@@ -1,18 +1,16 @@
 package com.vaadin.terminal.gwt.server;
 
+import com.vaadin.Application;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import com.vaadin.Application;
-import com.vaadin.cdi.VaadinApplication;
-
 public class VaadinCDIApplicationServlet extends AbstractApplicationServlet {
 
     private Class<? extends Application> vaadinApplicationClass;
-    @Inject
-    @VaadinApplication
+    @Inject @Any
     private Instance<Application> applications;
 
     @Override
@@ -34,12 +32,11 @@ public class VaadinCDIApplicationServlet extends AbstractApplicationServlet {
     @Override
     protected Application getNewApplication(HttpServletRequest request)
             throws ServletException {
-        for (Application application : applications) {
-            if (vaadinApplicationClass.isAssignableFrom(application.getClass())) {
+        Instance<Application> filtered = (Instance<Application>) applications.select(vaadinApplicationClass, new VaadinApplicationInstance());
+        for (Application application : filtered) {
                 return application;
-            }
-        }
-        throw new ServletException("No Vaadin application bean found");
+       }
+        throw new ServletException("No Vaadin application bean found for class: " + vaadinApplicationClass.getName());
     }
 
     @Override

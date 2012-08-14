@@ -14,5 +14,5 @@ import javax.inject.Qualifier;
 public @interface VaadinApplication {
 
 	@Nonbinding
-	public String mapping() default "";
+	public String mapping() default "/*";
 }

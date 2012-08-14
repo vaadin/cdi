@@ -1,1 +1,4 @@
 target/
+
+/vaadin-cdi/.settings
+/vaadin-cdi-test/.settings

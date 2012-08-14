@@ -13,5 +13,4 @@ public class SalesMainRoot extends Root {
 		addComponent(new Label("Sales main"));
 
 	}
-
 }

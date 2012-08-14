@@ -1,4 +1,4 @@
-package com.vaadin.reports.presentation;
+package com.vaadin.purchases.presentation;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -9,11 +9,11 @@ import com.vaadin.cdi.VaadinApplication;
 import com.vaadin.terminal.WrappedRequest;
 import com.vaadin.ui.Root;
 
-@VaadinApplication(mapping = "/reports/*")
-public class ReportsApplication extends Application {
+@VaadinApplication
+public class PurchasesApplication extends Application {
 
 	@Inject
-	private Instance<ReportsRoot> root;
+	private Instance<PurchasesRoot> root;
 
 	@Override
 	protected Root getRoot(WrappedRequest request)

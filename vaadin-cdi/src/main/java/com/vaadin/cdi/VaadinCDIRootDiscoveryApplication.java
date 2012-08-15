@@ -20,10 +20,13 @@ public final class VaadinCDIRootDiscoveryApplication extends Application {
 	@Override
 	protected Root getRoot(WrappedRequest request) {
 		String rootName = getRootNameFromRequest(request);
+
 		Map<String, Root> applicationRoots = discoverRootsForThisApplication();
+
 		if (applicationRoots.containsKey(rootName)) {
 			return applicationRoots.get(rootName);
 		}
+
 		throw new RuntimeException("Could not determine root " + rootName
 				+ " for application ");
 	}
@@ -47,9 +50,7 @@ public final class VaadinCDIRootDiscoveryApplication extends Application {
 			VaadinRoot deploymentIdentifier = rootClass
 					.getAnnotation(VaadinRoot.class);
 			String rootMapping = deploymentIdentifier.mapping();
-			if (rootMapping == null) {
-				rootMapping = "";
-			}
+
 			if (mappedRoots.containsKey(rootMapping)) {
 				throw new RuntimeException(
 						"Multiple roots for same application with same mapping");

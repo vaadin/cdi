@@ -5,11 +5,10 @@ import javax.inject.Inject;
 
 import com.vaadin.Application;
 import com.vaadin.RootRequiresMoreInformationException;
-import com.vaadin.cdi.VaadinApplication;
 import com.vaadin.terminal.WrappedRequest;
 import com.vaadin.ui.Root;
 
-@VaadinApplication(mapping = "/reports/*")
+//@VaadinApplication(mapping = "/reports/*")
 public class ReportsApplication extends Application {
 
 	@Inject

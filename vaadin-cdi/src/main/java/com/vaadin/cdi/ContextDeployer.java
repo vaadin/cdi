@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.servlet.Registration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -21,6 +22,7 @@ import com.vaadin.ui.Root;
 @WebListener
 public class ContextDeployer implements ServletContextListener {
 
+	private Set<String> configuredApplications;
 	private Map<String, Set<String>> rootMappings;
 
 	@Inject
@@ -36,6 +38,7 @@ public class ContextDeployer implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
+		configuredApplications = new HashSet<String>();
 		rootMappings = new HashMap<String, Set<String>>();
 
 		ServletContext context = sce.getServletContext();
@@ -43,10 +46,27 @@ public class ContextDeployer implements ServletContextListener {
 		System.out.println("Initializing web context for path "
 				+ context.getContextPath());
 
+		discoverMappingDoneInConfigurationFile(context);
 		discoverApplicationMappingsAndThrowOnConflicts();
 		discoverRootMappingsAndThrowOnConflicts();
 
 		registerVaadinApplications(context);
+	}
+
+	private void discoverMappingDoneInConfigurationFile(ServletContext context) {
+		Map<String, ? extends Registration> registrations = context
+				.getServletRegistrations();
+
+		for (Registration registration : registrations.values()) {
+			String applicationParameter = registration
+					.getInitParameter("application");
+
+			if (applicationParameter != null) {
+				System.out.println(applicationParameter
+						+ " is already configured in web.xml");
+				configuredApplications.add(applicationParameter);
+			}
+		}
 	}
 
 	/**
@@ -189,8 +209,17 @@ public class ContextDeployer implements ServletContextListener {
 			Class<? extends Application> applicationClass, String mapping,
 			ServletContext context) {
 		String className = applicationClass.getSimpleName();
+		String canonicalClassName = applicationClass.getCanonicalName();
 
-		System.out.println("Instantiating new servlet for " + className);
+		// If mapping is already done in web.xml, skip registration
+		if (configuredApplications.contains(canonicalClassName)) {
+			System.out.println(canonicalClassName
+					+ " is already registed, skipping");
+			return;
+		}
+
+		System.out.println("Instantiating new servlet for "
+				+ canonicalClassName);
 
 		ServletRegistration.Dynamic registration = context.addServlet(
 				className, servletInstanceProvider.get());

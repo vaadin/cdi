@@ -4,12 +4,12 @@ import java.lang.annotation.Annotation;
 
 import com.vaadin.Application;
 
-class VaadinRootAnnotation implements VaadinRoot {
+class VaadinUIAnnotation implements VaadinUI {
 
 	private final String mapping;
 	private Class<? extends Application> application;
 
-	public VaadinRootAnnotation(Class<? extends Application> application,
+	public VaadinUIAnnotation(Class<? extends Application> application,
 			String mapping) {
 		this.application = application;
 		this.mapping = mapping;
@@ -17,7 +17,7 @@ class VaadinRootAnnotation implements VaadinRoot {
 
 	@Override
 	public Class<? extends Annotation> annotationType() {
-		return VaadinRoot.class;
+		return VaadinUI.class;
 	}
 
 	@Override

@@ -18,7 +18,7 @@ public class VaadinCDIApplicationServlet extends AbstractApplicationServlet {
 	private Class<Application> vaadinApplicationClass;
 
 	@Inject
-	private Instance<CDIRootProvider> cdiRootProvider;
+	private Instance<CDIUIProvider> cdiRootProvider;
 
 	@Override
 	public void init() throws ServletException {
@@ -78,7 +78,7 @@ public class VaadinCDIApplicationServlet extends AbstractApplicationServlet {
 			application = filtered.get();
 		}
 
-		application.addRootProvider(cdiRootProvider.get());
+		application.addUIProvider(cdiRootProvider.get());
 
 		return application;
 	}

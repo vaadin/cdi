@@ -12,7 +12,7 @@ import com.vaadin.Application;
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })
-public @interface VaadinRoot {
+public @interface VaadinUI {
 
 	public String mapping() default "";
 

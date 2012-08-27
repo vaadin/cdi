@@ -1,11 +1,11 @@
 package com.vaadin.purchases.presentation;
 
-import com.vaadin.cdi.VaadinRoot;
+import com.vaadin.cdi.VaadinUI;
 import com.vaadin.terminal.WrappedRequest;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Root;
 
-@VaadinRoot(mapping = "purchaseslisting", application = PurchasesApplication.class)
+@VaadinUI(mapping = "purchaseslisting", application = PurchasesApplication.class)
 public class PurchasesRoot extends Root {
 
 	@Override

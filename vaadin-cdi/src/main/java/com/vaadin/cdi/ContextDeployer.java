@@ -17,13 +17,13 @@ import javax.servlet.ServletRegistration.Dynamic;
 import javax.servlet.annotation.WebListener;
 
 import com.vaadin.Application;
-import com.vaadin.ui.Root;
+import com.vaadin.ui.UI;
 
 @WebListener
 public class ContextDeployer implements ServletContextListener {
 
 	private Set<String> configuredApplications;
-	private Map<String, Set<String>> rootMappings;
+	private Map<String, Set<String>> uiMappings;
 
 	@Inject
 	@VaadinApplication
@@ -31,7 +31,7 @@ public class ContextDeployer implements ServletContextListener {
 
 	@Inject
 	@Any
-	private Instance<Root> roots;
+	private Instance<UI> uis;
 
 	@Inject
 	private Instance<VaadinCDIApplicationServlet> servletInstanceProvider;
@@ -39,7 +39,7 @@ public class ContextDeployer implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		configuredApplications = new HashSet<String>();
-		rootMappings = new HashMap<String, Set<String>>();
+		uiMappings = new HashMap<String, Set<String>>();
 
 		ServletContext context = sce.getServletContext();
 
@@ -48,7 +48,7 @@ public class ContextDeployer implements ServletContextListener {
 
 		discoverMappingDoneInConfigurationFile(context);
 		discoverApplicationMappingsAndThrowOnConflicts();
-		discoverRootMappingsAndThrowOnConflicts();
+		discoverUIMappingsAndThrowOnConflicts();
 
 		registerVaadinApplications(context);
 	}
@@ -86,12 +86,12 @@ public class ContextDeployer implements ServletContextListener {
 						+ " does not start with /");
 			}
 
-			if (rootMappings.containsKey(mapping)) {
+			if (uiMappings.containsKey(mapping)) {
 				throw new RuntimeException(
 						"Multiple Vaadin applications annotated with @VaadinApplication have same mapping attribute value or no mapping specified.");
 			}
 
-			rootMappings.put(mapping, new HashSet<String>());
+			uiMappings.put(mapping, new HashSet<String>());
 		}
 	}
 
@@ -99,17 +99,17 @@ public class ContextDeployer implements ServletContextListener {
 	 * Checks that there are no multiple roots assigned to same application with
 	 * same mapping
 	 */
-	private void discoverRootMappingsAndThrowOnConflicts() {
-		for (Root root : roots) {
+	private void discoverUIMappingsAndThrowOnConflicts() {
+		for (UI ui : uis) {
 
-			if (root.getClass().isAnnotationPresent(VaadinRoot.class)) {
-				VaadinRoot vaadinRootAnnotation = root.getClass()
-						.getAnnotation(VaadinRoot.class);
-				Class<? extends Application> applicationClass = vaadinRootAnnotation
+			if (ui.getClass().isAnnotationPresent(VaadinUI.class)) {
+				VaadinUI vaadinUIAnnotation = ui.getClass().getAnnotation(
+						VaadinUI.class);
+				Class<? extends Application> applicationClass = vaadinUIAnnotation
 						.application();
 
 				String applicationMapping = "/*";
-				String rootMapping = vaadinRootAnnotation.mapping();
+				String rootMapping = vaadinUIAnnotation.mapping();
 
 				if (applicationClass
 						.isAnnotationPresent(VaadinApplication.class)) {
@@ -119,24 +119,24 @@ public class ContextDeployer implements ServletContextListener {
 					applicationMapping = vaadinApplicationAnnotation.mapping();
 				}
 
-				if (!rootMappings.containsKey(applicationMapping)) {
-					rootMappings.put(applicationMapping, new HashSet<String>());
+				if (!uiMappings.containsKey(applicationMapping)) {
+					uiMappings.put(applicationMapping, new HashSet<String>());
 				}
 
-				if (rootMappings.get(applicationMapping).contains(rootMapping)) {
+				if (uiMappings.get(applicationMapping).contains(rootMapping)) {
 					throw new RuntimeException("Application "
 							+ applicationMapping
 							+ " has multiple roots with same mapping "
 							+ rootMapping);
 				}
 
-				rootMappings.get(applicationMapping).add(rootMapping);
+				uiMappings.get(applicationMapping).add(rootMapping);
 			}
 		}
 
-		for (String applicationMapping : rootMappings.keySet()) {
+		for (String applicationMapping : uiMappings.keySet()) {
 			System.out.println(applicationMapping + " "
-					+ rootMappings.get(applicationMapping));
+					+ uiMappings.get(applicationMapping));
 		}
 	}
 
@@ -146,9 +146,9 @@ public class ContextDeployer implements ServletContextListener {
 	 * @param context
 	 */
 	private void registerVaadinApplications(ServletContext context) {
-		if (rootMappings.isEmpty()) {
+		if (uiMappings.isEmpty()) {
 			System.out
-					.println("Could not register Vaadin applications or Roots, no such classes found with @VaadinApplication or @VaadinRoot annotations");
+					.println("Could not register Vaadin applications or UIs, no such classes found with @VaadinApplication or @VaadinUI annotations");
 		}
 
 		if (isApplicationsWithAnnotationsSpecified()) {
@@ -157,8 +157,8 @@ public class ContextDeployer implements ServletContextListener {
 			}
 		}
 
-		if (isRootsToDefaultApplicationSpecified()) {
-			if (!isApplicationRegisteredToContextRoot(context)) {
+		if (isUIsToDefaultApplicationSpecified()) {
+			if (!isApplicationRegisteredToContextUI(context)) {
 				registerDefaultApplicationToContext(context);
 			}
 		}
@@ -172,15 +172,15 @@ public class ContextDeployer implements ServletContextListener {
 		return !applications.isUnsatisfied();
 	}
 
-	private boolean isRootsToDefaultApplicationSpecified() {
-		if (rootMappings.containsKey("/*")) {
-			return !rootMappings.get("/*").isEmpty();
+	private boolean isUIsToDefaultApplicationSpecified() {
+		if (uiMappings.containsKey("/*")) {
+			return !uiMappings.get("/*").isEmpty();
 		}
 
 		return false;
 	}
 
-	private boolean isApplicationRegisteredToContextRoot(ServletContext context) {
+	private boolean isApplicationRegisteredToContextUI(ServletContext context) {
 		for (ServletRegistration registration : context
 				.getServletRegistrations().values()) {
 			if (registration.getMappings().contains("/*")) {

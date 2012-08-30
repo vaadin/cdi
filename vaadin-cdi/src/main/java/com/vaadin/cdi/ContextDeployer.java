@@ -4,8 +4,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.servlet.Registration;
 import javax.servlet.ServletContext;
@@ -24,8 +25,7 @@ public class ContextDeployer implements ServletContextListener {
     private Set<String> configuredUIs;
 
     @Inject
-    @Any
-    private Instance<UI> uis;
+    private BeanManager beanManager;
 
     @Inject
     private Instance<VaadinCDIApplicationServlet> servletInstanceProvider;
@@ -66,21 +66,26 @@ public class ContextDeployer implements ServletContextListener {
      * same mapping
      */
     private void discoverUIMappingsFromAnnotations() {
-        for (UI ui : uis) {
+        Set<Bean<?>> uiBeans = beanManager.getBeans(UI.class,
+                new VaadinUIAnnotation());
 
-            if (ui.getClass().isAnnotationPresent(VaadinUI.class)) {
-                VaadinUI vaadinUIAnnotation = ui.getClass().getAnnotation(
-                        VaadinUI.class);
+        for (Bean<?> uiBean : uiBeans) {
+            Class<? extends UI> uiBeanClass = uiBean.getBeanClass().asSubclass(
+                    UI.class);
 
-                String rootMapping = vaadinUIAnnotation.mapping();
+            if (uiBeanClass.isAnnotationPresent(VaadinUI.class)) {
+                VaadinUI vaadinUIAnnotation = uiBeanClass
+                        .getAnnotation(VaadinUI.class);
 
-                if (configuredUIs.contains(rootMapping)) {
+                String uiMapping = vaadinUIAnnotation.mapping();
+
+                if (configuredUIs.contains(uiMapping)) {
                     throw new RuntimeException(
                             "Multiple UIs configured with same mapping "
-                                    + rootMapping);
+                                    + uiMapping);
                 }
 
-                configuredUIs.add(rootMapping);
+                configuredUIs.add(uiMapping);
             }
         }
 

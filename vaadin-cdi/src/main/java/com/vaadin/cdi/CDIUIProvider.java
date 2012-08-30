@@ -1,7 +1,9 @@
 package com.vaadin.cdi;
 
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Instance;
+import java.util.Set;
+
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
 import com.vaadin.Application;
@@ -13,17 +15,16 @@ import com.vaadin.ui.UI;
 public class CDIUIProvider implements UIProvider {
 
     @Inject
-    @Any
-    private Instance<UI> UIs;
+    private BeanManager beanManager;
 
     @Override
     public Class<? extends UI> getUIClass(Application application,
             WrappedRequest request) throws UIRequiresMoreInformationException {
         String UIMapping = parseUIMapping(request);
-        UI ui = selectUIMatchingAnnotation(new VaadinUIAnnotation(UIMapping));
+        Bean<?> uiBean = getUIBeanMatchingMapping(UIMapping);
 
-        if (ui != null) {
-            return ui.getClass();
+        if (uiBean != null) {
+            return uiBean.getBeanClass().asSubclass(UI.class);
         }
 
         return null;
@@ -33,29 +34,36 @@ public class CDIUIProvider implements UIProvider {
     public UI instantiateUI(Application application, Class<? extends UI> type,
             WrappedRequest request) {
         String UIMapping = parseUIMapping(request);
-        UI ui = selectUIMatchingAnnotation(new VaadinUIAnnotation(UIMapping));
+        Bean<?> uiBean = getUIBeanMatchingMapping(UIMapping);
 
-        if (ui != null) {
-            return ui;
+        if (uiBean != null) {
+            return (UI) beanManager.getReference(uiBean, type,
+                    beanManager.createCreationalContext(uiBean));
         }
 
-        throw new RuntimeException("Could not instantiate root");
+        throw new RuntimeException("Could not instantiate UI");
     }
 
-    private UI selectUIMatchingAnnotation(VaadinUI vaadinUI) {
-        Instance<UI> selectedUI = UIs.select(vaadinUI);
+    private Bean<?> getUIBeanMatchingMapping(String mapping) {
+        Set<Bean<?>> beans = beanManager.getBeans(UI.class,
+                new VaadinUIAnnotation());
 
-        if (selectedUI.isUnsatisfied()) {
-            System.out.println("Could not find ui");
-            return null;
+        for (Bean<?> bean : beans) {
+            Class<? extends UI> beanClass = bean.getBeanClass().asSubclass(
+                    UI.class);
+
+            if (beanClass.isAnnotationPresent(VaadinUI.class)) {
+                VaadinUI annotation = beanClass.getAnnotation(VaadinUI.class);
+
+                if (annotation.mapping() != null) {
+                    if (mapping.equals(annotation.mapping())) {
+                        return bean;
+                    }
+                }
+            }
         }
 
-        if (selectedUI.isAmbiguous()) {
-            System.out.println("Ambiguous ui definition");
-            return null;
-        }
-
-        return selectedUI.get();
+        return null;
     }
 
     private String parseUIMapping(WrappedRequest request) {

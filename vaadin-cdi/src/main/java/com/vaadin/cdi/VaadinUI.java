@@ -5,6 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 
 @Qualifier
@@ -12,5 +13,6 @@ import javax.inject.Qualifier;
 @Target({ ElementType.FIELD, ElementType.TYPE })
 public @interface VaadinUI {
 
+    @Nonbinding
     public String mapping() default "";
 }

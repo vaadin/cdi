@@ -2,13 +2,9 @@ package com.vaadin.cdi;
 
 import java.lang.annotation.Annotation;
 
+import javax.enterprise.util.Nonbinding;
+
 class VaadinUIAnnotation implements VaadinUI {
-
-    private final String mapping;
-
-    public VaadinUIAnnotation(String mapping) {
-        this.mapping = mapping;
-    }
 
     @Override
     public Class<? extends Annotation> annotationType() {
@@ -16,7 +12,8 @@ class VaadinUIAnnotation implements VaadinUI {
     }
 
     @Override
+    @Nonbinding
     public String mapping() {
-        return mapping;
+        return null;
     }
 }

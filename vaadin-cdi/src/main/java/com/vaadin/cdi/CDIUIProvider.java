@@ -14,14 +14,13 @@ public class CDIUIProvider implements UIProvider {
 
     @Inject
     @Any
-    private Instance<UI> uis;
+    private Instance<UI> UIs;
 
     @Override
     public Class<? extends UI> getUIClass(Application application,
             WrappedRequest request) throws UIRequiresMoreInformationException {
-        String rootMapping = parseUIMapping(request);
-        UI ui = selectUIMatchingAnnotation(new VaadinUIAnnotation(
-                application.getClass(), rootMapping));
+        String UIMapping = parseUIMapping(request);
+        UI ui = selectUIMatchingAnnotation(new VaadinUIAnnotation(UIMapping));
 
         if (ui != null) {
             return ui.getClass();
@@ -33,19 +32,18 @@ public class CDIUIProvider implements UIProvider {
     @Override
     public UI instantiateUI(Application application, Class<? extends UI> type,
             WrappedRequest request) {
-        String rootMapping = parseUIMapping(request);
-        UI root = selectUIMatchingAnnotation(new VaadinUIAnnotation(
-                application.getClass(), rootMapping));
+        String UIMapping = parseUIMapping(request);
+        UI ui = selectUIMatchingAnnotation(new VaadinUIAnnotation(UIMapping));
 
-        if (root != null) {
-            return root;
+        if (ui != null) {
+            return ui;
         }
 
         throw new RuntimeException("Could not instantiate root");
     }
 
-    private UI selectUIMatchingAnnotation(VaadinUI vaadinRoot) {
-        Instance<UI> selectedUI = uis.select(vaadinRoot);
+    private UI selectUIMatchingAnnotation(VaadinUI vaadinUI) {
+        Instance<UI> selectedUI = UIs.select(vaadinUI);
 
         if (selectedUI.isUnsatisfied()) {
             System.out.println("Could not find ui");

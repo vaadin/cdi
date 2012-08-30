@@ -5,7 +5,7 @@ import com.vaadin.terminal.WrappedRequest;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 
-@VaadinUI(mapping = "purchaseslisting")
+@VaadinUI(mapping = "purchases")
 public class PurchasesRoot extends UI {
 
     @Override

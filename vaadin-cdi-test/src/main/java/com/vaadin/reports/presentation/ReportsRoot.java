@@ -4,7 +4,6 @@ import java.util.Date;
 
 import javax.inject.Inject;
 
-import com.vaadin.cdi.VaadinContext.VaadinScoped;
 import com.vaadin.cdi.VaadinUI;
 import com.vaadin.reports.business.issues.boundary.BugTracking;
 import com.vaadin.terminal.WrappedRequest;
@@ -12,8 +11,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.UI;
 
-@VaadinUI(mapping = "listing")
-@VaadinScoped
+@VaadinUI
 public class ReportsRoot extends UI {
 
     @Inject

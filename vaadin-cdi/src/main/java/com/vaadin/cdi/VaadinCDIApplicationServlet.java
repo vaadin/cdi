@@ -15,31 +15,10 @@ public class VaadinCDIApplicationServlet extends AbstractApplicationServlet {
     @Any
     private Instance<Application> applications;
 
-    private Class<Application> vaadinApplicationClass;
+    private final Class<Application> vaadinApplicationClass = Application.class;
 
     @Inject
     private Instance<CDIUIProvider> cdiRootProvider;
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-
-        String applicationClassName = getInitParameter("application");
-
-        System.out.println("Initializing servlet for application "
-                + applicationClassName);
-
-        try {
-
-            // Get the application class this servlet is providing.
-            vaadinApplicationClass = (Class<Application>) getServletContext()
-                    .getClassLoader().loadClass(applicationClassName);
-        } catch (ClassNotFoundException e) {
-            System.err.println("Could not find application class for "
-                    + applicationClassName);
-            throw new ServletException(e);
-        }
-    }
 
     @Override
     protected Application getNewApplication(HttpServletRequest request)

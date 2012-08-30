@@ -23,8 +23,8 @@
 		<servlet-name>PurchasesApplication</servlet-name>
 		<servlet-class>com.vaadin.cdi.VaadinCDIApplicationServlet</servlet-class>
 		<init-param>
-			<param-name>application</param-name>
-			<param-value>com.vaadin.purchases.presentation.PurchasesApplication</param-value>
+			<param-name>UI</param-name>
+			<param-value>com.vaadin.purchases.presentation.PurchasesRoot</param-value>
 		</init-param>
 	</servlet>
 	<servlet-mapping>

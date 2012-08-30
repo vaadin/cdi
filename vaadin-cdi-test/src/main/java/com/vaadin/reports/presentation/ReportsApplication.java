@@ -6,8 +6,8 @@ import com.vaadin.cdi.VaadinApplication;
 @VaadinApplication(mapping = "/reports/*")
 public class ReportsApplication extends Application {
 
-	@Override
-	public void init() {
-		super.init();
-	}
+    @Override
+    public void init() {
+        super.init();
+    }
 }

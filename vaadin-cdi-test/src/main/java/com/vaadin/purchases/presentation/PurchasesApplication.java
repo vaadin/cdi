@@ -4,8 +4,8 @@ import com.vaadin.Application;
 
 public class PurchasesApplication extends Application {
 
-	@Override
-	public void init() {
-		super.init();
-	}
+    @Override
+    public void init() {
+        super.init();
+    }
 }

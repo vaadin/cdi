@@ -8,13 +8,13 @@ import com.vaadin.ui.VerticalLayout;
 @VaadinView(name = "info")
 public class CustomerMainView extends VerticalLayout implements View {
 
-	public CustomerMainView() {
-		addComponent(new Label("Customer info"));
-	}
+    public CustomerMainView() {
+        addComponent(new Label("Customer info"));
+    }
 
-	@Override
-	public void navigateTo(String fragmentParameters) {
+    @Override
+    public void navigateTo(String fragmentParameters) {
 
-	}
+    }
 
 }

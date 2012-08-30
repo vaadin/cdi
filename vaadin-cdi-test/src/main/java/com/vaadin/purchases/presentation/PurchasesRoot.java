@@ -3,13 +3,13 @@ package com.vaadin.purchases.presentation;
 import com.vaadin.cdi.VaadinUI;
 import com.vaadin.terminal.WrappedRequest;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Root;
+import com.vaadin.ui.UI;
 
-@VaadinUI(mapping = "purchaseslisting", application = PurchasesApplication.class)
-public class PurchasesRoot extends Root {
+@VaadinUI(mapping = "purchaseslisting")
+public class PurchasesRoot extends UI {
 
-	@Override
-	protected void init(WrappedRequest request) {
-		addComponent(new Label("Purchases root"));
-	}
+    @Override
+    protected void init(WrappedRequest request) {
+        addComponent(new Label("Purchases root"));
+    }
 }

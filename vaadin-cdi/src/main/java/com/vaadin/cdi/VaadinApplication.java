@@ -13,6 +13,6 @@ import javax.inject.Qualifier;
 @Target({ ElementType.FIELD, ElementType.TYPE })
 public @interface VaadinApplication {
 
-	@Nonbinding
-	public String mapping() default "/*";
+    @Nonbinding
+    public String mapping() default "/*";
 }

@@ -9,43 +9,43 @@ import com.vaadin.navigator.ViewProvider;
 
 public class CDIViewProvider implements ViewProvider {
 
-	@Inject
-	@Any
-	private Instance<View> views;
+    @Inject
+    @Any
+    private Instance<View> views;
 
-	@Override
-	public String getViewName(String viewAndParameters) {
-		String viewName = parseViewName(viewAndParameters);
-		Instance<View> availableViews = discoverViewsByAnnotation(viewName);
+    @Override
+    public String getViewName(String viewAndParameters) {
+        String viewName = parseViewName(viewAndParameters);
+        Instance<View> availableViews = discoverViewsByAnnotation(viewName);
 
-		if (availableViews.isUnsatisfied()) {
-			return null;
-		}
+        if (availableViews.isUnsatisfied()) {
+            return null;
+        }
 
-		if (availableViews.isAmbiguous()) {
-			throw new RuntimeException(
-					"CDIViewProvider has multiple choises for view with name "
-							+ viewName);
-		}
+        if (availableViews.isAmbiguous()) {
+            throw new RuntimeException(
+                    "CDIViewProvider has multiple choises for view with name "
+                            + viewName);
+        }
 
-		return viewName;
-	}
+        return viewName;
+    }
 
-	@Override
-	public View getView(String viewName) {
-		Instance<View> view = discoverViewsByAnnotation(viewName);
-		return view.get();
-	}
+    @Override
+    public View getView(String viewName) {
+        Instance<View> view = discoverViewsByAnnotation(viewName);
+        return view.get();
+    }
 
-	private String parseViewName(String viewAndParameters) {
-		if (viewAndParameters.startsWith("!")) {
-			return viewAndParameters.substring(1);
-		}
+    private String parseViewName(String viewAndParameters) {
+        if (viewAndParameters.startsWith("!")) {
+            return viewAndParameters.substring(1);
+        }
 
-		return viewAndParameters;
-	}
+        return viewAndParameters;
+    }
 
-	private Instance<View> discoverViewsByAnnotation(String viewName) {
-		return views.select(new VaadinViewAnnotation(viewName));
-	}
+    private Instance<View> discoverViewsByAnnotation(String viewName) {
+        return views.select(new VaadinViewAnnotation(viewName));
+    }
 }

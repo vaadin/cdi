@@ -14,7 +14,7 @@ import com.vaadin.Application;
 @Target({ ElementType.FIELD, ElementType.TYPE })
 public @interface VaadinUI {
 
-	public String mapping() default "";
+    public String mapping() default "";
 
-	public Class<? extends Application> application() default Application.class;
+    public Class<? extends Application> application() default Application.class;
 }

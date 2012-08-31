@@ -7,7 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import com.vaadin.Application;
-import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
+import com.vaadin.server.AbstractApplicationServlet;
 
 public class VaadinCDIApplicationServlet extends AbstractApplicationServlet {
 

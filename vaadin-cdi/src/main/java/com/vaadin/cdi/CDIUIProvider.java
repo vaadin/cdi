@@ -7,9 +7,9 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
 import com.vaadin.Application;
-import com.vaadin.UIRequiresMoreInformationException;
-import com.vaadin.terminal.UIProvider;
-import com.vaadin.terminal.WrappedRequest;
+import com.vaadin.cdi.VaadinContext.BeanStoreContainer;
+import com.vaadin.server.UIProvider;
+import com.vaadin.server.WrappedRequest;
 import com.vaadin.ui.UI;
 
 public class CDIUIProvider implements UIProvider {
@@ -17,9 +17,12 @@ public class CDIUIProvider implements UIProvider {
     @Inject
     private BeanManager beanManager;
 
+    @Inject
+    private BeanStoreContainer beanStoreContainer;
+
     @Override
     public Class<? extends UI> getUIClass(Application application,
-            WrappedRequest request) throws UIRequiresMoreInformationException {
+            WrappedRequest request) {
         String UIMapping = parseUIMapping(request);
         Bean<?> uiBean = getUIBeanMatchingMapping(UIMapping);
 
@@ -37,8 +40,16 @@ public class CDIUIProvider implements UIProvider {
         Bean<?> uiBean = getUIBeanMatchingMapping(UIMapping);
 
         if (uiBean != null) {
-            return (UI) beanManager.getReference(uiBean, type,
+
+            System.out.println("Instantiating new UI from CDIUIProvider");
+            UI ui = (UI) beanManager.getReference(uiBean, type,
                     beanManager.createCreationalContext(uiBean));
+            beanStoreContainer.uiInitialized(ui);
+            ui.setApplication(application);
+
+            System.out.println(ui);
+
+            return ui;
         }
 
         throw new RuntimeException("Could not instantiate UI");

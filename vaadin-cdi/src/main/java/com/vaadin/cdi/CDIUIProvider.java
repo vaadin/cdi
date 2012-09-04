@@ -21,20 +21,7 @@ public class CDIUIProvider implements UIProvider {
     private BeanStoreContainer beanStoreContainer;
 
     @Override
-    public Class<? extends UI> getUIClass(Application application,
-            WrappedRequest request) {
-        String UIMapping = parseUIMapping(request);
-        Bean<?> uiBean = getUIBeanMatchingMapping(UIMapping);
-
-        if (uiBean != null) {
-            return uiBean.getBeanClass().asSubclass(UI.class);
-        }
-
-        return null;
-    }
-
-    @Override
-    public UI instantiateUI(Application application, Class<? extends UI> type,
+    public UI createInstance(Application application, Class<? extends UI> type,
             WrappedRequest request) {
         String UIMapping = parseUIMapping(request);
         Bean<?> uiBean = getUIBeanMatchingMapping(UIMapping);
@@ -53,6 +40,19 @@ public class CDIUIProvider implements UIProvider {
         }
 
         throw new RuntimeException("Could not instantiate UI");
+    }
+
+    @Override
+    public Class<? extends UI> getUIClass(Application application,
+            WrappedRequest request) {
+        String UIMapping = parseUIMapping(request);
+        Bean<?> uiBean = getUIBeanMatchingMapping(UIMapping);
+
+        if (uiBean != null) {
+            return uiBean.getBeanClass().asSubclass(UI.class);
+        }
+
+        return null;
     }
 
     private Bean<?> getUIBeanMatchingMapping(String mapping) {
@@ -88,4 +88,5 @@ public class CDIUIProvider implements UIProvider {
         }
         return "";
     }
+
 }

@@ -56,6 +56,18 @@ public class ContextDeployer implements ServletContextListener {
             if (uiParameter != null) {
                 System.out.println(uiParameter
                         + " is already configured in web.xml");
+
+                try {
+                    Class<?> uiClass = context.getClassLoader().loadClass(
+                            uiParameter);
+                    configuredUIs.add("/");
+                    System.out.println("Adding manually configured UI "
+                            + uiParameter + " to root context path \"/\"");
+                } catch (ClassNotFoundException e) {
+                    System.out.println("Failed to load class " + uiParameter
+                            + ", skipping");
+                }
+
                 configuredUIs.add(uiParameter);
             }
         }

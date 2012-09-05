@@ -7,7 +7,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
 import com.vaadin.Application;
-import com.vaadin.cdi.VaadinContext.BeanStoreContainer;
 import com.vaadin.server.UIProvider;
 import com.vaadin.server.WrappedRequest;
 import com.vaadin.ui.UI;

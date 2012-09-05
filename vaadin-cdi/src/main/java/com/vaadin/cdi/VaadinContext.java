@@ -183,7 +183,7 @@ public class VaadinContext implements Extension {
     @Scope
     // TODO: NormalScope
     @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
+    @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
     @Inherited
     public @interface VaadinUIScoped {
     }

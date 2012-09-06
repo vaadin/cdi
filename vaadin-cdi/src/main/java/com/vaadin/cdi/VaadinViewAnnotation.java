@@ -15,7 +15,7 @@ class VaadinViewAnnotation implements VaadinView {
     }
 
     @Override
-    public String name() {
+    public String value() {
         return viewName;
     }
 }

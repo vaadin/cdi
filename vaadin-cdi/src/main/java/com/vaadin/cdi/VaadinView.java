@@ -12,5 +12,5 @@ import javax.inject.Qualifier;
 @Target({ ElementType.FIELD, ElementType.TYPE })
 public @interface VaadinView {
 
-    public String name() default "";
+    public String value() default "";
 }

@@ -19,7 +19,7 @@ public class CDIViewProvider implements ViewProvider {
         Instance<View> availableViews = discoverViewsByAnnotation(viewName);
 
         if (availableViews.isUnsatisfied()) {
-            return null;
+            return null; //why null? Wouldn't be an Exception more consistent?
         }
 
         if (availableViews.isAmbiguous()) {

@@ -1,17 +1,18 @@
 package com.vaadin.cdi;
 
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
-import com.vaadin.server.AbstractUIProvider;
+import com.vaadin.server.DefaultUIProvider;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.server.WrappedRequest;
 import com.vaadin.ui.UI;
 
-public class CDIUIProvider extends AbstractUIProvider {
+public class CDIUIProvider extends DefaultUIProvider {
 
     @Inject
     private BeanManager beanManager;
@@ -22,8 +23,17 @@ public class CDIUIProvider extends AbstractUIProvider {
     @Override
     public UI createInstance(VaadinSession application,
             Class<? extends UI> type, WrappedRequest request) {
-        String uiMapping = parseUIMapping(request);
-        Bean<?> uiBean = getUIBeanMatchingMapping(uiMapping);
+
+        Bean<?> uiBean = null;
+
+        if (type.isAnnotationPresent(VaadinUI.class)) {
+            String uiMapping = parseUIMapping(request);
+            uiBean = getUIBeanMatchingMapping(uiMapping);
+        }
+
+        if (uiBean == null) {
+            uiBean = getUIBeanMatchingDeploymentDescriptor(type);
+        }
 
         if (uiBean != null) {
             UI ui = (UI) beanManager.getReference(uiBean, type,
@@ -46,7 +56,8 @@ public class CDIUIProvider extends AbstractUIProvider {
             return uiBean.getBeanClass().asSubclass(UI.class);
         }
 
-        return null;
+        // See if UI is configured to web.xml with VaadinCDIServlet
+        return super.getUIClass(application, request);
     }
 
     private Bean<?> getUIBeanMatchingMapping(String mapping) {
@@ -71,6 +82,29 @@ public class CDIUIProvider extends AbstractUIProvider {
         return null;
     }
 
+    private Bean<?> getUIBeanMatchingDeploymentDescriptor(
+            Class<? extends UI> type) {
+        Set<Bean<?>> beans = beanManager.getBeans(type);
+
+        if (beans.isEmpty()) {
+            beans = beanManager.getBeans(type, new VaadinUIAnnotation());
+        }
+
+        if (beans.isEmpty()) {
+            getLogger().warning(
+                    "Could not find UI bean for " + type.getCanonicalName());
+            return null;
+        }
+
+        if (beans.size() > 1) {
+            getLogger().warning(
+                    "Found multiple UI beans for " + type.getCanonicalName());
+            return null;
+        }
+
+        return beans.iterator().next();
+    }
+
     private String parseUIMapping(WrappedRequest request) {
         String requestPath = request.getRequestPathInfo();
         if (requestPath != null && requestPath.length() > 1) {
@@ -83,4 +117,7 @@ public class CDIUIProvider extends AbstractUIProvider {
         return "";
     }
 
+    private static Logger getLogger() {
+        return Logger.getLogger(CDIUIProvider.class.getCanonicalName());
+    }
 }

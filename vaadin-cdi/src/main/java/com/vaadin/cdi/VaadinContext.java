@@ -1,18 +1,14 @@
 package com.vaadin.cdi;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
 
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
@@ -24,7 +20,6 @@ import javax.enterprise.inject.spi.Extension;
 import javax.inject.Scope;
 
 import com.vaadin.ui.UI;
-import java.util.Set;
 
 /**
  * CDI Extension which registers VaadinContextImpl context.
@@ -35,7 +30,7 @@ public class VaadinContext implements Extension {
 
     void afterBeanDiscovery(@Observes
     final AfterBeanDiscovery afterBeanDiscovery, final BeanManager beanManager) {
-        System.out.println("---------------Registering");
+        getLogger().finest("Initializing VaadinContext CDI Extension");
         afterBeanDiscovery.addContext(new VaadinContextImpl(beanManager));
     }
 
@@ -55,13 +50,12 @@ public class VaadinContext implements Extension {
 
         private UIBeanStore getCurrentBeanStore() {
             Set<Bean<?>> beans = beanManager.getBeans(BeanStoreContainer.class);
-            if(beans.isEmpty()){
-                String msg = "Cannot obtain BeanStoreContainer";
-                System.err.println("---------" +msg);
+            if (beans.isEmpty()) {
+                String msg = "Unable to obtain bean store for UI";
+                getLogger().warning(msg);
                 throw new IllegalStateException(msg);
             }
-            final Bean<?> bean = beans
-                    .iterator().next();
+            final Bean<?> bean = beans.iterator().next();
             final BeanStoreContainer container = (BeanStoreContainer) beanManager
                     .getReference(bean, bean.getBeanClass(),
                             beanManager.createCreationalContext(bean));
@@ -91,7 +85,6 @@ public class VaadinContext implements Extension {
         }
     }
 
-  
     /**
      * Annotation used for declaring bean class scope for VaadinUI beans
      * 
@@ -100,9 +93,13 @@ public class VaadinContext implements Extension {
     @Scope
     // TODO: NormalScope
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
+    @Target({ ElementType.TYPE, ElementType.METHOD, ElementType.FIELD })
     @Inherited
     public @interface VaadinUIScoped {
+    }
+
+    private static Logger getLogger() {
+        return Logger.getLogger(VaadinContext.class.getCanonicalName());
     }
 
 }

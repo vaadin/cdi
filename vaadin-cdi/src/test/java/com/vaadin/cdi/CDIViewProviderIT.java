@@ -22,22 +22,24 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 public class CDIViewProviderIT {
-    
+
     @Inject
     CDIViewProvider provider;
-    
+
     @Deployment
     public static JavaArchive createTestArchive() {
         return ShrinkWrap.create(JavaArchive.class, "vaadincontext.jar").
                 addClass(TestView.class).
                 addPackage("com.vaadin.cdi").
+                addAsManifestResource(new ByteArrayAsset(VaadinContext.class.getName().getBytes()),
+                ArchivePaths.create("services/javax.enterprise.inject.spi.Extension")).
                 addAsManifestResource(
                 new ByteArrayAsset("<beans/>".getBytes()),
                 ArchivePaths.create("beans.xml"));
     }
 
     @Test
-    public void viewAvailableWithConvention() {
+    public void viewAvailableWithName() {
         View view = provider.getView(TestView.class.getSimpleName());
         assertNotNull(view);
     }

@@ -24,6 +24,7 @@ import javax.enterprise.inject.spi.Extension;
 import javax.inject.Scope;
 
 import com.vaadin.ui.UI;
+import java.util.Set;
 
 /**
  * CDI Extension which registers VaadinContextImpl context.
@@ -34,6 +35,7 @@ public class VaadinContext implements Extension {
 
     void afterBeanDiscovery(@Observes
     final AfterBeanDiscovery afterBeanDiscovery, final BeanManager beanManager) {
+        System.out.println("---------------Registering");
         afterBeanDiscovery.addContext(new VaadinContextImpl(beanManager));
     }
 
@@ -52,7 +54,13 @@ public class VaadinContext implements Extension {
         }
 
         private UIBeanStore getCurrentBeanStore() {
-            final Bean<?> bean = beanManager.getBeans(BeanStoreContainer.class)
+            Set<Bean<?>> beans = beanManager.getBeans(BeanStoreContainer.class);
+            if(beans.isEmpty()){
+                String msg = "Cannot obtain BeanStoreContainer";
+                System.err.println("---------" +msg);
+                throw new IllegalStateException(msg);
+            }
+            final Bean<?> bean = beans
                     .iterator().next();
             final BeanStoreContainer container = (BeanStoreContainer) beanManager
                     .getReference(bean, bean.getBeanClass(),
@@ -83,98 +91,7 @@ public class VaadinContext implements Extension {
         }
     }
 
-    /**
-     * Datastructure for storing bean instances in {@link VaadinUIScoped}
-     * context.
-     * 
-     * @author Tomi Virkki / Vaadin Ltd
-     */
-    static class UIBeanStore {
-        private final Map<Bean<?>, ContextualInstance<?>> instances = new HashMap<Bean<?>, ContextualInstance<?>>();
-
-        public UIBeanStore() {
-            System.out.println("Creating new UIBeanStore");
-        }
-
-        @SuppressWarnings("unchecked")
-        protected <T> T getBeanInstance(final Bean<T> bean,
-                final CreationalContext<T> creationalContext) {
-            ContextualInstance<T> contextualInstance = (ContextualInstance<T>) instances
-                    .get(bean);
-            if (contextualInstance == null && creationalContext != null) {
-                contextualInstance = new ContextualInstance<T>(
-                        bean.create(creationalContext), creationalContext);
-                instances.put(bean, contextualInstance);
-            }
-            return contextualInstance != null ? contextualInstance
-                    .getInstance() : null;
-        }
-
-        public void dereferenceAllBeanInstances() {
-            for (final Bean<?> bean : new HashSet<Bean<?>>(instances.keySet())) {
-                dereferenceBeanInstance(bean);
-            }
-        }
-
-        public <T> void dereferenceBeanInstance(final Bean<T> bean) {
-            @SuppressWarnings("unchecked")
-            final ContextualInstance<T> contextualInstance = (ContextualInstance<T>) instances
-                    .get(bean);
-            if (contextualInstance != null) {
-                bean.destroy(contextualInstance.getInstance(),
-                        contextualInstance.getCreationalContext());
-                instances.remove(bean);
-            }
-        }
-
-        class ContextualInstance<T> {
-            private final T instance;
-            private final CreationalContext<T> creationalContext;
-
-            public ContextualInstance(final T instance,
-                    final CreationalContext<T> creationalContext) {
-                super();
-                this.instance = instance;
-                this.creationalContext = creationalContext;
-            }
-
-            public T getInstance() {
-                return instance;
-            }
-
-            public CreationalContext<T> getCreationalContext() {
-                return creationalContext;
-            }
-        }
-    }
-
-    @SuppressWarnings("serial")
-    @SessionScoped
-    static class BeanStoreContainer implements Serializable {
-        private final Map<Integer, UIBeanStore> beanStores = new HashMap<Integer, VaadinContext.UIBeanStore>();
-
-        public UIBeanStore getBeanStore(final UI current) {
-            final Integer key = current != null ? current.hashCode() : null;
-            if (!beanStores.containsKey(key)) {
-                beanStores.put(key, new UIBeanStore());
-            }
-            return beanStores.get(key);
-        }
-
-        public void uiInitialized(final UI ui) {
-            beanStores.put(ui.hashCode(), beanStores.remove(null));
-            // TODO: Listen for Ui close -> Dereference beans of the related
-            // beanstore
-        }
-
-        @PreDestroy
-        private void preDestroy() {
-            for (final UIBeanStore beanStore : beanStores.values()) {
-                beanStore.dereferenceAllBeanInstances();
-            }
-        }
-    }
-
+  
     /**
      * Annotation used for declaring bean class scope for VaadinUI beans
      * 
@@ -183,7 +100,7 @@ public class VaadinContext implements Extension {
     @Scope
     // TODO: NormalScope
     @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
+    @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
     @Inherited
     public @interface VaadinUIScoped {
     }

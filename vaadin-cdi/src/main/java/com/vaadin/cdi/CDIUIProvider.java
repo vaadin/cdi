@@ -6,13 +6,13 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
-import com.vaadin.Application;
 import com.vaadin.cdi.VaadinContext.BeanStoreContainer;
-import com.vaadin.server.UIProvider;
+import com.vaadin.server.AbstractUIProvider;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.server.WrappedRequest;
 import com.vaadin.ui.UI;
 
-public class CDIUIProvider implements UIProvider {
+public class CDIUIProvider extends AbstractUIProvider {
 
     @Inject
     private BeanManager beanManager;
@@ -21,20 +21,15 @@ public class CDIUIProvider implements UIProvider {
     private BeanStoreContainer beanStoreContainer;
 
     @Override
-    public UI createInstance(Application application, Class<? extends UI> type,
-            WrappedRequest request) {
-        String UIMapping = parseUIMapping(request);
-        Bean<?> uiBean = getUIBeanMatchingMapping(UIMapping);
+    public UI createInstance(VaadinSession application,
+            Class<? extends UI> type, WrappedRequest request) {
+        String uiMapping = parseUIMapping(request);
+        Bean<?> uiBean = getUIBeanMatchingMapping(uiMapping);
 
         if (uiBean != null) {
-
-            System.out.println("Instantiating new UI from CDIUIProvider");
             UI ui = (UI) beanManager.getReference(uiBean, type,
                     beanManager.createCreationalContext(uiBean));
             beanStoreContainer.uiInitialized(ui);
-            ui.setApplication(application);
-
-            System.out.println(ui);
 
             return ui;
         }
@@ -43,7 +38,7 @@ public class CDIUIProvider implements UIProvider {
     }
 
     @Override
-    public Class<? extends UI> getUIClass(Application application,
+    public Class<? extends UI> getUIClass(VaadinSession application,
             WrappedRequest request) {
         String UIMapping = parseUIMapping(request);
         Bean<?> uiBean = getUIBeanMatchingMapping(UIMapping);

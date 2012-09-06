@@ -5,34 +5,22 @@ import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import com.vaadin.Application;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.VaadinServletSession;
 
 public class VaadinCDIApplicationServlet extends VaadinServlet {
-
-    private final Class<Application> vaadinApplicationClass = Application.class;
 
     @Inject
     private Instance<CDIUIProvider> cdiRootProvider;
 
     @Override
-    protected Application getNewApplication(HttpServletRequest request)
+    protected VaadinServletSession createApplication(HttpServletRequest request)
             throws ServletException {
 
-        Application application = null;
+        VaadinServletSession newApplication = new VaadinServletSession();
 
-        try {
-            application = vaadinApplicationClass.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException("Failed to create application instance",
-                    e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Failed to create application instance",
-                    e);
-        }
+        newApplication.addUIProvider(cdiRootProvider.get());
 
-        application.addUIProvider(cdiRootProvider.get());
-
-        return application;
+        return newApplication;
     }
 }

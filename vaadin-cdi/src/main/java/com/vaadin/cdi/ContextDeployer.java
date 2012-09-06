@@ -1,8 +1,10 @@
 package com.vaadin.cdi;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
@@ -16,12 +18,13 @@ import javax.servlet.ServletRegistration;
 import javax.servlet.ServletRegistration.Dynamic;
 import javax.servlet.annotation.WebListener;
 
-import com.vaadin.Application;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 
 @WebListener
 public class ContextDeployer implements ServletContextListener {
 
+    private Map<ServletRegistration, Set<String>> servletMappings;
     private Set<String> configuredUIs;
 
     @Inject
@@ -33,42 +36,106 @@ public class ContextDeployer implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         configuredUIs = new HashSet<String>();
+        servletMappings = new HashMap<ServletRegistration, Set<String>>();
 
         ServletContext context = sce.getServletContext();
 
-        System.out.println("Initializing web context for path "
-                + context.getContextPath());
+        getLogger()
+                .info("Initializing web context for path "
+                        + context.getContextPath());
 
+        discoverDeployedServlets(context);
         discoverUIMappingsFromConfigurationFile(context);
         discoverUIMappingsFromAnnotations();
 
-        registerVaadinApplications(context);
+        deployVaadinCDIServletIfUIsAvailable(context);
+
+        getLogger().info("Done deploying Vaadin UIs");
     }
 
-    private void discoverUIMappingsFromConfigurationFile(ServletContext context) {
+    private void discoverDeployedServlets(ServletContext context) {
         Map<String, ? extends Registration> registrations = context
                 .getServletRegistrations();
 
+        getLogger().info("Discovering deployed servlets...");
+
         for (Registration registration : registrations.values()) {
-            String uiParameter = registration
-                    .getInitParameter(Application.UI_PARAMETER);
+            if (registration instanceof ServletRegistration) {
+                ServletRegistration servletRegistration = (ServletRegistration) registration;
 
-            if (uiParameter != null) {
-                System.out.println(uiParameter
-                        + " is already configured in web.xml");
+                String servletClassname = servletRegistration.getClassName();
 
-                try {
-                    Class<?> uiClass = context.getClassLoader().loadClass(
-                            uiParameter);
-                    configuredUIs.add("/");
-                    System.out.println("Adding manually configured UI "
-                            + uiParameter + " to root context path \"/\"");
-                } catch (ClassNotFoundException e) {
-                    System.out.println("Failed to load class " + uiParameter
-                            + ", skipping");
+                servletMappings.put(servletRegistration, new HashSet<String>());
+
+                for (String mapping : servletRegistration.getMappings()) {
+                    getLogger().info(
+                            "Found " + servletClassname + " mapped to "
+                                    + mapping);
+                    servletMappings.get(servletRegistration).add(mapping);
+                }
+            }
+        }
+    }
+
+    private boolean isServletMappedToContextRoot() {
+        for (ServletRegistration servletRegistration : servletMappings.keySet()) {
+            if (servletRegistration.getMappings().contains("/*")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isVaadinCDIServletMappedToContextRootInDeploymentDescriptor(
+            ServletContext context) {
+        for (ServletRegistration servletRegistration : servletMappings.keySet()) {
+            String servletClassName = servletRegistration.getClassName();
+
+            try {
+                Class<?> servletClass = context.getClassLoader().loadClass(
+                        servletClassName);
+
+                if (VaadinCDIApplicationServlet.class
+                        .isAssignableFrom(servletClass)) {
+
+                    if (servletRegistration.getMappings().contains("/*")) {
+                        return true;
+                    }
                 }
 
-                configuredUIs.add(uiParameter);
+            } catch (ClassNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
+
+    private void discoverUIMappingsFromConfigurationFile(ServletContext context) {
+
+        getLogger().info(
+                "Discovering Vaadin UI mappings from deployment descriptor...");
+
+        for (ServletRegistration servletRegistration : servletMappings.keySet()) {
+            try {
+                String uiClassName = servletRegistration
+                        .getInitParameter(VaadinSession.UI_PARAMETER);
+
+                if (uiClassName != null) {
+                    Class<?> uiClass = context.getClassLoader().loadClass(
+                            uiClassName);
+
+                    if (uiClass.isAnnotationPresent(VaadinUI.class)) {
+                        throw new RuntimeException(
+                                uiClass
+                                        + " contains both, web.xml mapping as well as annotation configuration, only either one is allowed");
+                    }
+                }
+
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException("Could not find UI class", e);
             }
         }
     }
@@ -78,6 +145,9 @@ public class ContextDeployer implements ServletContextListener {
      * same mapping
      */
     private void discoverUIMappingsFromAnnotations() {
+        getLogger().info(
+                "Discovering Vaadin UI mappings from @VaadinUI annotations...");
+
         Set<Bean<?>> uiBeans = beanManager.getBeans(UI.class,
                 new VaadinUIAnnotation());
 
@@ -101,44 +171,54 @@ public class ContextDeployer implements ServletContextListener {
             }
         }
 
-        System.out.println("Available UIs: " + configuredUIs);
+        getLogger().info(
+                "Available Vaadin UIs for CDI deployment " + configuredUIs);
     }
 
     /**
-     * Registers all discovered applications to given servlet context
+     * Deploys VaadinCDIServlet to context root if UI classes with proper
+     * annotation are available
      * 
      * @param context
      */
-    private void registerVaadinApplications(ServletContext context) {
+    private void deployVaadinCDIServletIfUIsAvailable(ServletContext context) {
         if (configuredUIs.isEmpty()) {
-            System.out
-                    .println("Could not register Vaadin UIs, no classes found with @VaadinUI annotations and or no UI configured to web.xml with UI parameter.");
+            getLogger()
+                    .warning(
+                            "No Vaadin UI classes with @VaadinUI annotation found. Skipping automated deployment of VaadinCDIServlet.");
+        } else {
+            if (!isServletMappedToContextRoot()) {
+                getLogger()
+                        .info("No other deployment descriptor defined servlets found from context root");
+                registerVaadinCDIServletToContextRoot(context);
+            } else {
+                if (isVaadinCDIServletMappedToContextRootInDeploymentDescriptor(context)) {
+                    getLogger()
+                            .info("Servlet capable of deploying Vaadin UIs with CDI is already defined in deployment descriptor to context root, this will be used instead of default deployment of "
+                                    + VaadinCDIApplicationServlet.class
+                                            .getName());
+                } else {
+                    getLogger()
+                            .warning(
+                                    "Could not register VaadinCDIServlet automatically to context root as there is another servlet defined in deployment descriptor, @VaadinUI annotated UIs are not available");
+                }
+            }
         }
-
-        registerDefaultApplicationToContext(context);
     }
 
-    private void registerDefaultApplicationToContext(ServletContext context) {
-        registerApplicationToContext(Application.class, "/*", context);
+    private void registerVaadinCDIServletToContextRoot(ServletContext context) {
+        getLogger().info(
+                "Attempt to deploy VaadinCDIServlet to context root...");
+        registerServletToContext("/*", context);
     }
 
-    private void registerApplicationToContext(
-            Class<? extends Application> applicationClass, String mapping,
-            ServletContext context) {
-        String className = applicationClass.getSimpleName();
-        String canonicalClassName = applicationClass.getCanonicalName();
-
-        System.out.println("Instantiating new servlet for "
-                + canonicalClassName);
+    private void registerServletToContext(String mapping, ServletContext context) {
+        getLogger().info("Registering VaadinCDIServlet");
 
         ServletRegistration.Dynamic registration = context.addServlet(
-                className, servletInstanceProvider.get());
-
-        registration.setInitParameter("application",
-                applicationClass.getCanonicalName());
+                "VaadinCDIServlet", servletInstanceProvider.get());
 
         registration.addMapping("/VAADIN/*");
-
         addMappingToRegistration(mapping, registration);
     }
 
@@ -149,13 +229,17 @@ public class ContextDeployer implements ServletContextListener {
      * @param registration
      */
     private void addMappingToRegistration(String mapping, Dynamic registration) {
-        System.out.println("Mapping " + registration.getName() + " to "
-                + mapping);
+        getLogger()
+                .info("Mapping " + registration.getName() + " to " + mapping);
         registration.addMapping(mapping);
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         System.out.println("Context destroyed");
+    }
+
+    private static Logger getLogger() {
+        return Logger.getLogger(ContextDeployer.class.getCanonicalName());
     }
 }

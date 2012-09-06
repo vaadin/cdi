@@ -85,18 +85,6 @@ public class VaadinContext implements Extension {
         }
     }
 
-    /**
-     * Annotation used for declaring bean class scope for VaadinUI beans
-     * 
-     * @author Tomi Virkki / Vaadin Ltd
-     */
-    @Scope
-    // TODO: NormalScope
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target({ ElementType.TYPE, ElementType.METHOD, ElementType.FIELD })
-    @Inherited
-    public @interface VaadinUIScoped {
-    }
 
     private static Logger getLogger() {
         return Logger.getLogger(VaadinContext.class.getCanonicalName());

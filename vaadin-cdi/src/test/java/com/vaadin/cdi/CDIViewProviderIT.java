@@ -15,6 +15,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
+import static com.vaadin.cdi.ArchiveProvider.*;
 
 /**
  *
@@ -28,14 +29,7 @@ public class CDIViewProviderIT {
 
     @Deployment
     public static JavaArchive createTestArchive() {
-        return ShrinkWrap.create(JavaArchive.class, "vaadincontext.jar").
-                addClass(TestView.class).
-                addPackage("com.vaadin.cdi").
-                addAsManifestResource(new ByteArrayAsset(VaadinContext.class.getName().getBytes()),
-                ArchivePaths.create("services/javax.enterprise.inject.spi.Extension")).
-                addAsManifestResource(
-                new ByteArrayAsset("<beans/>".getBytes()),
-                ArchivePaths.create("beans.xml"));
+        return createJavaArchive(TestView.class);
     }
 
     @Test

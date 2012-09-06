@@ -6,7 +6,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-@VaadinView(name = "info")
+@VaadinView(value = "info")
 public class CustomerMainView extends VerticalLayout implements View {
 
     public CustomerMainView() {

@@ -43,15 +43,20 @@ public class CDIUIProvider extends DefaultUIProvider {
 
     @Override
     public Class<? extends UI> getUIClass(WrappedRequest request) {
-        String UIMapping = parseUIMapping(request);
-        Bean<?> uiBean = getUIBeanMatchingQualifierMapping(UIMapping);
+        String uiMapping = parseUIMapping(request);
+        Bean<?> uiBean = getUIBeanMatchingQualifierMapping(uiMapping);
 
         if (uiBean != null) {
             return uiBean.getBeanClass().asSubclass(UI.class);
         }
 
-        // See if UI is configured to web.xml with VaadinCDIServlet
-        return super.getUIClass(request);
+        if (uiMapping.isEmpty()) {
+            // See if UI is configured to web.xml with VaadinCDIServlet. This is
+            // done only if no specific UI name is given.
+            return super.getUIClass(request);
+        }
+
+        return null;
     }
 
     private Bean<?> getUIBeanMatchingQualifierMapping(String mapping) {

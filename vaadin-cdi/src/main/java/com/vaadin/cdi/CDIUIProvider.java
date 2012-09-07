@@ -21,15 +21,13 @@ public class CDIUIProvider extends DefaultUIProvider {
 
     @Override
     public UI createInstance(Class<? extends UI> type, WrappedRequest request) {
-        Bean<?> uiBean = null;
-
-        if (type.isAnnotationPresent(VaadinUI.class)) {
-            String uiMapping = parseUIMapping(request);
-            uiBean = getUIBeanMatchingMapping(uiMapping);
-        }
+        Bean<?> uiBean = getUIBeanMatchingDeploymentDescriptor(type);
 
         if (uiBean == null) {
-            uiBean = getUIBeanMatchingDeploymentDescriptor(type);
+            if (type.isAnnotationPresent(VaadinUI.class)) {
+                String uiMapping = parseUIMapping(request);
+                uiBean = getUIBeanMatchingMapping(uiMapping);
+            }
         }
 
         if (uiBean != null) {
@@ -80,9 +78,13 @@ public class CDIUIProvider extends DefaultUIProvider {
 
     private Bean<?> getUIBeanMatchingDeploymentDescriptor(
             Class<? extends UI> type) {
+
+        // If @VaadinUI qualifier is not given but UI is defined in deployment
+        // descriptor
         Set<Bean<?>> beans = beanManager.getBeans(type);
 
         if (beans.isEmpty()) {
+            // Otherwise check whether UI with qualifier exists
             beans = beanManager.getBeans(type, new VaadinUIAnnotation());
         }
 

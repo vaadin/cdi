@@ -26,7 +26,7 @@ public class CDIUIProvider extends DefaultUIProvider {
         if (uiBean == null) {
             if (type.isAnnotationPresent(VaadinUI.class)) {
                 String uiMapping = parseUIMapping(request);
-                uiBean = getUIBeanMatchingMapping(uiMapping);
+                uiBean = getUIBeanMatchingQualifierMapping(uiMapping);
             }
         }
 
@@ -44,7 +44,7 @@ public class CDIUIProvider extends DefaultUIProvider {
     @Override
     public Class<? extends UI> getUIClass(WrappedRequest request) {
         String UIMapping = parseUIMapping(request);
-        Bean<?> uiBean = getUIBeanMatchingMapping(UIMapping);
+        Bean<?> uiBean = getUIBeanMatchingQualifierMapping(UIMapping);
 
         if (uiBean != null) {
             return uiBean.getBeanClass().asSubclass(UI.class);
@@ -54,7 +54,7 @@ public class CDIUIProvider extends DefaultUIProvider {
         return super.getUIClass(request);
     }
 
-    private Bean<?> getUIBeanMatchingMapping(String mapping) {
+    private Bean<?> getUIBeanMatchingQualifierMapping(String mapping) {
         Set<Bean<?>> beans = beanManager.getBeans(UI.class,
                 new VaadinUIAnnotation());
 

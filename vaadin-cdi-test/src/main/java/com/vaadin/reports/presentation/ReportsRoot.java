@@ -11,7 +11,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.UI;
 
-@VaadinUI
+@VaadinUI(mapping = "reports")
 public class ReportsRoot extends UI {
 
     @Inject

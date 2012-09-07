@@ -1,7 +1,7 @@
 package com.vaadin.purchases.presentation;
 
-import com.vaadin.cdi.VaadinContext.VaadinUIScoped;
 import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.VaadinUIScoped;
 import com.vaadin.server.WrappedRequest;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;

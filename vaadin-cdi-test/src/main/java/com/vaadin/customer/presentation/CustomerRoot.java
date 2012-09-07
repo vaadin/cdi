@@ -3,8 +3,8 @@ package com.vaadin.customer.presentation;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.CDIViewProvider;
-import com.vaadin.cdi.VaadinContext.VaadinUIScoped;
 import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.VaadinUIScoped;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.Navigator.SimpleViewDisplay;
 import com.vaadin.server.WrappedRequest;

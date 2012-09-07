@@ -8,7 +8,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
 import com.vaadin.server.DefaultUIProvider;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.server.WrappedRequest;
 import com.vaadin.ui.UI;
 
@@ -21,9 +20,7 @@ public class CDIUIProvider extends DefaultUIProvider {
     private BeanStoreContainer beanStoreContainer;
 
     @Override
-    public UI createInstance(VaadinSession application,
-            Class<? extends UI> type, WrappedRequest request) {
-
+    public UI createInstance(Class<? extends UI> type, WrappedRequest request) {
         Bean<?> uiBean = null;
 
         if (type.isAnnotationPresent(VaadinUI.class)) {
@@ -47,8 +44,7 @@ public class CDIUIProvider extends DefaultUIProvider {
     }
 
     @Override
-    public Class<? extends UI> getUIClass(VaadinSession application,
-            WrappedRequest request) {
+    public Class<? extends UI> getUIClass(WrappedRequest request) {
         String UIMapping = parseUIMapping(request);
         Bean<?> uiBean = getUIBeanMatchingMapping(UIMapping);
 
@@ -57,7 +53,7 @@ public class CDIUIProvider extends DefaultUIProvider {
         }
 
         // See if UI is configured to web.xml with VaadinCDIServlet
-        return super.getUIClass(application, request);
+        return super.getUIClass(request);
     }
 
     private Bean<?> getUIBeanMatchingMapping(String mapping) {

@@ -27,7 +27,7 @@ public class ContextDeployer implements ServletContextListener {
     private Set<String> configuredUIs;
 
     @Inject
-    private Instance<VaadinCDIApplicationServlet> servletInstanceProvider;
+    private Instance<VaadinCDIServlet> servletInstanceProvider;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {

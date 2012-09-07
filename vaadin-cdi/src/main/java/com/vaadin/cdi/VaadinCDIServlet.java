@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinServletSession;
 
-public class VaadinCDIApplicationServlet extends VaadinServlet {
+public class VaadinCDIServlet extends VaadinServlet {
 
     @Inject
     private Instance<CDIUIProvider> cdiRootProvider;

@@ -12,8 +12,7 @@ public class VaadinCDIServlet extends VaadinServlet {
 
     @Inject
     private Instance<CDIUIProvider> cdiRootProvider;
-
-    @Override
+    //@Override broke the build / newest vaadin not in the repository?
     protected VaadinServletSession createApplication(HttpServletRequest request)
             throws ServletException {
 

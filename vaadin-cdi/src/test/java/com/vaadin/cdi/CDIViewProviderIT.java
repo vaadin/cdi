@@ -4,22 +4,22 @@
  */
 package com.vaadin.cdi;
 
-import com.vaadin.cdi.views.TestView;
-import com.vaadin.navigator.View;
+import static com.vaadin.cdi.ArchiveProvider.createJavaArchive;
+import static org.junit.Assert.assertNotNull;
+
 import javax.inject.Inject;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.ArchivePaths;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
-import static com.vaadin.cdi.ArchiveProvider.*;
+
+import com.vaadin.cdi.views.TestView;
+import com.vaadin.navigator.View;
 
 /**
- *
+ * 
  * @author adam-bien.com
  */
 @RunWith(Arquillian.class)

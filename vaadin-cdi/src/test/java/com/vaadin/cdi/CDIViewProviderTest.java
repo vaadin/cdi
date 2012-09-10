@@ -1,20 +1,21 @@
 package com.vaadin.cdi;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.junit.Before;
+import org.junit.Test;
 
 /**
- *
+ * 
  * @author adam-bien.com
  */
 public class CDIViewProviderTest {
 
     CDIViewProvider cut;
-    
+
     @Before
-    public void initialize(){
+    public void initialize() {
         cut = new CDIViewProvider();
     }
 

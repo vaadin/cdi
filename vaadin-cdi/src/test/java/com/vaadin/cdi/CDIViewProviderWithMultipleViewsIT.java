@@ -25,7 +25,7 @@ public class CDIViewProviderWithMultipleViewsIT {
         return createJavaArchive(CDIViewProvider.class,TestView.class,AnotherTestViewWithSameName.class);
     }
 
-    @Test(expected=RuntimeException.class)
+    @Test(expected=IllegalStateException.class)
     public void conventionalAndConfiguredNameCollision() {
         provider.getView(TestView.class.getSimpleName());
     }

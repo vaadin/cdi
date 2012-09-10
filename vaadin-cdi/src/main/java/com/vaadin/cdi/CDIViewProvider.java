@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 public class CDIViewProvider implements ViewProvider {
 
@@ -29,17 +30,20 @@ public class CDIViewProvider implements ViewProvider {
     public View getView(String viewName) {
         List<View> result = new ArrayList<View>();
         Instance<View> allViews = views.select(new VaadinViewAnnotation(viewName));
+        View configuredView=null;
+     
         if (!allViews.isUnsatisfied() && !allViews.isAmbiguous()) {
-            return allViews.get();
+            configuredView = allViews.get();
+            LOG().info("View with name: " + viewName + " uniquely configured");
         }
-        
         for (View view : allViews) {
-            if (viewName.equals(evaluateViewName(view))) {
+            if (view != configuredView && viewName.equals(evaluateViewName(view))) {
                 result.add(view);
+                LOG().info("Another view with conflicting name found: " + view.getClass());
             }
         }
         
-        if (result.size() > 1) {
+        if ((configuredView == null && result.size() > 1) || (configuredView != null && !result.isEmpty())) {
             String viewNames="";
             for (View view : allViews) {
                 Class clazz = view.getClass();
@@ -53,7 +57,12 @@ public class CDIViewProvider implements ViewProvider {
                     + viewName);
         }
 
-        return result.get(0);
+        if(configuredView != null) {
+            return configuredView;
+        }
+        else {
+            return result.get(0);
+        }
     }
 
     private String parseViewName(String viewAndParameters) {
@@ -83,5 +92,9 @@ public class CDIViewProvider implements ViewProvider {
         }else{
             return String.valueOf(firstLower);
         }
+    }
+    
+    private static Logger LOG(){
+        return Logger.getLogger(CDIViewProvider.class.getCanonicalName());
     }
 }

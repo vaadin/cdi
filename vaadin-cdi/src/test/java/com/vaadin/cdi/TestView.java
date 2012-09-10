@@ -7,7 +7,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
  *
  * @author adam-bien.com
  */
-@VaadinView("TestView")
+@VaadinView
 public class TestView implements View{
 
     @Override

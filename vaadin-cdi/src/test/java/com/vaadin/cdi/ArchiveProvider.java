@@ -20,7 +20,7 @@ public class ArchiveProvider {
                 .addClasses(classes)
                 .addPackage("com.vaadin.cdi")
                 .addAsManifestResource(
-                        new ByteArrayAsset(VaadinContext.class.getName()
+                        new ByteArrayAsset(VaadinExtension.class.getName()
                                 .getBytes()),
                         ArchivePaths
                                 .create("services/javax.enterprise.inject.spi.Extension"))
@@ -35,7 +35,7 @@ public class ArchiveProvider {
                 .addPackage("com.vaadin.cdi")
                 .addPackage(packageName)
                 .addAsManifestResource(
-                        new ByteArrayAsset(VaadinContext.class.getName()
+                        new ByteArrayAsset(VaadinExtension.class.getName()
                                 .getBytes()),
                         ArchivePaths
                                 .create("services/javax.enterprise.inject.spi.Extension"))

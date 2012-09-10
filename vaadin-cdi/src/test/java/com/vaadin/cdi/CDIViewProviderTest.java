@@ -41,6 +41,6 @@ public class CDIViewProviderTest {
     public void extractViewName() {
         String expected = "oneAndOnlyView";
         String actual = cut.evaluateViewName(new OneAndOnlyView());
-        assertThat(actual, is(expected0));
+        assertThat(actual, is(expected));
     }
 }

@@ -15,7 +15,7 @@ public class CDIViewProvider implements ViewProvider {
 
     @Inject
     @Any
-    private Instance<View> views;
+    private Instance<View> allViews;
 
     @Override
     public String getViewName(String viewAndParameters) {
@@ -27,12 +27,12 @@ public class CDIViewProvider implements ViewProvider {
     @Override
     public View getView(String viewName) {
         List<View> result = new ArrayList<View>();
-        Instance<View> allViews = views.select(new VaadinViewAnnotation(
-                viewName));
+        Instance<View> configuredViews = allViews
+                .select(new VaadinViewAnnotation(viewName));
         View configuredView = null;
 
-        if (!allViews.isUnsatisfied() && !allViews.isAmbiguous()) {
-            configuredView = allViews.get();
+        if (!configuredViews.isUnsatisfied() && !configuredViews.isAmbiguous()) {
+            configuredView = configuredViews.get();
             LOG().info("View with name: " + viewName + " uniquely configured");
         }
         for (View view : allViews) {
@@ -48,7 +48,7 @@ public class CDIViewProvider implements ViewProvider {
         if ((configuredView == null && result.size() > 1)
                 || (configuredView != null && !result.isEmpty())) {
             String viewNames = "";
-            for (View view : allViews) {
+            for (View view : configuredViews) {
                 viewNames += errorMessage(view.getClass());
             }
             if (configuredView != null) {

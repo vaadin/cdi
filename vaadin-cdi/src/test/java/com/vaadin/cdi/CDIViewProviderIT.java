@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.vaadin.cdi;
 
 import static com.vaadin.cdi.ArchiveProvider.createJavaArchive;
@@ -15,7 +11,6 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.vaadin.cdi.views.TestView;
 import com.vaadin.navigator.View;
 
 /**
@@ -30,12 +25,12 @@ public class CDIViewProviderIT {
 
     @Deployment
     public static JavaArchive createTestArchive() {
-        return createJavaArchive(TestView.class);
+        return createJavaArchive("com.vaadin.cdi.views");
     }
 
     @Test
     public void viewAvailableWithName() {
-        View view = provider.getView(TestView.class.getSimpleName());
+        View view = provider.getView("oneAndOnlyView");
         assertNotNull(view);
     }
 }

@@ -6,6 +6,8 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.vaadin.cdi.views.OneAndOnlyView;
+
 /**
  * 
  * @author adam-bien.com
@@ -33,5 +35,12 @@ public class CDIViewProviderTest {
         String expected = "loginPage";
         String actual = cut.normalize(origin);
         assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void extractViewName() {
+        String expected = "oneAndOnlyView";
+        String actual = cut.evaluateViewName(new OneAndOnlyView());
+        assertThat(actual, is(expected0));
     }
 }

@@ -49,12 +49,10 @@ public class CDIViewProvider implements ViewProvider {
                 || (configuredView != null && !result.isEmpty())) {
             String viewNames = "";
             for (View view : allViews) {
-                Class<? extends View> clazz = view.getClass();
-                String className = clazz.getName();
-                VaadinView vaadinView = clazz.getAnnotation(VaadinView.class);
-                String annotationValue = vaadinView.value();
-                viewNames += "@VaadinView(" + annotationValue + ") class "
-                        + className + "\n";
+                viewNames += errorMessage(view.getClass());
+            }
+            if (configuredView != null) {
+                viewNames += errorMessage(configuredView.getClass());
             }
             String message = "CDIViewProvider has multiple choices "
                     + viewNames + " for view with name " + viewName;
@@ -70,6 +68,18 @@ public class CDIViewProvider implements ViewProvider {
             return null;
         }
 
+    }
+
+    String errorMessage(Class<? extends View> clazz) {
+        String className = clazz.getName();
+        VaadinView vaadinView = clazz.getAnnotation(VaadinView.class);
+        String annotationValue = vaadinView.value();
+        return errorMessage(className, annotationValue);
+    }
+
+    String errorMessage(String className, String annotationValue) {
+        return "@VaadinView(" + annotationValue + ") class " + className
+                + "{};\n";
     }
 
     private String parseViewName(String viewAndParameters) {

@@ -1,6 +1,7 @@
 package com.vaadin.cdi;
 
 import static com.vaadin.cdi.ArchiveProvider.createJavaArchive;
+import static org.junit.Assert.assertNull;
 
 import javax.inject.Inject;
 
@@ -11,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.vaadin.cdi.views.TestView;
+import com.vaadin.navigator.View;
 
 /**
  * 
@@ -30,5 +32,11 @@ public class CDIViewProviderWithMultipleViewsIT {
     @Test(expected = IllegalStateException.class)
     public void conventionalAndConfiguredNameCollision() {
         provider.getView(TestView.class.getSimpleName());
+    }
+
+    @Test
+    public void notExistingView() {
+        View view = provider.getView("should not exist");
+        assertNull(view);
     }
 }

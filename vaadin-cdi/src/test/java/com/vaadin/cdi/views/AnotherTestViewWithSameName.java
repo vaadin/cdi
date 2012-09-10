@@ -1,4 +1,6 @@
-package com.vaadin.cdi;
+package com.vaadin.cdi.views;
+
+import com.vaadin.cdi.VaadinView;
 
 /**
  *

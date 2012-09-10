@@ -1,5 +1,6 @@
-package com.vaadin.cdi;
+package com.vaadin.cdi.views;
 
+import com.vaadin.cdi.VaadinView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 

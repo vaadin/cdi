@@ -4,6 +4,7 @@
  */
 package com.vaadin.cdi;
 
+import com.vaadin.cdi.views.TestView;
 import com.vaadin.navigator.View;
 import javax.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;

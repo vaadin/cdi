@@ -28,10 +28,11 @@ public class CDIViewProvider implements ViewProvider {
     @Override
     public View getView(String viewName) {
         List<View> result = new ArrayList<View>();
-        Instance<View> allViews = views.select(new VaadinViewAnnotation());
-        if (allViews.isUnsatisfied()) {
-            return null;
+        Instance<View> allViews = views.select(new VaadinViewAnnotation(viewName));
+        if (!allViews.isUnsatisfied() && !allViews.isAmbiguous()) {
+            return allViews.get();
         }
+        
         for (View view : allViews) {
             if (viewName.equals(evaluateViewName(view))) {
                 result.add(view);
@@ -39,8 +40,16 @@ public class CDIViewProvider implements ViewProvider {
         }
         
         if (result.size() > 1) {
+            String viewNames="";
+            for (View view : allViews) {
+                Class clazz = view.getClass();
+                String className = clazz.getName();
+                VaadinView vaadinView = (VaadinView) clazz.getAnnotation(VaadinView.class);
+                String annotationValue = vaadinView.value();
+                viewNames += "@VaadinView("+annotationValue+") class " + className + "\n";
+            }
             throw new RuntimeException(
-                    "CDIViewProvider has multiple choises for view with name "
+                    "CDIViewProvider has multiple choices "+ viewNames + " for view with name "
                     + viewName);
         }
 
@@ -61,9 +70,18 @@ public class CDIViewProvider implements ViewProvider {
         VaadinView annotation = clazz.getAnnotation(VaadinView.class);
         String configuredViewName = annotation.value();
         if (configuredViewName.isEmpty()) {
-            return clazz.getSimpleName();
+            return normalize(clazz.getSimpleName());
         } else {
             return configuredViewName;
+        }
+    }
+
+    String normalize(String name) {
+        char firstLower = Character.toLowerCase(name.charAt(0));
+        if(name.length() > 1){
+            return firstLower + name.substring(1);
+        }else{
+            return String.valueOf(firstLower);
         }
     }
 }

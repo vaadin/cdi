@@ -64,9 +64,12 @@ public class CDIViewProvider implements ViewProvider {
 
         if (configuredView != null) {
             return configuredView;
-        } else {
+        } else if (!result.isEmpty()) {
             return result.get(0);
+        } else {
+            return null;
         }
+
     }
 
     private String parseViewName(String viewAndParameters) {

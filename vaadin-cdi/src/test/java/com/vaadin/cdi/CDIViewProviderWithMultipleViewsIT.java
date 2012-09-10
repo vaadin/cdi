@@ -1,17 +1,19 @@
 package com.vaadin.cdi;
 
-import com.vaadin.cdi.views.TestView;
-import com.vaadin.cdi.views.AnotherTestViewWithSameName;
+import static com.vaadin.cdi.ArchiveProvider.createJavaArchive;
+
 import javax.inject.Inject;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static com.vaadin.cdi.ArchiveProvider.*;
+
+import com.vaadin.cdi.views.TestView;
 
 /**
- *
+ * 
  * @author adam-bien.com
  */
 @RunWith(Arquillian.class)
@@ -22,10 +24,10 @@ public class CDIViewProviderWithMultipleViewsIT {
 
     @Deployment
     public static JavaArchive createTestArchive() {
-        return createJavaArchive(CDIViewProvider.class,TestView.class,AnotherTestViewWithSameName.class);
+        return createJavaArchive("com.vaadin.cdi.views");
     }
 
-    @Test(expected=IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void conventionalAndConfiguredNameCollision() {
         provider.getView(TestView.class.getSimpleName());
     }

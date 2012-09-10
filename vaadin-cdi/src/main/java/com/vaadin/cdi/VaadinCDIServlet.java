@@ -3,23 +3,20 @@ package com.vaadin.cdi;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinServletSession;
+import com.vaadin.server.WrappedHttpServletRequest;
 
 public class VaadinCDIServlet extends VaadinServlet {
 
     @Inject
     private Instance<CDIUIProvider> cdiRootProvider;
-    //@Override broke the build / newest vaadin not in the repository?
-    protected VaadinServletSession createApplication(HttpServletRequest request)
-            throws ServletException {
 
-        VaadinServletSession newApplication = new VaadinServletSession();
-
-        newApplication.addUIProvider(cdiRootProvider.get());
-
-        return newApplication;
+    @Override
+    protected void onVaadinSessionStarted(WrappedHttpServletRequest request,
+            VaadinServletSession session) throws ServletException {
+        session.addUIProvider(cdiRootProvider.get());
+        super.onVaadinSessionStarted(request, session);
     }
 }

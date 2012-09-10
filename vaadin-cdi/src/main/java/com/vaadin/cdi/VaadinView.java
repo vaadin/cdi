@@ -7,6 +7,10 @@ import java.lang.annotation.Target;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 
+/**
+ * Similar semantics to @see javax.inject.Named
+ * @author adam-bien.com
+ */
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })
@@ -17,6 +21,5 @@ public @interface VaadinView {
      * So it is optional. 
      * Also multiple views without a value may exist at the same time
      */
-    @Nonbinding
     public String value() default "";
 }

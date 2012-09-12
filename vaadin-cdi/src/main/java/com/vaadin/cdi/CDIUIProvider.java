@@ -3,6 +3,7 @@ package com.vaadin.cdi;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
@@ -17,7 +18,7 @@ public class CDIUIProvider extends DefaultUIProvider {
     private BeanManager beanManager;
 
     @Inject
-    private BeanStoreContainer beanStoreContainer;
+    private Instance<BeanStoreContainer> beanStoreContainer;
 
     @Override
     public UI createInstance(WrappedRequest request, Class<? extends UI> type) {
@@ -29,15 +30,12 @@ public class CDIUIProvider extends DefaultUIProvider {
                 uiBean = getUIBeanMatchingQualifierMapping(uiMapping);
             }
         }
-
         if (uiBean != null) {
             UI ui = (UI) beanManager.getReference(uiBean, type,
                     beanManager.createCreationalContext(uiBean));
-            beanStoreContainer.uiInitialized(ui);
-
+            beanStoreContainer.get().uiInitialized(ui);
             return ui;
         }
-
         throw new IllegalStateException("Could not instantiate UI");
     }
 
@@ -70,8 +68,15 @@ public class CDIUIProvider extends DefaultUIProvider {
             if (beanClass.isAnnotationPresent(VaadinUI.class)) {
                 VaadinUI annotation = beanClass.getAnnotation(VaadinUI.class);
 
-                if (annotation.mapping() != null) {
+                if (annotation.mapping() != null
+                        && !annotation.mapping().isEmpty()) {
                     if (mapping.equals(annotation.mapping())) {
+                        return bean;
+                    }
+                } else {
+                    String defaultMapping = Naming.firstToLower(beanClass
+                            .getSimpleName());
+                    if (mapping.equals(defaultMapping)) {
                         return bean;
                     }
                 }

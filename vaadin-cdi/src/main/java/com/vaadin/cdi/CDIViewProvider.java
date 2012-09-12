@@ -14,6 +14,8 @@ import com.vaadin.cdi.component.JaasTools;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.UI;
+import java.util.HashSet;
+import java.util.Set;
 
 public class CDIViewProvider implements ViewProvider {
 

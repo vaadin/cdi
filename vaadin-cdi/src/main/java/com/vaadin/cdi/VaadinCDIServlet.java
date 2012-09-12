@@ -1,5 +1,7 @@
 package com.vaadin.cdi;
 
+import java.util.logging.Logger;
+
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -16,7 +18,12 @@ public class VaadinCDIServlet extends VaadinServlet {
     @Override
     protected void onVaadinSessionStarted(WrappedHttpServletRequest request,
             VaadinServletSession session) throws ServletException {
+        LOG().info("--onVaadinSessionStarted");
         session.addUIProvider(cdiRootProvider.get());
         super.onVaadinSessionStarted(request, session);
+    }
+
+    private static Logger LOG() {
+        return Logger.getLogger(VaadinExtension.class.getCanonicalName());
     }
 }

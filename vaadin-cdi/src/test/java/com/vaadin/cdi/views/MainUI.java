@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import com.vaadin.cdi.VaadinScopedBean;
 import com.vaadin.cdi.VaadinUI;
 import com.vaadin.cdi.VaadinUIScoped;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.WrappedRequest;
 import com.vaadin.ui.UI;
 
@@ -33,6 +34,8 @@ public class MainUI extends UI {
     @Override
     protected void init(WrappedRequest request) {
         System.out.println("Initialized: " + request);
+        Navigator.SimpleViewDisplay viewDisplay = new Navigator.SimpleViewDisplay();
+        setContent(viewDisplay);
     }
 
 }

@@ -63,7 +63,7 @@ public class CDIViewProvider implements ViewProvider {
     private Bean<?> getViewBean(String viewName) {
         Set<Bean<?>> viewBeans = beanManager.getBeans(View.class,
                 new VaadinViewAnnotation(viewName));
-
+        //TODO conventional lookup
         Set<Bean<?>> viewBeansForThisProvider = getViewBeansForCurrentUI(viewBeans);
 
         if (viewBeansForThisProvider.isEmpty()) {

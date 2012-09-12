@@ -1,8 +1,10 @@
 package com.vaadin.cdi;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
@@ -12,10 +14,10 @@ import javax.enterprise.inject.spi.Bean;
  */
 /**
  * Datastructure for storing bean instances in {@link VaadinUIScoped} context.
- *
+ * 
  * @author Tomi Virkki / Vaadin Ltd
  */
-public class UIBeanStore {
+public class UIBeanStore implements Serializable {
 
     private final Map<Bean<?>, UIBeanStore.ContextualInstance<?>> instances = new HashMap<Bean<?>, UIBeanStore.ContextualInstance<?>>();
 
@@ -33,8 +35,8 @@ public class UIBeanStore {
                     bean.create(creationalContext), creationalContext);
             instances.put(bean, contextualInstance);
         }
-        return contextualInstance != null ? contextualInstance
-                .getInstance() : null;
+        return contextualInstance != null ? contextualInstance.getInstance()
+                : null;
     }
 
     public void dereferenceAllBeanInstances() {

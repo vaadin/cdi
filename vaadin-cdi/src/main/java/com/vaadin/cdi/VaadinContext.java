@@ -30,14 +30,19 @@ public class VaadinContext implements Context {
         Set<Bean<?>> beans = beanManager.getBeans(BeanStoreContainer.class);
         if (beans.isEmpty()) {
             String msg = "Unable to obtain bean store for UI";
-            getLogger().warning(msg);
+            getLogger().severe(msg);
             throw new IllegalStateException(msg);
         }
         final Bean<?> bean = beans.iterator().next();
         final BeanStoreContainer container = (BeanStoreContainer) beanManager
                 .getReference(bean, bean.getBeanClass(),
                         beanManager.createCreationalContext(bean));
-        return container.getBeanStore(UI.getCurrent());
+        UI current = UI.getCurrent();
+        if (current == null) {
+            throw new IllegalStateException(
+                    "There is no class extending from UI");
+        }
+        return container.getBeanStore(current);
     }
 
     @Override

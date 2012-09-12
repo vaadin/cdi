@@ -3,7 +3,11 @@ package com.vaadin.cdi;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
+import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
 
 import com.vaadin.cdi.component.ComponentTools;
 import com.vaadin.cdi.component.JaasTools;
@@ -21,49 +25,56 @@ public class ArchiveProvider {
             VaadinUI.class, VaadinUIAnnotation.class, VaadinUIScoped.class,
             VaadinViewAnnotation.class };
 
-    public static JavaArchive createJavaArchive(String packageName,
+    public static WebArchive createWebArchive(String packageName,
             Class... classes) {
         return ShrinkWrap
-                .create(JavaArchive.class, "vaadincontext.jar")
+                .create(WebArchive.class, "vaadincontext.war")
                 .addClasses(classes)
                 .addClasses(FRAMEWORK_CLASSES)
                 .addPackage(packageName)
-                .addAsManifestResource(
+                .addAsWebResource(
                         new ByteArrayAsset(VaadinExtension.class.getName()
                                 .getBytes()),
                         ArchivePaths
                                 .create("services/javax.enterprise.inject.spi.Extension"))
-                .addAsManifestResource(
+                .addAsWebResource(
                         new ByteArrayAsset("<beans/>".getBytes()),
                         ArchivePaths.create("beans.xml"));
     }
 
-    public static JavaArchive createJavaArchive(Class... classes) {
-        return ShrinkWrap
-                .create(JavaArchive.class, "vaadincontext.jar")
+    public static WebArchive createWebArchive(Class... classes) {
+        MavenDependencyResolver resolver = DependencyResolvers.use(
+                MavenDependencyResolver.class).loadMetadataFromPom("pom.xml");
+        WebArchive archive = ShrinkWrap
+                .create(WebArchive.class, "vaadincontext.war")
                 .addClasses(classes)
                 .addClasses(FRAMEWORK_CLASSES)
-                .addAsManifestResource(
+                .addAsLibraries(
+                        resolver.artifact(
+                                "com.vaadin:vaadin-server:7.0-SNAPSHOT")
+                                .resolveAsFiles())
+                .addAsWebInfResource(
                         new ByteArrayAsset(VaadinExtension.class.getName()
                                 .getBytes()),
                         ArchivePaths
                                 .create("services/javax.enterprise.inject.spi.Extension"))
-                .addAsManifestResource(
-                        new ByteArrayAsset("<beans/>".getBytes()),
+                .addAsWebInfResource(EmptyAsset.INSTANCE,
                         ArchivePaths.create("beans.xml"));
+        System.out.println(archive.toString(true));
+        return archive;
     }
 
-    public static JavaArchive createJavaArchive(String packageName) {
+    public static WebArchive createWebArchive(String packageName) {
         return ShrinkWrap
-                .create(JavaArchive.class, "vaadincontext.jar")
+                .create(WebArchive.class, "vaadincontext.jar")
                 .addPackage(packageName)
                 .addClasses(FRAMEWORK_CLASSES)
-                .addAsManifestResource(
+                .addAsWebResource(
                         new ByteArrayAsset(VaadinExtension.class.getName()
                                 .getBytes()),
                         ArchivePaths
                                 .create("services/javax.enterprise.inject.spi.Extension"))
-                .addAsManifestResource(
+                .addAsWebResource(
                         new ByteArrayAsset("<beans/>".getBytes()),
                         ArchivePaths.create("beans.xml"));
     }

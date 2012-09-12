@@ -1,17 +1,16 @@
 package com.vaadin.cdi;
 
-import static com.vaadin.cdi.ArchiveProvider.createJavaArchive;
-import com.vaadin.cdi.views.OneAndOnlyView;
 import static org.junit.Assert.assertNotNull;
 
 import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+import static com.vaadin.cdi.ArchiveProvider.*;
+import com.vaadin.cdi.views.OneAndOnlyView;
 import com.vaadin.navigator.View;
 
 /**
@@ -25,8 +24,8 @@ public class CDIViewProviderIT {
     CDIViewProvider provider;
 
     @Deployment
-    public static JavaArchive createTestArchive() {
-        return createJavaArchive(OneAndOnlyView.class);
+    public static WebArchive createTestArchive() {
+        return createWebArchive(OneAndOnlyView.class);
     }
 
     @Test

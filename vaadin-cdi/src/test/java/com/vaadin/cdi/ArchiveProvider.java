@@ -4,7 +4,6 @@ import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
@@ -27,27 +26,21 @@ public class ArchiveProvider {
 
     public static WebArchive createWebArchive(String packageName,
             Class... classes) {
-        return ShrinkWrap
-                .create(WebArchive.class, "vaadincontext.war")
-                .addClasses(classes)
-                .addClasses(FRAMEWORK_CLASSES)
-                .addPackage(packageName)
-                .addAsWebResource(
-                        new ByteArrayAsset(VaadinExtension.class.getName()
-                                .getBytes()),
-                        ArchivePaths
-                                .create("services/javax.enterprise.inject.spi.Extension"))
-                .addAsWebResource(
-                        new ByteArrayAsset("<beans/>".getBytes()),
-                        ArchivePaths.create("beans.xml"));
+        return createWebArchive(classes).addPackage(packageName);
     }
 
     public static WebArchive createWebArchive(Class... classes) {
+        WebArchive archive = base();
+        archive.addClasses(classes);
+        System.out.println(archive.toString(true));
+        return archive;
+    }
+
+    static WebArchive base() {
         MavenDependencyResolver resolver = DependencyResolvers.use(
                 MavenDependencyResolver.class).loadMetadataFromPom("pom.xml");
-        WebArchive archive = ShrinkWrap
+        return ShrinkWrap
                 .create(WebArchive.class, "vaadincontext.war")
-                .addClasses(classes)
                 .addClasses(FRAMEWORK_CLASSES)
                 .addAsLibraries(
                         resolver.artifact(
@@ -60,23 +53,14 @@ public class ArchiveProvider {
                                 .create("services/javax.enterprise.inject.spi.Extension"))
                 .addAsWebInfResource(EmptyAsset.INSTANCE,
                         ArchivePaths.create("beans.xml"));
-        System.out.println(archive.toString(true));
-        return archive;
+
     }
 
     public static WebArchive createWebArchive(String packageName) {
-        return ShrinkWrap
-                .create(WebArchive.class, "vaadincontext.jar")
-                .addPackage(packageName)
-                .addClasses(FRAMEWORK_CLASSES)
-                .addAsWebResource(
-                        new ByteArrayAsset(VaadinExtension.class.getName()
-                                .getBytes()),
-                        ArchivePaths
-                                .create("services/javax.enterprise.inject.spi.Extension"))
-                .addAsWebResource(
-                        new ByteArrayAsset("<beans/>".getBytes()),
-                        ArchivePaths.create("beans.xml"));
+        WebArchive archive = base();
+        archive.addPackage(packageName);
+        System.out.println(archive.toString(true));
+        return archive;
     }
 
 }

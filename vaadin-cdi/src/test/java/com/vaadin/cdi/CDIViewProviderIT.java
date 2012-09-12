@@ -1,6 +1,7 @@
 package com.vaadin.cdi;
 
 import static com.vaadin.cdi.ArchiveProvider.createJavaArchive;
+import com.vaadin.cdi.views.OneAndOnlyView;
 import static org.junit.Assert.assertNotNull;
 
 import javax.inject.Inject;
@@ -25,7 +26,7 @@ public class CDIViewProviderIT {
 
     @Deployment
     public static JavaArchive createTestArchive() {
-        return createJavaArchive("com.vaadin.cdi.views");
+        return createJavaArchive(OneAndOnlyView.class);
     }
 
     @Test

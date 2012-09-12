@@ -78,7 +78,9 @@ public class ContextDeployer implements ServletContextListener {
 
         Set<Bean<?>> uiBeans = beanManager.getBeans(UI.class,
                 new VaadinUIAnnotation());
-
+        getLogger()
+                .info(uiBeans.size()
+                        + " Beans annotated with VaadinUIAnnotation discovered!");
         for (Bean<?> uiBean : uiBeans) {
             Class<? extends UI> uiBeanClass = uiBean.getBeanClass().asSubclass(
                     UI.class);
@@ -88,6 +90,9 @@ public class ContextDeployer implements ServletContextListener {
                         .getAnnotation(VaadinUI.class);
 
                 String uiMapping = vaadinUIAnnotation.mapping();
+                if (uiMapping == null || uiMapping.isEmpty()) {
+                    uiMapping = deriveFromConvention(uiBeanClass);
+                }
 
                 if (configuredUIs.contains(uiMapping)) {
                     throw new RuntimeException(
@@ -101,6 +106,10 @@ public class ContextDeployer implements ServletContextListener {
 
         getLogger().info(
                 "Available Vaadin UIs for CDI deployment " + configuredUIs);
+    }
+
+    private String deriveFromConvention(Class<? extends UI> uiBeanClass) {
+        return Naming.firstToLower(uiBeanClass.getSimpleName());
     }
 
     /**

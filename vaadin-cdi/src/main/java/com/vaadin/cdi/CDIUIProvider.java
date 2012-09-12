@@ -19,8 +19,8 @@ public class CDIUIProvider extends DefaultUIProvider {
     @Inject
     private BeanStoreContainer beanStoreContainer;
 
-    // @Override
-    public UI createInstance(Class<? extends UI> type, WrappedRequest request) {
+    @Override
+    public UI createInstance(WrappedRequest request, Class<? extends UI> type) {
         Bean<?> uiBean = getUIBeanMatchingDeploymentDescriptor(type);
 
         if (uiBean == null) {

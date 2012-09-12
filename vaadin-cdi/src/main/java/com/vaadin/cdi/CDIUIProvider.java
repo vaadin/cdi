@@ -19,7 +19,7 @@ public class CDIUIProvider extends DefaultUIProvider {
     @Inject
     private BeanStoreContainer beanStoreContainer;
 
-    @Override
+    // @Override
     public UI createInstance(Class<? extends UI> type, WrappedRequest request) {
         Bean<?> uiBean = getUIBeanMatchingDeploymentDescriptor(type);
 
@@ -38,7 +38,7 @@ public class CDIUIProvider extends DefaultUIProvider {
             return ui;
         }
 
-        throw new RuntimeException("Could not instantiate UI");
+        throw new IllegalStateException("Could not instantiate UI");
     }
 
     @Override

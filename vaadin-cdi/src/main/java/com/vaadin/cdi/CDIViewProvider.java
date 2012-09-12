@@ -1,5 +1,7 @@
 package com.vaadin.cdi;
 
+import static com.vaadin.cdi.Naming.firstToLower;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -95,18 +97,9 @@ public class CDIViewProvider implements ViewProvider {
         VaadinView annotation = clazz.getAnnotation(VaadinView.class);
         String configuredViewName = annotation.value();
         if (configuredViewName.isEmpty()) {
-            return normalize(clazz.getSimpleName());
+            return firstToLower(clazz.getSimpleName());
         } else {
             return configuredViewName;
-        }
-    }
-
-    String normalize(String name) {
-        char firstLower = Character.toLowerCase(name.charAt(0));
-        if (name.length() > 1) {
-            return firstLower + name.substring(1);
-        } else {
-            return String.valueOf(firstLower);
         }
     }
 

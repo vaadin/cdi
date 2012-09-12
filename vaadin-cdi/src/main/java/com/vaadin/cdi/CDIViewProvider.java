@@ -2,20 +2,20 @@ package com.vaadin.cdi;
 
 import static com.vaadin.cdi.Naming.firstToLower;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.component.JaasTools;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.UI;
-import java.util.HashSet;
-import java.util.Set;
 
 public class CDIViewProvider implements ViewProvider {
 
@@ -61,11 +61,27 @@ public class CDIViewProvider implements ViewProvider {
     }
 
     private Bean<?> getViewBean(String viewName) {
-        Set<Bean<?>> viewBeans = beanManager.getBeans(View.class,
-                new VaadinViewAnnotation(viewName));
-        //TODO conventional lookup
-        Set<Bean<?>> viewBeansForThisProvider = getViewBeansForCurrentUI(viewBeans);
+        Set<Bean<?>> views = new HashSet<Bean<?>>();
+        views.addAll(beanManager.getBeans(View.class, new VaadinViewAnnotation(
+                viewName)));
+        if (views.isEmpty()) {
+            LOG().info("No explicitly defined View with mapping found!");
+            Set<Bean<?>> all = beanManager.getBeans(View.class,
+                    new AnnotationLiteral<Any>() {
+                    });
+            for (Bean<?> bean : all) {
+                String computedName = evaluateViewName(bean.getBeanClass());
+                if (viewName.equals(computedName)) {
+                    views.add(bean);
+                    LOG().info(
+                            "Bean " + bean.getBeanClass().getName()
+                                    + " with computed name: " + computedName
+                                    + " added !");
+                }
+            }
 
+        }
+        Set<Bean<?>> viewBeansForThisProvider = getViewBeansForCurrentUI(views);
         if (viewBeansForThisProvider.isEmpty()) {
             return null;
         }
@@ -123,7 +139,10 @@ public class CDIViewProvider implements ViewProvider {
     }
 
     String evaluateViewName(View view) {
-        Class<? extends View> clazz = view.getClass();
+        return evaluateViewName(view);
+    }
+
+    String evaluateViewName(Class<?> clazz) {
         VaadinView annotation = clazz.getAnnotation(VaadinView.class);
         String configuredViewName = annotation.value();
         if (configuredViewName.isEmpty()) {

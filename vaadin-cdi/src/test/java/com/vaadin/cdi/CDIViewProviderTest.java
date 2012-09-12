@@ -1,13 +1,13 @@
 package com.vaadin.cdi;
 
-import com.vaadin.cdi.CDIViewProvider;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.cdi.views.OneAndOnlyView;
+import com.vaadin.cdi.views.OneAndOnlyViewWithPath;
+import com.vaadin.cdi.views.OneAndOnlyViewWithoutPath;
 
 public class CDIViewProviderTest {
 
@@ -19,9 +19,17 @@ public class CDIViewProviderTest {
     }
 
     @Test
-    public void extractViewName() {
-        String expected = "oneAndOnlyView";
-        String actual = this.cut.evaluateViewName(new OneAndOnlyView());
+    public void extractViewNameUsingPath() {
+        String expected = "oneAndOnlyViewWithPath";
+        String actual = this.cut.evaluateViewName(new OneAndOnlyViewWithPath());
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void extractViewNameUsingConvention() {
+        String expected = "oneAndOnlyViewWithoutPath";
+        String actual = this.cut
+                .evaluateViewName(new OneAndOnlyViewWithoutPath());
         assertThat(actual, is(expected));
     }
 

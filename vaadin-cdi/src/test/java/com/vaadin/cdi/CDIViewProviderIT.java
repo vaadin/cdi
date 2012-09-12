@@ -10,7 +10,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static com.vaadin.cdi.ArchiveProvider.*;
-import com.vaadin.cdi.views.OneAndOnlyView;
+import com.vaadin.cdi.views.OneAndOnlyViewWithPath;
 import com.vaadin.navigator.View;
 
 /**
@@ -25,7 +25,7 @@ public class CDIViewProviderIT {
 
     @Deployment
     public static WebArchive createTestArchive() {
-        return createWebArchive(OneAndOnlyView.class);
+        return createWebArchive(OneAndOnlyViewWithPath.class);
     }
 
     @Test

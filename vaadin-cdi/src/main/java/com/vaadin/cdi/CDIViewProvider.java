@@ -1,85 +1,113 @@
 package com.vaadin.cdi;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
+import com.vaadin.cdi.component.JaasTools;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewProvider;
+import com.vaadin.ui.UI;
 
 public class CDIViewProvider implements ViewProvider {
 
     @Inject
-    @Any
-    private Instance<View> allViews;
+    private BeanManager beanManager;
+
+    @Inject
+    private JaasTools jaasTools;
 
     @Override
     public String getViewName(String viewAndParameters) {
         String name = parseViewName(viewAndParameters);
-        getView(name); // are checks necessary here?
-        return name;
+
+        Bean<?> viewBean = getViewBean(name);
+
+        if (viewBean == null) {
+            return null;
+        }
+
+        if (isUserHavingAccessToView(viewBean)) {
+            return name;
+        }
+
+        return null;
+    }
+
+    private boolean isUserHavingAccessToView(Bean<?> viewBean) {
+        if (viewBean.getBeanClass().isAnnotationPresent(VaadinView.class)) {
+            VaadinView viewAnnotation = viewBean.getBeanClass().getAnnotation(
+                    VaadinView.class);
+
+            if (viewAnnotation.rolesAllowed().length == 0) {
+                // No roles defined, everyone is allowed
+                return true;
+            } else {
+                return jaasTools
+                        .isUserInSomeRole(viewAnnotation.rolesAllowed());
+            }
+        }
+
+        // No annotation defined, everyone is allowed
+        return true;
+    }
+
+    private Bean<?> getViewBean(String viewName) {
+        Set<Bean<?>> viewBeans = beanManager.getBeans(View.class,
+                new VaadinViewAnnotation(viewName));
+
+        Set<Bean<?>> viewBeansForThisProvider = getViewBeansForCurrentUI(viewBeans);
+
+        if (viewBeansForThisProvider.isEmpty()) {
+            return null;
+        }
+
+        if (viewBeansForThisProvider.size() > 1) {
+            throw new RuntimeException(
+                    "Multiple views mapped with same name for same UI");
+        }
+
+        return viewBeansForThisProvider.iterator().next();
+    }
+
+    private Set<Bean<?>> getViewBeansForCurrentUI(Set<Bean<?>> beans) {
+        Set<Bean<?>> viewBeans = new HashSet<Bean<?>>();
+
+        for (Bean<?> bean : beans) {
+            VaadinView viewAnnotation = bean.getBeanClass().getAnnotation(
+                    VaadinView.class);
+
+            if (viewAnnotation.ui().equals(UI.class)) {
+                viewBeans.add(bean);
+                continue;
+            }
+
+            if (UI.getCurrent().getClass().equals(viewAnnotation.ui())) {
+                viewBeans.add(bean);
+            }
+        }
+
+        return viewBeans;
     }
 
     @Override
     public View getView(String viewName) {
-        List<View> result = new ArrayList<View>();
-        Instance<View> configuredViews = allViews
-                .select(new VaadinViewAnnotation(viewName));
-        View configuredView = null;
 
-        if (!configuredViews.isUnsatisfied() && !configuredViews.isAmbiguous()) {
-            configuredView = configuredViews.get();
-            LOG().info("View with name: " + viewName + " uniquely configured");
-        }
-        for (View view : allViews) {
-            if (view != configuredView
-                    && viewName.equals(evaluateViewName(view))) {
-                result.add(view);
-                LOG().info(
-                        "Another view with conflicting name found: "
-                                + view.getClass());
-            }
+        Bean<?> viewBean = getViewBean(viewName);
+
+        if (viewBean != null) {
+            View view = (View) beanManager.getReference(viewBean,
+                    viewBean.getBeanClass(),
+                    beanManager.createCreationalContext(viewBean));
+
+            return view;
         }
 
-        if ((configuredView == null && result.size() > 1)
-                || (configuredView != null && !result.isEmpty())) {
-            String viewNames = "";
-            for (View view : configuredViews) {
-                viewNames += errorMessage(view.getClass());
-            }
-            if (configuredView != null) {
-                viewNames += errorMessage(configuredView.getClass());
-            }
-            String message = "CDIViewProvider has multiple choices "
-                    + viewNames + " for view with name " + viewName;
-            LOG().warning(message);
-            throw new IllegalStateException(message);
-        }
-
-        if (configuredView != null) {
-            return configuredView;
-        } else if (!result.isEmpty()) {
-            return result.get(0);
-        } else {
-            return null;
-        }
-
-    }
-
-    String errorMessage(Class<? extends View> clazz) {
-        String className = clazz.getName();
-        VaadinView vaadinView = clazz.getAnnotation(VaadinView.class);
-        String annotationValue = vaadinView.value();
-        return errorMessage(className, annotationValue);
-    }
-
-    String errorMessage(String className, String annotationValue) {
-        return "@VaadinView(" + annotationValue + ") class " + className
-                + "{};\n";
+        throw new RuntimeException("Unable to instantiate view");
     }
 
     private String parseViewName(String viewAndParameters) {

@@ -24,4 +24,14 @@ public class JaasTools {
     public boolean isUserInRole(String role) {
         return request.isUserInRole(role);
     }
+
+    public boolean isUserInSomeRole(String... roles) {
+        for (String role : roles) {
+            if (isUserInRole(role)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

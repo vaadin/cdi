@@ -19,7 +19,7 @@ public class ConventionalHello extends UI {
         setSizeFull();
         VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
-        layout.addComponent(new Label("UI with default mapping"));
+        layout.addComponent(new Label("+UI with default mapping"));
         setContent(layout);
     }
 

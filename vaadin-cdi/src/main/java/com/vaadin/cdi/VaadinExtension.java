@@ -19,9 +19,6 @@ public class VaadinExtension implements Extension {
 
     void afterBeanDiscovery(@Observes
     final AfterBeanDiscovery afterBeanDiscovery, final BeanManager beanManager) {
-        getLogger().info("Initializing VaadinContext CDI Extension");
-        registerStores(afterBeanDiscovery, beanManager);
-        getLogger().info("BeanStoreContainer registered");
         afterBeanDiscovery.addContext(new VaadinContext(beanManager));
         getLogger().info("VaadinContext registered");
     }

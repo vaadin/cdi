@@ -31,9 +31,11 @@ public class VaadinScopedInjectionIT {
     @Test
     public void scopedIsScoped() {
         Client client = Client.create();
-        ClientResponse message = client.resource(
-                "http://localhost:8181/vaadincontext/mainUI").get(
-                ClientResponse.class);
+        ClientResponse response = client
+                .resource(
+                        "http://localhost:8181/vaadincontext/mainUI/#!oneAndOnlyViewWithoutPath")
+                .get(ClientResponse.class);
+        assertThat(response.getClientResponseStatus().getStatusCode(), is(200));
         assertThat(VaadinScopedBean.COUNTER.get(), is(1));
         assertThat(MainUI.COUNTER.get(), is(1));
     }

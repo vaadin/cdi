@@ -46,6 +46,10 @@ public class ArchiveProvider {
                         resolver.artifact(
                                 "com.vaadin:vaadin-server:7.0-SNAPSHOT")
                                 .resolveAsFiles())
+                .addAsLibraries(
+                        resolver.artifact(
+                                "com.vaadin:vaadin-shared:7.0-SNAPSHOT")
+                                .resolveAsFiles())
                 .addAsWebInfResource(
                         new ByteArrayAsset(VaadinExtension.class.getName()
                                 .getBytes()),

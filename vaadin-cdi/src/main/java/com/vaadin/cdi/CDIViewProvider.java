@@ -139,7 +139,7 @@ public class CDIViewProvider implements ViewProvider {
     }
 
     String evaluateViewName(View view) {
-        return evaluateViewName(view);
+        return evaluateViewName(view.getClass());
     }
 
     String evaluateViewName(Class<?> clazz) {

@@ -8,6 +8,11 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
+/**
+ * Maintains view-scoped managed beans
+ * 
+ * @author Adam Bien, adam-bien.com
+ */
 public class ViewScopedContext implements Context {
 
     private ConcurrentHashMap<String, ScopedBean> context = null;

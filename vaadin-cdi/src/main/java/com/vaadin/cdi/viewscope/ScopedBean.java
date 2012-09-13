@@ -4,8 +4,9 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 
 /**
+ * A convenience wrapper. Simplifies the destruction of beans.
  * 
- * @author Adam Bien, blog.adam-bien.com
+ * @author Adam Bien, adam-bien.com
  */
 public class ScopedBean {
     private Object bean;

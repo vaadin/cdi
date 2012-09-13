@@ -6,16 +6,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.inject.Scope;
+import javax.enterprise.context.NormalScope;
 
 /**
- * Annotation used for declaring bean class scope for VaadinUI beans
+ * Binds the lifecycle of components to the lifetime of a View.
  * 
  * @author Adam Bien
  */
-@Scope
+@NormalScope
+@Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD, ElementType.FIELD })
-@Inherited
 public @interface VaadinViewScoped {
 }

@@ -12,14 +12,14 @@ import com.vaadin.ui.VerticalLayout;
  * 
  * @author adam-bien.com
  */
-@VaadinUI(mapping = "helloCDI")
-public class Hello extends UI {
+@VaadinUI
+public class ConventionalHello extends UI {
     @Override
     protected void init(WrappedRequest request) {
         setSizeFull();
         VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
-        layout.addComponent(new Label("explicitly defined mapping"));
+        layout.addComponent(new Label("UI with default mapping"));
         setContent(layout);
     }
 

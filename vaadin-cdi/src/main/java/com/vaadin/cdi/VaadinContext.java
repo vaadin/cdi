@@ -27,9 +27,13 @@ public class VaadinContext implements Context {
     }
 
     private UIBeanStore getCurrentBeanStore() {
+        return getCurrentBeanStore(UI.getCurrent());
+    }
+
+    private UIBeanStore getCurrentBeanStore(UI scopedView) {
         Set<Bean<?>> beans = beanManager.getBeans(BeanStoreContainer.class);
         if (beans.isEmpty()) {
-            String msg = "Unable to obtain bean store for UI";
+            String msg = "Unable to obtain bean store";
             getLogger().severe(msg);
             throw new IllegalStateException(msg);
         }
@@ -37,12 +41,8 @@ public class VaadinContext implements Context {
         final BeanStoreContainer container = (BeanStoreContainer) beanManager
                 .getReference(bean, bean.getBeanClass(),
                         beanManager.createCreationalContext(bean));
-        UI current = UI.getCurrent();
-        if (current == null) {
-            throw new IllegalStateException(
-                    "There is no class extending from UI");
-        }
-        return container.getBeanStore(current);
+        return container.getBeanStore(scopedView);
+
     }
 
     @Override
@@ -53,8 +53,20 @@ public class VaadinContext implements Context {
     @Override
     public <T> T get(final Contextual<T> contextual,
             final CreationalContext<T> creationalContext) {
-        return getCurrentBeanStore().getBeanInstance((Bean<T>) contextual,
-                creationalContext);
+        UIBeanStore currentBeanStore;
+        Bean<T> bean = (Bean<T>) contextual;
+        if (UI.class.isAssignableFrom(bean.getBeanClass())) {
+            UI scopedView = createScopedUI((Bean<UI>) bean,
+                    (CreationalContext<UI>) creationalContext);
+            currentBeanStore = getCurrentBeanStore(scopedView);
+        } else {
+            currentBeanStore = getCurrentBeanStore();
+        }
+        return currentBeanStore.getBeanInstance(bean, creationalContext);
+    }
+
+    public UI createScopedUI(Bean<UI> t, CreationalContext<UI> context) {
+        return t.create(context);
     }
 
     @Override

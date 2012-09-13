@@ -3,9 +3,11 @@ package com.vaadin.cdi;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
 import com.vaadin.server.DefaultUIProvider;
@@ -91,7 +93,9 @@ public class CDIUIProvider extends DefaultUIProvider {
 
         // If @VaadinUI qualifier is not given but UI is defined in deployment
         // descriptor
-        Set<Bean<?>> beans = beanManager.getBeans(type);
+        Set<Bean<?>> beans = beanManager.getBeans(type,
+                new AnnotationLiteral<Any>() {
+                });
 
         if (beans.isEmpty()) {
             // Otherwise check whether UI with qualifier exists

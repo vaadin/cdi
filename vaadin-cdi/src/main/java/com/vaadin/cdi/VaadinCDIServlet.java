@@ -18,8 +18,10 @@ public class VaadinCDIServlet extends VaadinServlet {
     @Override
     protected void onVaadinSessionStarted(WrappedHttpServletRequest request,
             VaadinServletSession session) throws ServletException {
-        LOG().info("--onVaadinSessionStarted");
-        session.addUIProvider(cdiRootProvider.get());
+        LOG().info("onVaadinSessionStarted");
+        CDIUIProvider uiProvider = cdiRootProvider.get();
+        LOG().info("Registering ui CDIUIProvider: " + uiProvider);
+        session.addUIProvider(uiProvider);
         super.onVaadinSessionStarted(request, session);
     }
 

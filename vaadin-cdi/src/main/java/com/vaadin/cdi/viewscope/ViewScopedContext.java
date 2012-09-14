@@ -1,12 +1,19 @@
 package com.vaadin.cdi.viewscope;
 
 import java.lang.annotation.Annotation;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+
+import com.vaadin.cdi.UIBeanStore;
+import com.vaadin.cdi.UIScopedContext;
+import com.vaadin.navigator.View;
 
 /**
  * Maintains view-scoped managed beans
@@ -15,44 +22,46 @@ import javax.enterprise.inject.spi.Bean;
  */
 public class ViewScopedContext implements Context {
 
-    private ConcurrentHashMap<String, ScopedBean> context = null;
     private boolean active;
+    private final BeanManager beanManager;
+    private final Map<View, UIBeanStore> beanStores = new HashMap<View, UIBeanStore>();
 
-    private ViewScopedContext() {
-        this.context = new ConcurrentHashMap<String, ScopedBean>();
-        this.active = true;
+    public ViewScopedContext(final BeanManager beanManager) {
+        this.beanManager = beanManager;
+    }
+
+    private UIBeanStore getCurrentBeanStore() {
+        return getCurrentBeanStore(CurrentView.getCurrent());
+    }
+
+    private UIBeanStore getCurrentBeanStore(View scopedView) {
+        return beanStores.get(scopedView);
     }
 
     @Override
-    public <T> T get(Contextual<T> contextual,
-            CreationalContext<T> creationalContext) {
-        Bean bean = (Bean) contextual;
-        final String beanName = bean.getName();
-        T foundBean = get(contextual);
-        if (foundBean != null) {
-            return foundBean;
+    public <T> T get(final Contextual<T> contextual) {
+        return get(contextual, null);
+    }
+
+    @Override
+    public <T> T get(final Contextual<T> contextual,
+            final CreationalContext<T> creationalContext) {
+        UIBeanStore currentBeanStore;
+        Bean<T> bean = (Bean<T>) contextual;
+        if (View.class.isAssignableFrom(bean.getBeanClass())) {
+            View scopedView = createScopedView((Bean<View>) bean,
+                    (CreationalContext<View>) creationalContext);
+            currentBeanStore = getCurrentBeanStore(scopedView);
         } else {
-            final ScopedBean cdiBean = new ScopedBean(contextual,
-                    creationalContext);
-            this.context.put(beanName, cdiBean);
-            return (T) cdiBean.getBean();
+            currentBeanStore = getCurrentBeanStore();
         }
+        return currentBeanStore.getBeanInstance(bean, creationalContext);
     }
 
-    @Override
-    public <T> T get(Contextual<T> contextual) {
-        final String beanName = ((Bean) contextual).getName();
-        final ScopedBean cdiBean = context.get(beanName);
-        if (cdiBean == null)
-            return null;
-        return (T) cdiBean.getBean();
-    }
-
-    public void shutdown() {
-        for (ScopedBean contextual : context.values()) {
-            contextual.destroy();
-        }
-        this.context.clear();
+    public View createScopedView(Bean<View> t, CreationalContext<View> context) {
+        View view = t.create(context);
+        CurrentView.set(view);
+        return view;
     }
 
     @Override
@@ -67,6 +76,10 @@ public class ViewScopedContext implements Context {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    private static Logger getLogger() {
+        return Logger.getLogger(UIScopedContext.class.getCanonicalName());
     }
 
 }

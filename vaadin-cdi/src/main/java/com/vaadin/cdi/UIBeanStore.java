@@ -26,7 +26,7 @@ public class UIBeanStore implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T getBeanInstance(final Bean<T> bean,
+    public <T> T getBeanInstance(final Bean<T> bean,
             final CreationalContext<T> creationalContext) {
         UIBeanStore.ContextualInstance<T> contextualInstance = (UIBeanStore.ContextualInstance<T>) instances
                 .get(bean);

@@ -10,6 +10,8 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionTarget;
 
+import com.vaadin.cdi.viewscope.ViewScopedContext;
+
 /**
  * CDI Extension which registers VaadinContextImpl context.
  * 
@@ -19,8 +21,9 @@ public class VaadinExtension implements Extension {
 
     void afterBeanDiscovery(@Observes
     final AfterBeanDiscovery afterBeanDiscovery, final BeanManager beanManager) {
-        afterBeanDiscovery.addContext(new VaadinContext(beanManager));
-        getLogger().info("VaadinContext registered");
+        afterBeanDiscovery.addContext(new ViewScopedContext(beanManager));
+        afterBeanDiscovery.addContext(new UIScopedContext(beanManager));
+        getLogger().info("VaadinScopes registered");
     }
 
     private static Logger getLogger() {

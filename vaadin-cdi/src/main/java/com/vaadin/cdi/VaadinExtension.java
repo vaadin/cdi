@@ -23,7 +23,7 @@ public class VaadinExtension implements Extension {
     final AfterBeanDiscovery afterBeanDiscovery, final BeanManager beanManager) {
         afterBeanDiscovery.addContext(new ViewScopedContext(beanManager));
         afterBeanDiscovery.addContext(new UIScopedContext(beanManager));
-        getLogger().info("VaadinScopes registered");
+        getLogger().info("Vaadin scopes registered");
     }
 
     private static Logger getLogger() {

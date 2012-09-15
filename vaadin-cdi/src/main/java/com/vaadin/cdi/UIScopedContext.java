@@ -47,7 +47,7 @@ public class UIScopedContext implements Context {
 
     @Override
     public <T> T get(final Contextual<T> contextual) {
-        return get(contextual, null);
+        return get(contextual);
     }
 
     @Override

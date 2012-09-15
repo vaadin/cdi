@@ -28,32 +28,59 @@ public class ViewScopedContext implements Context {
 
     public ViewScopedContext(final BeanManager beanManager) {
         this.beanManager = beanManager;
+        this.active = true;
     }
 
     private UIBeanStore getCurrentBeanStore() {
-        return getCurrentBeanStore(CurrentView.getCurrent());
+        View current = CurrentView.getCurrent();
+        if (current == null) {
+            return null;
+        }
+        return beanStores.get(current);
     }
 
-    private UIBeanStore getCurrentBeanStore(View scopedView) {
-        return beanStores.get(scopedView);
-    }
-
+    /**
+     * Returns an existing, or null
+     */
     @Override
     public <T> T get(final Contextual<T> contextual) {
-        return get(contextual, null);
+        Bean<T> bean = (Bean<T>) contextual;
+        LOG().info(
+                "Trying to fetch an existing instance for: "
+                        + bean.getBeanClass());
+        UIBeanStore currentBeanStore = getCurrentBeanStore();
+        if (currentBeanStore == null) {
+            LOG().info(
+                    "BeanStore for instance " + bean.getBeanClass()
+                            + " does not exist yet, creating a new one");
+            return null;
+        }
+        return currentBeanStore.getBeanInstance(bean);
     }
 
+    /**
+     * Returns an existing, or a new instance
+     */
     @Override
     public <T> T get(final Contextual<T> contextual,
             final CreationalContext<T> creationalContext) {
-        UIBeanStore currentBeanStore;
         Bean<T> bean = (Bean<T>) contextual;
-        if (View.class.isAssignableFrom(bean.getBeanClass())) {
-            View scopedView = createScopedView((Bean<View>) bean,
-                    (CreationalContext<View>) creationalContext);
-            currentBeanStore = getCurrentBeanStore(scopedView);
-        } else {
-            currentBeanStore = getCurrentBeanStore();
+        UIBeanStore currentBeanStore = getCurrentBeanStore();
+        if (currentBeanStore == null) {
+            if (View.class.isAssignableFrom(bean.getBeanClass())) {
+                LOG().info(
+                        "Requested bean " + bean.getBeanClass()
+                                + " is a View, creating a new one");
+                View scopedView = createScopedView((Bean<View>) bean,
+                        (CreationalContext<View>) creationalContext);
+                UIBeanStore uiBeanStore = new UIBeanStore();
+                beanStores.put(scopedView, uiBeanStore);
+                currentBeanStore = uiBeanStore;
+            } else {
+                throw new IllegalStateException(
+                        "CurrentView is null and requested class is: "
+                                + bean.getBeanClass());
+            }
         }
         return currentBeanStore.getBeanInstance(bean, creationalContext);
     }
@@ -78,7 +105,7 @@ public class ViewScopedContext implements Context {
         this.active = active;
     }
 
-    private static Logger getLogger() {
+    private static Logger LOG() {
         return Logger.getLogger(UIScopedContext.class.getCanonicalName());
     }
 

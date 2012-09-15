@@ -71,11 +71,7 @@ public class ViewScopedContext implements Context {
                 LOG().info(
                         "Requested bean " + bean.getBeanClass()
                                 + " is a View, creating a new one");
-                View scopedView = createScopedView((Bean<View>) bean,
-                        (CreationalContext<View>) creationalContext);
-                UIBeanStore uiBeanStore = new UIBeanStore();
-                beanStores.put(scopedView, uiBeanStore);
-                currentBeanStore = uiBeanStore;
+                currentBeanStore = createStoreAndView(creationalContext, bean);
             } else {
                 throw new IllegalStateException(
                         "CurrentView is null and requested class is: "
@@ -83,6 +79,17 @@ public class ViewScopedContext implements Context {
             }
         }
         return currentBeanStore.getBeanInstance(bean, creationalContext);
+    }
+
+    private <T> UIBeanStore createStoreAndView(
+            final CreationalContext<T> creationalContext, Bean<T> bean) {
+        UIBeanStore currentBeanStore;
+        View scopedView = createScopedView((Bean<View>) bean,
+                (CreationalContext<View>) creationalContext);
+        UIBeanStore uiBeanStore = new UIBeanStore();
+        beanStores.put(scopedView, uiBeanStore);
+        currentBeanStore = uiBeanStore;
+        return currentBeanStore;
     }
 
     public View createScopedView(Bean<View> t, CreationalContext<View> context) {

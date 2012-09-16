@@ -44,6 +44,9 @@ public class CDIUIProvider extends DefaultUIProvider {
     @Override
     public Class<? extends UI> getUIClass(WrappedRequest request) {
         String uiMapping = parseUIMapping(request);
+        getLogger().info(
+                "Parsed UI mapping for uri " + request.getRequestPathInfo()
+                        + " is: " + uiMapping);
         Bean<?> uiBean = getUIBeanMatchingQualifierMapping(uiMapping);
 
         if (uiBean != null) {
@@ -117,13 +120,25 @@ public class CDIUIProvider extends DefaultUIProvider {
         return beans.iterator().next();
     }
 
-    private String parseUIMapping(WrappedRequest request) {
-        String requestPath = request.getRequestPathInfo();
+    String parseUIMapping(WrappedRequest request) {
+        return parseUIMapping(request.getRequestPathInfo());
+    }
+
+    String parseUIMapping(String requestPath) {
         if (requestPath != null && requestPath.length() > 1) {
+            String path = requestPath;
             if (requestPath.endsWith("/")) {
-                return requestPath.substring(1, requestPath.lastIndexOf("/"));
+                path = requestPath.substring(0, requestPath.length() - 1);
+            }
+            if (!path.contains("!")) {
+                int lastIndex = path.lastIndexOf('/');
+                return path.substring(lastIndex + 1);
             } else {
-                return requestPath.substring(1);
+                int lastIndexOfBang = path.lastIndexOf('!');
+                // strip slash with bank => /!
+                String pathWithoutView = path.substring(0, lastIndexOfBang - 1);
+                int lastSlashIndex = pathWithoutView.lastIndexOf('/');
+                return pathWithoutView.substring(lastSlashIndex + 1);
             }
         }
         return "";

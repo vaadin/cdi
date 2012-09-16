@@ -62,27 +62,41 @@ public class CDIViewProvider implements ViewProvider {
     }
 
     private Bean<?> getViewBean(String viewName) {
-        Set<Bean<?>> views = new HashSet<Bean<?>>();
-        views.addAll(beanManager.getBeans(View.class, new VaadinViewAnnotation(
-                viewName)));
-        if (views.isEmpty()) {
-            LOG().info("No explicitly defined View with mapping found!");
-            Set<Bean<?>> all = beanManager.getBeans(View.class,
-                    new AnnotationLiteral<Any>() {
-                    });
-            for (Bean<?> bean : all) {
-                String computedName = evaluateViewName(bean.getBeanClass());
-                if (viewName.equals(computedName)) {
-                    views.add(bean);
-                    LOG().info(
-                            "Bean " + bean.getBeanClass().getName()
-                                    + " with computed name: " + computedName
-                                    + " added !");
-                }
-            }
-
+        Set<Bean<?>> matching = new HashSet<Bean<?>>();
+        Set<Bean<?>> all = beanManager.getBeans(View.class,
+                new AnnotationLiteral<Any>() {
+                });
+        if (all.isEmpty()) {
+            LOG().severe("No Views found!");
+            return null;
         }
-        Set<Bean<?>> viewBeansForThisProvider = getViewBeansForCurrentUI(views);
+        for (Bean<?> bean : all) {
+            Class<?> beanClass = bean.getBeanClass();
+            VaadinView viewAnnotation = beanClass
+                    .getAnnotation(VaadinView.class);
+            String mapping = null;
+            if (viewAnnotation != null) {
+                mapping = viewAnnotation.value();
+                LOG().info(
+                        beanClass.getName() + " is annotated, the mapping is: "
+                                + mapping);
+            }
+            if (mapping == null) {
+                mapping = evaluateViewName(beanClass);
+                LOG().info(
+                        "No mapping for view " + beanClass.getName()
+                                + " found " + " evaluated defaults are: "
+                                + mapping);
+            }
+            if (viewName.equals(mapping)) {
+                matching.add(bean);
+                LOG().info(
+                        "Bean " + beanClass.getName() + " with computed name: "
+                                + mapping + " added !");
+            }
+        }
+
+        Set<Bean<?>> viewBeansForThisProvider = getViewBeansForCurrentUI(matching);
         if (viewBeansForThisProvider.isEmpty()) {
             return null;
         }

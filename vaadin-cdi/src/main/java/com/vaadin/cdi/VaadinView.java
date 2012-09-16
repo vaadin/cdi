@@ -5,9 +5,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.enterprise.util.Nonbinding;
-import javax.inject.Qualifier;
-
 import com.vaadin.ui.UI;
 
 /**
@@ -15,7 +12,6 @@ import com.vaadin.ui.UI;
  * 
  * @author adam-bien.com
  */
-@Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })
 public @interface VaadinView {
@@ -27,9 +23,8 @@ public @interface VaadinView {
      */
     public String value() default "";
 
-    @Nonbinding
+    // why not @RollesAllowed?
     public String[] rolesAllowed() default {};
 
-    @Nonbinding
     public Class<? extends UI> ui() default UI.class;
 }

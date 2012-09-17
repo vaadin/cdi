@@ -7,6 +7,7 @@ package com.vaadin.cdi;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
@@ -24,15 +25,60 @@ public class BeanStoreContainer implements Serializable {
     @Inject
     Instance<UIBeanStore> beanStore;
 
-    public UIBeanStore getBeanStore(final UI current) {
-        if (current == null) {
+    /**
+     * Creates new bean store for given UI. If UI is null, new empty bean store
+     * will be created and returned. To assign bean store for the UI, the bean
+     * store must be activated by calling the activateBeanStore method with
+     * proper UI.
+     * 
+     * @param ui
+     * @return Bean store that is assigned for given UI.
+     */
+    public UIBeanStore getOrCreateBeanStore(UI ui) {
+        if (ui == null) {
+            getLogger().info("Instantiating new bean store");
+            return beanStore.get();
+        } else {
+            if (!beanStores.containsKey(ui.hashCode())) {
+                throw new IllegalStateException(
+                        "No UI bean store found for UI " + ui);
+            }
+
+            return beanStores.get(ui.hashCode());
+        }
+    }
+
+    /**
+     * Assigns bean store for UI. This method should be called by the framework
+     * after UI initialization
+     * 
+     * @param beanStore
+     * 
+     * @param ui
+     */
+    public void assignUIBeanStore(UIBeanStore beanStore, UI ui) {
+        getLogger()
+                .info("Assingning bean store " + beanStore + " for UI " + ui);
+
+        if (beanStore == null) {
+            throw new IllegalArgumentException("BeanStore cannot be null");
+        }
+
+        if (ui == null) {
             throw new IllegalArgumentException("UI cannot be null");
         }
-        final Integer key = current != null ? current.hashCode() : null;
-        if (!beanStores.containsKey(key)) {
-            beanStores.put(key, this.beanStore.get());
+
+        if (beanStore.isActivated()) {
+            throw new IllegalStateException("Bean store is already activated");
         }
-        return beanStores.get(key);
+
+        if (beanStores.containsKey(ui.hashCode())) {
+            throw new IllegalArgumentException(
+                    "Bean store is already assigned for another UI");
+        }
+
+        beanStores.put(ui.hashCode(), beanStore);
+        beanStore.setActivated();
     }
 
     @PreDestroy
@@ -40,5 +86,9 @@ public class BeanStoreContainer implements Serializable {
         for (final UIBeanStore beanStore : beanStores.values()) {
             beanStore.dereferenceAllBeanInstances();
         }
+    }
+
+    private static Logger getLogger() {
+        return Logger.getLogger(BeanStoreContainer.class.getCanonicalName());
     }
 }

@@ -29,24 +29,47 @@ public class UIScopedContext implements Context {
 
     @Override
     public <T> T get(final Contextual<T> contextual) {
-        return get(contextual);
+        return get(contextual, null);
     }
 
     @Override
     public <T> T get(final Contextual<T> contextual,
             final CreationalContext<T> creationalContext) {
-        UIBeanStore currentBeanStore = null;
-        Bean<T> bean = (Bean<T>) contextual;
 
-        if (UI.class.isAssignableFrom(bean.getBeanClass())) {
-            UI scopedView = createScopedUI((Bean<UI>) bean,
-                    (CreationalContext<UI>) creationalContext);
-            currentBeanStore = getCurrentBeanStoreForUI(scopedView);
-        } else {
-            currentBeanStore = getCurrentBeanStore();
+        getLogger().info("Getting bean " + contextual);
+
+        BeanStoreContainer beanStoreContainer = getBeanStoreContainer();
+
+        UIBeanStore beanStore = beanStoreContainer.getOrCreateBeanStore(UI
+                .getCurrent());
+
+        T beanInstance = beanStore.getBeanInstance((Bean<T>) contextual,
+                creationalContext);
+
+        if (isUIBean(contextual)) {
+            if (beanStore.isActivated()) {
+                return beanInstance;
+            } else {
+                beanStoreContainer.assignUIBeanStore(beanStore,
+                        (UI) beanInstance);
+            }
         }
 
-        return currentBeanStore.getBeanInstance(bean, creationalContext);
+        return beanInstance;
+    }
+
+    /**
+     * @param contextual
+     * @return true if Vaadin UI is assignabled from given bean's representing
+     *         type
+     */
+    private <T> boolean isUIBean(Contextual<T> contextual) {
+        if (contextual instanceof Bean) {
+            return UI.class.isAssignableFrom(((Bean<T>) contextual)
+                    .getBeanClass());
+        }
+
+        return false;
     }
 
     @Override
@@ -59,34 +82,24 @@ public class UIScopedContext implements Context {
         return true;
     }
 
-    private UI createScopedUI(Bean<UI> t, CreationalContext<UI> context) {
-        return t.create(context);
-    }
-
-    private UIBeanStore getCurrentBeanStore() {
-        return getCurrentBeanStoreForUI(UI.getCurrent());
-    }
-
-    private UIBeanStore getCurrentBeanStoreForUI(UI ui) {
+    private BeanStoreContainer getBeanStoreContainer() {
         Set<Bean<?>> beans = beanManager.getBeans(BeanStoreContainer.class);
 
         if (beans.isEmpty()) {
-            throw new IllegalStateException("No UI bean store found for UI "
-                    + ui);
+            throw new IllegalStateException(
+                    "No bean store container bound for session");
         }
 
         if (beans.size() > 1) {
             throw new IllegalStateException(
-                    "More than one bean store available for UI " + ui);
+                    "More than one bean store container available for session");
         }
 
-        final Bean<?> bean = beans.iterator().next();
+        Bean<?> bean = beans.iterator().next();
 
-        final BeanStoreContainer container = (BeanStoreContainer) beanManager
-                .getReference(bean, bean.getBeanClass(),
-                        beanManager.createCreationalContext(bean));
+        return (BeanStoreContainer) beanManager.getReference(bean,
+                bean.getBeanClass(), beanManager.createCreationalContext(bean));
 
-        return container.getBeanStore(ui);
     }
 
     private static Logger getLogger() {

@@ -1,7 +1,6 @@
 package com.vaadin.cdi;
 
 import org.junit.Before;
-import org.junit.Test;
 
 /**
  * 
@@ -16,8 +15,4 @@ public class BeanStoreContainerTest {
         cut = new BeanStoreContainer();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void getNullWithNull() {
-        cut.getBeanStore(null);
-    }
 }

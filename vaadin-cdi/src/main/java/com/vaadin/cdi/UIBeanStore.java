@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
@@ -17,8 +18,19 @@ public class UIBeanStore implements Serializable {
 
     private final Map<Bean<?>, UIBeanStore.ContextualInstance<?>> instances = new HashMap<Bean<?>, UIBeanStore.ContextualInstance<?>>();
 
+    private boolean activated;
+
     public UIBeanStore() {
-        System.out.println("Creating new UIBeanStore");
+        getLogger().info("Creating new UIBeanStore " + this);
+    }
+
+    public void setActivated() {
+        getLogger().info("Activating UIBeanStore " + this);
+        activated = true;
+    }
+
+    public boolean isActivated() {
+        return activated;
     }
 
     @SuppressWarnings("unchecked")
@@ -59,6 +71,10 @@ public class UIBeanStore implements Serializable {
                     contextualInstance.getCreationalContext());
             instances.remove(bean);
         }
+    }
+
+    private static Logger getLogger() {
+        return Logger.getLogger(UIBeanStore.class.getCanonicalName());
     }
 
     class ContextualInstance<T> {

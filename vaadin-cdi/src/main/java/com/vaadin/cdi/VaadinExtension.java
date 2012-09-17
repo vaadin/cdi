@@ -27,25 +27,4 @@ public class VaadinExtension implements Extension {
     private static Logger getLogger() {
         return Logger.getLogger(VaadinExtension.class.getCanonicalName());
     }
-
-    public void registerStores(AfterBeanDiscovery abd, BeanManager bm) {
-        InjectionTarget<BeanStoreContainer> beanStoreTarget = getInjectionTarget(
-                BeanStoreContainer.class, bm);
-        InjectionTarget<UIBeanStore> uiBeanStoreTarget = getInjectionTarget(
-                UIBeanStore.class, bm);
-        /*
-         * abd.addBean(new CDIBean<UIBeanStore>(UIBeanStore.class,
-         * uiBeanStoreTarget, Dependent.class));
-         */
-        abd.addBean(new CDIBean<BeanStoreContainer>(BeanStoreContainer.class,
-                beanStoreTarget, SessionScoped.class));
-
-    }
-
-    private <T> InjectionTarget<T> getInjectionTarget(Class<T> clazz,
-            BeanManager bm) {
-        AnnotatedType<T> type = bm.createAnnotatedType(clazz);
-        InjectionTarget<T> target = bm.createInjectionTarget(type);
-        return target;
-    }
 }

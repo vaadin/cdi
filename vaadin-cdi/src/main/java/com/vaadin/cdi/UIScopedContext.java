@@ -23,6 +23,7 @@ public class UIScopedContext implements Context {
     private final BeanManager beanManager;
 
     public UIScopedContext(final BeanManager beanManager) {
+        getLogger().info("Instantiating UIScoped context");
         this.beanManager = beanManager;
     }
 
@@ -39,7 +40,7 @@ public class UIScopedContext implements Context {
         if (UI.class.isAssignableFrom(bean.getBeanClass())) {
             UI scopedView = createScopedUI((Bean<UI>) bean,
                     (CreationalContext<UI>) creationalContext);
-            currentBeanStore = getCurrentBeanStore(scopedView);
+            currentBeanStore = getCurrentBeanStoreForUI(scopedView);
         } else {
             currentBeanStore = getCurrentBeanStore();
         }
@@ -61,10 +62,10 @@ public class UIScopedContext implements Context {
     }
 
     private UIBeanStore getCurrentBeanStore() {
-        return getCurrentBeanStore(UI.getCurrent());
+        return getCurrentBeanStoreForUI(UI.getCurrent());
     }
 
-    private UIBeanStore getCurrentBeanStore(UI scopedView) {
+    private UIBeanStore getCurrentBeanStoreForUI(UI ui) {
         Set<Bean<?>> beans = beanManager.getBeans(BeanStoreContainer.class);
         if (beans.isEmpty()) {
             String msg = "Unable to obtain bean store";
@@ -75,7 +76,7 @@ public class UIScopedContext implements Context {
         final BeanStoreContainer container = (BeanStoreContainer) beanManager
                 .getReference(bean, bean.getBeanClass(),
                         beanManager.createCreationalContext(bean));
-        return container.getBeanStore(scopedView);
+        return container.getBeanStore(ui);
 
     }
 

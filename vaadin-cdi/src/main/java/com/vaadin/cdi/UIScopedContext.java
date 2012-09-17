@@ -35,8 +35,9 @@ public class UIScopedContext implements Context {
     @Override
     public <T> T get(final Contextual<T> contextual,
             final CreationalContext<T> creationalContext) {
-        UIBeanStore currentBeanStore;
+        UIBeanStore currentBeanStore = null;
         Bean<T> bean = (Bean<T>) contextual;
+
         if (UI.class.isAssignableFrom(bean.getBeanClass())) {
             UI scopedView = createScopedUI((Bean<UI>) bean,
                     (CreationalContext<UI>) creationalContext);
@@ -44,6 +45,7 @@ public class UIScopedContext implements Context {
         } else {
             currentBeanStore = getCurrentBeanStore();
         }
+
         return currentBeanStore.getBeanInstance(bean, creationalContext);
     }
 
@@ -67,17 +69,24 @@ public class UIScopedContext implements Context {
 
     private UIBeanStore getCurrentBeanStoreForUI(UI ui) {
         Set<Bean<?>> beans = beanManager.getBeans(BeanStoreContainer.class);
+
         if (beans.isEmpty()) {
-            String msg = "Unable to obtain bean store";
-            getLogger().severe(msg);
-            throw new IllegalStateException(msg);
+            throw new IllegalStateException("No UI bean store found for UI "
+                    + ui);
         }
+
+        if (beans.size() > 1) {
+            throw new IllegalStateException(
+                    "More than one bean store available for UI " + ui);
+        }
+
         final Bean<?> bean = beans.iterator().next();
+
         final BeanStoreContainer container = (BeanStoreContainer) beanManager
                 .getReference(bean, bean.getBeanClass(),
                         beanManager.createCreationalContext(bean));
-        return container.getBeanStore(ui);
 
+        return container.getBeanStore(ui);
     }
 
     private static Logger getLogger() {

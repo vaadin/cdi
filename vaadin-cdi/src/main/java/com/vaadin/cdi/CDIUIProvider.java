@@ -4,7 +4,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
@@ -18,9 +17,6 @@ public class CDIUIProvider extends DefaultUIProvider {
 
     @Inject
     private BeanManager beanManager;
-
-    @Inject
-    private Instance<BeanStoreContainer> beanStoreContainer;
 
     @Override
     public UI createInstance(WrappedRequest request, Class<? extends UI> type) {

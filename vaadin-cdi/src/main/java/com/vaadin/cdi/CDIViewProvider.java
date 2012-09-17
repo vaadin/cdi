@@ -13,7 +13,6 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.component.JaasTools;
-import com.vaadin.cdi.viewscope.CurrentView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.UI;
@@ -138,7 +137,6 @@ public class CDIViewProvider implements ViewProvider {
             View view = (View) beanManager.getReference(viewBean,
                     viewBean.getBeanClass(),
                     beanManager.createCreationalContext(viewBean));
-            CurrentView.set(view);
 
             return view;
         }

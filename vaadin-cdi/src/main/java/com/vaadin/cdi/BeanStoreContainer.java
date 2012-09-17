@@ -7,6 +7,7 @@ package com.vaadin.cdi;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Instance;
@@ -32,12 +33,6 @@ public class BeanStoreContainer implements Serializable {
             beanStores.put(key, this.beanStore.get());
         }
         return beanStores.get(key);
-    }
-
-    public void uiInitialized(final UI ui) {
-        beanStores.put(ui.hashCode(), beanStores.remove(null));
-        // TODO: Listen for Ui close -> Dereference beans of the related
-        // beanstore
     }
 
     @PreDestroy

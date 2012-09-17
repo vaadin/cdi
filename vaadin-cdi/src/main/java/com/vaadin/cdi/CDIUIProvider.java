@@ -35,7 +35,6 @@ public class CDIUIProvider extends DefaultUIProvider {
         if (uiBean != null) {
             UI ui = (UI) beanManager.getReference(uiBean, type,
                     beanManager.createCreationalContext(uiBean));
-            beanStoreContainer.get().uiInitialized(ui);
             return ui;
         }
         throw new IllegalStateException("Could not instantiate UI");

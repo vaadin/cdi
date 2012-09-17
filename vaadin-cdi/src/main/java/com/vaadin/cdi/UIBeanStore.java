@@ -9,10 +9,6 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
 /**
- *
- * @author adam-bien.com
- */
-/**
  * Datastructure for storing bean instances in {@link VaadinUIScoped} context.
  * 
  * @author Tomi Virkki / Vaadin Ltd
@@ -26,7 +22,7 @@ public class UIBeanStore implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T getBeanInstance(final Bean<T> bean,
+    public <T> T getBeanInstance(final Bean<T> bean,
             final CreationalContext<T> creationalContext) {
         UIBeanStore.ContextualInstance<T> contextualInstance = (UIBeanStore.ContextualInstance<T>) instances
                 .get(bean);
@@ -37,6 +33,15 @@ public class UIBeanStore implements Serializable {
         }
         return contextualInstance != null ? contextualInstance.getInstance()
                 : null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getBeanInstance(final Bean<T> bean) {
+        ContextualInstance<?> instance = instances.get(bean);
+        if (instance == null) {
+            return null;
+        }
+        return (T) instance.getInstance();
     }
 
     public void dereferenceAllBeanInstances() {

@@ -18,11 +18,11 @@ import com.vaadin.ui.UI;
  * 
  * @author Tomi Virkki / Vaadin Ltd
  */
-public class VaadinContext implements Context {
+public class UIScopedContext implements Context {
 
     private final BeanManager beanManager;
 
-    public VaadinContext(final BeanManager beanManager) {
+    public UIScopedContext(final BeanManager beanManager) {
         this.beanManager = beanManager;
     }
 
@@ -47,7 +47,7 @@ public class VaadinContext implements Context {
 
     @Override
     public <T> T get(final Contextual<T> contextual) {
-        return get(contextual, null);
+        return get(contextual);
     }
 
     @Override
@@ -80,6 +80,6 @@ public class VaadinContext implements Context {
     }
 
     private static Logger getLogger() {
-        return Logger.getLogger(VaadinContext.class.getCanonicalName());
+        return Logger.getLogger(UIScopedContext.class.getCanonicalName());
     }
 }

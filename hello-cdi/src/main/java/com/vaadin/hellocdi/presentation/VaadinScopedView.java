@@ -1,26 +1,17 @@
 package com.vaadin.hellocdi.presentation;
 
-import com.vaadin.cdi.VaadinUI;
-import com.vaadin.cdi.VaadinUIScoped;
-import com.vaadin.server.WrappedRequest;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.cdi.VaadinView;
+import com.vaadin.cdi.viewscope.VaadinViewScoped;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
-/**
- *
- * @author adam-bien.com
- */
-@VaadinUI
-@VaadinUIScoped
-public class VaadinScopedView extends UI {
+@VaadinView
+@VaadinViewScoped
+public class VaadinScopedView implements View{
 
     @Override
-    protected void init(WrappedRequest request) {
-        setSizeFull();
-        VerticalLayout layout = new VerticalLayout();
-        layout.setSizeFull();
-        layout.addComponent(new Label("+VaadinScopedView works"));
-        setContent(layout);
+    public void enter(ViewChangeEvent event) {
+        System.out.println("DependentView entered!");
     }
+
 }

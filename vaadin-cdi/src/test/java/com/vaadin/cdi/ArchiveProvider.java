@@ -20,7 +20,7 @@ public class ArchiveProvider {
     public final static Class FRAMEWORK_CLASSES[] = new Class[] {
             ComponentTools.class, JaasTools.class, BeanStoreContainer.class,
             CDIUIProvider.class, CDIViewProvider.class, ContextDeployer.class,
-            UIBeanStore.class, VaadinCDIServlet.class, VaadinContext.class,
+            UIBeanStore.class, VaadinCDIServlet.class, UIScopedContext.class,
             VaadinUI.class, VaadinUIAnnotation.class, VaadinUIScoped.class,
             VaadinViewAnnotation.class };
 

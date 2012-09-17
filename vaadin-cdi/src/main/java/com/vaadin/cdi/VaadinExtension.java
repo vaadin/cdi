@@ -2,13 +2,10 @@ package com.vaadin.cdi;
 
 import java.util.logging.Logger;
 
-import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.InjectionTarget;
 
 
 /**

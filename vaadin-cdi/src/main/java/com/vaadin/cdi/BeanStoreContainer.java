@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import com.vaadin.ui.UI;
@@ -23,7 +22,7 @@ public class BeanStoreContainer implements Serializable {
     private final Map<Integer, UIBeanStore> beanStores = new HashMap<Integer, UIBeanStore>();
 
     @Inject
-    Instance<UIBeanStore> beanStore;
+    UIBeanStore beanStore;
 
     private UIBeanStore unfinishedBeanStore;
 
@@ -49,8 +48,9 @@ public class BeanStoreContainer implements Serializable {
                 return unfinishedBeanStore;
             } else {
                 // If creation is not pending, we return new bean store.
-
-                unfinishedBeanStore = beanStore.get();
+                //TODO: Probably wrong expectation: 
+                //there is NO new BeanStore created. We only have one BeanStore per session.
+                unfinishedBeanStore = beanStore;
                 return unfinishedBeanStore;
             }
         } else {

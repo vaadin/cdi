@@ -94,6 +94,7 @@ public class CDIUIProvider extends DefaultUIProvider {
                 });
 
         if (beans.isEmpty()) {
+            //TODO: superfluous: ANY means everything
             // Otherwise check whether UI with qualifier exists
             beans = beanManager.getBeans(type, new VaadinUIAnnotation());
         }

@@ -39,9 +39,7 @@ public class CDIUIProvider extends DefaultUIProvider {
     @Override
     public Class<? extends UI> getUIClass(WrappedRequest request) {
         String uiMapping = parseUIMapping(request);
-        getLogger().info(
-                "Parsed UI mapping for uri " + request.getRequestPathInfo()
-                        + " is: " + uiMapping);
+
         Bean<?> uiBean = getUIBeanMatchingQualifierMapping(uiMapping);
 
         if (uiBean != null) {

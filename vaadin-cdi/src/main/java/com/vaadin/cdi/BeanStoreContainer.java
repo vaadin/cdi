@@ -38,25 +38,30 @@ public class BeanStoreContainer implements Serializable {
      */
     public UIBeanStore getOrCreateBeanStore(UI ui) {
         if (ui == null) {
+
             if (isBeanStoreCreationPending()) {
+                // If creation is pending, we're instantiating bean inside
+                // unfinished ui bean. That's why we want to return same bean
+                // store.
+
                 getLogger().info(
-                        "Getting bean store with creation pending "
-                                + unfinishedBeanStore);
+                        "Getting pending bean store " + unfinishedBeanStore);
                 return unfinishedBeanStore;
             } else {
+                // If creation is not pending, we return new bean store.
+
                 unfinishedBeanStore = beanStore.get();
-                getLogger().info(
-                        "Instantiating new bean store " + unfinishedBeanStore);
                 return unfinishedBeanStore;
             }
         } else {
+            // If UI is not null, it must have assigned bean store.
+
             if (!beanStores.containsKey(ui.hashCode())) {
-                throw new IllegalStateException(
-                        "No UI bean store found for UI " + ui);
+                throw new IllegalStateException("No bean store found for UI "
+                        + ui);
             }
 
             UIBeanStore beanStore = beanStores.get(ui.hashCode());
-            getLogger().info("Getting bean store " + beanStore);
             return beanStore;
         }
     }
@@ -81,7 +86,8 @@ public class BeanStoreContainer implements Serializable {
      */
     public void assignPendingBeanStoreFor(UI ui) {
         getLogger()
-                .info("Assingning bean store " + beanStore + " for UI " + ui);
+                .info("Assigning bean store " + unfinishedBeanStore
+                        + " for UI " + ui);
 
         if (ui == null) {
             throw new IllegalArgumentException("UI cannot be null");

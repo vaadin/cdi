@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
@@ -16,25 +17,26 @@ import javax.enterprise.inject.spi.Bean;
  */
 public class UIBeanStore implements Serializable {
 
-    private final Map<Bean<?>, UIBeanStore.ContextualInstance<?>> instances = new HashMap<Bean<?>, UIBeanStore.ContextualInstance<?>>();
+    private final Map<Contextual<?>, UIBeanStore.ContextualInstance<?>> instances = new HashMap<Contextual<?>, UIBeanStore.ContextualInstance<?>>();
 
     public UIBeanStore() {
         getLogger().info("Creating new UIBeanStore " + this);
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getBeanInstance(final Bean<T> bean,
+    public <T> T getBeanInstance(final Contextual<T> contextual,
             final CreationalContext<T> creationalContext) {
 
-        getLogger().info("Getting bean instance for " + bean + " from " + this);
+        getLogger().info(
+                "Getting bean instance for " + contextual + " from " + this);
 
         UIBeanStore.ContextualInstance<T> contextualInstance = (UIBeanStore.ContextualInstance<T>) instances
-                .get(bean);
+                .get(contextual);
 
         if (contextualInstance == null && creationalContext != null) {
             contextualInstance = new UIBeanStore.ContextualInstance<T>(
-                    bean.create(creationalContext), creationalContext);
-            instances.put(bean, contextualInstance);
+                    contextual.create(creationalContext), creationalContext);
+            instances.put(contextual, contextualInstance);
         }
 
         return contextualInstance != null ? contextualInstance.getInstance()
@@ -51,12 +53,13 @@ public class UIBeanStore implements Serializable {
     }
 
     public void dereferenceAllBeanInstances() {
-        for (final Bean<?> bean : new HashSet<Bean<?>>(instances.keySet())) {
+        for (final Contextual<?> bean : new HashSet<Contextual<?>>(
+                instances.keySet())) {
             dereferenceBeanInstance(bean);
         }
     }
 
-    public <T> void dereferenceBeanInstance(final Bean<T> bean) {
+    public <T> void dereferenceBeanInstance(final Contextual<T> bean) {
         @SuppressWarnings("unchecked")
         final UIBeanStore.ContextualInstance<T> contextualInstance = (UIBeanStore.ContextualInstance<T>) instances
                 .get(bean);

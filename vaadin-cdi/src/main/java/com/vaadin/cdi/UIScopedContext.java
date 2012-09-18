@@ -43,15 +43,12 @@ public class UIScopedContext implements Context {
     public <T> T get(final Contextual<T> contextual,
             final CreationalContext<T> creationalContext) {
 
-        getLogger()
-                .info("Getting bean " + contextual + " from context " + this);
-
-        BeanStoreContainer beanStoreContainer = getBeanStoreContainer();
+        BeanStoreContainer beanStoreContainer = getSessionBoundBeanStoreContainer();
 
         UIBeanStore beanStore = beanStoreContainer.getOrCreateBeanStore(UI
                 .getCurrent());
 
-        T beanInstance = beanStore.getBeanInstance((Bean<T>) contextual,
+        T beanInstance = beanStore.getBeanInstance(contextual,
                 creationalContext);
 
         if (isUIBean(contextual)) {
@@ -60,6 +57,7 @@ public class UIScopedContext implements Context {
             }
         }
 
+        getLogger().info("Finished getting bean " + beanInstance);
         return beanInstance;
     }
 
@@ -80,7 +78,7 @@ public class UIScopedContext implements Context {
     /**
      * @return bean store container bound to the user's http session
      */
-    private BeanStoreContainer getBeanStoreContainer() {
+    private BeanStoreContainer getSessionBoundBeanStoreContainer() {
         Set<Bean<?>> beans = beanManager.getBeans(BeanStoreContainer.class);
 
         if (beans.isEmpty()) {
@@ -98,8 +96,6 @@ public class UIScopedContext implements Context {
         BeanStoreContainer bsc = (BeanStoreContainer) beanManager.getReference(
                 bean, bean.getBeanClass(),
                 beanManager.createCreationalContext(bean));
-
-        getLogger().info("Getting bean store container " + bsc);
 
         return bsc;
     }

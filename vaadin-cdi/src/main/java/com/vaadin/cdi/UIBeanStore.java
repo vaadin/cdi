@@ -18,31 +18,25 @@ public class UIBeanStore implements Serializable {
 
     private final Map<Bean<?>, UIBeanStore.ContextualInstance<?>> instances = new HashMap<Bean<?>, UIBeanStore.ContextualInstance<?>>();
 
-    private boolean activated;
-
     public UIBeanStore() {
         getLogger().info("Creating new UIBeanStore " + this);
-    }
-
-    public void setActivated() {
-        getLogger().info("Activating UIBeanStore " + this);
-        activated = true;
-    }
-
-    public boolean isActivated() {
-        return activated;
     }
 
     @SuppressWarnings("unchecked")
     public <T> T getBeanInstance(final Bean<T> bean,
             final CreationalContext<T> creationalContext) {
+
+        getLogger().info("Getting bean instance for " + bean + " from " + this);
+
         UIBeanStore.ContextualInstance<T> contextualInstance = (UIBeanStore.ContextualInstance<T>) instances
                 .get(bean);
+
         if (contextualInstance == null && creationalContext != null) {
             contextualInstance = new UIBeanStore.ContextualInstance<T>(
                     bean.create(creationalContext), creationalContext);
             instances.put(bean, contextualInstance);
         }
+
         return contextualInstance != null ? contextualInstance.getInstance()
                 : null;
     }

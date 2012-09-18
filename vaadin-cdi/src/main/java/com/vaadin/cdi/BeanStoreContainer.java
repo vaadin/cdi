@@ -25,27 +25,50 @@ public class BeanStoreContainer implements Serializable {
     @Inject
     Instance<UIBeanStore> beanStore;
 
+    private UIBeanStore unfinishedBeanStore;
+
     /**
      * Creates new bean store for given UI. If UI is null, new empty bean store
-     * will be created and returned. To assign bean store for the UI, the bean
-     * store must be activated by calling the activateBeanStore method with
-     * proper UI.
+     * will be created and returned if bean store creation is not pending. If
+     * creation is still pending, already existing instance is returned for null
+     * ui value as well.
      * 
      * @param ui
      * @return Bean store that is assigned for given UI.
      */
     public UIBeanStore getOrCreateBeanStore(UI ui) {
         if (ui == null) {
-            getLogger().info("Instantiating new bean store");
-            return beanStore.get();
+            if (isBeanStoreCreationPending()) {
+                getLogger().info(
+                        "Getting bean store with creation pending "
+                                + unfinishedBeanStore);
+                return unfinishedBeanStore;
+            } else {
+                unfinishedBeanStore = beanStore.get();
+                getLogger().info(
+                        "Instantiating new bean store " + unfinishedBeanStore);
+                return unfinishedBeanStore;
+            }
         } else {
             if (!beanStores.containsKey(ui.hashCode())) {
                 throw new IllegalStateException(
                         "No UI bean store found for UI " + ui);
             }
 
-            return beanStores.get(ui.hashCode());
+            UIBeanStore beanStore = beanStores.get(ui.hashCode());
+            getLogger().info("Getting bean store " + beanStore);
+            return beanStore;
         }
+    }
+
+    /**
+     * @return true if bean store creation is pending. This means that there is
+     *         unassigned bean store available that has not yet been assigned
+     *         for any UI. Calling getOrCreateBeanStore will return this already
+     *         existing but still unassigned bean store.
+     */
+    public boolean isBeanStoreCreationPending() {
+        return unfinishedBeanStore != null;
     }
 
     /**
@@ -56,20 +79,17 @@ public class BeanStoreContainer implements Serializable {
      * 
      * @param ui
      */
-    public void assignUIBeanStore(UIBeanStore beanStore, UI ui) {
+    public void assignPendingBeanStoreFor(UI ui) {
         getLogger()
                 .info("Assingning bean store " + beanStore + " for UI " + ui);
-
-        if (beanStore == null) {
-            throw new IllegalArgumentException("BeanStore cannot be null");
-        }
 
         if (ui == null) {
             throw new IllegalArgumentException("UI cannot be null");
         }
 
-        if (beanStore.isActivated()) {
-            throw new IllegalStateException("Bean store is already activated");
+        if (!isBeanStoreCreationPending()) {
+            throw new IllegalStateException(
+                    "No bean store creation is pending, unable to assign for UI");
         }
 
         if (beanStores.containsKey(ui.hashCode())) {
@@ -77,8 +97,8 @@ public class BeanStoreContainer implements Serializable {
                     "Bean store is already assigned for another UI");
         }
 
-        beanStores.put(ui.hashCode(), beanStore);
-        beanStore.setActivated();
+        beanStores.put(ui.hashCode(), unfinishedBeanStore);
+        unfinishedBeanStore = null;
     }
 
     @PreDestroy

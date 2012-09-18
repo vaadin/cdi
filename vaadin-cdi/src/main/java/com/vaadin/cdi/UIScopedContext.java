@@ -13,10 +13,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import com.vaadin.ui.UI;
 
 /**
- * Custom CDI context for Vaadin applications. Stores references to bean
- * instances in the scope of a Vaadin UI.
- * 
- * @author Tomi Virkki / Vaadin Ltd
+ * UIScopedContext is the context for @VaadinUIScoped beans.
  */
 public class UIScopedContext implements Context {
 
@@ -25,6 +22,16 @@ public class UIScopedContext implements Context {
     public UIScopedContext(final BeanManager beanManager) {
         getLogger().info("Instantiating UIScoped context");
         this.beanManager = beanManager;
+    }
+
+    @Override
+    public Class<? extends Annotation> getScope() {
+        return VaadinUIScoped.class;
+    }
+
+    @Override
+    public boolean isActive() {
+        return true;
     }
 
     @Override
@@ -72,16 +79,9 @@ public class UIScopedContext implements Context {
         return false;
     }
 
-    @Override
-    public Class<? extends Annotation> getScope() {
-        return VaadinUIScoped.class;
-    }
-
-    @Override
-    public boolean isActive() {
-        return true;
-    }
-
+    /**
+     * @return bean store container bound to the user's http session
+     */
     private BeanStoreContainer getBeanStoreContainer() {
         Set<Bean<?>> beans = beanManager.getBeans(BeanStoreContainer.class);
 

@@ -26,9 +26,6 @@
 			</snapshots>
 		</repository>
 	</repositories>
-
-
-
 	<dependencies>
 		<dependency>
 			<groupId>javax</groupId>

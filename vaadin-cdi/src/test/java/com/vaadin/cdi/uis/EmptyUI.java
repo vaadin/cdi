@@ -7,7 +7,9 @@ import javax.annotation.PostConstruct;
 import com.vaadin.cdi.VaadinUI;
 import com.vaadin.cdi.VaadinUIScoped;
 import com.vaadin.server.WrappedRequest;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 
 @VaadinUI
 @VaadinUIScoped
@@ -23,8 +25,13 @@ public class EmptyUI extends UI {
 
     @Override
     protected void init(WrappedRequest request) {
-        // TODO Auto-generated method stub
-
+        setSizeFull();
+        VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
+        Label label = new Label("+EmptyUI");
+        label.setId("label");
+        layout.addComponent(label);
+        setContent(layout);
     }
 
     public static int getNumberOfInstances() {

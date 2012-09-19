@@ -7,12 +7,14 @@ package com.vaadin.cdi;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.ui.UI;
 
@@ -28,8 +30,7 @@ public class BeanStoreContainer implements Serializable {
 
     private final Map<Integer, UIBeanStore> beanStores = new HashMap<Integer, UIBeanStore>();
 
-    @Inject
-    Instance<UIBeanStore> beanStore;
+    private BeanManager beanManager;
 
     private UIBeanStore unfinishedBeanStore;
 
@@ -56,7 +57,7 @@ public class BeanStoreContainer implements Serializable {
             } else {
                 // If creation is not pending, we return new UIBeanStore as it
                 // is UI specific.
-                unfinishedBeanStore = beanStore.get();
+                unfinishedBeanStore = createNewUIBeanStoreInstance();
                 return unfinishedBeanStore;
             }
         } else {
@@ -70,6 +71,29 @@ public class BeanStoreContainer implements Serializable {
             UIBeanStore beanStore = beanStores.get(ui.hashCode());
             return beanStore;
         }
+    }
+
+    /**
+     * @return New UIBeanStore instance
+     */
+    private UIBeanStore createNewUIBeanStoreInstance() {
+        Set<Bean<?>> beans = beanManager.getBeans(UIBeanStore.class);
+
+        if (beans.isEmpty()) {
+            throw new IllegalStateException("Could not find UIBeanStore bean");
+        }
+
+        if (beans.size() > 1) {
+            throw new IllegalStateException(
+                    "Ambiguous UIBeanStore reference available");
+        }
+
+        Bean<UIBeanStore> uiBeanStoreBean = (Bean<UIBeanStore>) beans
+                .iterator().next();
+
+        CreationalContext<UIBeanStore> creationalContext = beanManager
+                .createCreationalContext(uiBeanStoreBean);
+        return uiBeanStoreBean.create(creationalContext);
     }
 
     /**
@@ -122,5 +146,10 @@ public class BeanStoreContainer implements Serializable {
 
     private static Logger getLogger() {
         return Logger.getLogger(BeanStoreContainer.class.getCanonicalName());
+    }
+
+    public void setBeanManager(BeanManager beanManager) {
+        this.beanManager = beanManager;
+
     }
 }

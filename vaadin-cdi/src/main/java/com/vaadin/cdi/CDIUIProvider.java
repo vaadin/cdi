@@ -1,5 +1,6 @@
 package com.vaadin.cdi;
 
+import java.io.Serializable;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -13,7 +14,7 @@ import com.vaadin.server.DefaultUIProvider;
 import com.vaadin.server.WrappedRequest;
 import com.vaadin.ui.UI;
 
-public class CDIUIProvider extends DefaultUIProvider {
+public class CDIUIProvider extends DefaultUIProvider implements Serializable {
 
     @Inject
     private BeanManager beanManager;
@@ -94,7 +95,7 @@ public class CDIUIProvider extends DefaultUIProvider {
                 });
 
         if (beans.isEmpty()) {
-            //TODO: superfluous: ANY means everything
+            // TODO: superfluous: ANY means everything
             // Otherwise check whether UI with qualifier exists
             beans = beanManager.getBeans(type, new VaadinUIAnnotation());
         }

@@ -11,10 +11,17 @@ import java.util.logging.Logger;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import com.vaadin.ui.UI;
 
+/**
+ * BeanStoreContainer is session scoped top level UIBeanStore container that
+ * hosts UI specific scopings. For each UI there will be own UI specific scope
+ * and their backing instances are held within this BeanStoreContainer which is
+ * singleton in one HTTP session.
+ */
 @SessionScoped
 @SuppressWarnings("serial")
 public class BeanStoreContainer implements Serializable {
@@ -22,7 +29,7 @@ public class BeanStoreContainer implements Serializable {
     private final Map<Integer, UIBeanStore> beanStores = new HashMap<Integer, UIBeanStore>();
 
     @Inject
-    UIBeanStore beanStore;
+    Instance<UIBeanStore> beanStore;
 
     private UIBeanStore unfinishedBeanStore;
 
@@ -47,10 +54,9 @@ public class BeanStoreContainer implements Serializable {
                         "Getting pending bean store " + unfinishedBeanStore);
                 return unfinishedBeanStore;
             } else {
-                // If creation is not pending, we return new bean store.
-                //TODO: Probably wrong expectation: 
-                //there is NO new BeanStore created. We only have one BeanStore per session.
-                unfinishedBeanStore = beanStore;
+                // If creation is not pending, we return new UIBeanStore as it
+                // is UI specific.
+                unfinishedBeanStore = beanStore.get();
                 return unfinishedBeanStore;
             }
         } else {

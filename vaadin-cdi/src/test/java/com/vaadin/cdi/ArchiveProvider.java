@@ -40,7 +40,7 @@ public class ArchiveProvider {
         MavenDependencyResolver resolver = DependencyResolvers.use(
                 MavenDependencyResolver.class).loadMetadataFromPom("pom.xml");
         return ShrinkWrap
-                .create(WebArchive.class, "vaadincontext.war")
+                .create(WebArchive.class, "vaadinextension.war")
                 .addClasses(FRAMEWORK_CLASSES)
                 .addAsLibraries(
                         resolver.artifact(

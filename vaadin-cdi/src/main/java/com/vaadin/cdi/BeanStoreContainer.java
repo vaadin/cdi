@@ -35,15 +35,15 @@ public class BeanStoreContainer implements Serializable {
     private UIBeanStore unfinishedBeanStore;
 
     /**
-     * Creates new bean store for given UI. If UI is null, new empty bean store
-     * will be created and returned if bean store creation is not pending. If
-     * creation is still pending, already existing instance is returned for null
-     * ui value as well.
+     * Creates new UI bean store for given UI. If UI is null, new empty bean
+     * store will be created and returned if bean store creation is not pending.
+     * If previous creation is still pending, already existing instance is
+     * returned for null UI value as well.
      * 
      * @param ui
      * @return Bean store that is assigned for given UI.
      */
-    public UIBeanStore getOrCreateBeanStore(UI ui) {
+    public UIBeanStore getOrCreateUIBeanStoreFor(UI ui) {
         if (ui == null) {
 
             if (isBeanStoreCreationPending()) {
@@ -74,44 +74,23 @@ public class BeanStoreContainer implements Serializable {
     }
 
     /**
-     * @return New UIBeanStore instance
-     */
-    private UIBeanStore createNewUIBeanStoreInstance() {
-        Set<Bean<?>> beans = beanManager.getBeans(UIBeanStore.class);
-
-        if (beans.isEmpty()) {
-            throw new IllegalStateException("Could not find UIBeanStore bean");
-        }
-
-        if (beans.size() > 1) {
-            throw new IllegalStateException(
-                    "Ambiguous UIBeanStore reference available");
-        }
-
-        Bean<UIBeanStore> uiBeanStoreBean = (Bean<UIBeanStore>) beans
-                .iterator().next();
-
-        CreationalContext<UIBeanStore> creationalContext = beanManager
-                .createCreationalContext(uiBeanStoreBean);
-        return uiBeanStoreBean.create(creationalContext);
-    }
-
-    /**
-     * @return true if bean store creation is pending. This means that there is
-     *         unassigned bean store available that has not yet been assigned
-     *         for any UI. Calling getOrCreateBeanStore will return this already
-     *         existing but still unassigned bean store.
+     * @return true if UI bean store creation is pending. This means that there
+     *         is unassigned UI bean store available that has not yet been
+     *         assigned for any UI. Calling getOrCreateBeanStore will return
+     *         this already existing but still unassigned UI bean store.
      */
     public boolean isBeanStoreCreationPending() {
         return unfinishedBeanStore != null;
     }
 
     /**
-     * Assigns bean store for UI. This method should be called by the framework
-     * after UI initialization
+     * Assigns UI bean store for UI. This method should be called after the
+     * whole injection hierarchy has been processed and all beans related to
+     * particular UI are stored in the bean store. After assigning,
+     * isBeanStoreCreationPending will return false and requesting bean store
+     * for assigned ui will return the already assigned instance.
      * 
      * @param beanStore
-     * 
      * @param ui
      */
     public void assignPendingBeanStoreFor(UI ui) {
@@ -137,6 +116,34 @@ public class BeanStoreContainer implements Serializable {
         unfinishedBeanStore = null;
     }
 
+    void setBeanManager(BeanManager beanManager) {
+        this.beanManager = beanManager;
+
+    }
+
+    /**
+     * @return New UIBeanStore instance
+     */
+    private UIBeanStore createNewUIBeanStoreInstance() {
+        Set<Bean<?>> beans = beanManager.getBeans(UIBeanStore.class);
+
+        if (beans.isEmpty()) {
+            throw new IllegalStateException("Could not find UIBeanStore bean");
+        }
+
+        if (beans.size() > 1) {
+            throw new IllegalStateException(
+                    "Ambiguous UIBeanStore reference available");
+        }
+
+        Bean<UIBeanStore> uiBeanStoreBean = (Bean<UIBeanStore>) beans
+                .iterator().next();
+
+        CreationalContext<UIBeanStore> creationalContext = beanManager
+                .createCreationalContext(uiBeanStoreBean);
+        return uiBeanStoreBean.create(creationalContext);
+    }
+
     @PreDestroy
     private void preDestroy() {
         for (final UIBeanStore beanStore : beanStores.values()) {
@@ -146,10 +153,5 @@ public class BeanStoreContainer implements Serializable {
 
     private static Logger getLogger() {
         return Logger.getLogger(BeanStoreContainer.class.getCanonicalName());
-    }
-
-    public void setBeanManager(BeanManager beanManager) {
-        this.beanManager = beanManager;
-
     }
 }

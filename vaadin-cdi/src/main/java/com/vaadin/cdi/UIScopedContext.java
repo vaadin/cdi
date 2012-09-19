@@ -45,7 +45,7 @@ public class UIScopedContext implements Context {
 
         BeanStoreContainer beanStoreContainer = getSessionBoundBeanStoreContainer();
 
-        UIBeanStore beanStore = beanStoreContainer.getOrCreateBeanStore(UI
+        UIBeanStore beanStore = beanStoreContainer.getOrCreateUIBeanStoreFor(UI
                 .getCurrent());
 
         T beanInstance = beanStore.getBeanInstance(contextual,

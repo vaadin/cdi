@@ -81,7 +81,7 @@
 			<version>1.9.0</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- vaadin  -->
+		<!-- vaadin  core -->
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-server</artifactId>
@@ -94,17 +94,18 @@
 			<version>7.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
+		<!-- vaadin  dependencies needed for integration testing -->
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-client-compiled</artifactId>
 			<version>7.0-SNAPSHOT</version>
-			<scope>compile</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-themes-compiled</artifactId>
 			<version>7.0-SNAPSHOT</version>
-			<scope>compile</scope>
+			<scope>test</scope>
 		</dependency>		
 	</dependencies>
 

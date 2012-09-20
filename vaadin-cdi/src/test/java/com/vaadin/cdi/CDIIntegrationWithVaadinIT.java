@@ -38,7 +38,8 @@ public class CDIIntegrationWithVaadinIT {
 
     protected IdLocator LABEL = id("label");
     protected IdLocator BUTTON = id("button");
-    private String MAIN_VIEW = "instrumentedUI";
+    private final static String UI_URI = "instrumentedUI";
+    private final static String VIEW_URI = UI_URI + "/#!instrumentedView";
 
     @Deployment
     public static WebArchive deploy() {
@@ -49,18 +50,19 @@ public class CDIIntegrationWithVaadinIT {
     @Before
     public void resetCounter() {
         InstrumentedUI.resetCounter();
+        InstrumentedView.resetCounter();
     }
 
     @Test
     public void pageIsRenderedAndEmptyUICreatedAsManagedBean()
             throws MalformedURLException {
-        openFirstWindow(MAIN_VIEW);
+        openFirstWindow(UI_URI);
         assertTrue("InstrumentedUI should contain a label",
                 firstWindow.isElementPresent(LABEL));
         assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
         // reset session
         firstWindow.restartBrowser();
-        openFirstWindow(MAIN_VIEW);
+        openFirstWindow(UI_URI);
         assertTrue("InstrumentedUI should contain a label",
                 firstWindow.isElementPresent(LABEL));
         assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
@@ -80,37 +82,43 @@ public class CDIIntegrationWithVaadinIT {
     public void oneToOneRelationBetweenBrowserAndUI()
             throws MalformedURLException {
 
-        openFirstWindow(MAIN_VIEW);
+        openFirstWindow(UI_URI);
 
         firstWindow.click(BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         int clickCount = number(firstWindow.getText(LABEL));
-        assertThat(clickCount,is(1));
+        assertThat(clickCount, is(1));
         assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
 
         firstWindow.click(BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         clickCount = number(firstWindow.getText(LABEL));
-        assertThat(clickCount,is(2));
+        assertThat(clickCount, is(2));
         assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
 
-        openSecondWindow(MAIN_VIEW);
+        openSecondWindow(UI_URI);
 
         secondWindow.click(BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         clickCount = number(secondWindow.getText(LABEL));
-        assertThat(clickCount,is(1));
+        assertThat(clickCount, is(1));
         assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
 
         firstWindow.click(BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         clickCount = number(secondWindow.getText(LABEL));
-        assertThat(clickCount,is(2));
+        assertThat(clickCount, is(2));
         assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
 
     }
 
-    public int number(String txt){
+    @Test
+    public void anInjectedViewIsInstantiated() throws MalformedURLException {
+        openFirstWindow(VIEW_URI); //TODO it actually fails, the view is not displayed correctly
+        assertThat(InstrumentedView.getNumberOfInstances(), is(1));
+    }
+
+    public int number(String txt) {
         System.out.println("Text: " + txt);
         return Integer.parseInt(txt);
     }

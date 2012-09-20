@@ -1,19 +1,19 @@
 package com.vaadin.cdi.uis;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.annotation.PostConstruct;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.WrappedRequest;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.UI;
-
-import javax.annotation.PostConstruct;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 
 /**
- * @author  adam-bien.com
+ * @author adam-bien.com
  */
-public class InstrumentedView extends CustomComponent implements View{
+public class InstrumentedView extends CustomComponent implements View {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
 
@@ -22,10 +22,16 @@ public class InstrumentedView extends CustomComponent implements View{
         COUNTER.incrementAndGet();
 
     }
+
     @Override
     public void enter(ViewChangeEvent event) {
+        VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
+        setCompositionRoot(layout);
+        Label label = new Label("Label");
+        label.setId("label");
+        layout.addComponent(label);
     }
-  
 
     public static int getNumberOfInstances() {
         return COUNTER.get();
@@ -34,6 +40,5 @@ public class InstrumentedView extends CustomComponent implements View{
     public static void resetCounter() {
         COUNTER.set(0);
     }
-
 
 }

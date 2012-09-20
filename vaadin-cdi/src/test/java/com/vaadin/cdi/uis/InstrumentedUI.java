@@ -3,6 +3,7 @@ package com.vaadin.cdi.uis;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 import com.vaadin.cdi.VaadinUI;
 import com.vaadin.cdi.VaadinUIScoped;
@@ -19,6 +20,9 @@ public class InstrumentedUI extends UI {
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
 
     private int clickCount;
+
+    @Inject
+    InstrumentedView view;
 
     @PostConstruct
     public void initialize() {

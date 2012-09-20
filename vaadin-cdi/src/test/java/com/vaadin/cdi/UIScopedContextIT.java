@@ -1,9 +1,7 @@
 package com.vaadin.cdi;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.jboss.arquillian.ajocado.Graphene.elementPresent;
-import static org.jboss.arquillian.ajocado.Graphene.id;
-import static org.jboss.arquillian.ajocado.Graphene.waitModel;
+import static org.jboss.arquillian.ajocado.Graphene.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -13,6 +11,7 @@ import java.net.URL;
 import org.jboss.arquillian.ajocado.framework.GrapheneSelenium;
 import org.jboss.arquillian.ajocado.locator.IdLocator;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -23,6 +22,7 @@ import org.junit.runner.RunWith;
 
 import com.vaadin.cdi.uis.EmptyUI;
 
+@RunAsClient
 @RunWith(Arquillian.class)
 public class UIScopedContextIT {
 
@@ -47,11 +47,21 @@ public class UIScopedContextIT {
     @Test
     public void pageIsRenderedAndEmptyUICreatedAsManagedBean()
             throws MalformedURLException {
-        driver.open(new URL(contextPath.toString() + "emptyUI"));
-        waitModel.until(elementPresent.locator(LABEL));
+        openURI("emptyUI");
         assertTrue("EmptyUI should contain a label",
                 driver.isElementPresent(LABEL));
         assertThat(EmptyUI.getNumberOfInstances(), is(1));
+        // reset session
+        driver.restartBrowser();
+        openURI("emptyUI");
+        assertTrue("EmptyUI should contain a label",
+                driver.isElementPresent(LABEL));
+        assertThat(EmptyUI.getNumberOfInstances(), is(2));
+    }
+
+    private void openURI(String uri) throws MalformedURLException {
+        driver.open(new URL(contextPath.toString() + uri));
+        waitModel.until(elementPresent.locator(LABEL));
     }
 
 }

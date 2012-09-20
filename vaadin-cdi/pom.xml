@@ -35,14 +35,22 @@
         </repository>
     </repositories>
     <dependencies>
-        <!-- Java EE API reference -->
+         <!-- Java EE 6 API -->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>6.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Embedded TomEE -->
         <dependency>
             <groupId>org.apache.openejb</groupId>
             <artifactId>apache-tomee</artifactId>
             <version>1.0.0</version>
             <classifier>plus</classifier>
             <type>zip</type>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
         <!-- Arquillian -->
         <dependency>

@@ -1,6 +1,6 @@
 package com.vaadin.cdi;
 
-import static com.vaadin.cdi.Naming.firstToLower;
+import static com.vaadin.cdi.VaadinUINaming.firstToLower;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -158,11 +158,10 @@ public class CDIViewProvider implements ViewProvider {
 
     String evaluateViewName(Class<?> clazz) {
         VaadinView annotation = clazz.getAnnotation(VaadinView.class);
-        String configuredViewName = annotation.value();
-        if (configuredViewName.isEmpty()) {
+        if(annotation == null || annotation.value().isEmpty() ){
             return firstToLower(clazz.getSimpleName());
         } else {
-            return configuredViewName;
+            return annotation.value();
         }
     }
 

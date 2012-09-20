@@ -109,7 +109,7 @@ public class ContextDeployer implements ServletContextListener {
     }
 
     private String deriveFromConvention(Class<? extends UI> uiBeanClass) {
-        return Naming.firstToLower(uiBeanClass.getSimpleName());
+        return VaadinUINaming.firstToLower(uiBeanClass.getSimpleName());
     }
 
     /**

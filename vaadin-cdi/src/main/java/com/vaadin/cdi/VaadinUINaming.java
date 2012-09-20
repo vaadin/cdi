@@ -1,6 +1,7 @@
 package com.vaadin.cdi;
 
-public class Naming {
+public class VaadinUINaming {
+
     public static String firstToLower(String name) {
         char firstLower = Character.toLowerCase(name.charAt(0));
         if (name.length() > 1) {
@@ -8,5 +9,9 @@ public class Naming {
         } else {
             return String.valueOf(firstLower);
         }
+    }
+
+    public static String getConventionalName(Class<?> clazz){
+        return firstToLower(clazz.getSimpleName());
     }
 }

@@ -73,8 +73,8 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
                         return bean;
                     }
                 } else {
-                    String defaultMapping = VaadinUINaming.firstToLower(beanClass
-                            .getSimpleName());
+                    String defaultMapping = VaadinUINaming
+                            .deriveNameFromConvention(beanClass);
                     if (mapping.equals(defaultMapping)) {
                         return bean;
                     }

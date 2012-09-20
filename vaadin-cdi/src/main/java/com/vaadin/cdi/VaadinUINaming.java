@@ -2,7 +2,7 @@ package com.vaadin.cdi;
 
 public class VaadinUINaming {
 
-    public static String firstToLower(String name) {
+    static String firstToLower(String name) {
         char firstLower = Character.toLowerCase(name.charAt(0));
         if (name.length() > 1) {
             return firstLower + name.substring(1);
@@ -11,7 +11,7 @@ public class VaadinUINaming {
         }
     }
 
-    public static String getConventionalName(Class<?> clazz){
+    public static String deriveNameFromConvention(Class<?> clazz){
         return firstToLower(clazz.getSimpleName());
     }
 }

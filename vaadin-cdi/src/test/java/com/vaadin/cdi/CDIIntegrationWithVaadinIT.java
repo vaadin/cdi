@@ -25,7 +25,7 @@ import com.vaadin.cdi.uis.InstrumentedView;
 
 @RunAsClient
 @RunWith(Arquillian.class)
-public class UIScopedContextIT {
+public class CDIIntegrationWithVaadinIT {
 
     @Drone
     GrapheneSelenium firstWindow;

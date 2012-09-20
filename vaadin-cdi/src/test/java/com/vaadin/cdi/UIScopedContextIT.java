@@ -1,13 +1,7 @@
 package com.vaadin.cdi;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.jboss.arquillian.ajocado.Graphene.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-
+import com.vaadin.cdi.uis.InstrumentedUI;
+import com.vaadin.cdi.uis.InstrumentedView;
 import org.jboss.arquillian.ajocado.framework.GrapheneSelenium;
 import org.jboss.arquillian.ajocado.locator.IdLocator;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -20,14 +14,23 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.vaadin.cdi.uis.EmptyUI;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.jboss.arquillian.ajocado.Graphene.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunAsClient
 @RunWith(Arquillian.class)
 public class UIScopedContextIT {
 
     @Drone
-    GrapheneSelenium driver;
+    GrapheneSelenium firstWindow;
+
+    @Drone
+    GrapheneSelenium secondWindow;
 
     @ArquillianResource
     URL contextPath;
@@ -36,32 +39,38 @@ public class UIScopedContextIT {
 
     @Deployment
     public static WebArchive deploy() {
-        return ArchiveProvider.createWebArchive(EmptyUI.class);
+        return ArchiveProvider.createWebArchive(InstrumentedUI.class,InstrumentedView.class);
     }
 
     @Before
     public void resetCounter() {
-        EmptyUI.resetCounter();
+        InstrumentedUI.resetCounter();
     }
 
     @Test
     public void pageIsRenderedAndEmptyUICreatedAsManagedBean()
             throws MalformedURLException {
-        openURI("emptyUI");
-        assertTrue("EmptyUI should contain a label",
-                driver.isElementPresent(LABEL));
-        assertThat(EmptyUI.getNumberOfInstances(), is(1));
+        openURI("instrumentedUI");
+        assertTrue("InstrumentedUI should contain a label",
+                firstWindow.isElementPresent(LABEL));
+        assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
         // reset session
-        driver.restartBrowser();
-        openURI("emptyUI");
-        assertTrue("EmptyUI should contain a label",
-                driver.isElementPresent(LABEL));
-        assertThat(EmptyUI.getNumberOfInstances(), is(2));
+        firstWindow.restartBrowser();
+        openURI("instrumentedUI");
+        assertTrue("InstrumentedUI should contain a label",
+                firstWindow.isElementPresent(LABEL));
+        assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
     }
 
     private void openURI(String uri) throws MalformedURLException {
-        driver.open(new URL(contextPath.toString() + uri));
+        firstWindow.open(new URL(contextPath.toString() + uri));
         waitModel.until(elementPresent.locator(LABEL));
+    }
+
+    @Test
+    public void oneToOneRelationBetweenBrowserAndUI(){
+
+
     }
 
 }

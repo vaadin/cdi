@@ -1,9 +1,7 @@
 package com.vaadin.cdi;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -13,7 +11,7 @@ import javax.enterprise.inject.spi.Bean;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.cdi.uis.EmptyUI;
+import com.vaadin.cdi.uis.InstrumentedUI;
 
 public class UIBeanStoreTest {
 
@@ -27,7 +25,7 @@ public class UIBeanStoreTest {
     @Test
     public void getUIFromEmptyStore() {
         Bean bean = mock(Bean.class);
-        when(bean.getBeanClass()).thenReturn(EmptyUI.class);
+        when(bean.getBeanClass()).thenReturn(InstrumentedUI.class);
         Object instance = cut.getBeanInstance(bean);
         assertNull(instance);
     }
@@ -35,7 +33,7 @@ public class UIBeanStoreTest {
     @Test
     public void getUIFromEmptyStoreWithNullCreationalContext() {
         Bean bean = mock(Bean.class);
-        when(bean.getBeanClass()).thenReturn(EmptyUI.class);
+        when(bean.getBeanClass()).thenReturn(InstrumentedUI.class);
         Object instance = cut.getBeanInstance(bean, null);
         assertNull(instance);
     }
@@ -44,11 +42,11 @@ public class UIBeanStoreTest {
     public void getUIFromEmptyStoreWithCreationalCreationalContext() {
         Bean bean = mock(Bean.class);
         CreationalContext creationalContext = mock(CreationalContext.class);
-        EmptyUI expected = new EmptyUI();
+        InstrumentedUI expected = new InstrumentedUI();
         when(bean.create(creationalContext)).thenReturn(expected);
 
-        when(bean.getBeanClass()).thenReturn(EmptyUI.class);
-        EmptyUI instance = (EmptyUI) cut.getBeanInstance(bean,
+        when(bean.getBeanClass()).thenReturn(InstrumentedUI.class);
+        InstrumentedUI instance = (InstrumentedUI) cut.getBeanInstance(bean,
                 creationalContext);
         assertNotNull(instance);
         assertThat(instance, is(expected));

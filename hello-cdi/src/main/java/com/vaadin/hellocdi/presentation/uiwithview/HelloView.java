@@ -5,12 +5,8 @@ import javax.annotation.PostConstruct;
 import com.vaadin.cdi.VaadinView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 
 @VaadinView("hello")
 public class HelloView extends CustomComponent implements View {
@@ -24,6 +20,8 @@ public class HelloView extends CustomComponent implements View {
 
         TextField message = new TextField();
         message.setInputPrompt("User name");
+        final Label output = new Label();
+        output.setId("output");
 
         layout.addComponent(message);
 
@@ -31,7 +29,7 @@ public class HelloView extends CustomComponent implements View {
 
             @Override
             public void buttonClick(ClickEvent event) {
-                Notification.show("Button clicked");
+                output.setValue("Clicked");
             }
         });
 

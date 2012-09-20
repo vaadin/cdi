@@ -1,7 +1,13 @@
 package com.vaadin.cdi;
 
-import com.vaadin.cdi.uis.InstrumentedUI;
-import com.vaadin.cdi.uis.InstrumentedView;
+import static org.hamcrest.CoreMatchers.is;
+import static org.jboss.arquillian.ajocado.Graphene.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.jboss.arquillian.ajocado.framework.GrapheneSelenium;
 import org.jboss.arquillian.ajocado.locator.IdLocator;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -14,13 +20,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.jboss.arquillian.ajocado.Graphene.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import com.vaadin.cdi.uis.InstrumentedUI;
+import com.vaadin.cdi.uis.InstrumentedView;
 
 @RunAsClient
 @RunWith(Arquillian.class)
@@ -36,10 +37,13 @@ public class UIScopedContextIT {
     URL contextPath;
 
     protected IdLocator LABEL = id("label");
+    protected IdLocator BUTTON = id("button");
+    private String MAIN_VIEW = "instrumentedUI";
 
     @Deployment
     public static WebArchive deploy() {
-        return ArchiveProvider.createWebArchive(InstrumentedUI.class,InstrumentedView.class);
+        return ArchiveProvider.createWebArchive(InstrumentedUI.class,
+                InstrumentedView.class);
     }
 
     @Before
@@ -50,27 +54,65 @@ public class UIScopedContextIT {
     @Test
     public void pageIsRenderedAndEmptyUICreatedAsManagedBean()
             throws MalformedURLException {
-        openURI("instrumentedUI");
+        openFirstWindow(MAIN_VIEW);
         assertTrue("InstrumentedUI should contain a label",
                 firstWindow.isElementPresent(LABEL));
         assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
         // reset session
         firstWindow.restartBrowser();
-        openURI("instrumentedUI");
+        openFirstWindow(MAIN_VIEW);
         assertTrue("InstrumentedUI should contain a label",
                 firstWindow.isElementPresent(LABEL));
         assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
     }
 
-    private void openURI(String uri) throws MalformedURLException {
+    private void openFirstWindow(String uri) throws MalformedURLException {
         firstWindow.open(new URL(contextPath.toString() + uri));
         waitModel.until(elementPresent.locator(LABEL));
     }
 
+    private void openSecondWindow(String uri) throws MalformedURLException {
+        secondWindow.open(new URL(contextPath.toString() + uri));
+        waitModel.until(elementPresent.locator(LABEL));
+    }
+
     @Test
-    public void oneToOneRelationBetweenBrowserAndUI(){
+    public void oneToOneRelationBetweenBrowserAndUI()
+            throws MalformedURLException {
 
+        openFirstWindow(MAIN_VIEW);
 
+        firstWindow.click(BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        int clickCount = number(firstWindow.getText(LABEL));
+        assertThat(clickCount,is(1));
+        assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
+
+        firstWindow.click(BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        clickCount = number(firstWindow.getText(LABEL));
+        assertThat(clickCount,is(2));
+        assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
+
+        openSecondWindow(MAIN_VIEW);
+
+        secondWindow.click(BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        clickCount = number(secondWindow.getText(LABEL));
+        assertThat(clickCount,is(1));
+        assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
+
+        firstWindow.click(BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        clickCount = number(secondWindow.getText(LABEL));
+        assertThat(clickCount,is(2));
+        assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
+
+    }
+
+    public int number(String txt){
+        System.out.println("Text: " + txt);
+        return Integer.parseInt(txt);
     }
 
 }

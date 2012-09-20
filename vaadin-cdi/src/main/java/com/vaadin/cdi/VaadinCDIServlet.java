@@ -4,11 +4,10 @@ import java.util.logging.Logger;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
-import com.vaadin.server.VaadinServlet;
-import com.vaadin.server.VaadinServletSession;
-import com.vaadin.server.WrappedHttpServletRequest;
+import com.vaadin.server.*;
 
 public class VaadinCDIServlet extends VaadinServlet {
 
@@ -16,13 +15,28 @@ public class VaadinCDIServlet extends VaadinServlet {
     private Instance<CDIUIProvider> cdiRootProvider;
 
     @Override
-    protected void onVaadinSessionStarted(WrappedHttpServletRequest request,
-            VaadinServletSession session) throws ServletException {
-        logger().info("onVaadinSessionStarted");
-        CDIUIProvider uiProvider = cdiRootProvider.get();
-        logger().info("Registering ui CDIUIProvider: " + uiProvider);
-        session.addUIProvider(uiProvider);
-        super.onVaadinSessionStarted(request, session);
+    public void init(ServletConfig servletConfig) throws ServletException {
+        super.init(servletConfig);
+        logger().info("VaadinCDIServlet initialized");
+        this.registerUIProvider();
+    }
+
+    private void registerUIProvider() {
+        getVaadinService().addVaadinSessionInitializationListener(
+                new VaadinSessionInitializationListener() {
+                    @Override
+                    public void vaadinSessionInitialized(
+                            VaadinSessionInitializeEvent vaadinSessionInitializeEvent)
+                            throws ServiceException {
+                        VaadinSession vaadinSession = vaadinSessionInitializeEvent
+                                .getVaadinSession();
+                        logger().info("sessionInitialized");
+                        CDIUIProvider uiProvider = cdiRootProvider.get();
+                        logger().info(
+                                "Registering ui CDIUIProvider: " + uiProvider);
+                        vaadinSession.addUIProvider(uiProvider);
+                    }
+                });
     }
 
     private static Logger logger() {

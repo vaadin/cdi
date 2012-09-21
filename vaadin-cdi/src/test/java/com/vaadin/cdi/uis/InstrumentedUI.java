@@ -7,7 +7,7 @@ import javax.inject.Inject;
 
 import com.vaadin.cdi.VaadinUI;
 import com.vaadin.cdi.VaadinUIScoped;
-import com.vaadin.server.WrappedRequest;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -32,7 +32,7 @@ public class InstrumentedUI extends UI {
     }
 
     @Override
-    protected void init(WrappedRequest request) {
+    protected void init(VaadinRequest request) {
         setSizeFull();
         VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();

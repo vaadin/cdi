@@ -11,7 +11,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
 import com.vaadin.server.DefaultUIProvider;
-import com.vaadin.server.WrappedRequest;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 
 public class CDIUIProvider extends DefaultUIProvider implements Serializable {
@@ -20,7 +20,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
     private BeanManager beanManager;
 
     @Override
-    public UI createInstance(WrappedRequest request, Class<? extends UI> type) {
+    public UI createInstance(VaadinRequest request, Class<? extends UI> type) {
         Bean<?> uiBean = getUIBeanMatchingDeploymentDescriptor(type);
 
         if (uiBean == null) {
@@ -38,7 +38,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
     }
 
     @Override
-    public Class<? extends UI> getUIClass(WrappedRequest request) {
+    public Class<? extends UI> getUIClass(VaadinRequest request) {
         String uiMapping = parseUIMapping(request);
 
         Bean<?> uiBean = getUIBeanMatchingQualifierMapping(uiMapping);
@@ -115,7 +115,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         return beans.iterator().next();
     }
 
-    String parseUIMapping(WrappedRequest request) {
+    String parseUIMapping(VaadinRequest request) {
         return parseUIMapping(request.getRequestPathInfo());
     }
 

@@ -4,7 +4,7 @@ import javax.enterprise.inject.Produces;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import com.vaadin.server.WrappedRequest;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Component;
 import com.vaadin.util.CurrentInstance;
 
@@ -33,6 +33,6 @@ public class ComponentTools {
     @Produces
     protected HttpServletRequest getCurrentRequest() {
         return (HttpServletRequestWrapper) CurrentInstance
-                .get(WrappedRequest.class);
+                .get(VaadinRequest.class);
     }
 }

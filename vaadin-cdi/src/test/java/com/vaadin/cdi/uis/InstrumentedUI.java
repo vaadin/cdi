@@ -5,8 +5,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.cdi.VaadinUI;
 import com.vaadin.cdi.VaadinUIScoped;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -24,6 +26,12 @@ public class InstrumentedUI extends UI {
     @Inject
     InstrumentedView view;
 
+    @Inject
+    CDIViewProvider viewProvider;
+
+    private Navigator navigator;
+
+
     @PostConstruct
     public void initialize() {
         COUNTER.incrementAndGet();
@@ -34,8 +42,12 @@ public class InstrumentedUI extends UI {
     @Override
     protected void init(VaadinRequest request) {
         setSizeFull();
+
         VerticalLayout layout = new VerticalLayout();
+        navigator = new Navigator(this, layout);
+        navigator.addProvider(viewProvider);
         layout.setSizeFull();
+
         final Label label = new Label("+InstrumentedUI");
         label.setId("label");
         Button button = new Button("button", new Button.ClickListener() {

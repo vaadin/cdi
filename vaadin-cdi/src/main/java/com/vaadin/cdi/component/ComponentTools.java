@@ -1,6 +1,7 @@
 package com.vaadin.cdi.component;
 
 import javax.enterprise.inject.Produces;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
@@ -32,7 +33,7 @@ public class ComponentTools {
 
     @Produces
     protected HttpServletRequest getCurrentRequest() {
-        return (HttpServletRequestWrapper) CurrentInstance
-                .get(VaadinRequest.class);
+        return (HttpServletRequest) CurrentInstance
+                .get(ServletRequest.class);
     }
 }

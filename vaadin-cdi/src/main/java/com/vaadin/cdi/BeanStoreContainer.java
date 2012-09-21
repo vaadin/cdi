@@ -57,7 +57,7 @@ public class BeanStoreContainer implements Serializable {
             } else {
                 // If creation is not pending, we return new UIBeanStore as it
                 // is UI specific.
-                unfinishedBeanStore = createNewUIBeanStoreInstance();
+                unfinishedBeanStore = new UIBeanStore();
                 return unfinishedBeanStore;
             }
         } else {

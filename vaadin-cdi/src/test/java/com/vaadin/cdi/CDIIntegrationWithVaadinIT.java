@@ -33,12 +33,6 @@ public class CDIIntegrationWithVaadinIT {
     @Drone
     GrapheneSelenium secondWindow;
 
-    @Drone
-    GrapheneSelenium thirdWindow;
-
-    @Drone
-    GrapheneSelenium fourthWindow;
-
     @ArquillianResource
     URL contextPath;
 
@@ -137,16 +131,16 @@ public class CDIIntegrationWithVaadinIT {
     @Test
     public void dependentScopedViewIsInstantiatedTwice()
             throws MalformedURLException {
-        openWindow(fourthWindow, DEPENDENT_VIEW_URI);
-        fourthWindow.click(NAVIGATE_BUTTON);
+        openWindow(firstWindow, DEPENDENT_VIEW_URI);
+        firstWindow.click(NAVIGATE_BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(DependentInstrumentedView.getNumberOfInstances(), is(2));
     }
 
     @Test
     public void uIScopedViewIsInstantiatedOnce() throws MalformedURLException {
-        openWindow(thirdWindow, SCOPED_VIEW_URI);
-        thirdWindow.click(NAVIGATE_BUTTON);
+        openWindow(secondWindow, SCOPED_VIEW_URI);
+        secondWindow.click(NAVIGATE_BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(ScopedInstrumentedView.getNumberOfInstances(), is(1));
         assertDefaultRootNotInstantiated();

@@ -12,7 +12,7 @@ import com.vaadin.server.*;
 public class VaadinCDIServlet extends VaadinServlet {
 
     @Inject
-    private Instance<CDIUIProvider> cdiRootProvider;
+    private CDIUIProvider cdiRootProvider;
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
@@ -31,10 +31,9 @@ public class VaadinCDIServlet extends VaadinServlet {
                         VaadinSession vaadinSession = vaadinSessionInitializeEvent
                                 .getVaadinSession();
                         logger().info("sessionInitialized");
-                        CDIUIProvider uiProvider = cdiRootProvider.get();
                         logger().info(
-                                "Registering ui CDIUIProvider: " + uiProvider);
-                        vaadinSession.addUIProvider(uiProvider);
+                                "Registering ui CDIUIProvider: " + cdiRootProvider);
+                        vaadinSession.addUIProvider(cdiRootProvider);
                     }
                 });
     }

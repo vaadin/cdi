@@ -19,10 +19,6 @@ import com.vaadin.ui.VerticalLayout;
 @VaadinUIScoped
 public class InstrumentedUI extends UI {
 
-    private final static AtomicInteger COUNTER = new AtomicInteger(0);
-
-    private int clickCount;
-
     @Inject
     DependentInstrumentedView viewDependent;
 
@@ -33,6 +29,9 @@ public class InstrumentedUI extends UI {
     CDIViewProvider viewProvider;
 
     private Navigator navigator;
+
+    private final static AtomicInteger COUNTER = new AtomicInteger(0);
+    private int clickCount;
 
 
     @PostConstruct

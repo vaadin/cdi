@@ -8,23 +8,20 @@ import static org.junit.Assert.assertTrue;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.vaadin.cdi.uis.DependentInstrumentedView;
-import com.vaadin.cdi.uis.ScopedInstrumentedView;
-import com.vaadin.cdi.uis.ViewWithoutAnnotation;
 import org.jboss.arquillian.ajocado.framework.GrapheneSelenium;
 import org.jboss.arquillian.ajocado.locator.IdLocator;
-import org.jboss.arquillian.ajocado.locator.element.ElementLocator;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.vaadin.cdi.uis.InstrumentedUI;
+import com.vaadin.cdi.uis.*;
 
 @RunAsClient
 @RunWith(Arquillian.class)
@@ -36,6 +33,12 @@ public class CDIIntegrationWithVaadinIT {
     @Drone
     GrapheneSelenium secondWindow;
 
+    @Drone
+    GrapheneSelenium thirdWindow;
+
+    @Drone
+    GrapheneSelenium fourthWindow;
+
     @ArquillianResource
     URL contextPath;
 
@@ -43,20 +46,41 @@ public class CDIIntegrationWithVaadinIT {
     private final static IdLocator BUTTON = id("button");
     private final static IdLocator NAVIGATE_BUTTON = id("navigate");
     private final static String UI_URI = "instrumentedUI";
-    private final static String DEPENDENT_VIEW_URI = UI_URI + "/#!dependentInstrumentedView";
-    private final static String SCOPED_VIEW_URI = UI_URI + "/#!scopedInstrumentedView";
-    private final static String VIEW_WITHOUT_ANNOTATION = UI_URI + "/#!viewWithoutAnnotation";
+    private final static String DEPENDENT_VIEW_URI = UI_URI
+            + "/#!dependentInstrumentedView";
+    private final static String SCOPED_VIEW_URI = UI_URI
+            + "/#!scopedInstrumentedView";
+    private final static String VIEW_WITHOUT_ANNOTATION = UI_URI
+            + "/#!viewWithoutAnnotation";
 
     @Deployment
     public static WebArchive deploy() {
         return ArchiveProvider.createWebArchive(InstrumentedUI.class,
-                DependentInstrumentedView.class, ScopedInstrumentedView.class,ViewWithoutAnnotation.class);
+                DependentInstrumentedView.class, ScopedInstrumentedView.class,
+                ViewWithoutAnnotation.class, RootUI.class);
     }
 
     @Before
     public void resetCounter() {
         InstrumentedUI.resetCounter();
         DependentInstrumentedView.resetCounter();
+        ScopedInstrumentedView.resetCounter();
+        ViewWithoutAnnotation.resetCounter();
+        RootUI.resetCounter();
+    }
+
+    private void openFirstWindow(String uri) throws MalformedURLException {
+        openWindow(this.firstWindow,uri);
+    }
+
+    private void openSecondWindow(String uri) throws MalformedURLException {
+        openWindow(this.secondWindow,uri);
+    }
+
+    void openWindow(GrapheneSelenium window, String uri) throws MalformedURLException {
+        window.open(new URL(contextPath.toString() + uri));
+        waitModel.until(elementPresent.locator(LABEL));
+
     }
 
     @Test
@@ -72,16 +96,8 @@ public class CDIIntegrationWithVaadinIT {
         assertTrue("InstrumentedUI should contain a label",
                 firstWindow.isElementPresent(LABEL));
         assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
-    }
+        assertDefaultRootNotInstantiated();
 
-    private void openFirstWindow(String uri) throws MalformedURLException {
-        firstWindow.open(new URL(contextPath.toString() + uri));
-        waitModel.until(elementPresent.locator(LABEL));
-    }
-
-    private void openSecondWindow(String uri) throws MalformedURLException {
-        secondWindow.open(new URL(contextPath.toString() + uri));
-        waitModel.until(elementPresent.locator(LABEL));
     }
 
     @Test
@@ -115,36 +131,50 @@ public class CDIIntegrationWithVaadinIT {
         clickCount = number(secondWindow.getText(LABEL));
         assertThat(clickCount, is(2));
         assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
-
+        assertDefaultRootNotInstantiated();
     }
 
     @Test
-    public void dependentScopedViewIsInstantiatedTwice() throws MalformedURLException {
-        openFirstWindow(DEPENDENT_VIEW_URI);
-        firstWindow.click(NAVIGATE_BUTTON);
+    public void dependentScopedViewIsInstantiatedTwice()
+            throws MalformedURLException {
+        openWindow(fourthWindow, DEPENDENT_VIEW_URI);
+        fourthWindow.click(NAVIGATE_BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(DependentInstrumentedView.getNumberOfInstances(), is(2));
     }
 
     @Test
     public void uIScopedViewIsInstantiatedOnce() throws MalformedURLException {
-        openSecondWindow(SCOPED_VIEW_URI);
-        firstWindow.click(NAVIGATE_BUTTON);
+        openWindow(thirdWindow, SCOPED_VIEW_URI);
+        thirdWindow.click(NAVIGATE_BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(ScopedInstrumentedView.getNumberOfInstances(), is(1));
+        assertDefaultRootNotInstantiated();
     }
 
     @Test
-    public void recognitionOfViewWithoutAnnotation() throws MalformedURLException {
-        openSecondWindow(VIEW_WITHOUT_ANNOTATION);
+    public void recognitionOfViewWithoutAnnotation()
+            throws MalformedURLException {
+        openFirstWindow(VIEW_WITHOUT_ANNOTATION);
         firstWindow.click(NAVIGATE_BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(ViewWithoutAnnotation.getNumberOfInstances(), is(1));
+        assertDefaultRootNotInstantiated();
+    }
+
+    @Test
+    public void rootUIDiscovery() throws MalformedURLException {
+        openFirstWindow(contextPath.toString());
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(RootUI.getNumberOfInstances(), is(1));
+    }
+
+    void assertDefaultRootNotInstantiated() {
+        assertThat(RootUI.getNumberOfInstances(), is(0));
     }
 
     public int number(String txt) {
         System.out.println("Text: " + txt);
         return Integer.parseInt(txt);
     }
-
 }

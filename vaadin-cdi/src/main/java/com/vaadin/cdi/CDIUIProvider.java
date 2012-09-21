@@ -1,5 +1,7 @@
 package com.vaadin.cdi;
 
+import static com.vaadin.util.CurrentInstance.get;
+
 import java.io.Serializable;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -9,6 +11,8 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import com.vaadin.server.DefaultUIProvider;
 import com.vaadin.server.VaadinRequest;
@@ -40,7 +44,9 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
     @Override
     public Class<? extends UI> getUIClass(VaadinRequest request) {
         String uiMapping = parseUIMapping(request);
-
+        if (isRoot(request)) {
+            return rootUI();
+        }
         Bean<?> uiBean = getUIBeanMatchingQualifierMapping(uiMapping);
 
         if (uiBean != null) {
@@ -54,6 +60,39 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         }
 
         return null;
+    }
+
+    boolean isRoot(VaadinRequest request) {
+        ServletRequest servletRequest = Request.get();
+        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
+        String pathInfo = request.getRequestPathInfo();
+        String contextPath = httpRequest.getContextPath();
+        if(!contextPath.endsWith("/")){
+            contextPath += "/";
+        }
+        return pathInfo.endsWith(contextPath);
+    }
+
+    Class<? extends UI> rootUI() {
+        Set<Bean<?>> beans = beanManager.getBeans(UI.class,
+                new AnnotationLiteral<Root>() {
+                });
+        if (beans.isEmpty()) {
+            return null;
+        }
+        if (beans.size() > 1) {
+            StringBuilder errorMessage = new StringBuilder();
+            for (Bean<?> bean : beans) {
+                errorMessage.append(bean.getBeanClass().getName());
+                errorMessage.append("/n");
+            }
+            throw new IllegalStateException(
+                    "Multiple beans are annotated with @Root: "
+                            + errorMessage.toString());
+        }
+        Bean<?> uiBean = beans.iterator().next();
+        Class<?> rootUI = uiBean.getBeanClass();
+        return rootUI.asSubclass(UI.class);
     }
 
     private Bean<?> getUIBeanMatchingQualifierMapping(String mapping) {

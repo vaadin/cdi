@@ -1,13 +1,11 @@
 package com.vaadin.cdi.component;
 
-import javax.enterprise.inject.Produces;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
+import static com.vaadin.cdi.Request.get;
 
-import com.vaadin.server.VaadinRequest;
+import javax.enterprise.inject.Produces;
+import javax.servlet.http.HttpServletRequest;
+
 import com.vaadin.ui.Component;
-import com.vaadin.util.CurrentInstance;
 
 public class ComponentTools {
 
@@ -33,7 +31,6 @@ public class ComponentTools {
 
     @Produces
     protected HttpServletRequest getCurrentRequest() {
-        return (HttpServletRequest) CurrentInstance
-                .get(ServletRequest.class);
+        return get();
     }
 }

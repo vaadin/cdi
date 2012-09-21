@@ -9,6 +9,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import com.vaadin.server.*;
 import com.vaadin.util.CurrentInstance;
@@ -48,7 +49,8 @@ public class VaadinCDIServlet extends VaadinServlet {
 
     @Override
     public void service(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
-        CurrentInstance.setInheritable(ServletRequest.class,servletRequest);
+        Request.set((HttpServletRequest)servletRequest);
         super.service(servletRequest, servletResponse);
+        Request.cleanup();
     }
 }

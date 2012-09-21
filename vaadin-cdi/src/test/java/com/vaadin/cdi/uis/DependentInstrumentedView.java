@@ -16,7 +16,7 @@ import com.vaadin.ui.VerticalLayout;
  * @author adam-bien.com
  */
 @VaadinView
-public class InstrumentedView extends CustomComponent implements View {
+public class DependentInstrumentedView extends CustomComponent implements View {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
 
@@ -31,7 +31,7 @@ public class InstrumentedView extends CustomComponent implements View {
         VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
         setCompositionRoot(layout);
-        Label label = new Label("Label");
+        Label label = new Label("ViewLabel");
         label.setId("label");
         layout.addComponent(label);
     }

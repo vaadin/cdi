@@ -24,7 +24,10 @@ public class InstrumentedUI extends UI {
     private int clickCount;
 
     @Inject
-    InstrumentedView view;
+    DependentInstrumentedView viewDependent;
+
+    @Inject
+    ScopedInstrumentedView scopedInstrumentedView;
 
     @Inject
     CDIViewProvider viewProvider;
@@ -57,9 +60,16 @@ public class InstrumentedUI extends UI {
             }
         });
         button.setId("button");
+        Button navigate = new Button("button", new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                navigator.navigate();
+            }
+        });
+        navigate.setId("navigate");
         layout.addComponent(label);
         layout.addComponent(button);
-        navigator.navigate();
+        layout.addComponent(navigate);
         setContent(layout);
     }
 

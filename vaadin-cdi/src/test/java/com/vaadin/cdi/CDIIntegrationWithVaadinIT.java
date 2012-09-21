@@ -8,8 +8,11 @@ import static org.junit.Assert.assertTrue;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.vaadin.cdi.uis.DependentInstrumentedView;
+import com.vaadin.cdi.uis.ScopedInstrumentedView;
 import org.jboss.arquillian.ajocado.framework.GrapheneSelenium;
 import org.jboss.arquillian.ajocado.locator.IdLocator;
+import org.jboss.arquillian.ajocado.locator.element.ElementLocator;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
@@ -21,7 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.vaadin.cdi.uis.InstrumentedUI;
-import com.vaadin.cdi.uis.InstrumentedView;
 
 @RunAsClient
 @RunWith(Arquillian.class)
@@ -36,21 +38,23 @@ public class CDIIntegrationWithVaadinIT {
     @ArquillianResource
     URL contextPath;
 
-    protected IdLocator LABEL = id("label");
-    protected IdLocator BUTTON = id("button");
+    private final static IdLocator LABEL = id("label");
+    private final static IdLocator BUTTON = id("button");
+    private final static IdLocator NAVIGATE_BUTTON = id("navigate");
     private final static String UI_URI = "instrumentedUI";
-    private final static String VIEW_URI = UI_URI + "/#!instrumentedView";
+    private final static String DEPENDENT_VIEW_URI = UI_URI + "/#!dependentInstrumentedView";
+    private final static String SCOPED_VIEW_URI = UI_URI + "/#!scopedInstrumentedView";
 
     @Deployment
     public static WebArchive deploy() {
         return ArchiveProvider.createWebArchive(InstrumentedUI.class,
-                InstrumentedView.class);
+                DependentInstrumentedView.class, ScopedInstrumentedView.class);
     }
 
     @Before
     public void resetCounter() {
         InstrumentedUI.resetCounter();
-        InstrumentedView.resetCounter();
+        DependentInstrumentedView.resetCounter();
     }
 
     @Test
@@ -113,9 +117,19 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     @Test
-    public void anInjectedViewIsInstantiated() throws MalformedURLException {
-        openFirstWindow(VIEW_URI);
-        assertThat(InstrumentedView.getNumberOfInstances(), is(2));
+    public void dependentScopedViewIsInstantiatedTwice() throws MalformedURLException {
+        openFirstWindow(DEPENDENT_VIEW_URI);
+        firstWindow.click(NAVIGATE_BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(DependentInstrumentedView.getNumberOfInstances(), is(2));
+    }
+
+    @Test
+    public void uIScopedViewIsInstantiatedOnce() throws MalformedURLException {
+        openSecondWindow(SCOPED_VIEW_URI);
+        firstWindow.click(NAVIGATE_BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(ScopedInstrumentedView.getNumberOfInstances(), is(1));
     }
 
     public int number(String txt) {

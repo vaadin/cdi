@@ -121,29 +121,6 @@ public class BeanStoreContainer implements Serializable {
 
     }
 
-    /**
-     * @return New UIBeanStore instance
-     */
-    private UIBeanStore createNewUIBeanStoreInstance() {
-        Set<Bean<?>> beans = beanManager.getBeans(UIBeanStore.class);
-
-        if (beans.isEmpty()) {
-            throw new IllegalStateException("Could not find UIBeanStore bean");
-        }
-
-        if (beans.size() > 1) {
-            throw new IllegalStateException(
-                    "Ambiguous UIBeanStore reference available");
-        }
-
-        Bean<UIBeanStore> uiBeanStoreBean = (Bean<UIBeanStore>) beans
-                .iterator().next();
-
-        CreationalContext<UIBeanStore> creationalContext = beanManager
-                .createCreationalContext(uiBeanStoreBean);
-        return uiBeanStoreBean.create(creationalContext);
-    }
-
     @PreDestroy
     private void preDestroy() {
         for (final UIBeanStore beanStore : beanStores.values()) {

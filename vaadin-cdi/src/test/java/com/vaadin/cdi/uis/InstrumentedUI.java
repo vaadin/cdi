@@ -44,9 +44,9 @@ public class InstrumentedUI extends UI {
         setSizeFull();
 
         VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
         navigator = new Navigator(this, layout);
         navigator.addProvider(viewProvider);
-        layout.setSizeFull();
 
         final Label label = new Label("+InstrumentedUI");
         label.setId("label");
@@ -59,6 +59,7 @@ public class InstrumentedUI extends UI {
         button.setId("button");
         layout.addComponent(label);
         layout.addComponent(button);
+        navigator.navigate();
         setContent(layout);
     }
 

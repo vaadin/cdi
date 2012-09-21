@@ -114,8 +114,8 @@ public class CDIIntegrationWithVaadinIT {
 
     @Test
     public void anInjectedViewIsInstantiated() throws MalformedURLException {
-        openFirstWindow(VIEW_URI); //TODO it actually fails, the view is not displayed correctly
-        assertThat(InstrumentedView.getNumberOfInstances(), is(1));
+        openFirstWindow(VIEW_URI);
+        assertThat(InstrumentedView.getNumberOfInstances(), is(2));
     }
 
     public int number(String txt) {

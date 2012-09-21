@@ -10,6 +10,7 @@ import java.net.URL;
 
 import com.vaadin.cdi.uis.DependentInstrumentedView;
 import com.vaadin.cdi.uis.ScopedInstrumentedView;
+import com.vaadin.cdi.uis.ViewWithoutAnnotation;
 import org.jboss.arquillian.ajocado.framework.GrapheneSelenium;
 import org.jboss.arquillian.ajocado.locator.IdLocator;
 import org.jboss.arquillian.ajocado.locator.element.ElementLocator;
@@ -44,11 +45,12 @@ public class CDIIntegrationWithVaadinIT {
     private final static String UI_URI = "instrumentedUI";
     private final static String DEPENDENT_VIEW_URI = UI_URI + "/#!dependentInstrumentedView";
     private final static String SCOPED_VIEW_URI = UI_URI + "/#!scopedInstrumentedView";
+    private final static String VIEW_WITHOUT_ANNOTATION = UI_URI + "/#!viewWithoutAnnotation";
 
     @Deployment
     public static WebArchive deploy() {
         return ArchiveProvider.createWebArchive(InstrumentedUI.class,
-                DependentInstrumentedView.class, ScopedInstrumentedView.class);
+                DependentInstrumentedView.class, ScopedInstrumentedView.class,ViewWithoutAnnotation.class);
     }
 
     @Before
@@ -130,6 +132,14 @@ public class CDIIntegrationWithVaadinIT {
         firstWindow.click(NAVIGATE_BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(ScopedInstrumentedView.getNumberOfInstances(), is(1));
+    }
+
+    @Test
+    public void recognitionOfViewWithoutAnnotation() throws MalformedURLException {
+        openSecondWindow(VIEW_WITHOUT_ANNOTATION);
+        firstWindow.click(NAVIGATE_BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(ViewWithoutAnnotation.getNumberOfInstances(), is(1));
     }
 
     public int number(String txt) {

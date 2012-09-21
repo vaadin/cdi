@@ -78,7 +78,7 @@ public class CDIViewProvider implements ViewProvider {
                         beanClass.getName() + " is annotated, the mapping is: "
                                 + mapping);
             }
-            if (mapping == null || mapping.isEmpty()) {
+            if (viewAnnotation == null || mapping == null || mapping.isEmpty()) {
                 mapping = evaluateViewName(beanClass);
                 LOG().info(
                         "No mapping for view " + beanClass.getName()
@@ -113,7 +113,7 @@ public class CDIViewProvider implements ViewProvider {
             VaadinView viewAnnotation = bean.getBeanClass().getAnnotation(
                     VaadinView.class);
 
-            if (viewAnnotation.ui().equals(UI.class)) {
+            if (viewAnnotation == null || viewAnnotation.ui().equals(UI.class)) {
                 viewBeans.add(bean);
                 continue;
             }

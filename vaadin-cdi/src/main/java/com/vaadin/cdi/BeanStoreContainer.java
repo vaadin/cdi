@@ -102,12 +102,9 @@ public class BeanStoreContainer implements Serializable {
 
         String uri = deriveMappingForUI(ui);
         if (beanStores.containsKey(uri)) {
-            System.err.println("URI is already in the bean store! " + uri);
-            /*
-             * throw new IllegalArgumentException(
-             * "Bean store is already assigned for another UI with path: " +
-             * uri);
-             */
+            throw new IllegalArgumentException(
+                    "Bean store is already assigned for another UI with path: "
+                            + uri);
         }
 
         beanStores.put(uri, unfinishedBeanStore);

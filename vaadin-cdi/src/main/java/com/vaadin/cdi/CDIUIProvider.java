@@ -1,7 +1,5 @@
 package com.vaadin.cdi;
 
-import static com.vaadin.util.CurrentInstance.get;
-
 import java.io.Serializable;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -67,7 +65,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         String pathInfo = request.getRequestPathInfo();
         String contextPath = httpRequest.getContextPath();
-        if(!contextPath.endsWith("/")){
+        if (!contextPath.endsWith("/")) {
             contextPath += "/";
         }
         return pathInfo.endsWith(contextPath);
@@ -104,19 +102,10 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
                     UI.class);
 
             if (beanClass.isAnnotationPresent(VaadinUI.class)) {
-                VaadinUI annotation = beanClass.getAnnotation(VaadinUI.class);
-
-                if (annotation.mapping() != null
-                        && !annotation.mapping().isEmpty()) {
-                    if (mapping.equals(annotation.mapping())) {
-                        return bean;
-                    }
-                } else {
-                    String defaultMapping = VaadinUINaming
-                            .deriveNameFromConvention(beanClass);
-                    if (mapping.equals(defaultMapping)) {
-                        return bean;
-                    }
+                String computedMapping = Conventions
+                        .deriveMappingForUI(beanClass);
+                if (mapping.equals(computedMapping)) {
+                    return bean;
                 }
             }
         }

@@ -85,31 +85,17 @@ public class ContextDeployer implements ServletContextListener {
             Class<? extends UI> uiBeanClass = uiBean.getBeanClass().asSubclass(
                     UI.class);
 
-            if (uiBeanClass.isAnnotationPresent(VaadinUI.class)) {
-                VaadinUI vaadinUIAnnotation = uiBeanClass
-                        .getAnnotation(VaadinUI.class);
-
-                String uiMapping = vaadinUIAnnotation.mapping();
-                if (uiMapping == null || uiMapping.isEmpty()) {
-                    uiMapping = deriveFromConvention(uiBeanClass);
-                }
-
-                if (configuredUIs.contains(uiMapping)) {
-                    throw new RuntimeException(
-                            "Multiple UIs configured with same mapping "
-                                    + uiMapping);
-                }
-
-                configuredUIs.add(uiMapping);
+            String uiMapping = Conventions.deriveMappingForUI(uiBeanClass);
+            if (configuredUIs.contains(uiMapping)) {
+                throw new RuntimeException(
+                        "Multiple UIs configured with same mapping "
+                                + uiMapping);
             }
+            configuredUIs.add(uiMapping);
         }
 
         getLogger().info(
                 "Available Vaadin UIs for CDI deployment " + configuredUIs);
-    }
-
-    private String deriveFromConvention(Class<? extends UI> uiBeanClass) {
-        return VaadinUINaming.deriveNameFromConvention(uiBeanClass);
     }
 
     /**

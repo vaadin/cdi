@@ -79,7 +79,7 @@ public class CDIViewProvider implements ViewProvider {
                                 + mapping);
             }
             if (viewAnnotation == null || mapping == null || mapping.isEmpty()) {
-                mapping = evaluateViewName(beanClass);
+                mapping = Conventions.deriveMappingForView(beanClass);
                 LOG().info(
                         "No mapping for view " + beanClass.getName()
                                 + " found " + " evaluated defaults are: "
@@ -148,19 +148,6 @@ public class CDIViewProvider implements ViewProvider {
         }
 
         return viewAndParameters;
-    }
-
-    String evaluateViewName(View view) {
-        return evaluateViewName(view.getClass());
-    }
-
-    String evaluateViewName(Class<?> clazz) {
-        VaadinView annotation = clazz.getAnnotation(VaadinView.class);
-        if (annotation == null || annotation.value().isEmpty()) {
-            return VaadinUINaming.deriveNameFromConvention(clazz);
-        } else {
-            return annotation.value();
-        }
     }
 
     private static Logger LOG() {

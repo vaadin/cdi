@@ -10,6 +10,7 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
+
 /**
  * Datastructure for storing bean instances in {@link VaadinUIScoped} context.
  * 
@@ -50,6 +51,12 @@ public class UIBeanStore implements Serializable {
             return null;
         }
         return (T) instance.getInstance();
+    }
+
+    <T> void add(final Bean<T> bean, T t, CreationalContext<T> creationalContext) {
+        instances.put(
+                bean,
+                new UIBeanStore.ContextualInstance<T>(t, creationalContext));
     }
 
     public void dereferenceAllBeanInstances() {

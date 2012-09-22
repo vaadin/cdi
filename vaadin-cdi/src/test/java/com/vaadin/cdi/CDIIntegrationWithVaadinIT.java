@@ -16,11 +16,14 @@ import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import static org.jboss.arquillian.ajocado.Graphene.waitForHttp;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.vaadin.cdi.uis.*;
+
+import javax.inject.Named;
 
 @RunAsClient
 @RunWith(Arquillian.class)
@@ -28,9 +31,6 @@ public class CDIIntegrationWithVaadinIT {
 
     @Drone
     GrapheneSelenium firstWindow;
-
-    @Drone
-    GrapheneSelenium secondWindow;
 
     @ArquillianResource
     URL contextPath;
@@ -64,6 +64,8 @@ public class CDIIntegrationWithVaadinIT {
         ScopedInstrumentedView.resetCounter();
         ViewWithoutAnnotation.resetCounter();
         RootUI.resetCounter();
+        firstWindow.restartBrowser();
+
     }
 
     private void openFirstWindow(String uri) throws MalformedURLException {
@@ -71,7 +73,7 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     private void openSecondWindow(String uri) throws MalformedURLException {
-        openWindow(this.secondWindow, uri);
+        openWindow(this.firstWindow, uri);
     }
 
     void openWindow(GrapheneSelenium window, String uri)
@@ -116,17 +118,18 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(clickCount, is(2));
         assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
 
+        firstWindow.restartBrowser();
         openSecondWindow(UI_URI);
 
-        secondWindow.click(BUTTON);
+        firstWindow.click(BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
-        clickCount = number(secondWindow.getText(LABEL));
+        clickCount = number(firstWindow.getText(LABEL));
         assertThat(clickCount, is(1));
         assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
 
         firstWindow.click(BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
-        clickCount = number(secondWindow.getText(LABEL));
+        clickCount = number(firstWindow.getText(LABEL));
         assertThat(clickCount, is(2));
         assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
         assertDefaultRootNotInstantiated();
@@ -144,7 +147,7 @@ public class CDIIntegrationWithVaadinIT {
     @Test
     public void uIScopedViewIsInstantiatedOnce() throws MalformedURLException {
         openSecondWindow(SCOPED_VIEW_URI);
-        secondWindow.click(NAVIGATE_BUTTON);
+        firstWindow.click(NAVIGATE_BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(ScopedInstrumentedView.getNumberOfInstances(), is(1));
         assertDefaultRootNotInstantiated();

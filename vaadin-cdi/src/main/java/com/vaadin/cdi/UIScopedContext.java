@@ -11,6 +11,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.ui.UI;
+import org.omg.PortableServer.Current;
 
 /**
  * UIScopedContext is the context for @VaadinUIScoped beans.
@@ -44,16 +45,27 @@ public class UIScopedContext implements Context {
             final CreationalContext<T> creationalContext) {
 
         BeanStoreContainer beanStoreContainer = getSessionBoundBeanStoreContainer();
-
-        UIBeanStore beanStore = beanStoreContainer.getOrCreateUIBeanStoreFor(UI
-                .getCurrent());
-
-        T beanInstance = beanStore.getBeanInstance(contextual,
-                creationalContext);
-
+        T beanInstance = null;
         if (isUIBean(contextual)) {
+            UIBeanStore beanStore = beanStoreContainer
+                    .getOrCreateUIBeanStoreFor(((Bean)contextual).getBeanClass());
+
+            beanInstance = beanStore.getBeanInstance(contextual,
+                    creationalContext);
             if (beanStoreContainer.isBeanStoreCreationPending()) {
                 beanStoreContainer.assignPendingBeanStoreFor((UI) beanInstance);
+            }
+        } else {
+            UI current = UI.getCurrent();
+            if(current != null){
+                UIBeanStore store = beanStoreContainer.getOrCreateUIBeanStoreFor(current.getClass());
+                beanInstance = store.getBeanInstance(contextual,creationalContext);
+            }else{
+                beanInstance = contextual.create(creationalContext);
+                VaadinBean<T> bean = new VaadinBean<T>(contextual,
+                        beanInstance,creationalContext);
+                beanStoreContainer.addUILessComponent(bean);
+
             }
         }
 

@@ -1,5 +1,7 @@
 package com.vaadin.cdi;
 
+import com.vaadin.ui.UI;
+
 public class Conventions {
 
     static String firstToLower(String name) {
@@ -37,5 +39,11 @@ public class Conventions {
         } else {
             return annotation.value();
         }
+    }
+
+    public static String deriveMappingForUI(UI ui) {
+        if(ui == null)
+            return null;
+        return deriveMappingForUI(ui.getClass());
     }
 }

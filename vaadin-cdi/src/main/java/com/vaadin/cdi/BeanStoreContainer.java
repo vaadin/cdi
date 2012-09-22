@@ -4,16 +4,18 @@
  */
 package com.vaadin.cdi;
 
+import static com.vaadin.cdi.Conventions.deriveMappingForUI;
+
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.ui.UI;
@@ -28,11 +30,17 @@ import com.vaadin.ui.UI;
 @SuppressWarnings("serial")
 public class BeanStoreContainer implements Serializable {
 
-    private final Map<Integer, UIBeanStore> beanStores = new HashMap<Integer, UIBeanStore>();
+    private final Map<String, UIBeanStore> beanStores = new ConcurrentHashMap<String, UIBeanStore>();
 
     private BeanManager beanManager;
 
     private UIBeanStore unfinishedBeanStore;
+    private List<VaadinBean> componentsWaitingForUI = new ArrayList<VaadinBean>();
+
+    @PostConstruct
+    public void onNewSession(){
+        getLogger().info("New BeanStoreContainer created");
+    }
 
     /**
      * Creates new UI bean store for given UI. If UI is null, new empty bean
@@ -40,37 +48,37 @@ public class BeanStoreContainer implements Serializable {
      * If previous creation is still pending, already existing instance is
      * returned for null UI value as well.
      * 
+     * 
      * @param ui
      * @return Bean store that is assigned for given UI.
      */
-    public UIBeanStore getOrCreateUIBeanStoreFor(UI ui) {
-        if (ui == null) {
+    public UIBeanStore getOrCreateUIBeanStoreFor(Class ui) {
+        // if (ui == null) {
 
-            if (isBeanStoreCreationPending()) {
-                // If creation is pending, we're instantiating bean inside
-                // unfinished ui bean. That's why we want to return same bean
-                // store.
+        if (isBeanStoreCreationPending()) {
+            // If creation is pending, we're instantiating bean inside
+            // unfinished ui bean. That's why we want to return same bean
+            // store.
 
-                getLogger().info(
-                        "Getting pending bean store " + unfinishedBeanStore);
-                return unfinishedBeanStore;
-            } else {
-                // If creation is not pending, we return new UIBeanStore as it
-                // is UI specific.
-                unfinishedBeanStore = new UIBeanStore();
-                return unfinishedBeanStore;
-            }
+            getLogger().info(
+                    "Getting pending bean store " + unfinishedBeanStore);
+            return unfinishedBeanStore;
         } else {
-            // If UI is not null, it must have assigned bean store.
-
-            if (!beanStores.containsKey(ui.hashCode())) {
-                throw new IllegalStateException("No bean store found for UI "
-                        + ui);
-            }
-
-            UIBeanStore beanStore = beanStores.get(ui.hashCode());
-            return beanStore;
+            if (beanStores.containsKey(deriveMappingForUI(ui)))
+                return beanStores.get(Conventions.deriveMappingForUI(ui));
+            // If creation is not pending, we return new UIBeanStore as it
+            // is UI specific.
+            unfinishedBeanStore = new UIBeanStore();
+            return unfinishedBeanStore;
         }
+        // If UI is not null, it must have assigned bean store.
+/*
+        if (!beanStores.containsKey(deriveMappingForUI(ui))) {
+            throw new IllegalStateException("No bean store found for UI " + ui);
+        }
+
+        return beanStores.get(Conventions.deriveMappingForUI(ui));
+        */
     }
 
     /**
@@ -90,7 +98,6 @@ public class BeanStoreContainer implements Serializable {
      * isBeanStoreCreationPending will return false and requesting bean store
      * for assigned ui will return the already assigned instance.
      * 
-     * @param beanStore
      * @param ui
      */
     public void assignPendingBeanStoreFor(UI ui) {
@@ -107,13 +114,27 @@ public class BeanStoreContainer implements Serializable {
                     "No bean store creation is pending, unable to assign for UI");
         }
 
-        if (beanStores.containsKey(ui.hashCode())) {
+        String uri = deriveMappingForUI(ui);
+        if (beanStores.containsKey(uri)) {
+            System.err.println("URI is already in the bean store! " + uri);
+            /*
             throw new IllegalArgumentException(
-                    "Bean store is already assigned for another UI");
+                    "Bean store is already assigned for another UI with path: "
+                            + uri);
+                            */
         }
 
-        beanStores.put(ui.hashCode(), unfinishedBeanStore);
+        beanStores.put(uri, unfinishedBeanStore);
+        for (VaadinBean bean : this.componentsWaitingForUI) {
+            unfinishedBeanStore.add(bean.getBean(), bean.getBeanInstance(),
+                    bean.getCreationalContext());
+        }
+        this.componentsWaitingForUI.clear();
         unfinishedBeanStore = null;
+    }
+
+    public void addUILessComponent(VaadinBean bean) {
+        this.componentsWaitingForUI.add(bean);
     }
 
     void setBeanManager(BeanManager beanManager) {

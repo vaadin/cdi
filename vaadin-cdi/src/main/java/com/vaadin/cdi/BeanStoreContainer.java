@@ -127,7 +127,9 @@ public class BeanStoreContainer implements Serializable {
 
     @PreDestroy
     private void preDestroy() {
+        getLogger().info("BeanStoreContainer is about to be destroyed: " + this);
         for (final UIBeanStore beanStore : beanStores.values()) {
+            getLogger().info("Dereferencing beans from beanstore: " + beanStore);
             beanStore.dereferenceAllBeanInstances();
         }
     }

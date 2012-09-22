@@ -38,7 +38,7 @@ public class BeanStoreContainer implements Serializable {
     private List<VaadinBean> componentsWaitingForUI = new ArrayList<VaadinBean>();
 
     @PostConstruct
-    public void onNewSession(){
+    public void onNewSession() {
         getLogger().info("New BeanStoreContainer created");
     }
 
@@ -53,32 +53,18 @@ public class BeanStoreContainer implements Serializable {
      * @return Bean store that is assigned for given UI.
      */
     public UIBeanStore getOrCreateUIBeanStoreFor(Class ui) {
-        // if (ui == null) {
-
         if (isBeanStoreCreationPending()) {
             // If creation is pending, we're instantiating bean inside
             // unfinished ui bean. That's why we want to return same bean
             // store.
-
             getLogger().info(
                     "Getting pending bean store " + unfinishedBeanStore);
             return unfinishedBeanStore;
-        } else {
-            if (beanStores.containsKey(deriveMappingForUI(ui)))
-                return beanStores.get(Conventions.deriveMappingForUI(ui));
-            // If creation is not pending, we return new UIBeanStore as it
-            // is UI specific.
-            unfinishedBeanStore = new UIBeanStore();
-            return unfinishedBeanStore;
         }
-        // If UI is not null, it must have assigned bean store.
-/*
-        if (!beanStores.containsKey(deriveMappingForUI(ui))) {
-            throw new IllegalStateException("No bean store found for UI " + ui);
-        }
-
-        return beanStores.get(Conventions.deriveMappingForUI(ui));
-        */
+        if (beanStores.containsKey(deriveMappingForUI(ui)))
+            return beanStores.get(Conventions.deriveMappingForUI(ui));
+        unfinishedBeanStore = new UIBeanStore();
+        return unfinishedBeanStore;
     }
 
     /**
@@ -118,10 +104,10 @@ public class BeanStoreContainer implements Serializable {
         if (beanStores.containsKey(uri)) {
             System.err.println("URI is already in the bean store! " + uri);
             /*
-            throw new IllegalArgumentException(
-                    "Bean store is already assigned for another UI with path: "
-                            + uri);
-                            */
+             * throw new IllegalArgumentException(
+             * "Bean store is already assigned for another UI with path: " +
+             * uri);
+             */
         }
 
         beanStores.put(uri, unfinishedBeanStore);

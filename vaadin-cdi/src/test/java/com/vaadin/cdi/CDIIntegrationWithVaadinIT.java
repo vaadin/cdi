@@ -16,7 +16,6 @@ import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,18 +39,22 @@ public class CDIIntegrationWithVaadinIT {
     private final static IdLocator BUTTON = id("button");
     private final static IdLocator NAVIGATE_BUTTON = id("navigate");
     private final static String UI_URI = "instrumentedUI";
+    private final static String FIRST_UI_URI = "firstUI";
+    private final static String SECOND_UI_URI = "secondUI";
+
     private final static String DEPENDENT_VIEW_URI = UI_URI
             + "/#!dependentInstrumentedView";
-    private final static String SCOPED_VIEW_URI = UI_URI
+    private final static String SCOPED_VIEW_URI = FIRST_UI_URI
             + "/#!scopedInstrumentedView";
-    private final static String VIEW_WITHOUT_ANNOTATION = UI_URI
+    private final static String VIEW_WITHOUT_ANNOTATION = SECOND_UI_URI
             + "/#!viewWithoutAnnotation";
 
     @Deployment
     public static WebArchive deploy() {
         return ArchiveProvider.createWebArchive(InstrumentedUI.class,
                 DependentInstrumentedView.class, ScopedInstrumentedView.class,
-                ViewWithoutAnnotation.class, RootUI.class);
+                ViewWithoutAnnotation.class, RootUI.class, FirstUI.class,
+                SecondUI.class);
     }
 
     @Before
@@ -64,14 +67,15 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     private void openFirstWindow(String uri) throws MalformedURLException {
-        openWindow(this.firstWindow,uri);
+        openWindow(this.firstWindow, uri);
     }
 
     private void openSecondWindow(String uri) throws MalformedURLException {
-        openWindow(this.secondWindow,uri);
+        openWindow(this.secondWindow, uri);
     }
 
-    void openWindow(GrapheneSelenium window, String uri) throws MalformedURLException {
+    void openWindow(GrapheneSelenium window, String uri)
+            throws MalformedURLException {
         window.open(new URL(contextPath.toString() + uri));
         waitModel.until(elementPresent.locator(LABEL));
 
@@ -139,7 +143,7 @@ public class CDIIntegrationWithVaadinIT {
 
     @Test
     public void uIScopedViewIsInstantiatedOnce() throws MalformedURLException {
-        openWindow(secondWindow, SCOPED_VIEW_URI);
+        openSecondWindow(SCOPED_VIEW_URI);
         secondWindow.click(NAVIGATE_BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(ScopedInstrumentedView.getNumberOfInstances(), is(1));

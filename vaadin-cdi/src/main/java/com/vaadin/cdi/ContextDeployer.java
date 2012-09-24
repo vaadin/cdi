@@ -4,9 +4,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -77,10 +79,10 @@ public class ContextDeployer implements ServletContextListener {
                 "Discovering Vaadin UI mappings from @VaadinUI annotations...");
 
         Set<Bean<?>> uiBeans = beanManager.getBeans(UI.class,
-                new VaadinUIAnnotation());
-        getLogger()
-                .info(uiBeans.size()
-                        + " Beans annotated with VaadinUIAnnotation discovered!");
+                new AnnotationLiteral<Any>() {
+                });
+        getLogger().info(
+                uiBeans.size() + " Beans inheriting from UI discovered!");
         for (Bean<?> uiBean : uiBeans) {
             Class<? extends UI> uiBeanClass = uiBean.getBeanClass().asSubclass(
                     UI.class);

@@ -95,7 +95,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
 
     private Bean<?> getUIBeanMatchingQualifierMapping(String mapping) {
         Set<Bean<?>> beans = beanManager.getBeans(UI.class,
-                new VaadinUIAnnotation());
+               new AnnotationLiteral<Any>() {});
 
         for (Bean<?> bean : beans) {
             Class<? extends UI> beanClass = bean.getBeanClass().asSubclass(
@@ -121,12 +121,6 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         Set<Bean<?>> beans = beanManager.getBeans(type,
                 new AnnotationLiteral<Any>() {
                 });
-
-        if (beans.isEmpty()) {
-            // TODO: superfluous: ANY means everything
-            // Otherwise check whether UI with qualifier exists
-            beans = beanManager.getBeans(type, new VaadinUIAnnotation());
-        }
 
         if (beans.isEmpty()) {
             getLogger().warning(

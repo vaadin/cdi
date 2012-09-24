@@ -16,14 +16,11 @@ import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import static org.jboss.arquillian.ajocado.Graphene.waitForHttp;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.vaadin.cdi.uis.*;
-
-import javax.inject.Named;
 
 @RunAsClient
 @RunWith(Arquillian.class)
@@ -168,6 +165,15 @@ public class CDIIntegrationWithVaadinIT {
         openFirstWindow(contextPath.toString());
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(RootUI.getNumberOfInstances(), is(1));
+    }
+
+    @Test
+    public void refreshButtonCreatesNewUIInstance() throws MalformedURLException {
+        openFirstWindow(UI_URI);
+        assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
+        firstWindow.refresh();
+        assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
+        assertDefaultRootNotInstantiated();
     }
 
     void assertDefaultRootNotInstantiated() {

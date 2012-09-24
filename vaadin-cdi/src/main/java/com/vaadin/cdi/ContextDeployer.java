@@ -104,10 +104,11 @@ public class ContextDeployer implements ServletContextListener {
         Set<Bean<?>> result = new HashSet<Bean<?>>();
         for(Bean<?> bean:uiBeans){
             Class<?> beanClass = bean.getBeanClass();
-            if(beanClass.isAnnotationPresent(VaadinUI.class)){
+            if(beanClass.isAnnotationPresent(VaadinUI.class) && !beanClass.isAnnotationPresent(Root.class)){
                 result.add(bean);
             }else{
-                getLogger().info("UI without VaadinUI annotation found: " + beanClass.getName());
+                getLogger().info(
+                        "UI without VaadinUI annotation, or Root UI found: " + beanClass.getName());
             }
         }
         return result;

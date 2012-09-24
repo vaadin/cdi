@@ -21,7 +21,7 @@ public class ArchiveProvider {
             ComponentTools.class, JaasTools.class, BeanStoreContainer.class,
             CDIUIProvider.class, CDIViewProvider.class, ContextDeployer.class,
             UIBeanStore.class, VaadinCDIServlet.class, UIScopedContext.class,
-            Mapping.class, VaadinUIScoped.class};
+            VaadinUIScoped.class };
 
     public static WebArchive createWebArchive(String packageName,
             Class... classes) {

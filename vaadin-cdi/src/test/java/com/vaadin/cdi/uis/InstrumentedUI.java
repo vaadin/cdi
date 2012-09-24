@@ -6,7 +6,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.CDIViewProvider;
-import com.vaadin.cdi.Mapping;
 import com.vaadin.cdi.VaadinUIScoped;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
@@ -15,7 +14,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-@Mapping
 @VaadinUIScoped
 public class InstrumentedUI extends UI {
 
@@ -32,7 +30,6 @@ public class InstrumentedUI extends UI {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
     private int clickCount;
-
 
     @PostConstruct
     public void initialize() {

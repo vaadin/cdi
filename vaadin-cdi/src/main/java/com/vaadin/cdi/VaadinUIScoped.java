@@ -22,4 +22,5 @@ import javax.inject.Scope;
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 @Inherited
 public @interface VaadinUIScoped {
+    public String value() default "";
 }

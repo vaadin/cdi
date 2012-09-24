@@ -18,8 +18,8 @@ public class Conventions {
     }
 
     public static String deriveMappingForUI(Class<?> beanClass) {
-        if (beanClass.isAnnotationPresent(Mapping.class)) {
-            Mapping annotation = beanClass.getAnnotation(Mapping.class);
+        if (beanClass.isAnnotationPresent(VaadinUIScoped.class)) {
+            VaadinUIScoped annotation = beanClass.getAnnotation(VaadinUIScoped.class);
             String mapping = annotation.value();
             if (mapping != null && !mapping.isEmpty()) {
                 return mapping;
@@ -27,7 +27,6 @@ public class Conventions {
                 return deriveNameFromConvention(beanClass);
             }
         }else{
-            //TODO make Mapping optional
             return null;
         }
     }

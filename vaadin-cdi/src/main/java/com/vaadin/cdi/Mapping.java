@@ -10,7 +10,7 @@ import javax.inject.Qualifier;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })
-public @interface VaadinUI {
+public @interface Mapping {
 
-    public String mapping() default "";
+    public String value() default "";
 }

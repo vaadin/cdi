@@ -75,13 +75,13 @@ public class CDIViewProvider implements ViewProvider {
             if (viewAnnotation != null) {
                 mapping = viewAnnotation.value();
                 LOG().info(
-                        beanClass.getName() + " is annotated, the mapping is: "
+                        beanClass.getName() + " is annotated, the value is: "
                                 + mapping);
             }
             if (viewAnnotation == null || mapping == null || mapping.isEmpty()) {
                 mapping = Conventions.deriveMappingForView(beanClass);
                 LOG().info(
-                        "No mapping for view " + beanClass.getName()
+                        "No value for view " + beanClass.getName()
                                 + " found " + " evaluated defaults are: "
                                 + mapping);
             }

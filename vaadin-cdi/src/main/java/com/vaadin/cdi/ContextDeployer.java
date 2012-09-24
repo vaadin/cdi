@@ -72,11 +72,11 @@ public class ContextDeployer implements ServletContextListener {
 
     /**
      * Checks that there are no multiple roots assigned to same application with
-     * same mapping
+     * same value
      */
     private void discoverUIMappingsFromAnnotations() {
         getLogger().info(
-                "Discovering Vaadin UI mappings from @VaadinUI annotations...");
+                "Discovering Vaadin UI mappings from @Mapping annotations...");
 
         Set<Bean<?>> uiBeans = beanManager.getBeans(UI.class,
                 new AnnotationLiteral<Any>() {
@@ -90,7 +90,7 @@ public class ContextDeployer implements ServletContextListener {
             String uiMapping = Conventions.deriveMappingForUI(uiBeanClass);
             if (configuredUIs.contains(uiMapping)) {
                 throw new RuntimeException(
-                        "Multiple UIs configured with same mapping "
+                        "Multiple UIs configured with same value "
                                 + uiMapping);
             }
             configuredUIs.add(uiMapping);
@@ -117,7 +117,7 @@ public class ContextDeployer implements ServletContextListener {
         if (configuredUIs.isEmpty()) {
             getLogger()
                     .warning(
-                            "No Vaadin UI classes with @VaadinUI annotation found. Skipping automated deployment of VaadinCDIServlet.");
+                            "No Vaadin UI classes with @Mapping annotation found. Skipping automated deployment of VaadinCDIServlet.");
             return;
         }
 
@@ -142,7 +142,7 @@ public class ContextDeployer implements ServletContextListener {
     }
 
     /**
-     * Adds given mapping to given servlet registration
+     * Adds given value to given servlet registration
      * 
      * @param mapping
      * @param registration

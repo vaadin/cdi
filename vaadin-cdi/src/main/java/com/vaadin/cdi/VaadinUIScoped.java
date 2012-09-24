@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 import javax.inject.Scope;
 
 /**
- * Annotation used for declaring bean class scope for VaadinUI beans
+ * Annotation used for declaring bean class scope for Mapping beans
  *
  * @author Tomi Virkki / Vaadin Ltd
  */

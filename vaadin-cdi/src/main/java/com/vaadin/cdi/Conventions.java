@@ -18,16 +18,16 @@ public class Conventions {
     }
 
     public static String deriveMappingForUI(Class<?> beanClass) {
-        if (beanClass.isAnnotationPresent(VaadinUI.class)) {
-            VaadinUI annotation = beanClass.getAnnotation(VaadinUI.class);
-            String mapping = annotation.mapping();
+        if (beanClass.isAnnotationPresent(Mapping.class)) {
+            Mapping annotation = beanClass.getAnnotation(Mapping.class);
+            String mapping = annotation.value();
             if (mapping != null && !mapping.isEmpty()) {
                 return mapping;
             } else {
                 return deriveNameFromConvention(beanClass);
             }
         }else{
-            //TODO make VaadinUI optional
+            //TODO make Mapping optional
             return null;
         }
     }

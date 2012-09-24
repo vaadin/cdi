@@ -3,7 +3,7 @@ package com.vaadin.hellocdi.presentation.uiwithview;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.VaadinUI;
-import com.vaadin.server.WrappedRequest;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
@@ -17,7 +17,7 @@ public class UIWithViewUI extends UI {
     HelloView helloView;
 
     @Override
-    protected void init(WrappedRequest request) {
+    protected void init(VaadinRequest request) {
         setSizeFull();
         HorizontalLayout layout = new HorizontalLayout();
         layout.setSizeFull();

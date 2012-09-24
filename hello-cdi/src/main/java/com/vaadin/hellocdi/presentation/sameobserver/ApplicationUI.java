@@ -5,8 +5,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.vaadin.cdi.VaadinUI;
-import com.vaadin.cdi.VaadinUIScoped;
-import com.vaadin.server.WrappedRequest;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
@@ -14,7 +13,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 
 @VaadinUI
-@VaadinUIScoped
 public class ApplicationUI extends UI {
 
     @Inject
@@ -26,7 +24,7 @@ public class ApplicationUI extends UI {
     }
 
     @Override
-    protected void init(WrappedRequest request) {
+    protected void init(VaadinRequest request) {
         setSizeFull();
         HorizontalLayout layout = new HorizontalLayout();
         layout.setSizeFull();

@@ -3,9 +3,9 @@ package com.vaadin.hellocdi.presentation.namedevents;
 import javax.enterprise.event.Observes;
 import javax.inject.Named;
 
-import com.vaadin.cdi.VaadinUIScoped;
+import com.vaadin.cdi.VaadinUI;
 
-@VaadinUIScoped
+@VaadinUI
 public class OkButtonListener {
 
     public OkButtonListener() {

@@ -3,15 +3,15 @@ package com.vaadin.customer.presentation;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.CDIViewProvider;
+import com.vaadin.cdi.Mapping;
 import com.vaadin.cdi.VaadinUI;
-import com.vaadin.cdi.VaadinUIScoped;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.Navigator.SimpleViewDisplay;
 import com.vaadin.server.WrappedRequest;
 import com.vaadin.ui.UI;
 
-@VaadinUI(mapping = "customers")
-@VaadinUIScoped
+@Mapping(value = "customers")
+@VaadinUI
 public class CustomerRoot extends UI {
 
     private Navigator navigator;

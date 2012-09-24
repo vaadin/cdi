@@ -1,13 +1,13 @@
 package com.vaadin.purchases.presentation;
 
+import com.vaadin.cdi.Mapping;
 import com.vaadin.cdi.VaadinUI;
-import com.vaadin.cdi.VaadinUIScoped;
 import com.vaadin.server.WrappedRequest;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 
-@VaadinUI(mapping = "purchases")
-@VaadinUIScoped
+@Mapping(value = "purchases")
+@VaadinUI
 public class PurchasesRoot extends UI {
 
     @Override

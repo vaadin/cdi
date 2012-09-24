@@ -1,11 +1,11 @@
 package com.vaadin.hellocdi.presentation.injectiontest;
 
-import com.vaadin.cdi.VaadinUIScoped;
+import com.vaadin.cdi.VaadinUI;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-@VaadinUIScoped
+@VaadinUI
 public class InjectableComponent extends CustomComponent {
 
     public InjectableComponent() {

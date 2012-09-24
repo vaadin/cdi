@@ -83,7 +83,7 @@ public class ContextDeployer implements ServletContextListener {
                 });
         getLogger().info(
                 uiBeans.size() + " Beans inheriting from UI discovered!");
-        for (Bean<?> uiBean : uiBeans) {
+        for (Bean<?> uiBean : dropNotAnnotated(uiBeans)) {
             Class<? extends UI> uiBeanClass = uiBean.getBeanClass().asSubclass(
                     UI.class);
 
@@ -98,6 +98,19 @@ public class ContextDeployer implements ServletContextListener {
 
         getLogger().info(
                 "Available Vaadin UIs for CDI deployment " + configuredUIs);
+    }
+
+    Set<Bean<?>> dropNotAnnotated(Set<Bean<?>> uiBeans) {
+        Set<Bean<?>> result = new HashSet<Bean<?>>();
+        for(Bean<?> bean:uiBeans){
+            Class<?> beanClass = bean.getBeanClass();
+            if(beanClass.isAnnotationPresent(VaadinUI.class)){
+                result.add(bean);
+            }else{
+                getLogger().info("UI without VaadinUI annotation found: " + beanClass.getName());
+            }
+        }
+        return result;
     }
 
     /**

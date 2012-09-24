@@ -21,6 +21,6 @@ import javax.inject.Scope;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 @Inherited
-public @interface VaadinUIScoped {
+public @interface VaadinUI {
     public String value() default "";
 }

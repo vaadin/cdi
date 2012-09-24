@@ -1,6 +1,6 @@
 package com.vaadin.cdi.uis;
 
-import com.vaadin.cdi.VaadinUIScoped;
+import com.vaadin.cdi.VaadinUI;
 import com.vaadin.cdi.VaadinView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author adam-bien.com
  */
 @VaadinView
-@VaadinUIScoped
+@VaadinUI
 public class ScopedInstrumentedView extends CustomComponent implements View {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);

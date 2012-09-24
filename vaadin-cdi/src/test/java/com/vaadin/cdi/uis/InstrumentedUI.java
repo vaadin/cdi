@@ -6,7 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.CDIViewProvider;
-import com.vaadin.cdi.VaadinUIScoped;
+import com.vaadin.cdi.VaadinUI;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
@@ -14,7 +14,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-@VaadinUIScoped
+@VaadinUI
 public class InstrumentedUI extends UI {
 
     @Inject

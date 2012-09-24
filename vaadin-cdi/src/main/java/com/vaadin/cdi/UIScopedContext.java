@@ -11,7 +11,6 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.ui.UI;
-import org.omg.PortableServer.Current;
 
 /**
  * UIScopedContext is the context for @VaadinUIScoped beans.
@@ -27,7 +26,7 @@ public class UIScopedContext implements Context {
 
     @Override
     public Class<? extends Annotation> getScope() {
-        return VaadinUIScoped.class;
+        return VaadinUI.class;
     }
 
     @Override

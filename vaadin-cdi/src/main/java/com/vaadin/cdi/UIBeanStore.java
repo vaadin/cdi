@@ -12,7 +12,7 @@ import javax.enterprise.inject.spi.Bean;
 
 
 /**
- * Datastructure for storing bean instances in {@link VaadinUIScoped} context.
+ * Datastructure for storing bean instances in {@link VaadinUI} context.
  * 
  * @author Tomi Virkki / Vaadin Ltd
  */

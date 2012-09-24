@@ -26,7 +26,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         Bean<?> uiBean = getUIBeanMatchingDeploymentDescriptor(type);
 
         if (uiBean == null) {
-            if (type.isAnnotationPresent(VaadinUIScoped.class)) {
+            if (type.isAnnotationPresent(VaadinUI.class)) {
                 String uiMapping = parseUIMapping(request);
                 uiBean = getUIBeanMatchingQualifierMapping(uiMapping);
             }
@@ -101,7 +101,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
             Class<? extends UI> beanClass = bean.getBeanClass().asSubclass(
                     UI.class);
 
-            if (beanClass.isAnnotationPresent(VaadinUIScoped.class)) {
+            if (beanClass.isAnnotationPresent(VaadinUI.class)) {
                 String computedMapping = Conventions
                         .deriveMappingForUI(beanClass);
                 if (mapping.equals(computedMapping)) {

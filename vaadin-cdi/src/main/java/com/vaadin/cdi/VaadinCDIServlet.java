@@ -27,18 +27,20 @@ public class VaadinCDIServlet extends VaadinServlet {
     }
 
     private void registerUIProvider() {
-        getVaadinService().addVaadinSessionInitializationListener(
+
+        super.getService().addVaadinSessionInitializationListener(
                 new VaadinSessionInitializationListener() {
                     @Override
                     public void vaadinSessionInitialized(
                             VaadinSessionInitializeEvent vaadinSessionInitializeEvent)
                             throws ServiceException {
                         VaadinSession vaadinSession = vaadinSessionInitializeEvent
-                                .getVaadinSession();
+                                .getSession();
+                        VaadinService service = vaadinSessionInitializeEvent.getService();
                         logger().info("sessionInitialized");
                         logger().info(
                                 "Registering ui CDIUIProvider: " + cdiRootProvider);
-                        vaadinSession.addUIProvider(cdiRootProvider);
+                        service.addUIProvider(vaadinSession, cdiRootProvider);
                     }
                 });
     }

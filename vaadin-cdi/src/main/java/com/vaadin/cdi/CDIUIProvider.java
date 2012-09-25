@@ -13,6 +13,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import com.vaadin.server.DefaultUIProvider;
+import com.vaadin.server.UIClassSelectionEvent;
+import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 
@@ -22,7 +24,10 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
     private BeanManager beanManager;
 
     @Override
-    public UI createInstance(VaadinRequest request, Class<? extends UI> type) {
+    public UI createInstance(UICreateEvent uiCreateEvent) {
+        Class<? extends UI> type = uiCreateEvent.getUIClass();
+        Integer uiId = uiCreateEvent.getUiId();
+        VaadinRequest request = uiCreateEvent.getRequest();
         Bean<?> uiBean = getUIBeanMatchingDeploymentDescriptor(type);
 
         if (uiBean == null) {
@@ -40,7 +45,8 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
     }
 
     @Override
-    public Class<? extends UI> getUIClass(VaadinRequest request) {
+    public Class<? extends UI> getUIClass(UIClassSelectionEvent selectionEvent) {
+        VaadinRequest request = selectionEvent.getRequest();
         String uiMapping = parseUIMapping(request);
         if (isRoot(request)) {
             return rootUI();
@@ -54,20 +60,20 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         if (uiMapping.isEmpty()) {
             // See if UI is configured to web.xml with VaadinCDIServlet. This is
             // done only if no specific UI name is given.
-            return super.getUIClass(request);
+            return super.getUIClass(selectionEvent);
         }
 
         return null;
     }
 
     boolean isRoot(VaadinRequest request) {
-        ServletRequest servletRequest = Request.get();
-        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         String pathInfo = request.getRequestPathInfo();
-        String contextPath = httpRequest.getContextPath();
+        String contextPath = request.getContextPath();
         if (!contextPath.endsWith("/")) {
             contextPath += "/";
         }
+        if(request.getRequestPathInfo() == null)
+            return false;
         return pathInfo.endsWith(contextPath);
     }
 

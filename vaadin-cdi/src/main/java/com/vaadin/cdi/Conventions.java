@@ -39,10 +39,4 @@ public class Conventions {
             return annotation.value();
         }
     }
-
-    public static String deriveMappingForUI(UI ui) {
-        if(ui == null)
-            return null;
-        return deriveMappingForUI(ui.getClass());
-    }
 }

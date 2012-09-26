@@ -164,7 +164,8 @@ public class CDIIntegrationWithVaadinIT {
         openFirstWindow(UI_URI);
         assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
         firstWindow.refresh();
-        assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
+        waitModel.until(elementPresent.locator(LABEL));
+        assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
         assertDefaultRootNotInstantiated();
     }
 

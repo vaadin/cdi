@@ -24,14 +24,14 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
     @Override
     public UI createInstance(UICreateEvent uiCreateEvent) {
         Class<? extends UI> type = uiCreateEvent.getUIClass();
-        Integer uiId = uiCreateEvent.getUiId();
+        int uiId = uiCreateEvent.getUiId();
         VaadinRequest request = uiCreateEvent.getRequest();
         Bean<?> bean = scanForBeans(type);
         String uiMapping = "";
         if (bean == null) {
             if (type.isAnnotationPresent(VaadinUI.class)) {
                 uiMapping = parseUIMapping(request);
-                bean = getUIBeanMatchingQualifierMapping(uiMapping);
+                bean = getUIBeanWithMapping(uiMapping);
             } else {
                 throw new IllegalStateException("UI class: "
                         + bean.getBeanClass() + " with mapping: " + uiMapping
@@ -50,7 +50,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         if (isRoot(request)) {
             return rootUI();
         }
-        Bean<?> uiBean = getUIBeanMatchingQualifierMapping(uiMapping);
+        Bean<?> uiBean = getUIBeanWithMapping(uiMapping);
 
         if (uiBean != null) {
             return uiBean.getBeanClass().asSubclass(UI.class);
@@ -98,7 +98,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         return rootUI.asSubclass(UI.class);
     }
 
-    private Bean<?> getUIBeanMatchingQualifierMapping(String mapping) {
+    private Bean<?> getUIBeanWithMapping(String mapping) {
         Set<Bean<?>> beans = beanManager.getBeans(UI.class,
                 new AnnotationLiteral<Any>() {
                 });
@@ -119,10 +119,9 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         return null;
     }
 
-    private Bean<?> scanForBeans(
-            Class<? extends UI> type) {
+    private Bean<?> scanForBeans(Class<? extends UI> type) {
 
-        Set<Bean<?>> beans =  beanManager.getBeans(type,
+        Set<Bean<?>> beans = beanManager.getBeans(type,
                 new AnnotationLiteral<Any>() {
                 });
 

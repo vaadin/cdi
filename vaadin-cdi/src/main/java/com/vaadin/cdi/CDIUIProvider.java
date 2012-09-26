@@ -35,8 +35,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
                 String uiMapping = parseUIMapping(request);
                 uiBean = getUIBeanMatchingQualifierMapping(uiMapping);
             }
-        }
-        if (uiBean != null) {
+        }else{
             UI ui = (UI) beanManager.getReference(uiBean, type,
                     beanManager.createCreationalContext(uiBean));
             return ui;

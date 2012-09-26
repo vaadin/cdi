@@ -53,12 +53,6 @@ public class UIBeanStore implements Serializable {
         return (T) instance.getInstance();
     }
 
-    <T> void add(final Bean<T> bean, T t, CreationalContext<T> creationalContext) {
-        instances.put(
-                bean,
-                new UIBeanStore.ContextualInstance<T>(t, creationalContext));
-    }
-
     public void dereferenceAllBeanInstances() {
         for (final Contextual<?> bean : new HashSet<Contextual<?>>(
                 instances.keySet())) {

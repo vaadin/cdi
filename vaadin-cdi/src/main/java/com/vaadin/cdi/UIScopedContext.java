@@ -99,12 +99,8 @@ public class UIScopedContext implements Context {
 
         Bean<?> bean = beans.iterator().next();
 
-        BeanStoreContainer bsc = (BeanStoreContainer) beanManager.getReference(
-                bean, bean.getBeanClass(),
-                beanManager.createCreationalContext(bean));
-        bsc.setBeanManager(beanManager);
-
-        return bsc;
+        return (BeanStoreContainer) beanManager.getReference(bean,
+                bean.getBeanClass(), beanManager.createCreationalContext(bean));
     }
 
     private static Logger getLogger() {

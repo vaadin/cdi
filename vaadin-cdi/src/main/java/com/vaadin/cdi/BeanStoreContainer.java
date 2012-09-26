@@ -32,7 +32,6 @@ public class BeanStoreContainer implements Serializable {
 
     private final Map<Integer, UIBeanStore> beanStores = new ConcurrentHashMap<Integer, UIBeanStore>();
 
-    private BeanManager beanManager;
     private UIBeanStore unfinishedBeanStore;
 
     @PostConstruct
@@ -107,12 +106,6 @@ public class BeanStoreContainer implements Serializable {
 
         beanStores.put(uiUid, unfinishedBeanStore);
         unfinishedBeanStore = null;
-    }
-
-
-    void setBeanManager(BeanManager beanManager) {
-        this.beanManager = beanManager;
-
     }
 
     @PreDestroy

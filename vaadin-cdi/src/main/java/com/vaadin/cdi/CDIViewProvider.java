@@ -132,11 +132,10 @@ public class CDIViewProvider implements ViewProvider {
         Bean<?> viewBean = getViewBean(viewName);
 
         if (viewBean != null) {
-            View view = (View) beanManager.getReference(viewBean,
+            return  (View) beanManager.getReference(viewBean,
                     viewBean.getBeanClass(),
                     beanManager.createCreationalContext(viewBean));
 
-            return view;
         }
 
         throw new RuntimeException("Unable to instantiate view");

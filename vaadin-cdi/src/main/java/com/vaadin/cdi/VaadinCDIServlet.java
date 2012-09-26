@@ -28,11 +28,11 @@ public class VaadinCDIServlet extends VaadinServlet {
 
     private void registerUIProvider() {
 
-        super.getService().addVaadinSessionInitializationListener(
-                new VaadinSessionInitializationListener() {
+        super.getService().addSessionInitListener(
+                new SessionInitListener() {
                     @Override
-                    public void vaadinSessionInitialized(
-                            VaadinSessionInitializeEvent vaadinSessionInitializeEvent)
+                    public void sessionInit(
+                            SessionInitEvent vaadinSessionInitializeEvent)
                             throws ServiceException {
                         VaadinSession vaadinSession = vaadinSessionInitializeEvent
                                 .getSession();

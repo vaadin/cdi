@@ -75,7 +75,8 @@ public class CDIIntegrationWithVaadinIT {
 
     void openWindow(GrapheneSelenium window, String uri)
             throws MalformedURLException {
-        window.open(new URL(contextPath.toString() + uri));
+        URL url = new URL(contextPath.toString() + uri);
+        window.open(url);
         waitModel.until(elementPresent.locator(LABEL));
 
     }

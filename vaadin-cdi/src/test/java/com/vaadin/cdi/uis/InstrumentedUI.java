@@ -21,9 +21,6 @@ public class InstrumentedUI extends UI {
     DependentInstrumentedView viewDependent;
 
     @Inject
-    ScopedInstrumentedView scopedInstrumentedView;
-
-    @Inject
     CDIViewProvider viewProvider;
 
     private Navigator navigator;

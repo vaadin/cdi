@@ -44,28 +44,23 @@ public class UIScopedContext implements Context {
             final CreationalContext<T> creationalContext) {
 
         BeanStoreContainer beanStoreContainer = getSessionBoundBeanStoreContainer();
-        T beanInstance = null;
+        T beanInstance;
         if (isUIBean(contextual)) {
+            UIBean uiBean = (UIBean) contextual;
+            int uiId = uiBean.getUiId();
             UIBeanStore beanStore = beanStoreContainer
-                    .getOrCreateUIBeanStoreFor(((Bean)contextual).getBeanClass());
+                    .getOrCreateUIBeanStoreFor(uiBean);
 
             beanInstance = beanStore.getBeanInstance(contextual,
                     creationalContext);
             if (beanStoreContainer.isBeanStoreCreationPending()) {
-                beanStoreContainer.assignPendingBeanStoreFor((UI) beanInstance);
+                beanStoreContainer.assignPendingBeanStoreFor((UI) beanInstance,
+                        uiId);
             }
         } else {
-            UI current = UI.getCurrent();
-            if(current != null){
-                UIBeanStore store = beanStoreContainer.getOrCreateUIBeanStoreFor(current.getClass());
-                beanInstance = store.getBeanInstance(contextual,creationalContext);
-            }else{
-                beanInstance = contextual.create(creationalContext);
-                VaadinBean<T> bean = new VaadinBean<T>(contextual,
-                        beanInstance,creationalContext);
-                beanStoreContainer.addUILessComponent(bean);
-
-            }
+            throw new IllegalStateException(((Bean) contextual).getBeanClass()
+                    .getName()
+                    + " is not a UI, only UIs can be annotated with @VaadinUI!");
         }
 
         getLogger().info("Finished getting bean " + beanInstance);

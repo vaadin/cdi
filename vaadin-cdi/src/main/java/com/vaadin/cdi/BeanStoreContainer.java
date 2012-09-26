@@ -30,7 +30,7 @@ import com.vaadin.ui.UI;
 @SuppressWarnings("serial")
 public class BeanStoreContainer implements Serializable {
 
-    private final Map<String, UIBeanStore> beanStores = new ConcurrentHashMap<String, UIBeanStore>();
+    private final Map<Integer, UIBeanStore> beanStores = new ConcurrentHashMap<Integer, UIBeanStore>();
 
     private BeanManager beanManager;
 
@@ -52,7 +52,7 @@ public class BeanStoreContainer implements Serializable {
      * @param ui
      * @return Bean store that is assigned for given UI.
      */
-    public UIBeanStore getOrCreateUIBeanStoreFor(Class ui) {
+    public UIBeanStore getOrCreateUIBeanStoreFor(UIBean ui) {
         if (isBeanStoreCreationPending()) {
             // If creation is pending, we're instantiating bean inside
             // unfinished ui bean. That's why we want to return same bean
@@ -61,8 +61,9 @@ public class BeanStoreContainer implements Serializable {
                     "Getting pending bean store " + unfinishedBeanStore);
             return unfinishedBeanStore;
         }
-        if (beanStores.containsKey(deriveMappingForUI(ui)))
-            return beanStores.get(Conventions.deriveMappingForUI(ui));
+        int uiId = ui.getUiId();
+        if (beanStores.containsKey(uiId))
+            return beanStores.get(uiId);
         unfinishedBeanStore = new UIBeanStore();
         return unfinishedBeanStore;
     }
@@ -86,7 +87,7 @@ public class BeanStoreContainer implements Serializable {
      * 
      * @param ui
      */
-    public void assignPendingBeanStoreFor(UI ui) {
+    public void assignPendingBeanStoreFor(UI ui,int uiUid) {
         getLogger()
                 .info("Assigning bean store " + unfinishedBeanStore
                         + " for UI " + ui);
@@ -100,14 +101,13 @@ public class BeanStoreContainer implements Serializable {
                     "No bean store creation is pending, unable to assign for UI");
         }
 
-        String uri = deriveMappingForUI(ui);
-        if (beanStores.containsKey(uri)) {
+        if (beanStores.containsKey(uiUid)) {
             throw new IllegalArgumentException(
                     "Bean store is already assigned for another UI with path: "
-                            + uri);
+                            + uiUid);
         }
 
-        beanStores.put(uri, unfinishedBeanStore);
+        beanStores.put(uiUid, unfinishedBeanStore);
         for (VaadinBean bean : this.componentsWaitingForUI) {
             unfinishedBeanStore.add(bean.getBean(), bean.getBeanInstance(),
                     bean.getCreationalContext());

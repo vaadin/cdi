@@ -143,15 +143,6 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     @Test
-    public void uIScopedViewIsInstantiatedOnce() throws MalformedURLException {
-        openSecondWindow(SCOPED_VIEW_URI);
-        firstWindow.click(NAVIGATE_BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
-        assertThat(ScopedInstrumentedView.getNumberOfInstances(), is(1));
-        assertDefaultRootNotInstantiated();
-    }
-
-    @Test
     public void recognitionOfViewWithoutAnnotation()
             throws MalformedURLException {
         openFirstWindow(VIEW_WITHOUT_ANNOTATION);
@@ -173,7 +164,7 @@ public class CDIIntegrationWithVaadinIT {
         openFirstWindow(UI_URI);
         assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
         firstWindow.refresh();
-        assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
+        assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
         assertDefaultRootNotInstantiated();
     }
 

@@ -26,21 +26,21 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         Class<? extends UI> type = uiCreateEvent.getUIClass();
         Integer uiId = uiCreateEvent.getUiId();
         VaadinRequest request = uiCreateEvent.getRequest();
-        Bean<?> uiBean = scanForBeans(type);
+        Bean<?> bean = scanForBeans(type);
         String uiMapping = "";
-        if (uiBean == null) {
+        if (bean == null) {
             if (type.isAnnotationPresent(VaadinUI.class)) {
                 uiMapping = parseUIMapping(request);
-                uiBean = getUIBeanMatchingQualifierMapping(uiMapping);
-                uiBean = new UIBean(uiBean,uiId);
+                bean = getUIBeanMatchingQualifierMapping(uiMapping);
             } else {
                 throw new IllegalStateException("UI class: "
-                        + uiBean.getBeanClass() + " with mapping: " + uiMapping
+                        + bean.getBeanClass() + " with mapping: " + uiMapping
                         + " is not annotated with VaadinUI!");
             }
         }
+        UIBean uiBean = new UIBean(bean, uiId);
         return (UI) beanManager.getReference(uiBean, type,
-                beanManager.createCreationalContext(uiBean));
+                beanManager.createCreationalContext(bean));
     }
 
     @Override

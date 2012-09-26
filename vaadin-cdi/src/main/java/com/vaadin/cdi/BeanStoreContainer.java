@@ -33,9 +33,7 @@ public class BeanStoreContainer implements Serializable {
     private final Map<Integer, UIBeanStore> beanStores = new ConcurrentHashMap<Integer, UIBeanStore>();
 
     private BeanManager beanManager;
-
     private UIBeanStore unfinishedBeanStore;
-    private List<VaadinBean> componentsWaitingForUI = new ArrayList<VaadinBean>();
 
     @PostConstruct
     public void onNewSession() {
@@ -108,17 +106,9 @@ public class BeanStoreContainer implements Serializable {
         }
 
         beanStores.put(uiUid, unfinishedBeanStore);
-        for (VaadinBean bean : this.componentsWaitingForUI) {
-            unfinishedBeanStore.add(bean.getBean(), bean.getBeanInstance(),
-                    bean.getCreationalContext());
-        }
-        this.componentsWaitingForUI.clear();
         unfinishedBeanStore = null;
     }
 
-    public void addUILessComponent(VaadinBean bean) {
-        this.componentsWaitingForUI.add(bean);
-    }
 
     void setBeanManager(BeanManager beanManager) {
         this.beanManager = beanManager;

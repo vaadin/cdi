@@ -78,7 +78,7 @@ public class UIScopedContext implements Context {
      *         type
      */
     private <T> boolean isUIBean(Contextual<T> contextual) {
-        if (contextual instanceof Bean) {
+        if (contextual instanceof UIBean) {
             return UI.class.isAssignableFrom(((Bean<T>) contextual)
                     .getBeanClass());
         }

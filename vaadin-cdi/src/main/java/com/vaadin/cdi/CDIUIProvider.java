@@ -9,8 +9,6 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
 
 import com.vaadin.server.DefaultUIProvider;
 import com.vaadin.server.UIClassSelectionEvent;
@@ -28,19 +26,21 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         Class<? extends UI> type = uiCreateEvent.getUIClass();
         Integer uiId = uiCreateEvent.getUiId();
         VaadinRequest request = uiCreateEvent.getRequest();
-        Bean<?> uiBean = getUIBeanMatchingDeploymentDescriptor(type);
-
+        Bean<?> uiBean = scanForBeans(type);
+        String uiMapping = "";
         if (uiBean == null) {
             if (type.isAnnotationPresent(VaadinUI.class)) {
-                String uiMapping = parseUIMapping(request);
+                uiMapping = parseUIMapping(request);
                 uiBean = getUIBeanMatchingQualifierMapping(uiMapping);
+                uiBean = new UIBean(uiBean,uiId);
+            } else {
+                throw new IllegalStateException("UI class: "
+                        + uiBean.getBeanClass() + " with mapping: " + uiMapping
+                        + " is not annotated with VaadinUI!");
             }
-        }else{
-            UI ui = (UI) beanManager.getReference(uiBean, type,
-                    beanManager.createCreationalContext(uiBean));
-            return ui;
         }
-        throw new IllegalStateException("Could not instantiate UI");
+        return (UI) beanManager.getReference(uiBean, type,
+                beanManager.createCreationalContext(uiBean));
     }
 
     @Override
@@ -71,7 +71,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         if (!contextPath.endsWith("/")) {
             contextPath += "/";
         }
-        if(request.getRequestPathInfo() == null)
+        if (request.getRequestPathInfo() == null)
             return false;
         return pathInfo.endsWith(contextPath);
     }
@@ -100,7 +100,8 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
 
     private Bean<?> getUIBeanMatchingQualifierMapping(String mapping) {
         Set<Bean<?>> beans = beanManager.getBeans(UI.class,
-               new AnnotationLiteral<Any>() {});
+                new AnnotationLiteral<Any>() {
+                });
 
         for (Bean<?> bean : beans) {
             Class<? extends UI> beanClass = bean.getBeanClass().asSubclass(
@@ -118,10 +119,10 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         return null;
     }
 
-    private Bean<?> getUIBeanMatchingDeploymentDescriptor(
+    private Bean<?> scanForBeans(
             Class<? extends UI> type) {
 
-        Set<Bean<?>> beans = beanManager.getBeans(type,
+        Set<Bean<?>> beans =  beanManager.getBeans(type,
                 new AnnotationLiteral<Any>() {
                 });
 

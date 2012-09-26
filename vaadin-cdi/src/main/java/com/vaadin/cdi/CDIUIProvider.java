@@ -34,7 +34,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
                 bean = getUIBeanWithMapping(uiMapping);
             } else {
                 throw new IllegalStateException("UI class: "
-                        + bean.getBeanClass() + " with mapping: " + uiMapping
+                        + type.getName() + " with mapping: " + uiMapping
                         + " is not annotated with VaadinUI!");
             }
         }

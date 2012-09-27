@@ -44,7 +44,7 @@ public class CDIIntegrationWithVaadinIT {
     private final static String INSTRUMENTED_VIEW_URI = UI_URI
             + "/#!instrumentedView";
     private final static String DANGLING_VIEW_URI = SECOND_UI_URI
-            + INSTRUMENTED_VIEW_URI;
+            + "/#!danglingView";
     private final static String VIEW_WITHOUT_ANNOTATION = SECOND_UI_URI
             + "/#!viewWithoutAnnotation";
 
@@ -176,13 +176,12 @@ public class CDIIntegrationWithVaadinIT {
 
     @Test
     public void danglingViewCauses404() throws MalformedURLException {
-        URL url = new URL(contextPath.toString() + DANGLING_VIEW_URI);
-        this.firstWindow.open(url);
-        assertTrue(this.firstWindow.isTextPresent("HTTP Status 404"));
-        System.out.println("Source: " + firstWindow.getHtmlSource());
-        assertThat(SecondUI.getNumberOfInstances(), is(0));
-        assertThat(InstrumentedView.getNumberOfInstances(), is(0));
-        assertDefaultRootNotInstantiated();
+        openWindow(DANGLING_VIEW_URI);
+        waitModel.until(elementPresent.locator(LABEL));
+        firstWindow.click(NAVIGATE_BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(SecondUI.getNumberOfInstances(), is(1));
+        assertThat(DanglingView.getNumberOfInstances(), is(0));
     }
 
     @Test

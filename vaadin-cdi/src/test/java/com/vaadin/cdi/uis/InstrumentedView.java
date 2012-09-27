@@ -15,7 +15,7 @@ import com.vaadin.ui.VerticalLayout;
  * @author adam-bien.com
  */
 @VaadinView
-public class DependentInstrumentedView extends CustomComponent implements View {
+public class InstrumentedView extends CustomComponent implements View {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
 

@@ -10,6 +10,7 @@ import java.net.URL;
 
 import org.jboss.arquillian.ajocado.framework.GrapheneSelenium;
 import org.jboss.arquillian.ajocado.locator.IdLocator;
+import org.jboss.arquillian.ajocado.locator.NameLocator;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
@@ -33,23 +34,24 @@ public class CDIIntegrationWithVaadinIT {
     URL contextPath;
 
     private final static IdLocator LABEL = id("label");
+    private final static NameLocator H1 =  name("h1");
     private final static IdLocator BUTTON = id("button");
     private final static IdLocator NAVIGATE_BUTTON = id("navigate");
     private final static String UI_URI = "instrumentedUI";
     private final static String FIRST_UI_URI = "firstUI";
     private final static String SECOND_UI_URI = "secondUI";
 
-    private final static String DEPENDENT_VIEW_URI = UI_URI
-            + "/#!dependentInstrumentedView";
-    private final static String SCOPED_VIEW_URI = FIRST_UI_URI
-            + "/#!scopedInstrumentedView";
+    private final static String INSTRUMENTED_VIEW_URI = UI_URI
+            + "/#!instrumentedView";
+    private final static String DANGLING_VIEW_URI = SECOND_UI_URI
+            + INSTRUMENTED_VIEW_URI;
     private final static String VIEW_WITHOUT_ANNOTATION = SECOND_UI_URI
             + "/#!viewWithoutAnnotation";
 
     @Deployment
     public static WebArchive deploy() {
         return ArchiveProvider.createWebArchive(InstrumentedUI.class,
-                DependentInstrumentedView.class, ScopedInstrumentedView.class,
+                InstrumentedView.class, ScopedInstrumentedView.class,
                 ViewWithoutAnnotation.class, RootUI.class, FirstUI.class,
                 SecondUI.class);
     }
@@ -57,7 +59,7 @@ public class CDIIntegrationWithVaadinIT {
     @Before
     public void resetCounter() {
         InstrumentedUI.resetCounter();
-        DependentInstrumentedView.resetCounter();
+        InstrumentedView.resetCounter();
         ScopedInstrumentedView.resetCounter();
         ViewWithoutAnnotation.resetCounter();
         RootUI.resetCounter();
@@ -136,10 +138,10 @@ public class CDIIntegrationWithVaadinIT {
     @Test
     public void dependentScopedViewIsInstantiatedTwice()
             throws MalformedURLException {
-        openWindow(firstWindow, DEPENDENT_VIEW_URI);
+        openWindow(firstWindow, INSTRUMENTED_VIEW_URI);
         firstWindow.click(NAVIGATE_BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
-        assertThat(DependentInstrumentedView.getNumberOfInstances(), is(2));
+        assertThat(InstrumentedView.getNumberOfInstances(), is(2));
     }
 
     @Test
@@ -166,6 +168,17 @@ public class CDIIntegrationWithVaadinIT {
         firstWindow.refresh();
         waitModel.until(elementPresent.locator(LABEL));
         assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
+        assertDefaultRootNotInstantiated();
+    }
+
+    @Test
+    public void viewMustBeReferencedByUI() throws MalformedURLException {
+        URL url = new URL(contextPath.toString() + DANGLING_VIEW_URI);
+        this.firstWindow.open(url);
+        assertTrue(this.firstWindow.isTextPresent("HTTP Status 404"));
+        System.out.println("Source: " + firstWindow.getHtmlSource());
+        assertThat(SecondUI.getNumberOfInstances(), is(0));
+        assertThat(InstrumentedView.getNumberOfInstances(), is(0));
         assertDefaultRootNotInstantiated();
     }
 

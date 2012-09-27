@@ -48,12 +48,15 @@ public class CDIIntegrationWithVaadinIT {
     private final static String VIEW_WITHOUT_ANNOTATION = SECOND_UI_URI
             + "/#!viewWithoutAnnotation";
 
+    private final static String WITH_ANNOTATION_REGISTERED_VIEW = SECOND_UI_URI
+            + "/#!withAnnotationRegisteredView";
+
     @Deployment
     public static WebArchive deploy() {
         return ArchiveProvider.createWebArchive(InstrumentedUI.class,
                 InstrumentedView.class, ScopedInstrumentedView.class,
                 ViewWithoutAnnotation.class, RootUI.class, FirstUI.class,
-                SecondUI.class);
+                SecondUI.class,WithAnnotationRegisteredView.class);
     }
 
     @Before
@@ -62,18 +65,18 @@ public class CDIIntegrationWithVaadinIT {
         InstrumentedView.resetCounter();
         ScopedInstrumentedView.resetCounter();
         ViewWithoutAnnotation.resetCounter();
+        WithAnnotationRegisteredView.resetCounter();
+        SecondUI.resetCounter();
+        FirstUI.resetCounter();
         RootUI.resetCounter();
         firstWindow.restartBrowser();
 
     }
 
-    private void openFirstWindow(String uri) throws MalformedURLException {
+    private void openWindow(String uri) throws MalformedURLException {
         openWindow(this.firstWindow, uri);
     }
 
-    private void openSecondWindow(String uri) throws MalformedURLException {
-        openWindow(this.firstWindow, uri);
-    }
 
     void openWindow(GrapheneSelenium window, String uri)
             throws MalformedURLException {
@@ -86,13 +89,13 @@ public class CDIIntegrationWithVaadinIT {
     @Test
     public void pageIsRenderedAndEmptyUICreatedAsManagedBean()
             throws MalformedURLException {
-        openFirstWindow(UI_URI);
+        openWindow(UI_URI);
         assertTrue("InstrumentedUI should contain a label",
                 firstWindow.isElementPresent(LABEL));
         assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
         // reset session
         firstWindow.restartBrowser();
-        openFirstWindow(UI_URI);
+        openWindow(UI_URI);
         assertTrue("InstrumentedUI should contain a label",
                 firstWindow.isElementPresent(LABEL));
         assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
@@ -104,7 +107,7 @@ public class CDIIntegrationWithVaadinIT {
     public void oneToOneRelationBetweenBrowserAndUI()
             throws MalformedURLException {
 
-        openFirstWindow(UI_URI);
+        openWindow(UI_URI);
 
         firstWindow.click(BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
@@ -119,7 +122,7 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
 
         firstWindow.restartBrowser();
-        openSecondWindow(UI_URI);
+        openWindow(UI_URI);
 
         firstWindow.click(BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
@@ -147,7 +150,7 @@ public class CDIIntegrationWithVaadinIT {
     @Test
     public void recognitionOfViewWithoutAnnotation()
             throws MalformedURLException {
-        openFirstWindow(VIEW_WITHOUT_ANNOTATION);
+        openWindow(VIEW_WITHOUT_ANNOTATION);
         firstWindow.click(NAVIGATE_BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(ViewWithoutAnnotation.getNumberOfInstances(), is(1));
@@ -156,14 +159,14 @@ public class CDIIntegrationWithVaadinIT {
 
     @Test
     public void rootUIDiscovery() throws MalformedURLException {
-        openFirstWindow(contextPath.toString());
+        openWindow(contextPath.toString());
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(RootUI.getNumberOfInstances(), is(1));
     }
 
     @Test
     public void refreshButtonCreatesNewUIInstance() throws MalformedURLException {
-        openFirstWindow(UI_URI);
+        openWindow(UI_URI);
         assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
         firstWindow.refresh();
         waitModel.until(elementPresent.locator(LABEL));
@@ -172,7 +175,7 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     @Test
-    public void viewMustBeReferencedByUI() throws MalformedURLException {
+    public void danglingViewCauses404() throws MalformedURLException {
         URL url = new URL(contextPath.toString() + DANGLING_VIEW_URI);
         this.firstWindow.open(url);
         assertTrue(this.firstWindow.isTextPresent("HTTP Status 404"));
@@ -181,6 +184,18 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(InstrumentedView.getNumberOfInstances(), is(0));
         assertDefaultRootNotInstantiated();
     }
+
+    @Test
+    public void withAnnotationRegisteredView() throws MalformedURLException {
+        openWindow(WITH_ANNOTATION_REGISTERED_VIEW);
+        waitModel.until(elementPresent.locator(LABEL));
+        firstWindow.click(NAVIGATE_BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(SecondUI.getNumberOfInstances(), is(1));
+        assertThat(WithAnnotationRegisteredView.getNumberOfInstances(), is(1));
+    }
+
+
 
     void assertDefaultRootNotInstantiated() {
         assertThat(RootUI.getNumberOfInstances(), is(0));

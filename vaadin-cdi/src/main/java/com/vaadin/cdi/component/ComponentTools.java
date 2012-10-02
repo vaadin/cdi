@@ -6,6 +6,7 @@ import javax.enterprise.inject.Produces;
 import javax.servlet.http.HttpServletRequest;
 
 import com.vaadin.ui.Component;
+import javax.enterprise.context.RequestScoped;
 
 public class ComponentTools {
 
@@ -30,6 +31,7 @@ public class ComponentTools {
     }
 
     @Produces
+    @RequestScoped
     protected HttpServletRequest getCurrentRequest() {
         return get();
     }

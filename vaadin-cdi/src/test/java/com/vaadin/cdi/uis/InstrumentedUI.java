@@ -18,7 +18,7 @@ import com.vaadin.ui.VerticalLayout;
 public class InstrumentedUI extends UI {
 
     @Inject
-    DependentInstrumentedView viewDependent;
+    InstrumentedView view;
 
     @Inject
     CDIViewProvider viewProvider;

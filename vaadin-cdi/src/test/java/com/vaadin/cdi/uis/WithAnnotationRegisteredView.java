@@ -1,9 +1,5 @@
 package com.vaadin.cdi.uis;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.annotation.PostConstruct;
-
 import com.vaadin.cdi.VaadinView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -11,11 +7,14 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import javax.annotation.PostConstruct;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * @author adam-bien.com
  */
-@VaadinView
-public class DependentInstrumentedView extends CustomComponent implements View {
+@VaadinView(ui = SecondUI.class)
+public class WithAnnotationRegisteredView extends CustomComponent implements View {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
 

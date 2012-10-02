@@ -27,6 +27,8 @@ public class ContextDeployer implements ServletContextListener {
     private BeanManager beanManager;
 
     private Set<String> configuredUIs;
+    
+    private boolean foundRootUI = false;
 
     @Inject
     private Instance<VaadinCDIServlet> servletInstanceProvider;
@@ -104,11 +106,17 @@ public class ContextDeployer implements ServletContextListener {
         Set<Bean<?>> result = new HashSet<Bean<?>>();
         for(Bean<?> bean:uiBeans){
             Class<?> beanClass = bean.getBeanClass();
-            if(beanClass.isAnnotationPresent(VaadinUI.class) && !beanClass.isAnnotationPresent(Root.class)){
-                result.add(bean);
-            }else{
+            if(beanClass.isAnnotationPresent(VaadinUI.class)) {
+                if (!beanClass.isAnnotationPresent(Root.class)) {
+                    result.add(bean);
+                } else {
+                    foundRootUI = true;
+                    getLogger().info(
+                            "Root UI found: " + beanClass.getName());
+                }
+            } else {
                 getLogger().info(
-                        "UI without VaadinUI annotation, or Root UI found: " + beanClass.getName());
+                        "UI without VaadinUI annotation found: " + beanClass.getName());
             }
         }
         return result;
@@ -128,7 +136,7 @@ public class ContextDeployer implements ServletContextListener {
             return;
         }
 
-        if (configuredUIs.isEmpty()) {
+        if (configuredUIs.isEmpty() && !foundRootUI) {
             getLogger()
                     .warning(
                             "No Vaadin UI classes with @Mapping annotation found. Skipping automated deployment of VaadinCDIServlet.");

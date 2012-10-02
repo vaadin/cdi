@@ -1,7 +1,5 @@
 package com.vaadin.cdi;
 
-import com.vaadin.ui.UI;
-
 public class Conventions {
 
     static String firstToLower(String name) {
@@ -26,7 +24,7 @@ public class Conventions {
             } else {
                 return deriveNameFromConvention(beanClass);
             }
-        }else{
+        } else {
             return null;
         }
     }

@@ -154,7 +154,7 @@ public class CDIIntegrationWithVaadinIT {
 
     @Test
     public void rootUIDiscovery() throws MalformedURLException {
-        openFirstWindow(contextPath.toString());
+        openFirstWindow("");// contextPath added by openWindow
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(RootUI.getNumberOfInstances(), is(1));
     }

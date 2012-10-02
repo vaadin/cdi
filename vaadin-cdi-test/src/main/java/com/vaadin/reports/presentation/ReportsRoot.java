@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import com.vaadin.cdi.Mapping;
 import com.vaadin.reports.business.issues.boundary.BugTracking;
-import com.vaadin.server.WrappedRequest;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.UI;
@@ -18,7 +18,7 @@ public class ReportsRoot extends UI {
     BugTracking bt;
 
     @Override
-    protected void init(WrappedRequest request) {
+    protected void init(VaadinRequest request) {
         addComponent(new Button("New Bug", new Button.ClickListener() {
 
             @Override

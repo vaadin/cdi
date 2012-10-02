@@ -7,7 +7,7 @@ import com.vaadin.cdi.Mapping;
 import com.vaadin.cdi.VaadinUI;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.Navigator.SimpleViewDisplay;
-import com.vaadin.server.WrappedRequest;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 
 @Mapping(value = "customers")
@@ -20,7 +20,7 @@ public class CustomerRoot extends UI {
     private CDIViewProvider cdiViewProvider;
 
     @Override
-    protected void init(WrappedRequest request) {
+    protected void init(VaadinRequest request) {
         SimpleViewDisplay viewDisplay = new SimpleViewDisplay();
         setContent(viewDisplay);
 

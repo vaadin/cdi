@@ -103,6 +103,12 @@
             <version>7.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-client-compiled</artifactId>
+            <version>7.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
         <!-- Java EE 6 API -->
         <dependency>
             <groupId>javax</groupId>

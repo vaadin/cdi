@@ -4,14 +4,12 @@ import java.util.Date;
 
 import javax.inject.Inject;
 
-import com.vaadin.cdi.Mapping;
 import com.vaadin.reports.business.issues.boundary.BugTracking;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.UI;
 
-@Mapping(value = "reports")
 public class ReportsRoot extends UI {
 
     @Inject

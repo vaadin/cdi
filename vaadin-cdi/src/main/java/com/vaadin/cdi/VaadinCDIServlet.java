@@ -6,7 +6,12 @@ import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
-import com.vaadin.server.*;
+import com.vaadin.server.ServiceException;
+import com.vaadin.server.SessionInitEvent;
+import com.vaadin.server.SessionInitListener;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinServiceSession;
+import com.vaadin.server.VaadinServlet;
 
 public class VaadinCDIServlet extends VaadinServlet {
 
@@ -18,9 +23,9 @@ public class VaadinCDIServlet extends VaadinServlet {
         @Override
         public void sessionInit(SessionInitEvent event) throws ServiceException {
             VaadinService service = event.getService();
-            final VaadinSession session = event.getSession();
+            final VaadinServiceSession session = event.getSession();
             logger().info("Registering ui CDIUIProvider: " + cdiRootProvider);
-            service.addUIProvider(session,cdiRootProvider);
+            session.addUIProvider(cdiRootProvider);
         }
     };
 

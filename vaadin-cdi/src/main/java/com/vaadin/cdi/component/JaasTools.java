@@ -1,5 +1,7 @@
 package com.vaadin.cdi.component;
 
+import java.security.Principal;
+
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -18,11 +20,16 @@ public class JaasTools {
     }
 
     public boolean isUserSignedIn() {
-        return request.getUserPrincipal() != null;
+        Principal principal = request.getUserPrincipal();
+        return principal != null;
     }
 
     public boolean isUserInRole(String role) {
         return request.isUserInRole(role);
+    }
+
+    public String getPrincipalName() {
+        return request.getUserPrincipal().getName();
     }
 
     public boolean isUserInSomeRole(String... roles) {

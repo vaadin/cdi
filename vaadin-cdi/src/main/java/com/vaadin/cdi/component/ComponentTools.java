@@ -1,5 +1,6 @@
 package com.vaadin.cdi.component;
 
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,6 +30,7 @@ public class ComponentTools {
     }
 
     @Produces
+    @RequestScoped
     protected HttpServletRequest getCurrentRequest() {
         return VaadinServletService.getCurrentServletRequest();
     }

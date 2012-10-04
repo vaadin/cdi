@@ -99,13 +99,13 @@
         <!-- vaadin  dependencies needed for integration testing -->
         <dependency>
             <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-client-compiled</artifactId>
+            <artifactId>vaadin-theme-compiled</artifactId>
             <version>7.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-themes-compiled</artifactId>
+            <artifactId>vaadin-client-compiled</artifactId>
             <version>7.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>

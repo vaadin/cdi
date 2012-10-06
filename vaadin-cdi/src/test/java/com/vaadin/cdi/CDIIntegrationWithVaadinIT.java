@@ -34,11 +34,10 @@ public class CDIIntegrationWithVaadinIT {
     URL contextPath;
 
     private final static IdLocator LABEL = id("label");
-    private final static NameLocator H1 =  name("h1");
     private final static IdLocator BUTTON = id("button");
     private final static IdLocator NAVIGATE_BUTTON = id("navigate");
     private final static String UI_URI = "instrumentedUI";
-    private final static String FIRST_UI_URI = "firstUI";
+    private final static String CDI_EVENTS_UI_URI = "uIWithCDIListener";
     private final static String SECOND_UI_URI = "secondUI";
 
     private final static String INSTRUMENTED_VIEW_URI = UI_URI
@@ -56,7 +55,7 @@ public class CDIIntegrationWithVaadinIT {
         return ArchiveProvider.createWebArchive(InstrumentedUI.class,
                 InstrumentedView.class, ScopedInstrumentedView.class,
                 ViewWithoutAnnotation.class, RootUI.class, FirstUI.class,
-                SecondUI.class,WithAnnotationRegisteredView.class);
+                SecondUI.class,WithAnnotationRegisteredView.class,UIWithCDIListener.class);
     }
 
     @Before
@@ -194,6 +193,17 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(WithAnnotationRegisteredView.getNumberOfInstances(), is(1));
     }
 
+    @Test
+    public void cdiEventsArrivesInTheSameUIScopedInstance() throws MalformedURLException {
+        assertThat(UIWithCDIListener.getNumberOfInstances(), is(0));
+        assertThat(UIWithCDIListener.getNumberOfDeliveredEvents(), is(0));
+        openWindow(CDI_EVENTS_UI_URI);
+        waitModel.until(elementPresent.locator(LABEL));
+        firstWindow.click(BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(UIWithCDIListener.getNumberOfInstances(), is(1));
+        assertThat(UIWithCDIListener.getNumberOfDeliveredEvents(), is(1));
+    }
 
 
     void assertDefaultRootNotInstantiated() {

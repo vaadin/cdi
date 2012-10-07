@@ -10,7 +10,6 @@ import java.net.URL;
 
 import org.jboss.arquillian.ajocado.framework.GrapheneSelenium;
 import org.jboss.arquillian.ajocado.locator.IdLocator;
-import org.jboss.arquillian.ajocado.locator.NameLocator;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
@@ -37,16 +36,17 @@ public class CDIIntegrationWithVaadinIT {
     private final static IdLocator BUTTON = id("button");
     private final static IdLocator NAVIGATE_BUTTON = id("navigate");
     private final static String UI_URI = "instrumentedUI";
-    private final static String CDI_EVENTS_UI_URI = "uIWithCDIListener";
-    private final static String SECOND_UI_URI = "secondUI";
+    private final static String UI_WITH_CDISELF_LISTENER = "uIWithCDISelfListener";
+    private static final String UI_WITH_CDI_DEPENDENT_LISTENER = "uIWithCDIDependentListener";
 
+    private final static String SECOND_UI_URI = "secondUI";
     private final static String INSTRUMENTED_VIEW_URI = UI_URI
             + "/#!instrumentedView";
     private final static String DANGLING_VIEW_URI = SECOND_UI_URI
             + "/#!danglingView";
+
     private final static String VIEW_WITHOUT_ANNOTATION = SECOND_UI_URI
             + "/#!viewWithoutAnnotation";
-
     private final static String WITH_ANNOTATION_REGISTERED_VIEW = SECOND_UI_URI
             + "/#!withAnnotationRegisteredView";
 
@@ -55,7 +55,8 @@ public class CDIIntegrationWithVaadinIT {
         return ArchiveProvider.createWebArchive(InstrumentedUI.class,
                 InstrumentedView.class, ScopedInstrumentedView.class,
                 ViewWithoutAnnotation.class, RootUI.class, FirstUI.class,
-                SecondUI.class,WithAnnotationRegisteredView.class,UIWithCDIListener.class);
+                SecondUI.class, WithAnnotationRegisteredView.class,
+                UIWithCDISelfListener.class, UIWithCDIDependentListener.class,DependentCDIEventListener.class);
     }
 
     @Before
@@ -68,6 +69,10 @@ public class CDIIntegrationWithVaadinIT {
         SecondUI.resetCounter();
         FirstUI.resetCounter();
         RootUI.resetCounter();
+        UIWithCDIDependentListener.resetCounter();
+        UIWithCDISelfListener.resetCounter();
+        DependentCDIEventListener.resetCounter();
+        DependentCDIEventListener.resetEventCounter();
         firstWindow.restartBrowser();
 
     }
@@ -75,7 +80,6 @@ public class CDIIntegrationWithVaadinIT {
     private void openWindow(String uri) throws MalformedURLException {
         openWindow(this.firstWindow, uri);
     }
-
 
     void openWindow(GrapheneSelenium window, String uri)
             throws MalformedURLException {
@@ -164,7 +168,8 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     @Test
-    public void refreshButtonCreatesNewUIInstance() throws MalformedURLException {
+    public void refreshButtonCreatesNewUIInstance()
+            throws MalformedURLException {
         openWindow(UI_URI);
         assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
         firstWindow.refresh();
@@ -194,17 +199,45 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     @Test
-    public void cdiEventsArrivesInTheSameUIScopedInstance() throws MalformedURLException {
-        assertThat(UIWithCDIListener.getNumberOfInstances(), is(0));
-        assertThat(UIWithCDIListener.getNumberOfDeliveredEvents(), is(0));
-        openWindow(CDI_EVENTS_UI_URI);
+    public void cdiEventsArrivesInTheSameUIScopedInstance()
+            throws MalformedURLException {
+        assertThat(UIWithCDISelfListener.getNumberOfInstances(), is(0));
+        assertThat(UIWithCDISelfListener.getNumberOfDeliveredEvents(), is(0));
+        openWindow(UI_WITH_CDISELF_LISTENER);
         waitModel.until(elementPresent.locator(LABEL));
         firstWindow.click(BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
-        assertThat(UIWithCDIListener.getNumberOfInstances(), is(1));
-        assertThat(UIWithCDIListener.getNumberOfDeliveredEvents(), is(1));
+        assertThat(UIWithCDISelfListener.getNumberOfInstances(), is(1));
+        assertThat(UIWithCDISelfListener.getNumberOfDeliveredEvents(), is(1));
+        firstWindow.click(BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(UIWithCDISelfListener.getNumberOfInstances(), is(1));
+        assertThat(UIWithCDISelfListener.getNumberOfDeliveredEvents(), is(2));
+
     }
 
+    @Test
+    public void cdiEventsArrivesInDependentListener()
+            throws MalformedURLException {
+        assertThat(UIWithCDIDependentListener.getNumberOfInstances(), is(0));
+        assertThat(DependentCDIEventListener.getNumberOfDeliveredEvents(), is(0));
+        assertThat(DependentCDIEventListener.getNumberOfInstances(), is(0));
+        openWindow(UI_WITH_CDI_DEPENDENT_LISTENER);
+        waitModel.until(elementPresent.locator(LABEL));
+        firstWindow.click(BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(UIWithCDIDependentListener.getNumberOfInstances(), is(1));
+        assertThat(DependentCDIEventListener.getNumberOfInstances(), is(2));
+        assertThat(DependentCDIEventListener.getNumberOfDeliveredEvents(),
+                is(1));
+        firstWindow.click(BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(UIWithCDIDependentListener.getNumberOfInstances(), is(1));
+        assertThat(DependentCDIEventListener.getNumberOfInstances(), is(3));
+        assertThat(DependentCDIEventListener.getNumberOfDeliveredEvents(),
+                is(2));
+
+    }
 
     void assertDefaultRootNotInstantiated() {
         assertThat(RootUI.getNumberOfInstances(), is(0));

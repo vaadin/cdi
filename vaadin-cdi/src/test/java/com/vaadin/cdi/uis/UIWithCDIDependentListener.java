@@ -8,25 +8,23 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.event.Observes;
-import javax.enterprise.event.Reception;
 import javax.inject.Inject;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @VaadinUI
-public class UIWithCDIListener extends UI {
+public class UIWithCDIDependentListener extends UI {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
-    private final static AtomicInteger EVENT_COUNTER = new AtomicInteger(0);
 
     @Inject
     private javax.enterprise.event.Event<String> events;
 
+    @Inject
+    private DependentCDIEventListener toBeDependent;
+
     @PostConstruct
     public void initialize() {
         COUNTER.incrementAndGet();
-        EVENT_COUNTER.set(0);
-
     }
 
     @Override
@@ -36,7 +34,7 @@ public class UIWithCDIListener extends UI {
         VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
 
-        final Label label = new Label("+InstrumentedUI");
+        final Label label = new Label("+UIWithCDIDependentListener");
         label.setId("label");
         Button button = new Button("button", new Button.ClickListener() {
             @Override
@@ -50,18 +48,10 @@ public class UIWithCDIListener extends UI {
         setContent(layout);
     }
 
-    public void onEventArrival(@Observes(notifyObserver = Reception.IF_EXISTS) String message){
-        this.EVENT_COUNTER.incrementAndGet();
-        System.out.println("Message arrived!");
-    }
-
     public static int getNumberOfInstances() {
         return COUNTER.get();
     }
 
-    public static int getNumberOfDeliveredEvents() {
-        return EVENT_COUNTER.get();
-    }
 
     public static void resetCounter() {
         COUNTER.set(0);

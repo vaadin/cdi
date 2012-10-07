@@ -47,12 +47,14 @@ public class UIScopedContext implements Context {
 
         BeanStoreContainer beanStoreContainer = getSessionBoundBeanStoreContainer();
         T beanInstance;
+        int uiId;
+        UIBeanStore beanStore;
+
         if (isInstanceOfUIBean(contextual)) {
             UIBean uiBean = (UIBean) contextual;
-            int uiId = uiBean.getUiId();
-            UIBeanStore beanStore = beanStoreContainer
+            uiId = uiBean.getUiId();
+            beanStore = beanStoreContainer
                     .getOrCreateUIBeanStoreFor(uiBean);
-
             beanInstance = beanStore.getBeanInstance(contextual,
                     creationalContext);
             if (beanStoreContainer.isBeanStoreCreationPending()) {
@@ -64,15 +66,23 @@ public class UIScopedContext implements Context {
              *  than a Bean.
              */
         } else if(isUIBean(contextual)){
-            beanInstance = (T) UI.getCurrent();
-            if(beanInstance == null){
+            final UI current = UI.getCurrent();
+            if(current == null){
                 throw new IllegalStateException("CDI listener identified, but there is no active UI available.");
             }
+            Bean<T> bean = (Bean<T>) contextual;
+            if(bean.getBeanClass().isAssignableFrom(current.getClass()))
+                return (T) current;
+            uiId = current.getUIId();
+            beanStore = beanStoreContainer.getUIBeanStore(uiId);
+            beanInstance = beanStore.getBeanInstance(bean);
         }else {
             throw new IllegalStateException(((Bean) contextual).getBeanClass()
                     .getName()
                     + " is not a UI, only UIs can be annotated with @VaadinUI!");
         }
+
+
 
         getLogger().info("Finished getting bean " + beanInstance);
         return beanInstance;

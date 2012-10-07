@@ -9,6 +9,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.Reception;
 import javax.inject.Inject;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -49,7 +50,7 @@ public class UIWithCDIListener extends UI {
         setContent(layout);
     }
 
-    public void onEventArrival(@Observes String message){
+    public void onEventArrival(@Observes(notifyObserver = Reception.IF_EXISTS) String message){
         this.EVENT_COUNTER.incrementAndGet();
         System.out.println("Message arrived!");
     }

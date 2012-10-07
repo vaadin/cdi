@@ -12,6 +12,8 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.ui.UI;
 
+import static com.vaadin.cdi.Conventions.deriveMappingForUI;
+
 /**
  * UIScopedContext is the context for @VaadinUIScoped beans.
  */
@@ -45,7 +47,7 @@ public class UIScopedContext implements Context {
 
         BeanStoreContainer beanStoreContainer = getSessionBoundBeanStoreContainer();
         T beanInstance;
-        if (isUIBean(contextual)) {
+        if (isInstanceOfUIBean(contextual)) {
             UIBean uiBean = (UIBean) contextual;
             int uiId = uiBean.getUiId();
             UIBeanStore beanStore = beanStoreContainer
@@ -57,7 +59,16 @@ public class UIScopedContext implements Context {
                 beanStoreContainer.assignPendingBeanStoreFor((UI) beanInstance,
                         uiId);
             }
-        } else {
+            /**
+             *  In case of a CDI event listener, the Contextual is NOT a UIBean, rather
+             *  than a Bean.
+             */
+        } else if(isUIBean(contextual)){
+            beanInstance = (T) UI.getCurrent();
+            if(beanInstance == null){
+                throw new IllegalStateException("CDI listener identified, but there is no active UI available.");
+            }
+        }else {
             throw new IllegalStateException(((Bean) contextual).getBeanClass()
                     .getName()
                     + " is not a UI, only UIs can be annotated with @VaadinUI!");
@@ -72,8 +83,17 @@ public class UIScopedContext implements Context {
      * @return true if Vaadin UI is assignabled from given bean's representing
      *         type
      */
-    private <T> boolean isUIBean(Contextual<T> contextual) {
+    private <T> boolean isInstanceOfUIBean(Contextual<T> contextual) {
         if (contextual instanceof UIBean) {
+            return UI.class.isAssignableFrom(((Bean<T>) contextual)
+                    .getBeanClass());
+        }
+
+        return false;
+    }
+
+    private <T> boolean isUIBean(Contextual<T> contextual) {
+        if (contextual instanceof Bean) {
             return UI.class.isAssignableFrom(((Bean<T>) contextual)
                     .getBeanClass());
         }

@@ -12,8 +12,6 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.ui.UI;
 
-import static com.vaadin.cdi.Conventions.deriveMappingForUI;
-
 /**
  * UIScopedContext is the context for @VaadinUIScoped beans.
  */
@@ -53,8 +51,7 @@ public class UIScopedContext implements Context {
         if (isInstanceOfUIBean(contextual)) {
             UIBean uiBean = (UIBean) contextual;
             uiId = uiBean.getUiId();
-            beanStore = beanStoreContainer
-                    .getOrCreateUIBeanStoreFor(uiBean);
+            beanStore = beanStoreContainer.getOrCreateUIBeanStoreFor(uiBean);
             beanInstance = beanStore.getBeanInstance(contextual,
                     creationalContext);
             if (beanStoreContainer.isBeanStoreCreationPending()) {
@@ -62,29 +59,24 @@ public class UIScopedContext implements Context {
                         uiId);
             }
             /**
-             *  In case of a CDI event listener, the Contextual is NOT a UIBean, rather
-             *  than a Bean.
+             * In case of a CDI event listener, the Contextual is NOT a UIBean,
+             * rather than just a Bean.
              */
-        } else if(isUIBean(contextual)){
+        } else if (isUIBean(contextual)) {
             final UI current = UI.getCurrent();
-            if(current == null){
-                throw new IllegalStateException("CDI listener identified, but there is no active UI available.");
+            if (current == null) {
+                throw new IllegalStateException(
+                        "CDI listener identified, but there is no active UI available.");
             }
             Bean<T> bean = (Bean<T>) contextual;
-            if(bean.getBeanClass().isAssignableFrom(current.getClass()))
-                return (T) current;
-            /*
-            uiId = current.getUIId();
-            beanStore = beanStoreContainer.getUIBeanStore(uiId);
-            beanInstance = beanStore.getBeanInstance(bean);
-            */
-        }else {
+            if (bean.getBeanClass().isAssignableFrom(current.getClass())) {
+                beanInstance = (T) current;
+            }
+        } else {
             throw new IllegalStateException(((Bean) contextual).getBeanClass()
                     .getName()
                     + " is not a UI, only UIs can be annotated with @VaadinUI!");
         }
-
-
 
         getLogger().info("Finished getting bean " + beanInstance);
         return beanInstance;

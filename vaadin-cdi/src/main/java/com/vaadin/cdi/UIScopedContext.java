@@ -44,18 +44,33 @@ public class UIScopedContext implements Context {
             final CreationalContext<T> creationalContext) {
 
         BeanStoreContainer beanStoreContainer = getSessionBoundBeanStoreContainer();
-        T beanInstance;
-        if (isUIBean(contextual)) {
-            UIBean uiBean = (UIBean) contextual;
-            int uiId = uiBean.getUiId();
-            UIBeanStore beanStore = beanStoreContainer
-                    .getOrCreateUIBeanStoreFor(uiBean);
+        T beanInstance = null;
+        int uiId;
+        UIBeanStore beanStore;
 
+        if (isInstanceOfUIBean(contextual)) {
+            UIBean uiBean = (UIBean) contextual;
+            uiId = uiBean.getUiId();
+            beanStore = beanStoreContainer.getOrCreateUIBeanStoreFor(uiBean);
             beanInstance = beanStore.getBeanInstance(contextual,
                     creationalContext);
             if (beanStoreContainer.isBeanStoreCreationPending()) {
                 beanStoreContainer.assignPendingBeanStoreFor((UI) beanInstance,
                         uiId);
+            }
+            /**
+             * In case of a CDI event listener, the Contextual is NOT a UIBean,
+             * rather than just a Bean.
+             */
+        } else if (isUIBean(contextual)) {
+            final UI current = UI.getCurrent();
+            if (current == null) {
+                throw new IllegalStateException(
+                        "CDI listener identified, but there is no active UI available.");
+            }
+            Bean<T> bean = (Bean<T>) contextual;
+            if (bean.getBeanClass().isAssignableFrom(current.getClass())) {
+                beanInstance = (T) current;
             }
         } else {
             throw new IllegalStateException(((Bean) contextual).getBeanClass()
@@ -72,8 +87,17 @@ public class UIScopedContext implements Context {
      * @return true if Vaadin UI is assignabled from given bean's representing
      *         type
      */
-    private <T> boolean isUIBean(Contextual<T> contextual) {
+    private <T> boolean isInstanceOfUIBean(Contextual<T> contextual) {
         if (contextual instanceof UIBean) {
+            return UI.class.isAssignableFrom(((Bean<T>) contextual)
+                    .getBeanClass());
+        }
+
+        return false;
+    }
+
+    private <T> boolean isUIBean(Contextual<T> contextual) {
+        if (contextual instanceof Bean) {
             return UI.class.isAssignableFrom(((Bean<T>) contextual)
                     .getBeanClass());
         }

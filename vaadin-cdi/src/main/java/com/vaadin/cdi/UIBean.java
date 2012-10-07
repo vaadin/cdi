@@ -80,4 +80,24 @@ public class UIBean implements Bean {
     public void destroy(Object components, CreationalContext uiCreationalContext) {
         delegate.destroy(components, uiCreationalContext);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UIBean)) return false;
+
+        UIBean uiBean = (UIBean) o;
+
+        if (uiId != uiBean.uiId) return false;
+        if (!delegate.getBeanClass().equals(uiBean.delegate.getBeanClass())) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = delegate.getBeanClass().hashCode();
+        result = 31 * result + uiId;
+        return result;
+    }
 }

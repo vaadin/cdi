@@ -37,6 +37,7 @@ public class CDIIntegrationWithVaadinIT {
     private final static IdLocator NAVIGATE_BUTTON = id("navigate");
     private final static String UI_URI = "instrumentedUI";
     private final static String UI_WITH_CDISELF_LISTENER = "uIWithCDISelfListener";
+    private final static String INTERCEPTED_UI = "interceptedUI";
     private static final String UI_WITH_CDI_DEPENDENT_LISTENER = "uIWithCDIDependentListener";
 
     private final static String SECOND_UI_URI = "secondUI";
@@ -56,7 +57,9 @@ public class CDIIntegrationWithVaadinIT {
                 InstrumentedView.class, ScopedInstrumentedView.class,
                 ViewWithoutAnnotation.class, RootUI.class, FirstUI.class,
                 SecondUI.class, WithAnnotationRegisteredView.class,
-                UIWithCDISelfListener.class, UIWithCDIDependentListener.class,DependentCDIEventListener.class);
+                UIWithCDISelfListener.class, UIWithCDIDependentListener.class,
+                DependentCDIEventListener.class, InterceptedUI.class,
+                InstrumentedInterceptor.class, InterceptedBean.class);
     }
 
     @Before
@@ -220,7 +223,8 @@ public class CDIIntegrationWithVaadinIT {
     public void cdiEventsArrivesInDependentListener()
             throws MalformedURLException {
         assertThat(UIWithCDIDependentListener.getNumberOfInstances(), is(0));
-        assertThat(DependentCDIEventListener.getNumberOfDeliveredEvents(), is(0));
+        assertThat(DependentCDIEventListener.getNumberOfDeliveredEvents(),
+                is(0));
         assertThat(DependentCDIEventListener.getNumberOfInstances(), is(0));
         openWindow(UI_WITH_CDI_DEPENDENT_LISTENER);
         waitModel.until(elementPresent.locator(LABEL));
@@ -236,6 +240,21 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(DependentCDIEventListener.getNumberOfInstances(), is(2));
         assertThat(DependentCDIEventListener.getNumberOfDeliveredEvents(),
                 is(2));
+
+    }
+
+    @Test
+    public void interceptedScopedEventListener() throws MalformedURLException {
+        assertThat(InterceptedUI.getNumberOfInstances(), is(0));
+        assertThat(InstrumentedInterceptor.getCounter(), is(0));
+        openWindow(INTERCEPTED_UI);
+        waitModel.until(elementPresent.locator(LABEL));
+        firstWindow.click(BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(InstrumentedInterceptor.getCounter(), is(1));
+        firstWindow.click(BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(InstrumentedInterceptor.getCounter(), is(2));
 
     }
 

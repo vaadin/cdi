@@ -19,9 +19,6 @@ public class UIWithCDIDependentListener extends UI {
     @Inject
     private javax.enterprise.event.Event<String> events;
 
-    @Inject
-    private DependentCDIEventListener toBeDependent;
-
     @PostConstruct
     public void initialize() {
         COUNTER.incrementAndGet();

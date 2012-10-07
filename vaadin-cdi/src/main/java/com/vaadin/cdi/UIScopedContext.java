@@ -46,7 +46,7 @@ public class UIScopedContext implements Context {
             final CreationalContext<T> creationalContext) {
 
         BeanStoreContainer beanStoreContainer = getSessionBoundBeanStoreContainer();
-        T beanInstance;
+        T beanInstance = null;
         int uiId;
         UIBeanStore beanStore;
 
@@ -73,9 +73,11 @@ public class UIScopedContext implements Context {
             Bean<T> bean = (Bean<T>) contextual;
             if(bean.getBeanClass().isAssignableFrom(current.getClass()))
                 return (T) current;
+            /*
             uiId = current.getUIId();
             beanStore = beanStoreContainer.getUIBeanStore(uiId);
             beanInstance = beanStore.getBeanInstance(bean);
+            */
         }else {
             throw new IllegalStateException(((Bean) contextual).getBeanClass()
                     .getName()

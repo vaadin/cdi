@@ -1,12 +1,14 @@
 package com.vaadin.cdi.uis;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.Reception;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class DependentCDIEventListener{
+public class DependentCDIEventListener implements Serializable{
 
     private final static AtomicInteger EVENT_COUNTER = new AtomicInteger(0);
     private final static AtomicInteger COUNTER = new AtomicInteger(0);

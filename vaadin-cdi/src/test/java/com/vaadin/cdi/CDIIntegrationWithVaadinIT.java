@@ -227,13 +227,13 @@ public class CDIIntegrationWithVaadinIT {
         firstWindow.click(BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(UIWithCDIDependentListener.getNumberOfInstances(), is(1));
-        assertThat(DependentCDIEventListener.getNumberOfInstances(), is(2));
+        assertThat(DependentCDIEventListener.getNumberOfInstances(), is(1));
         assertThat(DependentCDIEventListener.getNumberOfDeliveredEvents(),
                 is(1));
         firstWindow.click(BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(UIWithCDIDependentListener.getNumberOfInstances(), is(1));
-        assertThat(DependentCDIEventListener.getNumberOfInstances(), is(3));
+        assertThat(DependentCDIEventListener.getNumberOfInstances(), is(2));
         assertThat(DependentCDIEventListener.getNumberOfDeliveredEvents(),
                 is(2));
 

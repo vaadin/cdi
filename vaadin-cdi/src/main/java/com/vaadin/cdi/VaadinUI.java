@@ -13,14 +13,12 @@ import javax.enterprise.context.NormalScope;
 import javax.inject.Scope;
 
 /**
- * Annotation used for declaring bean class scope for Mapping beans
  *
- * @author Tomi Virkki / Vaadin Ltd
+ *
  */
 @Scope
-// TODO: NormalScope
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
+@Target({ElementType.TYPE})
 @Inherited
 public @interface VaadinUI {
     public String value() default "";

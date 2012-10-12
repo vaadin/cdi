@@ -20,9 +20,6 @@ public class CDIViewProvider implements ViewProvider {
     @Inject
     private BeanManager beanManager;
 
-    @Inject
-    private JaasTools jaasTools;
-
     @Override
     public String getViewName(String viewAndParameters) {
         String name = parseViewName(viewAndParameters);
@@ -49,7 +46,7 @@ public class CDIViewProvider implements ViewProvider {
                 // No roles defined, everyone is allowed
                 return true;
             } else {
-                return jaasTools
+                return JaasTools
                         .isUserInSomeRole(viewAnnotation.rolesAllowed());
             }
         }
@@ -81,9 +78,8 @@ public class CDIViewProvider implements ViewProvider {
             if (viewAnnotation == null || mapping == null || mapping.isEmpty()) {
                 mapping = Conventions.deriveMappingForView(beanClass);
                 LOG().info(
-                        "No value for view " + beanClass.getName()
-                                + " found " + " evaluated defaults are: "
-                                + mapping);
+                        "No value for view " + beanClass.getName() + " found "
+                                + " evaluated defaults are: " + mapping);
             }
             if (viewName.equals(mapping)) {
                 matching.add(bean);
@@ -132,7 +128,7 @@ public class CDIViewProvider implements ViewProvider {
         Bean<?> viewBean = getViewBean(viewName);
 
         if (viewBean != null) {
-            return  (View) beanManager.getReference(viewBean,
+            return (View) beanManager.getReference(viewBean,
                     viewBean.getBeanClass(),
                     beanManager.createCreationalContext(viewBean));
 

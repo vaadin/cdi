@@ -169,6 +169,7 @@ public class CDIIntegrationWithVaadinIT {
 
     @Test
     public void rootUIDiscovery() throws MalformedURLException {
+        assertThat(RootUI.getNumberOfInstances(), is(0));
         openWindow("");
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(RootUI.getNumberOfInstances(), is(1));

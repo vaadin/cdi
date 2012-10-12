@@ -59,10 +59,15 @@ public class JaasTools {
     }
 
     /**
-     * @return name that was used to login user
+     * @return name of the user that is currently logged in, if no user is
+     *         logged in null will be returned.
      */
     public static String getPrincipalName() {
-        return getCurrentRequest().getUserPrincipal().getName();
+        if (isUserSignedIn()) {
+            return getCurrentRequest().getUserPrincipal().getName();
+        }
+
+        return null;
     }
 
     /**

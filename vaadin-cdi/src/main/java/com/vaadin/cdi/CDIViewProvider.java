@@ -32,12 +32,17 @@ public class CDIViewProvider implements ViewProvider {
 
         if (isUserHavingAccessToView(viewBean)) {
             return name;
+        } else {
+            LOG().info(
+                    "User " + JaasTools.getPrincipalName()
+                            + " did not have access to view " + viewBean);
         }
 
         return null;
     }
 
     private boolean isUserHavingAccessToView(Bean<?> viewBean) {
+
         if (viewBean.getBeanClass().isAnnotationPresent(VaadinView.class)) {
             VaadinView viewAnnotation = viewBean.getBeanClass().getAnnotation(
                     VaadinView.class);
@@ -46,8 +51,15 @@ public class CDIViewProvider implements ViewProvider {
                 // No roles defined, everyone is allowed
                 return true;
             } else {
-                return JaasTools
-                        .isUserInSomeRole(viewAnnotation.rolesAllowed());
+                boolean hasAccess = JaasTools.isUserInSomeRole(viewAnnotation
+                        .rolesAllowed());
+
+                LOG().info(
+                        "Checking if user " + JaasTools.getPrincipalName()
+                                + " is having access to " + viewBean + ": "
+                                + Boolean.toString(hasAccess));
+
+                return hasAccess;
             }
         }
 

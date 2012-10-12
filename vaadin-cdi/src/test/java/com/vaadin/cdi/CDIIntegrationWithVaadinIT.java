@@ -41,10 +41,14 @@ public class CDIIntegrationWithVaadinIT {
     private static final String UI_WITH_CDI_DEPENDENT_LISTENER = "uIWithCDIDependentListener";
 
     private final static String SECOND_UI_URI = "secondUI";
+    private final static String FIRST_UI_URI = "firstUI";
     private final static String INSTRUMENTED_VIEW_URI = UI_URI
             + "/#!instrumentedView";
     private final static String DANGLING_VIEW_URI = SECOND_UI_URI
             + "/#!danglingView";
+
+    private final static String RESTRICTED_VIEW_URI = FIRST_UI_URI
+            + "/#!restrictedView";
 
     private final static String VIEW_WITHOUT_ANNOTATION = SECOND_UI_URI
             + "/#!viewWithoutAnnotation";
@@ -59,7 +63,7 @@ public class CDIIntegrationWithVaadinIT {
                 SecondUI.class, WithAnnotationRegisteredView.class,
                 UIWithCDISelfListener.class, UIWithCDIDependentListener.class,
                 DependentCDIEventListener.class, InterceptedUI.class,
-                InstrumentedInterceptor.class, InterceptedBean.class);
+                InstrumentedInterceptor.class, InterceptedBean.class,RestrictedView.class);
     }
 
     @Before
@@ -255,6 +259,19 @@ public class CDIIntegrationWithVaadinIT {
         firstWindow.click(BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(InstrumentedInterceptor.getCounter(), is(2));
+
+    }
+
+    @Test
+    public void navigationToRestrictedViewFails() throws MalformedURLException {
+        assertThat(FirstUI.getNumberOfInstances(), is(0));
+        assertThat(RestrictedView.getNumberOfInstances(), is(0));
+        openWindow(RESTRICTED_VIEW_URI);
+        waitModel.until(elementPresent.locator(LABEL));
+        firstWindow.click(NAVIGATE_BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(FirstUI.getNumberOfInstances(), is(1));
+        assertThat(RestrictedView.getNumberOfInstances(), is(0));
 
     }
 

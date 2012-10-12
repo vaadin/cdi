@@ -38,15 +38,15 @@ public class InterceptedUI extends UI {
 
         final Label label = new Label("+InterceptedUI");
         label.setId("label");
-        Button navigate = new Button("button", new Button.ClickListener() {
+        Button changeLabel = new Button("button", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 label.setValue(interceptedBean.fromInterceptorBean());
             }
         });
-        navigate.setId("button");
+        changeLabel.setId("button");
         layout.addComponent(label);
-        layout.addComponent(navigate);
+        layout.addComponent(changeLabel);
         setContent(layout);
     }
 

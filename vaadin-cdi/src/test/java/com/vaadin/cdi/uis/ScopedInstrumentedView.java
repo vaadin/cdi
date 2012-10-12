@@ -15,7 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author adam-bien.com
  */
 @VaadinView
-@VaadinUI
 public class ScopedInstrumentedView extends CustomComponent implements View {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);

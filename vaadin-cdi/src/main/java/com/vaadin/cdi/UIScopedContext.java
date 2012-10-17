@@ -79,7 +79,6 @@ public class UIScopedContext implements Context {
                 getLogger().log(Level.WARNING, "Tried to get a Bean that is not compatible with the current UI {0}. "
                         + "Looks like you need to specify \"notifyObserver=Reception.IF_EXISTS\" on the event observer methods of {1}.",
                         new Object[]{current, bean.getBeanClass().getName()});
-                throw new IllegalStateException("CDI listener identified that is not compatible with the currently active UI");
             }
         } else {
             throw new IllegalStateException(((Bean) contextual).getBeanClass()

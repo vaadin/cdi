@@ -99,15 +99,16 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
                 new AnnotationLiteral<Any>() {
                 });
 
-        for (Bean<?> bean : beans) {
-            Class<? extends UI> beanClass = bean.getBeanClass().asSubclass(
-                    UI.class);
+        for (Bean<?> bean : beans) {            
+            // We need this check since the returned beans can also be producers
+            if (UI.class.isAssignableFrom(bean.getBeanClass())) {
+                Class<? extends UI> beanClass = bean.getBeanClass().asSubclass(UI.class);
 
-            if (beanClass.isAnnotationPresent(VaadinUI.class)) {
-                String computedMapping = Conventions
-                        .deriveMappingForUI(beanClass);
-                if (mapping.equals(computedMapping)) {
-                    return bean;
+                if (beanClass.isAnnotationPresent(VaadinUI.class)) {
+                    String computedMapping = Conventions.deriveMappingForUI(beanClass);
+                    if (mapping.equals(computedMapping)) {
+                        return bean;
+                    }
                 }
             }
         }

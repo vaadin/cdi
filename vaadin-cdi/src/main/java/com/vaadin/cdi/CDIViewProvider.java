@@ -35,6 +35,12 @@ public class CDIViewProvider implements ViewProvider {
         }
 
         if (isUserHavingAccessToView(viewBean)) {
+            if (viewBean.getBeanClass().isAnnotationPresent(VaadinView.class)) {
+                String specifiedViewName = viewBean.getBeanClass().getAnnotation(VaadinView.class).value();
+                if (!specifiedViewName.isEmpty()) {
+                    return specifiedViewName;
+                }
+            }
             return name;
         } else {
             LOG().log(
@@ -96,7 +102,11 @@ public class CDIViewProvider implements ViewProvider {
                         Level.INFO, "No viewName for view {0} found, using \"{1}\"",
                         new Object[]{beanClass.getName(), mapping});
             }
-            if (viewName.equals(mapping)) {
+            if (viewAnnotation != null && viewAnnotation.supportsParameters() && viewName.startsWith(mapping)) {
+                matching.add(bean);
+                LOG().log(
+                        Level.INFO, "Bean {0} with viewName \"{1}\" is one alternative for viewAndParameters \"{2}\"", new Object[]{bean, mapping, viewName});
+            } else if (viewName.equals(mapping)) {
                 matching.add(bean);
                 LOG().log(
                         Level.INFO, "Bean {0} with viewName \"{1}\" is one alternative", new Object[]{bean, mapping});

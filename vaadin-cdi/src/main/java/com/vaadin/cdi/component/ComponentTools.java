@@ -1,6 +1,7 @@
 package com.vaadin.cdi.component;
 
 import com.vaadin.ui.Component;
+import javax.enterprise.context.RequestScoped;
 
 /**
  * 

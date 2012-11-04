@@ -1,6 +1,5 @@
 package com.vaadin.cdi.uis;
 
-import com.vaadin.cdi.VaadinUI;
 import com.vaadin.cdi.VaadinView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -14,8 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author adam-bien.com
  */
-@VaadinView
-public class ScopedInstrumentedView extends CustomComponent implements View {
+@VaadinView(ui = SecondUI.class)
+public class RestrictedView extends CustomComponent implements View {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
 
@@ -30,7 +29,7 @@ public class ScopedInstrumentedView extends CustomComponent implements View {
         VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
         setCompositionRoot(layout);
-        Label label = new Label("ViewLabel");
+        Label label = new Label("RestrictedView");
         label.setId("label");
         layout.addComponent(label);
     }

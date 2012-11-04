@@ -4,11 +4,7 @@
  */
 package com.vaadin.cdi;
 
-import static com.vaadin.cdi.Conventions.deriveMappingForUI;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -16,15 +12,12 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.ui.UI;
 
 /**
- * BeanStoreContainer is session scoped top level UIBeanStore container that
- * hosts UI specific scopings. For each UI there will be own UI specific scope
- * and their backing instances are held within this BeanStoreContainer which is
- * singleton in one HTTP session.
+ * BeanStoreContainer associates a UI instance with a UIBeanStore. There is only
+ * one BeanStoreContainer per session. A BeanStoreContainer is @see @SessionScoped
  */
 @SessionScoped
 @SuppressWarnings("serial")
@@ -65,7 +58,7 @@ public class BeanStoreContainer implements Serializable {
         return unfinishedBeanStore;
     }
 
-    public UIBeanStore getUIBeanStore(int uiID){
+    public UIBeanStore getUIBeanStore(int uiID) {
         return beanStores.get(uiID);
     }
 
@@ -88,7 +81,7 @@ public class BeanStoreContainer implements Serializable {
      * 
      * @param ui
      */
-    public void assignPendingBeanStoreFor(UI ui,int uiUid) {
+    public void assignPendingBeanStoreFor(UI ui, int uiUid) {
         getLogger()
                 .info("Assigning bean store " + unfinishedBeanStore
                         + " for UI " + ui);
@@ -114,9 +107,11 @@ public class BeanStoreContainer implements Serializable {
 
     @PreDestroy
     private void preDestroy() {
-        getLogger().info("BeanStoreContainer is about to be destroyed: " + this);
+        getLogger()
+                .info("BeanStoreContainer is about to be destroyed: " + this);
         for (final UIBeanStore beanStore : beanStores.values()) {
-            getLogger().info("Dereferencing beans from beanstore: " + beanStore);
+            getLogger()
+                    .info("Dereferencing beans from beanstore: " + beanStore);
             beanStore.dereferenceAllBeanInstances();
         }
     }

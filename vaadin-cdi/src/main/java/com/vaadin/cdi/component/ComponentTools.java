@@ -1,38 +1,36 @@
 package com.vaadin.cdi.component;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Produces;
-import javax.servlet.http.HttpServletRequest;
-
-import com.vaadin.server.VaadinServletService;
 import com.vaadin.ui.Component;
 import javax.enterprise.context.RequestScoped;
 
+/**
+ * 
+ * ComponentTools is JaasTools addition that allows enabling/disabling, and
+ * hiding Vaadin component based on roles available through JAAS. In order to
+ * use these methods user must be signed in to container managed security
+ * domain.
+ */
 public class ComponentTools {
 
+    /**
+     * Sets given component enabled if currently signed in user is in one or
+     * more given roles, otherwise component is disabled.
+     * 
+     * @param component
+     * @param roles
+     */
     public void setEnabledForRoles(Component component, String... roles) {
-        component.setEnabled(isUserInSomeGivenRole(roles));
+        component.setEnabled(JaasTools.isUserInSomeRole(roles));
     }
 
+    /**
+     * Sets given component visible if currently signed in user is in one or
+     * more given roles, otherwise component is hidden.
+     * 
+     * @param component
+     * @param roles
+     */
     public void setVisibleForRoles(Component component, String... roles) {
-        component.setVisible(isUserInSomeGivenRole(roles));
-    }
-
-    private boolean isUserInSomeGivenRole(String... roles) {
-        HttpServletRequest request = getCurrentRequest();
-
-        for (String role : roles) {
-            if (request.isUserInRole(role)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    @Produces
-    @RequestScoped
-    protected HttpServletRequest getCurrentRequest() {
-        return VaadinServletService.getCurrentServletRequest();
+        component.setVisible(JaasTools.isUserInSomeRole(roles));
     }
 }

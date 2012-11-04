@@ -9,7 +9,5 @@
 	<name>vaadin-cdi-integration</name>
 	<modules>
 		<module>vaadin-cdi</module>
-		<module>vaadin-cdi-test</module>
-		<module>hello-cdi</module>
 	</modules>
 </project>

@@ -9,7 +9,7 @@ import javax.enterprise.inject.spi.Extension;
 
 
 /**
- * CDI Extension which registers VaadinContextImpl context.
+ * CDI Extension needed to register the @VaadinUI scope to the runtime.
  * 
  * @author Tomi Virkki / Vaadin Ltd
  */

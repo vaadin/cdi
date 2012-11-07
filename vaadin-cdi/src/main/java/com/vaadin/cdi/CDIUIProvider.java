@@ -67,8 +67,11 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
 
     boolean isRoot(VaadinRequest request) {
         String pathInfo = request.getRequestPathInfo();
-        if(pathInfo == null)
-            return false;
+        
+        if (pathInfo == null) {
+        	return false;
+        }
+            
         return pathInfo.equals("/");
     }
 

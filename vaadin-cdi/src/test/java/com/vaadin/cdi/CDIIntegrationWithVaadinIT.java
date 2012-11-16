@@ -2,8 +2,7 @@ package com.vaadin.cdi;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.jboss.arquillian.ajocado.Graphene.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,6 +41,7 @@ public class CDIIntegrationWithVaadinIT {
 
     private final static String SECOND_UI_URI = "secondUI";
     private final static String FIRST_UI_URI = "firstUI";
+    private final static String UNSECURED_UI_URI = "unsecuredUI";
     private final static String INSTRUMENTED_VIEW_URI = UI_URI
             + "/#!instrumentedView";
     private final static String DANGLING_VIEW_URI = SECOND_UI_URI
@@ -60,7 +60,7 @@ public class CDIIntegrationWithVaadinIT {
         return ArchiveProvider.createWebArchive(InstrumentedUI.class,
                 InstrumentedView.class, ScopedInstrumentedView.class,
                 ViewWithoutAnnotation.class, RootUI.class, FirstUI.class,
-                SecondUI.class, WithAnnotationRegisteredView.class,
+                SecondUI.class,UnsecuredUI.class, WithAnnotationRegisteredView.class,
                 UIWithCDISelfListener.class, UIWithCDIDependentListener.class,
                 DependentCDIEventListener.class, InterceptedUI.class,
                 InstrumentedInterceptor.class, InterceptedBean.class,RestrictedView.class);
@@ -274,6 +274,21 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(FirstUI.getNumberOfInstances(), is(1));
         assertThat(RestrictedView.getNumberOfInstances(), is(0));
 
+    }
+
+    @Test
+    public void unsecuredUI() throws MalformedURLException{
+        openWindow(UNSECURED_UI_URI);
+        final String principalName = firstWindow.getText(id("principalName"));
+        final String isUserInRole = firstWindow.getText(id("isUserInRole"));
+        final String isUserInSomeRole = firstWindow.getText(id("isUserInSomeRole"));
+        final String currentRequestNotNull = firstWindow.getText(id("currentRequestNotNull"));
+        final String isUserSignedIn = firstWindow.getText(id("isUserSignedIn"));
+        assertFalse(Boolean.parseBoolean(principalName));
+        assertFalse(Boolean.parseBoolean(isUserInRole));
+        assertFalse(Boolean.parseBoolean(isUserInSomeRole));
+        assertTrue(Boolean.parseBoolean(currentRequestNotNull));
+        assertFalse(Boolean.parseBoolean(isUserSignedIn));
     }
 
     void assertDefaultRootNotInstantiated() {

@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.thoughtworks.selenium.SeleniumException;
 import org.jboss.arquillian.ajocado.framework.GrapheneSelenium;
 import org.jboss.arquillian.ajocado.locator.IdLocator;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -284,11 +285,17 @@ public class CDIIntegrationWithVaadinIT {
         final String isUserInSomeRole = firstWindow.getText(id("isUserInSomeRole"));
         final String currentRequestNotNull = firstWindow.getText(id("currentRequestNotNull"));
         final String isUserSignedIn = firstWindow.getText(id("isUserSignedIn"));
+        final String disabled = firstWindow.getText(id("disabled"));
+        try{
+            firstWindow.getText(id("invisible"));
+            fail("Invisible element should not be accessible");
+        }catch(SeleniumException ex){}
         assertFalse(Boolean.parseBoolean(principalName));
         assertFalse(Boolean.parseBoolean(isUserInRole));
         assertFalse(Boolean.parseBoolean(isUserInSomeRole));
         assertTrue(Boolean.parseBoolean(currentRequestNotNull));
         assertFalse(Boolean.parseBoolean(isUserSignedIn));
+        assertThat(disabled,is("DisabledLabel"));
     }
 
     void assertDefaultRootNotInstantiated() {

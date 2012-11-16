@@ -18,7 +18,7 @@ public class ComponentTools {
      * @param component
      * @param roles
      */
-    public void setEnabledForRoles(Component component, String... roles) {
+    public static void setEnabledForRoles(Component component, String... roles) {
         component.setEnabled(JaasTools.isUserInSomeRole(roles));
     }
 
@@ -29,7 +29,7 @@ public class ComponentTools {
      * @param component
      * @param roles
      */
-    public void setVisibleForRoles(Component component, String... roles) {
+    public static void setVisibleForRoles(Component component, String... roles) {
         component.setVisible(JaasTools.isUserInSomeRole(roles));
     }
 }

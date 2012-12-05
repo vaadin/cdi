@@ -33,8 +33,8 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
                 uiMapping = parseUIMapping(request);
                 bean = getUIBeanWithMapping(uiMapping);
             } else {
-                throw new IllegalStateException("UI class: "
-                        + type.getName() + " with mapping: " + uiMapping
+                throw new IllegalStateException("UI class: " + type.getName()
+                        + " with mapping: " + uiMapping
                         + " is not annotated with VaadinUI!");
             }
         }
@@ -66,12 +66,12 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
     }
 
     boolean isRoot(VaadinRequest request) {
-        String pathInfo = request.getRequestPathInfo();
-        
+        String pathInfo = request.getPathInfo();
+
         if (pathInfo == null) {
-        	return false;
+            return false;
         }
-            
+
         return pathInfo.equals("/");
     }
 
@@ -102,13 +102,15 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
                 new AnnotationLiteral<Any>() {
                 });
 
-        for (Bean<?> bean : beans) {            
+        for (Bean<?> bean : beans) {
             // We need this check since the returned beans can also be producers
             if (UI.class.isAssignableFrom(bean.getBeanClass())) {
-                Class<? extends UI> beanClass = bean.getBeanClass().asSubclass(UI.class);
+                Class<? extends UI> beanClass = bean.getBeanClass().asSubclass(
+                        UI.class);
 
                 if (beanClass.isAnnotationPresent(VaadinUI.class)) {
-                    String computedMapping = Conventions.deriveMappingForUI(beanClass);
+                    String computedMapping = Conventions
+                            .deriveMappingForUI(beanClass);
                     if (mapping.equals(computedMapping)) {
                         return bean;
                     }
@@ -141,7 +143,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
     }
 
     String parseUIMapping(VaadinRequest request) {
-        return parseUIMapping(request.getRequestPathInfo());
+        return parseUIMapping(request.getPathInfo());
     }
 
     String parseUIMapping(String requestPath) {

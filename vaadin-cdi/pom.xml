@@ -7,6 +7,11 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
+	<properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<vaadin.version>7.0-SNAPSHOT</vaadin.version>
+	</properties>
+	
     <name>vaadin-cdi</name>
     <url>http://maven.apache.org</url>
     <dependencyManagement>
@@ -87,26 +92,26 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>
-            <version>7.0-SNAPSHOT</version>
+            <version>${vaadin.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-shared</artifactId>
-            <version>7.0-SNAPSHOT</version>
+            <version>${vaadin.version}</version>
             <scope>compile</scope>
         </dependency>
         <!-- vaadin  dependencies needed for integration testing -->
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-theme-compiler</artifactId>
-            <version>7.0-SNAPSHOT</version>
+            <version>${vaadin.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-client-compiled</artifactId>
-            <version>7.0-SNAPSHOT</version>
+            <version>${vaadin.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- Java EE 6 API -->
@@ -132,8 +137,4 @@
             </plugin>
         </plugins>
     </build>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
 </project>

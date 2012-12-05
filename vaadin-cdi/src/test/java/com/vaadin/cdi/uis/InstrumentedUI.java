@@ -56,7 +56,7 @@ public class InstrumentedUI extends UI {
         Button navigate = new Button("button", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                navigator.navigate();
+                navigator.navigateTo("");
             }
         });
         navigate.setId("navigate");

@@ -10,8 +10,8 @@ import com.vaadin.server.ServiceException;
 import com.vaadin.server.SessionInitEvent;
 import com.vaadin.server.SessionInitListener;
 import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinServiceSession;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.VaadinSession;
 
 public class VaadinCDIServlet extends VaadinServlet {
 
@@ -23,7 +23,7 @@ public class VaadinCDIServlet extends VaadinServlet {
         @Override
         public void sessionInit(SessionInitEvent event) throws ServiceException {
             VaadinService service = event.getService();
-            final VaadinServiceSession session = event.getSession();
+            final VaadinSession session = event.getSession();
             logger().info("Registering ui CDIUIProvider: " + cdiRootProvider);
             session.addUIProvider(cdiRootProvider);
         }

@@ -31,6 +31,8 @@ public class ContextDeployer implements ServletContextListener {
     @Inject
     private Instance<VaadinCDIServlet> servletInstanceProvider;
 
+    private String urlMapping = "/*";
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         configuredUIs = new HashSet<String>();
@@ -42,6 +44,8 @@ public class ContextDeployer implements ServletContextListener {
                         + context.getContextPath());
 
         discoverUIMappingsFromAnnotations();
+
+        discoverURLMappingFromRoot();
 
         deployVaadinCDIServlet(context);
 
@@ -75,37 +79,42 @@ public class ContextDeployer implements ServletContextListener {
      * same value
      */
     private void discoverUIMappingsFromAnnotations() {
-        getLogger().info(
-                "Discovering Vaadin UIs...");
+        getLogger().info("Discovering Vaadin UIs...");
 
         Set<Bean<?>> uiBeans = beanManager.getBeans(UI.class,
-                new AnnotationLiteral<Any>() {});
-        
+                new AnnotationLiteral<Any>() {
+                });
+
         getLogger().info(
                 uiBeans.size() + " beans inheriting from UI discovered!");
-        
+
         for (Bean<?> uiBean : dropBeansWithOutVaadinUIAnnotation(uiBeans)) {
             Class<? extends UI> uiBeanClass = uiBean.getBeanClass().asSubclass(
                     UI.class);
 
             String uiMapping = Conventions.deriveMappingForUI(uiBeanClass);
-            
+
             if (configuredUIs.contains(uiMapping)) {
-                throw new RuntimeException("Multiple UIs configured with value " + uiMapping);
+                throw new RuntimeException(
+                        "Multiple UIs configured with value " + uiMapping);
             }
-            
+
             configuredUIs.add(uiMapping);
         }
-        
+
         int numberOfRootUIs = getNumberOfRootUIs();
-        
-        if(numberOfRootUIs == 1) {
-        	getLogger().info("Vaadin UI " + getRootClassName() + " is marked as @Root, " +
-        			"this UI is accessible from context root of deployment");
+
+        if (numberOfRootUIs == 1) {
+            getLogger()
+                    .info("Vaadin UI "
+                            + getRootClassName()
+                            + " is marked as @Root, "
+                            + "this UI is accessible from context root of deployment");
         }
-        if(numberOfRootUIs > 1) {
-        	throw new RuntimeException("Multiple UIs configured with @Root annotation, " +
-        			"only one UI can be root");
+        if (numberOfRootUIs > 1) {
+            throw new RuntimeException(
+                    "Multiple UIs configured with @Root annotation, "
+                            + "only one UI can be root");
         }
 
         getLogger().info(
@@ -116,23 +125,49 @@ public class ContextDeployer implements ServletContextListener {
      * @return number of UI beans annotated with @Root annotation
      */
     private int getNumberOfRootUIs() {
-    	 Set<Bean<?>> beans = beanManager.getBeans(UI.class,
-                 new AnnotationLiteral<Root>() {});
-    	 
-         return beans.size();
-	}
-    
+        Set<Bean<?>> beans = getRootAnnotatedBeans();
+
+        return beans.size();
+    }
+
     /**
      * @return name of the root class
      */
     private String getRootClassName() {
-    	 Set<Bean<?>> beans = beanManager.getBeans(UI.class,
-    			 new AnnotationLiteral<Root>() {});
-    	 
-         return beans.iterator().next().getBeanClass().getCanonicalName();
+        Set<Bean<?>> beans = getRootAnnotatedBeans();
+
+        return beans.iterator().next().getBeanClass().getCanonicalName();
     }
 
-	/**
+    /**
+     * Checks if there is a @Root with a urlMapping. If so, it retrieves the URL
+     * mapping from it.
+     */
+    private void discoverURLMappingFromRoot() {
+        Set<Bean<?>> beans = getRootAnnotatedBeans();
+
+        Class<?> rootClass = beans.iterator().next().getBeanClass();
+
+        URLMapping urlMappingAnnotation = rootClass
+                .getAnnotation(URLMapping.class);
+        if (urlMappingAnnotation != null) {
+            urlMapping = urlMappingAnnotation.value();
+            getLogger().info(
+                    "Will map VaadinCDIServlet to '" + urlMapping + "'");
+        }
+    }
+
+    /**
+     * @return all UI beans annotated with @Root annotation.
+     */
+    private Set<Bean<?>> getRootAnnotatedBeans() {
+        Set<Bean<?>> beans = beanManager.getBeans(UI.class,
+                new AnnotationLiteral<Root>() {
+                });
+        return beans;
+    }
+
+    /**
      * From the given set of beans, removes all without @VaadinUI annotation
      * 
      * @param uiBeans
@@ -140,19 +175,20 @@ public class ContextDeployer implements ServletContextListener {
      */
     Set<Bean<?>> dropBeansWithOutVaadinUIAnnotation(Set<Bean<?>> uiBeans) {
         Set<Bean<?>> result = new HashSet<Bean<?>>();
-        
+
         for (Bean<?> bean : uiBeans) {
             Class<?> beanClass = bean.getBeanClass();
-            
-            if (beanClass.isAnnotationPresent(VaadinUI.class)){
+
+            if (beanClass.isAnnotationPresent(VaadinUI.class)) {
                 result.add(bean);
-            } else{
+            } else {
                 getLogger().info(
-                        "UI without VaadinUI annotation found: " + beanClass.getName() + 
-                        ", it is not available in CDI deployment");
+                        "UI without VaadinUI annotation found: "
+                                + beanClass.getName()
+                                + ", it is not available in CDI deployment");
             }
         }
-        
+
         return result;
     }
 
@@ -166,16 +202,16 @@ public class ContextDeployer implements ServletContextListener {
         if (isVaadinServletsDefinedInDeploymentDescriptor(context)) {
             getLogger()
                     .warning(
-                            "Vaadin related servlet is defined in deployment descriptor, " +
-                            "automated deployment of VaadinCDIServlet is now disabled");
+                            "Vaadin related servlet is defined in deployment descriptor, "
+                                    + "automated deployment of VaadinCDIServlet is now disabled");
             return;
         }
 
         if (configuredUIs.isEmpty()) {
             getLogger()
                     .warning(
-                            "No Vaadin UI classes with @VaadinUI or @Root annotation found. " +
-                            "Skipping automated deployment of VaadinCDIServlet.");
+                            "No Vaadin UI classes with @VaadinUI or @Root annotation found. "
+                                    + "Skipping automated deployment of VaadinCDIServlet.");
             return;
         }
 
@@ -186,17 +222,17 @@ public class ContextDeployer implements ServletContextListener {
     private void registerVaadinCDIServletToContextRoot(ServletContext context) {
         getLogger().info(
                 "Attempt to deploy VaadinCDIServlet to context root...");
-        registerServletToContext("/*", context);
+        registerServletToContext(context);
     }
 
-    private void registerServletToContext(String mapping, ServletContext context) {
+    private void registerServletToContext(ServletContext context) {
         getLogger().info("Registering VaadinCDIServlet");
 
         ServletRegistration.Dynamic registration = context.addServlet(
                 "VaadinCDIServlet", servletInstanceProvider.get());
 
         registration.addMapping("/VAADIN/*");
-        addMappingToRegistration(mapping, registration);
+        addMappingToRegistration(urlMapping, registration);
     }
 
     /**

@@ -1,13 +1,34 @@
+/*
+ * Copyright 2012 Vaadin Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.vaadin.cdi;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.jboss.arquillian.ajocado.Graphene.*;
-import static org.junit.Assert.*;
+import static org.jboss.arquillian.ajocado.Graphene.elementPresent;
+import static org.jboss.arquillian.ajocado.Graphene.id;
+import static org.jboss.arquillian.ajocado.Graphene.retrieveText;
+import static org.jboss.arquillian.ajocado.Graphene.waitModel;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.thoughtworks.selenium.SeleniumException;
 import org.jboss.arquillian.ajocado.framework.GrapheneSelenium;
 import org.jboss.arquillian.ajocado.locator.IdLocator;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -20,7 +41,24 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.vaadin.cdi.uis.*;
+import com.thoughtworks.selenium.SeleniumException;
+import com.vaadin.cdi.uis.DanglingView;
+import com.vaadin.cdi.uis.DependentCDIEventListener;
+import com.vaadin.cdi.uis.FirstUI;
+import com.vaadin.cdi.uis.InstrumentedInterceptor;
+import com.vaadin.cdi.uis.InstrumentedUI;
+import com.vaadin.cdi.uis.InstrumentedView;
+import com.vaadin.cdi.uis.InterceptedBean;
+import com.vaadin.cdi.uis.InterceptedUI;
+import com.vaadin.cdi.uis.RestrictedView;
+import com.vaadin.cdi.uis.RootUI;
+import com.vaadin.cdi.uis.ScopedInstrumentedView;
+import com.vaadin.cdi.uis.SecondUI;
+import com.vaadin.cdi.uis.UIWithCDIDependentListener;
+import com.vaadin.cdi.uis.UIWithCDISelfListener;
+import com.vaadin.cdi.uis.UnsecuredUI;
+import com.vaadin.cdi.uis.ViewWithoutAnnotation;
+import com.vaadin.cdi.uis.WithAnnotationRegisteredView;
 
 @RunAsClient
 @RunWith(Arquillian.class)
@@ -61,10 +99,12 @@ public class CDIIntegrationWithVaadinIT {
         return ArchiveProvider.createWebArchive(InstrumentedUI.class,
                 InstrumentedView.class, ScopedInstrumentedView.class,
                 ViewWithoutAnnotation.class, RootUI.class, FirstUI.class,
-                SecondUI.class,UnsecuredUI.class, WithAnnotationRegisteredView.class,
+                SecondUI.class, UnsecuredUI.class,
+                WithAnnotationRegisteredView.class,
                 UIWithCDISelfListener.class, UIWithCDIDependentListener.class,
                 DependentCDIEventListener.class, InterceptedUI.class,
-                InstrumentedInterceptor.class, InterceptedBean.class,RestrictedView.class);
+                InstrumentedInterceptor.class, InterceptedBean.class,
+                RestrictedView.class);
     }
 
     @Before
@@ -278,24 +318,27 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     @Test
-    public void unsecuredUI() throws MalformedURLException{
+    public void unsecuredUI() throws MalformedURLException {
         openWindow(UNSECURED_UI_URI);
         final String principalName = firstWindow.getText(id("principalName"));
         final String isUserInRole = firstWindow.getText(id("isUserInRole"));
-        final String isUserInSomeRole = firstWindow.getText(id("isUserInSomeRole"));
-        final String currentRequestNotNull = firstWindow.getText(id("currentRequestNotNull"));
+        final String isUserInSomeRole = firstWindow
+                .getText(id("isUserInSomeRole"));
+        final String currentRequestNotNull = firstWindow
+                .getText(id("currentRequestNotNull"));
         final String isUserSignedIn = firstWindow.getText(id("isUserSignedIn"));
         final String disabled = firstWindow.getText(id("disabled"));
-        try{
+        try {
             firstWindow.getText(id("invisible"));
             fail("Invisible element should not be accessible");
-        }catch(SeleniumException ex){}
+        } catch (SeleniumException ex) {
+        }
         assertFalse(Boolean.parseBoolean(principalName));
         assertFalse(Boolean.parseBoolean(isUserInRole));
         assertFalse(Boolean.parseBoolean(isUserInSomeRole));
         assertTrue(Boolean.parseBoolean(currentRequestNotNull));
         assertFalse(Boolean.parseBoolean(isUserSignedIn));
-        assertThat(disabled,is("DisabledLabel"));
+        assertThat(disabled, is("DisabledLabel"));
     }
 
     void assertDefaultRootNotInstantiated() {

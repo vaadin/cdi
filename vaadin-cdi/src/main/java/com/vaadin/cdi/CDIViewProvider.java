@@ -1,13 +1,26 @@
+/*
+ * Copyright 2012 Vaadin Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.vaadin.cdi;
 
-import com.vaadin.cdi.component.JaasTools;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewProvider;
-import com.vaadin.ui.UI;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Any;
@@ -15,6 +28,11 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
+
+import com.vaadin.cdi.component.JaasTools;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewProvider;
+import com.vaadin.ui.UI;
 
 public class CDIViewProvider implements ViewProvider {
 
@@ -24,7 +42,9 @@ public class CDIViewProvider implements ViewProvider {
 
     @Override
     public String getViewName(String viewAndParameters) {
-        LOG().log(Level.INFO, "Attempting to retrieve view name from string \"{0}\"", viewAndParameters);
+        LOG().log(Level.INFO,
+                "Attempting to retrieve view name from string \"{0}\"",
+                viewAndParameters);
 
         String name = parseViewName(viewAndParameters);
 
@@ -36,16 +56,17 @@ public class CDIViewProvider implements ViewProvider {
 
         if (isUserHavingAccessToView(viewBean)) {
             if (viewBean.getBeanClass().isAnnotationPresent(VaadinView.class)) {
-                String specifiedViewName = viewBean.getBeanClass().getAnnotation(VaadinView.class).value();
+                String specifiedViewName = viewBean.getBeanClass()
+                        .getAnnotation(VaadinView.class).value();
                 if (!specifiedViewName.isEmpty()) {
                     return specifiedViewName;
                 }
             }
             return name;
         } else {
-            LOG().log(
-                    Level.INFO, "User {0} did not have access to view \"{1}\"",
-                    new Object[]{JaasTools.getPrincipalName(), viewBean});
+            LOG().log(Level.INFO,
+                    "User {0} did not have access to view \"{1}\"",
+                    new Object[] { JaasTools.getPrincipalName(), viewBean });
         }
 
         return null;
@@ -65,8 +86,10 @@ public class CDIViewProvider implements ViewProvider {
                         .rolesAllowed());
 
                 LOG().log(
-                        Level.INFO, "Checking if user {0} is having access to {1}: {2}",
-                        new Object[]{JaasTools.getPrincipalName(), viewBean, Boolean.toString(hasAccess)});
+                        Level.INFO,
+                        "Checking if user {0} is having access to {1}: {2}",
+                        new Object[] { JaasTools.getPrincipalName(), viewBean,
+                                Boolean.toString(hasAccess) });
 
                 return hasAccess;
             }
@@ -83,7 +106,8 @@ public class CDIViewProvider implements ViewProvider {
                 new AnnotationLiteral<Any>() {
                 });
         if (all.isEmpty()) {
-            LOG().severe("No Views found! Please add at least one class implemeting the View interface.");
+            LOG().severe(
+                    "No Views found! Please add at least one class implemeting the View interface.");
             return null;
         }
         for (Bean<?> bean : all) {
@@ -93,23 +117,28 @@ public class CDIViewProvider implements ViewProvider {
             String mapping = null;
             if (viewAnnotation != null) {
                 mapping = viewAnnotation.value();
-                LOG().log(Level.INFO, "{0} is annotated, the viewName is \"{1}\"",
-                        new Object[]{beanClass.getName(), mapping});
+                LOG().log(Level.INFO,
+                        "{0} is annotated, the viewName is \"{1}\"",
+                        new Object[] { beanClass.getName(), mapping });
             }
             if (viewAnnotation == null || mapping == null || mapping.isEmpty()) {
                 mapping = Conventions.deriveMappingForView(beanClass);
-                LOG().log(
-                        Level.INFO, "No viewName for view {0} found, using \"{1}\"",
-                        new Object[]{beanClass.getName(), mapping});
+                LOG().log(Level.INFO,
+                        "No viewName for view {0} found, using \"{1}\"",
+                        new Object[] { beanClass.getName(), mapping });
             }
-            if (viewAnnotation != null && viewAnnotation.supportsParameters() && viewName.startsWith(mapping)) {
+            if (viewAnnotation != null && viewAnnotation.supportsParameters()
+                    && viewName.startsWith(mapping)) {
                 matching.add(bean);
                 LOG().log(
-                        Level.INFO, "Bean {0} with viewName \"{1}\" is one alternative for viewAndParameters \"{2}\"", new Object[]{bean, mapping, viewName});
+                        Level.INFO,
+                        "Bean {0} with viewName \"{1}\" is one alternative for viewAndParameters \"{2}\"",
+                        new Object[] { bean, mapping, viewName });
             } else if (viewName.equals(mapping)) {
                 matching.add(bean);
-                LOG().log(
-                        Level.INFO, "Bean {0} with viewName \"{1}\" is one alternative", new Object[]{bean, mapping});
+                LOG().log(Level.INFO,
+                        "Bean {0} with viewName \"{1}\" is one alternative",
+                        new Object[] { bean, mapping });
             }
         }
 
@@ -149,27 +178,32 @@ public class CDIViewProvider implements ViewProvider {
 
     @Override
     public View getView(String viewName) {
-        LOG().log(Level.INFO, "Attempting to retrieve view with name \"{0}\"", viewName);
+        LOG().log(Level.INFO, "Attempting to retrieve view with name \"{0}\"",
+                viewName);
         Bean<?> viewBean = getViewBean(viewName);
 
         if (viewBean != null) {
             if (!isUserHavingAccessToView(viewBean)) {
-                LOG().log(
-                        Level.INFO, "User {0} did not have access to view {1}",
-                        new Object[]{JaasTools.getPrincipalName(), viewBean});
+                LOG().log(Level.INFO,
+                        "User {0} did not have access to view {1}",
+                        new Object[] { JaasTools.getPrincipalName(), viewBean });
                 return null;
             }
 
             if (currentViewCreationalContext != null) {
-                LOG().log(Level.INFO, "Releasing creational context for current view {0}", currentViewCreationalContext);
+                LOG().log(Level.INFO,
+                        "Releasing creational context for current view {0}",
+                        currentViewCreationalContext);
                 currentViewCreationalContext.release();
             }
 
-            currentViewCreationalContext = beanManager.createCreationalContext(viewBean);
-            LOG().log(Level.INFO, "Created new creational context for current view {0}", currentViewCreationalContext);
-            View view = (View) beanManager.getReference(viewBean,
-                    viewBean.getBeanClass(),
+            currentViewCreationalContext = beanManager
+                    .createCreationalContext(viewBean);
+            LOG().log(Level.INFO,
+                    "Created new creational context for current view {0}",
                     currentViewCreationalContext);
+            View view = (View) beanManager.getReference(viewBean,
+                    viewBean.getBeanClass(), currentViewCreationalContext);
             LOG().log(Level.INFO, "Returning view instance {0}", view);
             return view;
         }
@@ -180,7 +214,9 @@ public class CDIViewProvider implements ViewProvider {
     @PreDestroy
     protected void destroy() {
         if (currentViewCreationalContext != null) {
-            LOG().log(Level.INFO, "CDIViewProvider is being destroyed, releasing creational context for current view");
+            LOG().log(
+                    Level.INFO,
+                    "CDIViewProvider is being destroyed, releasing creational context for current view");
             currentViewCreationalContext.release();
         }
     }

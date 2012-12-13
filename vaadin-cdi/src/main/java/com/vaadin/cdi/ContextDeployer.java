@@ -161,15 +161,16 @@ public class ContextDeployer implements ServletContextListener {
      */
     private void discoverURLMappingFromRoot() {
         Set<Bean<?>> beans = getRootAnnotatedBeans();
+        if (beans != null && !beans.isEmpty()) {
+            Class<?> rootClass = beans.iterator().next().getBeanClass();
 
-        Class<?> rootClass = beans.iterator().next().getBeanClass();
-
-        URLMapping urlMappingAnnotation = rootClass
-                .getAnnotation(URLMapping.class);
-        if (urlMappingAnnotation != null) {
-            urlMapping = urlMappingAnnotation.value();
-            getLogger().info(
-                    "Will map VaadinCDIServlet to '" + urlMapping + "'");
+            URLMapping urlMappingAnnotation = rootClass
+                    .getAnnotation(URLMapping.class);
+            if (urlMappingAnnotation != null) {
+                urlMapping = urlMappingAnnotation.value();
+                getLogger().info(
+                        "Will map VaadinCDIServlet to '" + urlMapping + "'");
+            }
         }
     }
 

@@ -222,11 +222,17 @@ public class CDIViewProvider implements ViewProvider {
     }
 
     private String parseViewName(String viewAndParameters) {
-        if (viewAndParameters.startsWith("!")) {
-            return viewAndParameters.substring(1);
+
+        String viewName = viewAndParameters;
+        if (viewName.startsWith("!")) {
+            viewName = viewName.substring(1);
+        }
+        
+        if (viewName.contains("/")) {
+            viewName = viewName.split("/")[0];
         }
 
-        return viewAndParameters;
+        return viewName;
     }
 
     private static Logger LOG() {

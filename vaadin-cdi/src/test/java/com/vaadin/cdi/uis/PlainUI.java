@@ -16,11 +16,6 @@
 
 package com.vaadin.cdi.uis;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.cdi.VaadinUI;
 import com.vaadin.navigator.Navigator;
@@ -30,16 +25,16 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import java.util.concurrent.atomic.AtomicInteger;
+
 @VaadinUI
-public class InstrumentedUI extends UI {
+public class PlainUI extends UI {
 
     @Inject
     InstrumentedView view;
 
-    @Inject
-    CDIViewProvider viewProvider;
-
-    private Navigator navigator;
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
     private int clickCount;
@@ -57,28 +52,10 @@ public class InstrumentedUI extends UI {
 
         VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
-        navigator = new Navigator(this, layout);
-        navigator.addProvider(viewProvider);
 
-        final Label label = new Label("+InstrumentedUI");
+        final Label label = new Label("+PlainUI");
         label.setId("label");
-        Button button = new Button("Change Label", new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                label.setValue(String.valueOf(++clickCount));
-            }
-        });
-        button.setId("button");
-        Button navigate = new Button("Navigate", new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                navigator.navigateTo("");
-            }
-        });
-        navigate.setId("navigate");
         layout.addComponent(label);
-        layout.addComponent(button);
-        layout.addComponent(navigate);
         setContent(layout);
     }
 

@@ -29,6 +29,7 @@ import static org.junit.Assert.fail;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.vaadin.cdi.uis.*;
 import org.jboss.arquillian.ajocado.framework.GrapheneSelenium;
 import org.jboss.arquillian.ajocado.locator.IdLocator;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -42,23 +43,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.thoughtworks.selenium.SeleniumException;
-import com.vaadin.cdi.uis.DanglingView;
-import com.vaadin.cdi.uis.DependentCDIEventListener;
-import com.vaadin.cdi.uis.FirstUI;
-import com.vaadin.cdi.uis.InstrumentedInterceptor;
-import com.vaadin.cdi.uis.InstrumentedUI;
-import com.vaadin.cdi.uis.InstrumentedView;
-import com.vaadin.cdi.uis.InterceptedBean;
-import com.vaadin.cdi.uis.InterceptedUI;
-import com.vaadin.cdi.uis.RestrictedView;
-import com.vaadin.cdi.uis.RootUI;
-import com.vaadin.cdi.uis.ScopedInstrumentedView;
-import com.vaadin.cdi.uis.SecondUI;
-import com.vaadin.cdi.uis.UIWithCDIDependentListener;
-import com.vaadin.cdi.uis.UIWithCDISelfListener;
-import com.vaadin.cdi.uis.UnsecuredUI;
-import com.vaadin.cdi.uis.ViewWithoutAnnotation;
-import com.vaadin.cdi.uis.WithAnnotationRegisteredView;
 
 @RunAsClient
 @RunWith(Arquillian.class)
@@ -74,6 +58,7 @@ public class CDIIntegrationWithVaadinIT {
     private final static IdLocator BUTTON = id("button");
     private final static IdLocator NAVIGATE_BUTTON = id("navigate");
     private final static String UI_URI = "instrumentedUI";
+    private final static String PLAIN_UI_URI = "plainUI";
     private final static String UI_WITH_CDISELF_LISTENER = "uIWithCDISelfListener";
     private final static String INTERCEPTED_UI = "interceptedUI";
     private static final String UI_WITH_CDI_DEPENDENT_LISTENER = "uIWithCDIDependentListener";
@@ -104,11 +89,12 @@ public class CDIIntegrationWithVaadinIT {
                 UIWithCDISelfListener.class, UIWithCDIDependentListener.class,
                 DependentCDIEventListener.class, InterceptedUI.class,
                 InstrumentedInterceptor.class, InterceptedBean.class,
-                RestrictedView.class);
+                RestrictedView.class,PlainUI.class);
     }
 
     @Before
     public void resetCounter() {
+        PlainUI.resetCounter();
         InstrumentedUI.resetCounter();
         InstrumentedView.resetCounter();
         ScopedInstrumentedView.resetCounter();
@@ -140,16 +126,16 @@ public class CDIIntegrationWithVaadinIT {
     @Test
     public void pageIsRenderedAndEmptyUICreatedAsManagedBean()
             throws MalformedURLException {
-        openWindow(UI_URI);
-        assertTrue("InstrumentedUI should contain a label",
+        openWindow(PLAIN_UI_URI);
+        assertTrue("PlainUI should contain a label",
                 firstWindow.isElementPresent(LABEL));
-        assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
+        assertThat(PlainUI.getNumberOfInstances(), is(1));
         // reset session
         firstWindow.restartBrowser();
-        openWindow(UI_URI);
-        assertTrue("InstrumentedUI should contain a label",
+        openWindow(PLAIN_UI_URI);
+        assertTrue("PlainUI should contain a label",
                 firstWindow.isElementPresent(LABEL));
-        assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
+        assertThat(PlainUI.getNumberOfInstances(), is(2));
         assertDefaultRootNotInstantiated();
 
     }

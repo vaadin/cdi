@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.views.OneAndOnlyViewWithoutPath;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;

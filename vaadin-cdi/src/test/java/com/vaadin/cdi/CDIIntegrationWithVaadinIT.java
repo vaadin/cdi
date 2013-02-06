@@ -124,7 +124,7 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     @Test
-    public void pageIsRenderedAndEmptyUICreatedAsManagedBean()
+    public void browserRestartCreatesNewManagedBean()
             throws MalformedURLException {
         openWindow(PLAIN_UI_URI);
         assertTrue("PlainUI should contain a label",

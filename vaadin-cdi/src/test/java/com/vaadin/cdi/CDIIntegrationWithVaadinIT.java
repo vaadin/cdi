@@ -188,7 +188,6 @@ public class CDIIntegrationWithVaadinIT {
     public void recognitionOfViewWithoutAnnotation()
             throws MalformedURLException {
         openWindow(VIEW_WITHOUT_ANNOTATION);
-        firstWindow.click(NAVIGATE_BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(ViewWithoutAnnotation.getNumberOfInstances(), is(1));
         assertDefaultRootNotInstantiated();

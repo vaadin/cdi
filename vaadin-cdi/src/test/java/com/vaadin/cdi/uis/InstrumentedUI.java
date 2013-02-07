@@ -21,8 +21,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import com.sun.beans.ObjectHandler;
 import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.views.OneAndOnlyViewWithPath;
 import com.vaadin.cdi.views.OneAndOnlyViewWithoutPath;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
@@ -56,10 +58,8 @@ public class InstrumentedUI extends UI {
     protected void init(VaadinRequest request) {
         setSizeFull();
 
-        VerticalLayout layout = new VerticalLayout();
+        final VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
-        navigator = new Navigator(this, layout);
-        navigator.addProvider(viewProvider);
 
         final Label label = new Label("+InstrumentedUI");
         label.setId("label");
@@ -73,7 +73,9 @@ public class InstrumentedUI extends UI {
         Button navigate = new Button("Navigate", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                navigator.navigateTo("");
+                navigator = new Navigator(InstrumentedUI.this, layout);
+                navigator.addProvider(viewProvider);
+                navigator.navigateTo("instrumentedView");
             }
         });
         navigate.setId("navigate");

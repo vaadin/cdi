@@ -52,17 +52,17 @@ public class SecondUI extends UI {
     protected void init(VaadinRequest request) {
         setSizeFull();
 
-        VerticalLayout layout = new VerticalLayout();
+        final VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
-        navigator = new Navigator(this, layout);
-        navigator.addProvider(viewProvider);
 
         final Label label = new Label("+SecondUI");
         label.setId("label");
         Button navigate = new Button("button", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                navigator.navigateTo("");
+                navigator = new Navigator(SecondUI.this, layout);
+                navigator.addProvider(viewProvider);
+                navigator.navigateTo("danglingView");
             }
         });
         navigate.setId("navigate");

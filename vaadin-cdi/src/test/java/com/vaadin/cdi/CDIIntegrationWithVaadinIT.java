@@ -195,6 +195,17 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     @Test
+    public void withAnnotationRegisteredView() throws MalformedURLException {
+        ParameterizedNavigationUI.NAVIGATE_TO = "withAnnotationRegisteredView";
+        openWindow(Conventions.deriveMappingForUI(ParameterizedNavigationUI.class));
+        firstWindow.click(NAVIGATE_BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(WithAnnotationRegisteredView.getNumberOfInstances(), is(1));
+        assertDefaultRootNotInstantiated();
+    }
+
+
+    @Test
     public void rootUIDiscovery() throws MalformedURLException {
         assertThat(RootUI.getNumberOfInstances(), is(0));
         openWindow("");
@@ -223,15 +234,6 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(DanglingView.getNumberOfInstances(), is(0));
     }
 
-    @Test
-    public void withAnnotationRegisteredView() throws MalformedURLException {
-        openWindow(WITH_ANNOTATION_REGISTERED_VIEW);
-        waitModel.until(elementPresent.locator(LABEL));
-        firstWindow.click(NAVIGATE_BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
-        assertThat(SecondUI.getNumberOfInstances(), is(1));
-        assertThat(WithAnnotationRegisteredView.getNumberOfInstances(), is(1));
-    }
 
     @Test
     public void cdiEventsArrivesInTheSameUIScopedInstance()
@@ -292,14 +294,15 @@ public class CDIIntegrationWithVaadinIT {
 
     @Test
     public void navigationToRestrictedViewFails() throws MalformedURLException {
-        assertThat(FirstUI.getNumberOfInstances(), is(0));
+        assertThat(ParameterizedNavigationUI.getNumberOfInstances(), is(0));
         assertThat(RestrictedView.getNumberOfInstances(), is(0));
-        openWindow(RESTRICTED_VIEW_URI);
-        waitModel.until(elementPresent.locator(LABEL));
+        ParameterizedNavigationUI.NAVIGATE_TO = Conventions.deriveMappingForView(RestrictedView.class);
+        openWindow(Conventions.deriveMappingForUI(ParameterizedNavigationUI.class));
         firstWindow.click(NAVIGATE_BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
-        assertThat(FirstUI.getNumberOfInstances(), is(1));
+        assertThat(ParameterizedNavigationUI.getNumberOfInstances(), is(1));
         assertThat(RestrictedView.getNumberOfInstances(), is(0));
+        assertDefaultRootNotInstantiated();
 
     }
 

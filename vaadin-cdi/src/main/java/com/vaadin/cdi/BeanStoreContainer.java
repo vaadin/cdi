@@ -70,10 +70,6 @@ public class BeanStoreContainer implements Serializable {
         return unfinishedBeanStore;
     }
 
-    public UIBeanStore getUIBeanStore(int uiID) {
-        return beanStores.get(uiID);
-    }
-
     /**
      * @return true if UI bean store creation is pending. This means that there
      *         is unassigned UI bean store available that has not yet been

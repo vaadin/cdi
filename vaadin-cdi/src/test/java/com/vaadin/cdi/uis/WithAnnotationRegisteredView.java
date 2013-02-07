@@ -30,7 +30,7 @@ import com.vaadin.ui.VerticalLayout;
 /**
  * @author adam-bien.com
  */
-@VaadinView(ui = SecondUI.class)
+@VaadinView
 public class WithAnnotationRegisteredView extends CustomComponent implements
         View {
 

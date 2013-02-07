@@ -71,12 +71,6 @@ public class CDIIntegrationWithVaadinIT {
     private final static String DANGLING_VIEW_URI = SECOND_UI_URI
             + "/#!danglingView";
 
-    private final static String RESTRICTED_VIEW_URI = FIRST_UI_URI
-            + "/#!restrictedView";
-
-    private final static String WITH_ANNOTATION_REGISTERED_VIEW = SECOND_UI_URI
-            + "/#!withAnnotationRegisteredView";
-
     @Deployment
     public static WebArchive deploy() {
         return ArchiveProvider.createWebArchive(InstrumentedUI.class,
@@ -87,7 +81,7 @@ public class CDIIntegrationWithVaadinIT {
                 UIWithCDISelfListener.class, UIWithCDIDependentListener.class,
                 DependentCDIEventListener.class, InterceptedUI.class,
                 InstrumentedInterceptor.class, InterceptedBean.class,
-                RestrictedView.class,PlainUI.class,ParameterizedNavigationUI.class);
+                RestrictedView.class, PlainUI.class, ParameterizedNavigationUI.class, SubUI.class);
     }
 
     @Before
@@ -195,22 +189,20 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     @Test
-    public void withAnnotationRegisteredView() throws MalformedURLException {
-        ParameterizedNavigationUI.NAVIGATE_TO = "withAnnotationRegisteredView";
-        openWindow(Conventions.deriveMappingForUI(ParameterizedNavigationUI.class));
-        firstWindow.click(NAVIGATE_BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
-        assertThat(WithAnnotationRegisteredView.getNumberOfInstances(), is(1));
-        assertDefaultRootNotInstantiated();
-    }
-
-
-    @Test
     public void rootUIDiscovery() throws MalformedURLException {
         assertThat(RootUI.getNumberOfInstances(), is(0));
         openWindow("");
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(RootUI.getNumberOfInstances(), is(1));
+    }
+
+
+    @Test
+    public void uiInheritance() throws MalformedURLException {
+        openWindow(Conventions.deriveMappingForUI(SubUI.class));
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(SubUI.getNumberOfInstances(), is(1));
+        assertDefaultRootNotInstantiated();
     }
 
     @Test

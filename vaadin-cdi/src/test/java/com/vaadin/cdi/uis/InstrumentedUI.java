@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import com.sun.beans.ObjectHandler;
 import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.cdi.VaadinUI;
 import com.vaadin.cdi.views.OneAndOnlyViewWithPath;

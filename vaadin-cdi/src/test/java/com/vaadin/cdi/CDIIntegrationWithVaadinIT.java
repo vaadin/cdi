@@ -74,8 +74,6 @@ public class CDIIntegrationWithVaadinIT {
     private final static String RESTRICTED_VIEW_URI = FIRST_UI_URI
             + "/#!restrictedView";
 
-    private final static String VIEW_WITHOUT_ANNOTATION = SECOND_UI_URI
-            + "/#!viewWithoutAnnotation";
     private final static String WITH_ANNOTATION_REGISTERED_VIEW = SECOND_UI_URI
             + "/#!withAnnotationRegisteredView";
 
@@ -89,7 +87,7 @@ public class CDIIntegrationWithVaadinIT {
                 UIWithCDISelfListener.class, UIWithCDIDependentListener.class,
                 DependentCDIEventListener.class, InterceptedUI.class,
                 InstrumentedInterceptor.class, InterceptedBean.class,
-                RestrictedView.class,PlainUI.class);
+                RestrictedView.class,PlainUI.class,ParameterizedNavigationUI.class);
     }
 
     @Before
@@ -107,6 +105,7 @@ public class CDIIntegrationWithVaadinIT {
         UIWithCDISelfListener.resetCounter();
         DependentCDIEventListener.resetCounter();
         DependentCDIEventListener.resetEventCounter();
+        ParameterizedNavigationUI.reset();
         firstWindow.restartBrowser();
 
     }
@@ -187,7 +186,9 @@ public class CDIIntegrationWithVaadinIT {
     @Test
     public void recognitionOfViewWithoutAnnotation()
             throws MalformedURLException {
-        openWindow(VIEW_WITHOUT_ANNOTATION);
+        ParameterizedNavigationUI.NAVIGATE_TO = "viewWithoutAnnotation";
+        openWindow(Conventions.deriveMappingForUI(ParameterizedNavigationUI.class));
+        firstWindow.click(NAVIGATE_BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(ViewWithoutAnnotation.getNumberOfInstances(), is(1));
         assertDefaultRootNotInstantiated();

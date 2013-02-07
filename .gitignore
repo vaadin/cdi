@@ -5,5 +5,5 @@ target/
 nbactions.xml
 .idea/
 .iml
-
 *.iml
+*.log

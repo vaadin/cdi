@@ -39,23 +39,19 @@ public class ArchiveProvider {
             UIBeanStore.class, VaadinCDIServlet.class, UIScopedContext.class,
             VaadinUI.class };
 
-    public static WebArchive createWebArchive(String packageName,
-            Class... classes) {
-        return createWebArchive(classes).addPackage(packageName);
-    }
 
-    public static WebArchive createWebArchive(Class... classes) {
-        WebArchive archive = base();
+    public static WebArchive createWebArchive(String warName,Class... classes) {
+        WebArchive archive = base(warName);
         archive.addClasses(classes);
         System.out.println(archive.toString(true));
         return archive;
     }
 
-    static WebArchive base() {
+    static WebArchive base(String warName) {
         MavenDependencyResolver resolver = DependencyResolvers.use(
                 MavenDependencyResolver.class).loadMetadataFromPom("pom.xml");
         return ShrinkWrap
-                .create(WebArchive.class, "vaadinextension.war")
+                .create(WebArchive.class,warName + ".war")
                 .addClasses(FRAMEWORK_CLASSES)
                 .addAsLibraries(
                         resolver.artifact(
@@ -73,13 +69,6 @@ public class ArchiveProvider {
                 .addAsWebInfResource(EmptyAsset.INSTANCE,
                         ArchivePaths.create("beans.xml"));
 
-    }
-
-    public static WebArchive createWebArchive(String packageName) {
-        WebArchive archive = base();
-        archive.addPackage(packageName);
-        System.out.println(archive.toString(true));
-        return archive;
     }
 
 }

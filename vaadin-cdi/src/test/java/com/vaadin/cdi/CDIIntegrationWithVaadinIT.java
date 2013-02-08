@@ -33,6 +33,7 @@ import com.vaadin.cdi.uis.*;
 import org.jboss.arquillian.ajocado.framework.GrapheneSelenium;
 import org.jboss.arquillian.ajocado.locator.IdLocator;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
@@ -72,8 +73,8 @@ public class CDIIntegrationWithVaadinIT {
             + "/#!danglingView";
 
     @Deployment
-    public static WebArchive deploy() {
-        return ArchiveProvider.createWebArchive(InstrumentedUI.class,
+    public static WebArchive archiveWithDefaultRootUI() {
+        return ArchiveProvider.createWebArchive("default",InstrumentedUI.class,
                 InstrumentedView.class, ScopedInstrumentedView.class,
                 ViewWithoutAnnotation.class, RootUI.class, FirstUI.class,
                 SecondUI.class, UnsecuredUI.class,
@@ -82,6 +83,11 @@ public class CDIIntegrationWithVaadinIT {
                 DependentCDIEventListener.class, InterceptedUI.class,
                 InstrumentedInterceptor.class, InterceptedBean.class,
                 RestrictedView.class, PlainUI.class, ParameterizedNavigationUI.class, SubUI.class);
+    }
+
+    @Deployment(name = "customURIMapping")
+    public static WebArchive archiveWithCustomURIMapping() {
+        return ArchiveProvider.createWebArchive("custom",RootWithCustomMappingUI.class);
     }
 
     @Before
@@ -95,6 +101,7 @@ public class CDIIntegrationWithVaadinIT {
         SecondUI.resetCounter();
         FirstUI.resetCounter();
         RootUI.resetCounter();
+        RootWithCustomMappingUI.resetCounter();
         UIWithCDIDependentListener.resetCounter();
         UIWithCDISelfListener.resetCounter();
         DependentCDIEventListener.resetCounter();
@@ -295,6 +302,15 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(ParameterizedNavigationUI.getNumberOfInstances(), is(1));
         assertThat(RestrictedView.getNumberOfInstances(), is(0));
         assertDefaultRootNotInstantiated();
+
+    }
+
+    @Test @OperateOnDeployment("customURIMapping")
+    public void customServletMapping() throws MalformedURLException {
+        assertThat(RootWithCustomMappingUI.getNumberOfInstances(), is(0));
+        openWindow("customURI/rootWithCustomMappingUI");
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(RootWithCustomMappingUI.getNumberOfInstances(), is(1));
 
     }
 

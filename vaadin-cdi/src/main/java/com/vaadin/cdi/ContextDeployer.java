@@ -232,15 +232,10 @@ public class ContextDeployer implements ServletContextListener {
             return;
         }
 
-        registerVaadinCDIServletToContextRoot(context);
-
-    }
-
-    private void registerVaadinCDIServletToContextRoot(ServletContext context) {
-        getLogger().info(
-                "Attempt to deploy VaadinCDIServlet to context root...");
         registerServletToContext(context);
+
     }
+
 
     private void registerServletToContext(ServletContext context) {
         getLogger().info("Registering VaadinCDIServlet");
@@ -249,19 +244,9 @@ public class ContextDeployer implements ServletContextListener {
                 "VaadinCDIServlet", servletInstanceProvider.get());
 
         registration.addMapping("/VAADIN/*");
-        addMappingToRegistration(urlMapping, registration);
-    }
-
-    /**
-     * Adds given value to given servlet registration
-     * 
-     * @param mapping
-     * @param registration
-     */
-    private void addMappingToRegistration(String mapping, Dynamic registration) {
         getLogger()
                 .info("Mapping " + registration.getName() + " to " + mapping);
-        registration.addMapping(mapping);
+        registration.addMapping(urlMapping);
     }
 
     @Override

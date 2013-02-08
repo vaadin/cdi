@@ -38,7 +38,6 @@ public class VaadinCDIServlet extends VaadinServlet {
 
         @Override
         public void sessionInit(SessionInitEvent event) throws ServiceException {
-            VaadinService service = event.getService();
             final VaadinSession session = event.getSession();
             logger().info("Registering ui CDIUIProvider: " + cdiRootProvider);
             session.addUIProvider(cdiRootProvider);

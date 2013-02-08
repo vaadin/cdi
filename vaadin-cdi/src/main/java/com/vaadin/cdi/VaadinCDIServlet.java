@@ -34,6 +34,8 @@ public class VaadinCDIServlet extends VaadinServlet {
     @Inject
     private CDIUIProvider cdiRootProvider;
 
+    private static boolean stopDeployment;
+
     private final SessionInitListener sessionInitListener = new SessionInitListener() {
 
         @Override
@@ -44,9 +46,22 @@ public class VaadinCDIServlet extends VaadinServlet {
         }
     };
 
+    /**
+     * Call to this method prevents successful deployment of the VaadinCDIServlet
+     * This method is a workaround, because ContextDeployer is not able
+     * to stop the deployment reliably (tested with TomEE 1.5)
+     */
+    public void stopDeployment(){
+        stopDeployment = true;
+    }
+
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
+        if(stopDeployment){
+            stopDeployment = false;
+            throw new InconsistentDeploymentException("Inconsistent deployment unit detected, aborting...");
+        }
         logger().info("VaadinCDIServlet initialized");
         getService().addSessionInitListener(sessionInitListener);
     }

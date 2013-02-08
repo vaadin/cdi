@@ -58,10 +58,13 @@ public class ContextDeployer implements ServletContextListener {
         getLogger()
                 .info("Initializing web context for path "
                         + context.getContextPath());
-
-        discoverUIMappingsFromAnnotations();
-
-        discoverURLMappingFromRoot();
+        try{
+            discoverUIMappingsFromAnnotations();
+            discoverURLMappingFromRoot();
+        }catch(InconsistentDeploymentException e){
+            servletInstanceProvider.get().stopDeployment();
+            throw e;
+        }
 
         deployVaadinCDIServlet(context);
 
@@ -245,7 +248,7 @@ public class ContextDeployer implements ServletContextListener {
 
         registration.addMapping("/VAADIN/*");
         getLogger()
-                .info("Mapping " + registration.getName() + " to " + mapping);
+                .info("Mapping " + registration.getName() + " to " + urlMapping);
         registration.addMapping(urlMapping);
     }
 

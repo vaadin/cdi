@@ -16,6 +16,7 @@
 
 package com.vaadin.cdi;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.jboss.arquillian.ajocado.Graphene.elementPresent;
 import static org.jboss.arquillian.ajocado.Graphene.id;
@@ -32,11 +33,10 @@ import java.net.URL;
 import com.vaadin.cdi.uis.*;
 import org.jboss.arquillian.ajocado.framework.GrapheneSelenium;
 import org.jboss.arquillian.ajocado.locator.IdLocator;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.container.test.api.*;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
@@ -54,6 +54,9 @@ public class CDIIntegrationWithVaadinIT {
 
     @ArquillianResource
     URL contextPath;
+
+    @ArquillianResource
+    private Deployer deployer;
 
     private final static IdLocator LABEL = id("label");
     private final static IdLocator BUTTON = id("button");
@@ -90,6 +93,11 @@ public class CDIIntegrationWithVaadinIT {
         return ArchiveProvider.createWebArchive("custom",RootWithCustomMappingUI.class);
     }
 
+    @Deployment(name = "multipleRoots",managed = false)
+    public static WebArchive multipleRootsInWar() {
+        return ArchiveProvider.createWebArchive("multipleroots",RootWithCustomMappingUI.class,RootUI.class);
+    }
+
     @Before
     public void resetCounter() {
         PlainUI.resetCounter();
@@ -117,10 +125,18 @@ public class CDIIntegrationWithVaadinIT {
 
     void openWindow(GrapheneSelenium window, String uri)
             throws MalformedURLException {
+        openWindowNoWait(window,uri);
+        waitModel.until(elementPresent.locator(LABEL));
+    }
+
+    void openWindowNoWait(String uri) throws MalformedURLException {
+        openWindowNoWait(this.firstWindow,uri);
+    }
+
+    void openWindowNoWait(GrapheneSelenium window, String uri)
+            throws MalformedURLException {
         URL url = new URL(contextPath.toString() + uri);
         window.open(url);
-        waitModel.until(elementPresent.locator(LABEL));
-
     }
 
     @Test
@@ -311,6 +327,22 @@ public class CDIIntegrationWithVaadinIT {
         openWindow("customURI/rootWithCustomMappingUI");
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(RootWithCustomMappingUI.getNumberOfInstances(), is(1));
+
+    }
+
+    /**
+     *
+     * Tests invalid deployment of multiple roots within a WAR
+     * Should be started first--arquillian deployment are not perfectly isolated.
+     */
+    @Test @InSequence(-1)
+    public void multipleRootsBreakDeployment() throws MalformedURLException {
+        assertThat(RootUI.getNumberOfInstances(), is(0));
+        deployer.deploy("multipleRoots");
+        openWindowNoWait("");
+        final String expectedErrorMessage = this.firstWindow.getBodyText();
+        assertThat(expectedErrorMessage, containsString("Inconsistent deployment unit detected, aborting..."));
+        assertThat(RootUI.getNumberOfInstances(), is(0));
 
     }
 

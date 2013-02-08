@@ -68,7 +68,7 @@ public class ContextDeployer implements ServletContextListener {
         getLogger().info("Done deploying Vaadin UIs");
     }
 
-    private boolean isVaadinServletsDefinedInDeploymentDescriptor(
+    private boolean isVaadinServletDefinedInDeploymentDescriptor(
             ServletContext context) {
         for (ServletRegistration servletRegistration : context
                 .getServletRegistrations().values()) {
@@ -83,7 +83,7 @@ public class ContextDeployer implements ServletContextListener {
                 }
 
             } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
+                throw new InconsistentDeploymentException(e);
             }
         }
 
@@ -111,7 +111,7 @@ public class ContextDeployer implements ServletContextListener {
             String uiMapping = Conventions.deriveMappingForUI(uiBeanClass);
 
             if (configuredUIs.contains(uiMapping)) {
-                throw new RuntimeException(
+                throw new InconsistentDeploymentException(
                         "Multiple UIs configured with value " + uiMapping);
             }
 
@@ -128,7 +128,7 @@ public class ContextDeployer implements ServletContextListener {
                             + "this UI is accessible from context root of deployment");
         }
         if (numberOfRootUIs > 1) {
-            throw new RuntimeException(
+            throw new InconsistentDeploymentException(
                     "Multiple UIs configured with @Root annotation, "
                             + "only one UI can be root");
         }
@@ -216,7 +216,7 @@ public class ContextDeployer implements ServletContextListener {
      * @param context
      */
     private void deployVaadinCDIServlet(ServletContext context) {
-        if (isVaadinServletsDefinedInDeploymentDescriptor(context)) {
+        if (isVaadinServletDefinedInDeploymentDescriptor(context)) {
             getLogger()
                     .warning(
                             "Vaadin related servlet is defined in deployment descriptor, "
@@ -266,7 +266,8 @@ public class ContextDeployer implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        System.out.println("Context destroyed");
+        getLogger()
+                .info("Context destroyed");
     }
 
     private static Logger getLogger() {

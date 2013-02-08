@@ -59,14 +59,6 @@ public class UIBeanStore implements Serializable {
                 : null;
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T getBeanInstance(final Bean<T> bean) {
-        ContextualInstance<?> instance = instances.get(bean);
-        if (instance == null) {
-            return null;
-        }
-        return (T) instance.getInstance();
-    }
     public void dereferenceAllBeanInstances() {
         for (final Contextual<?> bean : new HashSet<Contextual<?>>(
                 instances.keySet())) {

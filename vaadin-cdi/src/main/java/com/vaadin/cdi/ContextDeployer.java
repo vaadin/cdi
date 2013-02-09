@@ -30,7 +30,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRegistration;
-import javax.servlet.ServletRegistration.Dynamic;
 import javax.servlet.annotation.WebListener;
 
 import com.vaadin.server.VaadinServlet;
@@ -45,7 +44,7 @@ public class ContextDeployer implements ServletContextListener {
     private Set<String> configuredUIs;
 
     @Inject
-    private Instance<VaadinCDIServlet> servletInstanceProvider;
+    private VaadinCDIServlet vaaddinCDIServlet;
 
     private String urlMapping = "/*";
 
@@ -62,7 +61,7 @@ public class ContextDeployer implements ServletContextListener {
             discoverUIMappingsFromAnnotations();
             discoverURLMappingFromRoot();
         }catch(InconsistentDeploymentException e){
-            servletInstanceProvider.get().stopDeployment();
+            vaaddinCDIServlet.stopDeployment();
             throw e;
         }
 
@@ -244,7 +243,7 @@ public class ContextDeployer implements ServletContextListener {
         getLogger().info("Registering VaadinCDIServlet");
 
         ServletRegistration.Dynamic registration = context.addServlet(
-                "VaadinCDIServlet", servletInstanceProvider.get());
+                "VaadinCDIServlet", vaaddinCDIServlet);
 
         registration.addMapping("/VAADIN/*");
         getLogger()

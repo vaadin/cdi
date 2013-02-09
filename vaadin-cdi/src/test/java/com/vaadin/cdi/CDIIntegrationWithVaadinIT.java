@@ -86,7 +86,7 @@ public class CDIIntegrationWithVaadinIT {
                 DependentCDIEventListener.class, InterceptedUI.class,
                 InstrumentedInterceptor.class, InterceptedBean.class,
                 RestrictedView.class, PlainUI.class, ParameterizedNavigationUI.class,
-                EnterpriseUI.class,Boundary.class,SubUI.class);
+                EnterpriseUI.class,Boundary.class,SubUI.class,PlainAlternativeUI.class);
     }
 
     @Deployment(name = "customURIMapping")
@@ -255,6 +255,13 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(DanglingView.getNumberOfInstances(), is(0));
     }
 
+    @Test
+    public void alternativeIsNotAccessible() throws MalformedURLException {
+        openWindowNoWait(Conventions.deriveMappingForUI(PlainAlternativeUI.class));
+        final String expectedErrorMessage = this.firstWindow.getBodyText();
+        assertThat(expectedErrorMessage, containsString("404"));
+        assertThat(PlainAlternativeUI.getNumberOfInstances(), is(0));
+    }
 
     @Test
     public void cdiEventsArrivesInTheSameUIScopedInstance()

@@ -61,7 +61,7 @@ public class VaadinCDIServlet extends VaadinServlet {
         if(reason!=null){
             String message = reason;
             reason = null;
-            throw new InconsistentDeploymentException("VaadinCDIServlet deployment aborted. Reason: " + message);
+            throw new ServletException("VaadinCDIServlet deployment aborted. Reason: " + message);
         }
         logger().info("VaadinCDIServlet initialized");
         getService().addSessionInitListener(sessionInitListener);

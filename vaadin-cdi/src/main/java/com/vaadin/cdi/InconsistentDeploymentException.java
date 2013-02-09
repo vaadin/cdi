@@ -1,14 +1,41 @@
+/*
+ * Copyright 2012 Vaadin Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.vaadin.cdi;
 
 /**
  * @author: adam-bien.com
  */
 public class InconsistentDeploymentException extends RuntimeException {
-    public InconsistentDeploymentException(String message) {
+
+    enum ID{ MULTIPLE_ROOTS,MULTIPLE_UIs_WITH_SAME_PATH,CLASS_NOT_FOUND}
+
+    private ID id;
+
+    public InconsistentDeploymentException(ID id,String message) {
         super(message);
+        this.id = id;
     }
 
-    public InconsistentDeploymentException(Exception e) {
+    public InconsistentDeploymentException(ID id,Exception e) {
         super(e);
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + id + "] Inconsistent deployment: " + getMessage();
     }
 }

@@ -13,7 +13,7 @@
     </properties>
 
     <name>vaadin-cdi</name>
-    <url>http://maven.apache.org</url>
+    <url>http://vaadin.com</url>
     <dependencyManagement>
         <dependencies>
             <dependency>

@@ -202,7 +202,7 @@ public class ContextDeployer implements ServletContextListener {
             if (beanClass.isAnnotationPresent(VaadinUI.class)) {
                 result.add(bean);
             } else {
-                getLogger().info(
+                getLogger().warning(
                         "UI without VaadinUI annotation found: "
                                 + beanClass.getName()
                                 + ", it is not available in CDI deployment");

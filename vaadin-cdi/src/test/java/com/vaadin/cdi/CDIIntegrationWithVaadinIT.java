@@ -68,7 +68,6 @@ public class CDIIntegrationWithVaadinIT {
     private static final String UI_WITH_CDI_DEPENDENT_LISTENER = "uIWithCDIDependentListener";
 
     private final static String SECOND_UI_URI = "secondUI";
-    private final static String FIRST_UI_URI = "firstUI";
     private final static String UNSECURED_UI_URI = "unsecuredUI";
     private final static String INSTRUMENTED_VIEW_URI = UI_URI
             + "/#!instrumentedView";
@@ -96,6 +95,11 @@ public class CDIIntegrationWithVaadinIT {
     @Deployment(name = "multipleRoots",managed = false)
     public static WebArchive multipleRootsInWar() {
         return ArchiveProvider.createWebArchive("multipleroots",RootWithCustomMappingUI.class,RootUI.class);
+    }
+
+    @Deployment(name = "uiPathCollision",managed = false)
+    public static WebArchive multipleUIsWithSamePath() {
+        return ArchiveProvider.createWebArchive("uiPathCollision",PathCollisionUI.class,AnotherPathCollisionUI.class);
     }
 
     @Before
@@ -333,13 +337,29 @@ public class CDIIntegrationWithVaadinIT {
     /**
      *
      * Tests invalid deployment of multiple roots within a WAR
-     * Should be started first--arquillian deployment are not perfectly isolated.
+     * Should be before the regular tests--arquillian deployments are not perfectly isolated.
      */
     @Test @InSequence(-1)
     public void multipleRootsBreakDeployment() throws MalformedURLException {
         assertThat(RootUI.getNumberOfInstances(), is(0));
         deployer.deploy("multipleRoots");
         openWindowNoWait("");
+        final String expectedErrorMessage = this.firstWindow.getBodyText();
+        assertThat(expectedErrorMessage, containsString("Inconsistent deployment unit detected, aborting..."));
+        assertThat(RootUI.getNumberOfInstances(), is(0));
+
+    }
+
+    /**
+     *
+     * Tests invalid deployment of multiple roots within a WAR
+     * Should be started first--arquillian deployments are not perfectly isolated.
+     */
+    @Test @InSequence(-2)
+    public void uiPathCollisionBreaksDeployment() throws MalformedURLException {
+        assertThat(RootUI.getNumberOfInstances(), is(0));
+        deployer.deploy("uiPathCollision");
+        openWindowNoWait(Conventions.deriveMappingForUI(PathCollisionUI.class));
         final String expectedErrorMessage = this.firstWindow.getBodyText();
         assertThat(expectedErrorMessage, containsString("Inconsistent deployment unit detected, aborting..."));
         assertThat(RootUI.getNumberOfInstances(), is(0));

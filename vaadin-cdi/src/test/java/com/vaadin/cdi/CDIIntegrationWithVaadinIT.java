@@ -345,7 +345,7 @@ public class CDIIntegrationWithVaadinIT {
         deployer.deploy("multipleRoots");
         openWindowNoWait("");
         final String expectedErrorMessage = this.firstWindow.getBodyText();
-        assertThat(expectedErrorMessage, containsString("Inconsistent deployment unit detected, aborting..."));
+        assertThat(expectedErrorMessage, containsString("VaadinCDIServlet deployment aborted. Reason:"));
         assertThat(RootUI.getNumberOfInstances(), is(0));
 
     }
@@ -361,7 +361,7 @@ public class CDIIntegrationWithVaadinIT {
         deployer.deploy("uiPathCollision");
         openWindowNoWait(Conventions.deriveMappingForUI(PathCollisionUI.class));
         final String expectedErrorMessage = this.firstWindow.getBodyText();
-        assertThat(expectedErrorMessage, containsString("Inconsistent deployment unit detected, aborting..."));
+        assertThat(expectedErrorMessage, containsString("VaadinCDIServlet deployment aborted. Reason:"));
         assertThat(RootUI.getNumberOfInstances(), is(0));
 
     }

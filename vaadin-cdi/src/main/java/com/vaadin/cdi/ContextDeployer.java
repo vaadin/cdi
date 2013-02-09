@@ -21,7 +21,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
@@ -44,7 +43,7 @@ public class ContextDeployer implements ServletContextListener {
     private Set<String> configuredUIs;
 
     @Inject
-    private VaadinCDIServlet vaaddinCDIServlet;
+    private VaadinCDIServlet vaadinCDIServlet;
 
     private String urlMapping = "/*";
 
@@ -61,7 +60,7 @@ public class ContextDeployer implements ServletContextListener {
             discoverUIMappingsFromAnnotations();
             discoverURLMappingFromRoot();
         }catch(InconsistentDeploymentException e){
-            vaaddinCDIServlet.stopDeployment();
+            vaadinCDIServlet.stopDeployment(e.getMessage());
             throw e;
         }
 
@@ -114,7 +113,7 @@ public class ContextDeployer implements ServletContextListener {
 
             if (configuredUIs.contains(uiMapping)) {
                 throw new InconsistentDeploymentException(
-                        "Multiple UIs configured with value " + uiMapping);
+                        "Multiple UIs configured with value (path) " + uiMapping);
             }
 
             configuredUIs.add(uiMapping);
@@ -243,7 +242,7 @@ public class ContextDeployer implements ServletContextListener {
         getLogger().info("Registering VaadinCDIServlet");
 
         ServletRegistration.Dynamic registration = context.addServlet(
-                "VaadinCDIServlet", vaaddinCDIServlet);
+                "VaadinCDIServlet", vaadinCDIServlet);
 
         registration.addMapping("/VAADIN/*");
         getLogger()

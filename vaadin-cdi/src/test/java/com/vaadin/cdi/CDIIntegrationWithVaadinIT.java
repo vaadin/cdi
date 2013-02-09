@@ -18,6 +18,7 @@ package com.vaadin.cdi;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.jboss.arquillian.ajocado.Graphene.elementPresent;
 import static org.jboss.arquillian.ajocado.Graphene.id;
 import static org.jboss.arquillian.ajocado.Graphene.retrieveText;
@@ -84,7 +85,8 @@ public class CDIIntegrationWithVaadinIT {
                 UIWithCDISelfListener.class, UIWithCDIDependentListener.class,
                 DependentCDIEventListener.class, InterceptedUI.class,
                 InstrumentedInterceptor.class, InterceptedBean.class,
-                RestrictedView.class, PlainUI.class, ParameterizedNavigationUI.class, SubUI.class);
+                RestrictedView.class, PlainUI.class, ParameterizedNavigationUI.class,
+                EnterpriseUI.class,Boundary.class,SubUI.class);
     }
 
     @Deployment(name = "customURIMapping")
@@ -364,6 +366,19 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(expectedErrorMessage, containsString("VaadinCDIServlet deployment aborted. Reason:"));
         assertThat(RootUI.getNumberOfInstances(), is(0));
 
+    }
+
+    @Test
+    public void ejbInvocation() throws MalformedURLException {
+        openWindow(Conventions.deriveMappingForUI(EnterpriseUI.class));
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(EnterpriseUI.getNumberOfInstances(), is(1));
+        firstWindow.click(BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        final String labelText = retrieveText.locator(LABEL).retrieve();
+        assertThat(labelText,startsWith("Echo:"));
+        assertThat(EnterpriseUI.getNumberOfInstances(), is(1));
+        assertDefaultRootNotInstantiated();
     }
 
     @Test

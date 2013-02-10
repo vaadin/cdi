@@ -60,7 +60,7 @@ public class ContextDeployer implements ServletContextListener {
             discoverUIMappingsFromAnnotations();
             discoverURLMappingFromRoot();
         }catch(InconsistentDeploymentException e){
-            vaadinCDIServlet.stopDeployment(e.getMessage());
+            vaadinCDIServlet.stopDeployment(e.toString());
             throw e;
         }
 

@@ -26,7 +26,7 @@ package com.vaadin.cdi;
  */
 public class InconsistentDeploymentException extends RuntimeException {
 
-    enum ID{ MULTIPLE_ROOTS,MULTIPLE_UIs_WITH_SAME_PATH,CLASS_NOT_FOUND}
+    enum ID{ MULTIPLE_ROOTS, PATH_COLLISION,CLASS_NOT_FOUND}
 
     private ID id;
 

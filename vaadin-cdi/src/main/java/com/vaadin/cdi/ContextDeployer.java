@@ -112,7 +112,7 @@ public class ContextDeployer implements ServletContextListener {
             String uiMapping = Conventions.deriveMappingForUI(uiBeanClass);
 
             if (configuredUIs.contains(uiMapping)) {
-                throw new InconsistentDeploymentException(InconsistentDeploymentException.ID.MULTIPLE_UIs_WITH_SAME_PATH,
+                throw new InconsistentDeploymentException(InconsistentDeploymentException.ID.PATH_COLLISION,
                         "Multiple UIs configured with @VaadinUI(" + uiMapping+")");
             }
 

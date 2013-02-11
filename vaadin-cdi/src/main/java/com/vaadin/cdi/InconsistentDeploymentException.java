@@ -16,6 +16,12 @@
 package com.vaadin.cdi;
 
 /**
+ * Thrown in case the contents of the deployment archive are not consistent:
+ * <ol>
+ *     <li>Multiple VaadinUIs are using the same path e.g. @VaadinUI("a"), @VaadinUI("b")</li>
+ *     <li>Several UIs annotated with @Root annotations are packaged</li>
+ *     <li>A servlet defined in the web.xml cannot be loaded.</li>
+ * </ol>
  * @author: adam-bien.com
  */
 public class InconsistentDeploymentException extends RuntimeException {

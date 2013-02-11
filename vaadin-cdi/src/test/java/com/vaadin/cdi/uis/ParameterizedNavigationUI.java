@@ -35,8 +35,6 @@ public class ParameterizedNavigationUI extends UI {
     @Inject
     CDIViewProvider viewProvider;
 
-    private Navigator navigator;
-
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
     public static String NAVIGATE_TO = "";
     private int clickCount;
@@ -60,7 +58,7 @@ public class ParameterizedNavigationUI extends UI {
         Button navigate = new Button("button", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                navigator = new Navigator(ParameterizedNavigationUI.this, layout);
+                Navigator navigator = new Navigator(ParameterizedNavigationUI.this, layout);
                 navigator.addProvider(viewProvider);
                 navigator.navigateTo(NAVIGATE_TO);
             }

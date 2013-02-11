@@ -50,7 +50,6 @@ public class PlainUI extends UI {
 
         VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
-
         final Label label = new Label("+PlainUI");
         label.setId("label");
         layout.addComponent(label);

@@ -75,7 +75,7 @@ public class CDIIntegrationWithVaadinIT {
     public static WebArchive archiveWithDefaultRootUI() {
         return ArchiveProvider.createWebArchive("default",InstrumentedUI.class,
                 InstrumentedView.class, ScopedInstrumentedView.class,
-                ViewWithoutAnnotation.class, RootUI.class, FirstUI.class,
+                ViewWithoutAnnotation.class, RootUI.class,
                 SecondUI.class, UnsecuredUI.class,
                 WithAnnotationRegisteredView.class,
                 UIWithCDISelfListener.class, UIWithCDIDependentListener.class,
@@ -116,7 +116,6 @@ public class CDIIntegrationWithVaadinIT {
         ViewWithoutAnnotation.resetCounter();
         WithAnnotationRegisteredView.resetCounter();
         SecondUI.resetCounter();
-        FirstUI.resetCounter();
         RootUI.resetCounter();
         RootWithCustomMappingUI.resetCounter();
         UIWithCDIDependentListener.resetCounter();

@@ -14,26 +14,30 @@
  * the License.
  */
 
-package com.vaadin.cdi;
+package com.vaadin.cdi.uis;
 
+import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.uis.Boundary;
+import com.vaadin.cdi.uis.InstrumentedView;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import sun.security.x509.IssuerAlternativeNameExtension;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Alternative;
+import javax.inject.Inject;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @VaadinUI
-@Alternative
-public class PlainAlternativeUI extends UI {
-
-
+public class EnterpriseUI extends UI {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
     private int clickCount;
+
+
+    @Inject
+    Boundary boundary;
 
     @PostConstruct
     public void initialize() {
@@ -49,9 +53,19 @@ public class PlainAlternativeUI extends UI {
         VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
 
-        final Label label = new Label("+PlainAlternativeUI");
+        final Label label = new Label("+EnterpriseUI");
         label.setId("label");
+        Button button = new Button("InvokeEJB", new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                String response = boundary.echo(String.valueOf(++clickCount));
+                label.setValue(response);
+            }
+        });
+        button.setId("button");
+
         layout.addComponent(label);
+        layout.addComponent(button);
         setContent(layout);
     }
 

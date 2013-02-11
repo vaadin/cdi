@@ -104,6 +104,11 @@ public class CDIIntegrationWithVaadinIT {
         return ArchiveProvider.createWebArchive("uiPathCollision",PathCollisionUI.class,AnotherPathCollisionUI.class);
     }
 
+    @Deployment(name = "alternativeUiPathCollision")
+    public static WebArchive alternativeAndActiveWithSamePath() {
+        return ArchiveProvider.createWebArchive("alternativeUiPathCollision",PlainUI.class,PlainColidingAlternativeUI.class);
+    }
+
     @Before
     public void resetCounter() {
         PlainUI.resetCounter();
@@ -253,6 +258,17 @@ public class CDIIntegrationWithVaadinIT {
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(SecondUI.getNumberOfInstances(), is(1));
         assertThat(DanglingView.getNumberOfInstances(), is(0));
+    }
+
+    @Test  @OperateOnDeployment("alternativeUiPathCollision")
+    public void alternativeDoesNotColideWithPath() throws MalformedURLException {
+        final String plainUIPath = Conventions.deriveMappingForUI(PlainUI.class);
+        final String plainAlternativeUI = Conventions.deriveMappingForUI(PlainColidingAlternativeUI.class);
+        assertThat(plainUIPath,is(plainAlternativeUI));
+        openWindow(plainUIPath);
+        waitModel.until(elementPresent.locator(LABEL));
+        assertThat(PlainUI.getNumberOfInstances(), is(1));
+        assertThat(PlainColidingAlternativeUI.getNumberOfInstances(), is(0));
     }
 
     @Test

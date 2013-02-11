@@ -16,11 +16,15 @@
 
 package com.vaadin.cdi;
 
+import static com.vaadin.cdi.Conventions.deriveMappingForUI;
 import static com.vaadin.cdi.Conventions.deriveMappingForView;
 import static com.vaadin.cdi.Conventions.firstToLower;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
+import com.vaadin.cdi.uis.PlainColidingAlternativeUI;
+import com.vaadin.cdi.uis.PlainUI;
 import org.junit.Test;
 
 import com.vaadin.cdi.views.OneAndOnlyViewWithPath;
@@ -37,6 +41,14 @@ public class ConventionsTest {
     public void normalizeLowerFirstCase() {
         String origin = "LoginPage";
         String expected = "loginPage";
+        String actual = firstToLower(origin);
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void lowerFirstCaseWithOneCharacter() {
+        String origin = "A";
+        String expected = "a";
         String actual = firstToLower(origin);
         assertThat(actual, is(expected));
     }
@@ -62,12 +74,31 @@ public class ConventionsTest {
         String actual = deriveMappingForView(OneAndOnlyViewWithoutPath.class);
         assertThat(actual, is(expected));
     }
-
     @Test
     public void extractViewNameUsingConventionWithoutAnnotation() {
         String expected = "oneAndOnlyViewWithoutPathAndAnnotation";
         String actual = deriveMappingForView(OneAndOnlyViewWithoutPathAndAnnotation.class);
         assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void extractUIPathUsingConvention() {
+        String expected = "plainUI";
+        String actual = deriveMappingForUI(PlainUI.class);
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void extractUIPathUsingAnnotation() {
+        String expected = "plainUI";
+        String actual = deriveMappingForUI(PlainColidingAlternativeUI.class);
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void uiAnnotationNotPresent(){
+        final String uiPath = deriveMappingForUI(String.class);
+        assertNull(uiPath);
     }
 
 }

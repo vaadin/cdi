@@ -222,7 +222,12 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(InstrumentedView.getNumberOfInstances(), is(1));
         assertThat(NoViewProviderNavigationUI.getNumberOfInstances(), is(1));
         assertThat(NoViewProviderNavigationUI.getNumberOfNavigations(), is(1));
-        assertThat(InstrumentedView.getNumberOfInstances(),is(1));
+
+        firstWindow.click(NAVIGATE_BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(InstrumentedView.getNumberOfInstances(), is(1));
+        assertThat(NoViewProviderNavigationUI.getNumberOfInstances(), is(1));
+        assertThat(NoViewProviderNavigationUI.getNumberOfNavigations(), is(2));
 
     }
 

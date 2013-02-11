@@ -46,6 +46,8 @@ public class NoViewProviderNavigationUI extends UI {
         final VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSizeFull();
 
+        final HorizontalLayout horizontalLayout = new HorizontalLayout();
+
         final Label label = new Label("+NoViewProviderNavigationUI");
         label.setId("label");
 
@@ -53,7 +55,7 @@ public class NoViewProviderNavigationUI extends UI {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 NAVIGATION_COUNTER.incrementAndGet();
-                Navigator navigator = new Navigator(NoViewProviderNavigationUI.this, verticalLayout);
+                Navigator navigator = new Navigator(NoViewProviderNavigationUI.this, horizontalLayout);
                 navigator.addView("instrumentedView",view);
                 navigator.navigateTo("instrumentedView");
             }
@@ -61,6 +63,7 @@ public class NoViewProviderNavigationUI extends UI {
         navigate.setId("navigate");
         verticalLayout.addComponent(label);
         verticalLayout.addComponent(navigate);
+        verticalLayout.addComponent(horizontalLayout);
         setContent(verticalLayout);
     }
 

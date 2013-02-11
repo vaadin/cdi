@@ -82,7 +82,8 @@ public class CDIIntegrationWithVaadinIT {
                 DependentCDIEventListener.class, InterceptedUI.class,
                 InstrumentedInterceptor.class, InterceptedBean.class,
                 RestrictedView.class, PlainUI.class, ParameterizedNavigationUI.class,
-                EnterpriseUI.class,Boundary.class,SubUI.class,PlainAlternativeUI.class);
+                EnterpriseUI.class,Boundary.class,SubUI.class,PlainAlternativeUI.class,
+                NoViewProviderNavigationUI.class);
     }
 
     @Deployment(name = "customURIMapping")
@@ -123,6 +124,7 @@ public class CDIIntegrationWithVaadinIT {
         DependentCDIEventListener.resetCounter();
         DependentCDIEventListener.resetEventCounter();
         ParameterizedNavigationUI.reset();
+        NoViewProviderNavigationUI.resetCounter();
         firstWindow.restartBrowser();
 
     }
@@ -201,12 +203,27 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     @Test
-    public void dependentScopedViewIsInstantiatedTwice()
+    public void dependentScopedViewIsInstantiatedTwiceWithViewProvider()
             throws MalformedURLException {
         openWindow(firstWindow, INSTRUMENTED_VIEW_URI);
         firstWindow.click(NAVIGATE_BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(InstrumentedView.getNumberOfInstances(), is(2));
+    }
+
+    @Test
+    public void dependentScopedViewIsInstantiatedOnce()
+            throws MalformedURLException {
+        String uri = deriveMappingForUI(NoViewProviderNavigationUI.class);
+        openWindow(uri);
+        assertThat(InstrumentedView.getNumberOfInstances(),is(1));
+        firstWindow.click(NAVIGATE_BUTTON);
+        waitModel.waitForChange(retrieveText.locator(LABEL));
+        assertThat(InstrumentedView.getNumberOfInstances(), is(1));
+        assertThat(NoViewProviderNavigationUI.getNumberOfInstances(), is(1));
+        assertThat(NoViewProviderNavigationUI.getNumberOfNavigations(), is(1));
+        assertThat(InstrumentedView.getNumberOfInstances(),is(1));
+
     }
 
     @Test

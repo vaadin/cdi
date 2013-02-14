@@ -1,19 +1,18 @@
 /*
  * Copyright 2012 Vaadin Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi;
 
 import java.lang.annotation.Annotation;
@@ -31,7 +30,7 @@ import com.vaadin.ui.UI;
 
 /**
  * UIScopedContext is the context for
- * 
+ *
  * @VaadinUIScoped beans.
  */
 public class UIScopedContext implements Context {
@@ -45,7 +44,7 @@ public class UIScopedContext implements Context {
 
     @Override
     public Class<? extends Annotation> getScope() {
-        return VaadinUI.class;
+        return VaadinUIScoped.class;
     }
 
     @Override
@@ -64,7 +63,7 @@ public class UIScopedContext implements Context {
 
         getLogger().log(Level.INFO,
                 "Getting bean for contextual {0} and creational context {1}",
-                new Object[] { contextual, creationalContext });
+                new Object[]{contextual, creationalContext});
 
         BeanStoreContainer beanStoreContainer = getSessionBoundBeanStoreContainer();
         T beanInstance = null;
@@ -97,10 +96,10 @@ public class UIScopedContext implements Context {
             } else if (creationalContext != null) {
                 getLogger()
                         .log(Level.WARNING,
-                                "Tried to get a Bean that is not compatible with the current UI {0}. "
-                                        + "Looks like you need to specify \"notifyObserver=Reception.IF_EXISTS\" on the event observer methods of {1}.",
-                                new Object[] { current,
-                                        bean.getBeanClass().getName() });
+                        "Tried to get a Bean that is not compatible with the current UI {0}. "
+                        + "Looks like you need to specify \"notifyObserver=Reception.IF_EXISTS\" on the event observer methods of {1}.",
+                        new Object[]{current,
+                    bean.getBeanClass().getName()});
             }
         } else {
             throw new IllegalStateException(((Bean) contextual).getBeanClass()
@@ -110,15 +109,15 @@ public class UIScopedContext implements Context {
 
         getLogger()
                 .log(Level.INFO,
-                        "Finished getting bean for contextual {0}, returning instance {1}",
-                        new Object[] { contextual, beanInstance });
+                "Finished getting bean for contextual {0}, returning instance {1}",
+                new Object[]{contextual, beanInstance});
         return beanInstance;
     }
 
     /**
      * @param contextual
      * @return true if Vaadin UI is assignabled from given bean's representing
-     *         type
+     * type
      */
     private <T> boolean isInstanceOfUIBean(Contextual<T> contextual) {
         if (contextual instanceof UIBean) {

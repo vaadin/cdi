@@ -71,7 +71,7 @@ public class VaadinUIScopedBeanStore implements java.io.Serializable {
             logger.log(Level.WARNING, "Contextual {0} is not passivation capable", contextual);
         }
         if (!isSerializable(creationalContext)) {
-            logger.log(Level.WARNING, "CreationalContext {0} is not passivation capable", creationalContext);
+            logger.log(Level.WARNING, "Creational context {0} is not passivation capable", creationalContext);
         }
         SerializableContextualInstance<T> contextualInstance = new SerializableContextualInstance<T>(instance, creationalContext);
         instances.put(contextual, contextualInstance);
@@ -93,7 +93,7 @@ public class VaadinUIScopedBeanStore implements java.io.Serializable {
         assert bean != null : "bean must not be null";
         SerializableContextualInstance<T> contextualInstance = (SerializableContextualInstance<T>) instances.get(bean);
         if (contextualInstance != null) {
-            logger.log(Level.FINE, "Destroying instance {0} of bean {1} using CreationalContext {2}",
+            logger.log(Level.FINE, "Destroying instance {0} of bean {1} using creational context {2}",
                     new Object[]{contextualInstance.instance, bean, contextualInstance.creationalContext});
             bean.destroy(contextualInstance.instance, contextualInstance.creationalContext);
             instances.remove(bean);

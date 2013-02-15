@@ -109,13 +109,12 @@ class UIBeanStoreContainer implements java.io.Serializable {
             @Override
             public void detach(DetachEvent event) {
                 logger.log(Level.INFO, "UI {0} has been detached from the application", ui);
-                BeanStore beanStore = beanStores.get(uiId);
+                ui.removeDetachListener(this);
+                BeanStore beanStore = beanStores.remove(uiId);
                 if (beanStore != null) {
                     logger.log(Level.INFO, "Destroying beans in BeanStore {0} and removing it from UIBeanStoreContainer {1}", new Object[]{beanStore, UIBeanStoreContainer.this});
                     beanStore.destroyAllBeanInstances();
-                    beanStores.remove(uiId);
                 }
-                ui.removeDetachListener(this);
             }
         };
     }

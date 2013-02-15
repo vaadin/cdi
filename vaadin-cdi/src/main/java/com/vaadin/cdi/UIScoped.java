@@ -28,7 +28,9 @@ import javax.enterprise.context.NormalScope;
  * scope is active every time {@link com.vaadin.ui.UI#getCurrent() } returns a
  * non-null value. <p> Please note that no {@link com.vaadin.ui.UI}s may be
  * annotated with this annotation. They should use the {@link VaadinUI}
- * annotation instead.
+ * annotation instead. <p> The UI that the bean is scoped to can be injected by
+ * using:
+ * <pre><code>&#064;Inject UI myUI;</code></pre>
  */
 @NormalScope(passivating = true)
 @Retention(RetentionPolicy.RUNTIME)

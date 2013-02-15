@@ -38,13 +38,14 @@ class BeanStore implements java.io.Serializable {
 
     /**
      * Returns the bean instance of the specified bean. If no bean instance is
-     * found in the store, a new instance is created, stored and returned.
+     * found in the store, a new instance is created, stored and returned. If
+     * the creational context is null and no existing bean is found, null is
+     * returned.
      */
     <T> T getBeanInstance(Contextual<T> contextual, CreationalContext<T> creationalContext) {
         assert contextual != null : "contextual must not be null";
-        assert creationalContext != null : "creationalContext must not be null";
         T instance = getBeanInstance(contextual);
-        if (instance == null) {
+        if (instance == null && creationalContext != null) {
             instance = contextual.create(creationalContext);
             registerBeanInstance(instance, contextual, creationalContext);
         }

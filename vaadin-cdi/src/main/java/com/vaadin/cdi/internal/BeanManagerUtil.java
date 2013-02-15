@@ -22,7 +22,7 @@ import javax.enterprise.inject.spi.BeanManager;
 /**
  * Utility classes for working with a {@link BeanManager}.
  */
-final class BeanManagerUtil {
+public final class BeanManagerUtil {
 
     private final BeanManager beanManager;
 

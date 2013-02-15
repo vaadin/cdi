@@ -29,7 +29,7 @@ import javax.enterprise.inject.spi.PassivationCapable;
 /**
  * TODO Document me!
  */
-class VaadinUIBean implements Bean, PassivationCapable, java.io.Serializable {
+public class VaadinUIBean implements Bean, PassivationCapable, java.io.Serializable {
 
     private static final Logger logger = Logger.getLogger(VaadinUIBean.class.getCanonicalName());
     private final Bean delegate;

@@ -26,8 +26,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.PassivationCapable;
 
 /**
- * Container for beans that belong to a specific scope. This class is not part
- * of the public API and should not be used by clients directly.
+ * Container for beans that belong to a specific scope.
  */
 class BeanStore implements java.io.Serializable {
 

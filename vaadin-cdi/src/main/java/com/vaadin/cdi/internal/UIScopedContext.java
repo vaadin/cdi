@@ -18,7 +18,6 @@ package com.vaadin.cdi.internal;
 import com.vaadin.cdi.UIScoped;
 import com.vaadin.ui.UI;
 import java.lang.annotation.Annotation;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.ContextNotActiveException;
@@ -35,11 +34,11 @@ import javax.enterprise.inject.spi.BeanManager;
 public class UIScopedContext implements Context {
 
     private static final Logger logger = Logger.getLogger(UIScopedContext.class.getCanonicalName());
-    private final BeanManager beanManager;
+    private final BeanManagerUtil beanManagerUtil;
 
     public UIScopedContext(BeanManager beanManager) {
         logger.log(Level.INFO, "Instantiating {0}", UIScopedContext.class.getSimpleName());
-        this.beanManager = beanManager;
+        this.beanManagerUtil = new BeanManagerUtil(beanManager);
     }
 
     @Override
@@ -70,36 +69,8 @@ public class UIScopedContext implements Context {
         // to verify that there is in fact a current UI
         final UI current = UI.getCurrent();
         final int uiId = current.getUIId();
-        final Set<Bean<?>> uiBeans = beanManager.getBeans(current.getClass());
-        
-        if (uiBeans.isEmpty()) {
-            throw new IllegalStateException("No bean of type " + current.getClass().getCanonicalName() + " was found");
-        }
-        
-        if (uiBeans.size() > 1) {
-            throw new IllegalStateException("More than one bean of type " + current.getClass().getCanonicalName() + " was found");
-        }
-        
-        final Bean<?> uiBean = uiBeans.iterator().next();        
-        return getSessionBoundBeanStoreContainer().getOrCreateUIBeanStoreFor(new VaadinUIBean(uiBean, uiId));
-    }
-
-    private UIBeanStoreContainer getSessionBoundBeanStoreContainer() {
-        Set<Bean<?>> beans = beanManager.getBeans(UIBeanStoreContainer.class);
-
-        if (beans.isEmpty()) {
-            throw new IllegalStateException(
-                    "No bean store container bound to session");
-        }
-
-        if (beans.size() > 1) {
-            throw new IllegalStateException(
-                    "More than one bean store container bound to session");
-        }
-
-        Bean<?> bean = beans.iterator().next();
-        return (UIBeanStoreContainer) beanManager.getReference(bean,
-                bean.getBeanClass(), beanManager.createCreationalContext(bean));
+        final Bean<?> uiBean = beanManagerUtil.findBeanOfType(current.getClass());
+        return beanManagerUtil.getSessionBoundBeanStoreContainer().getOrCreateUIBeanStoreFor(new VaadinUIBean(uiBean, uiId));
     }
 
     @Override

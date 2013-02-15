@@ -29,14 +29,14 @@ import javax.enterprise.inject.spi.PassivationCapable;
 /**
  * TODO Document me!
  */
-class VaadinUIBean<T extends UI> implements Bean<T>, PassivationCapable, java.io.Serializable {
+class VaadinUIBean implements Bean, PassivationCapable, java.io.Serializable {
 
     private static final Logger logger = Logger.getLogger(VaadinUIBean.class.getCanonicalName());
-    private final Bean<T> delegate;
+    private final Bean delegate;
     private final int uiId;
     private final String passivationId;
 
-    VaadinUIBean(Bean<T> delegate, int uiId) {
+    VaadinUIBean(Bean delegate, int uiId) {
         assert delegate != null : "delegate must not be null";
         if (!UI.class.isAssignableFrom(delegate.getBeanClass())) {
             throw new IllegalArgumentException("The delegate bean is not a UI");
@@ -103,14 +103,14 @@ class VaadinUIBean<T extends UI> implements Bean<T>, PassivationCapable, java.io
     }
 
     @Override
-    public T create(CreationalContext<T> creationalContext) {
+    public Object create(CreationalContext creationalContext) {
         logger.log(Level.FINER, "Creating new bean instance of bean {0} using creational context {1}",
                 new Object[]{this, creationalContext});
         return delegate.create(creationalContext);
     }
 
     @Override
-    public void destroy(T instance, CreationalContext<T> creationalContext) {
+    public void destroy(Object instance, CreationalContext creationalContext) {
         logger.log(Level.FINER, "Destroying bean instance {0} of bean {1} using creational context {2}",
                 new Object[]{instance, this, creationalContext});
         delegate.destroy(instance, creationalContext);

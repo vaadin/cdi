@@ -33,16 +33,19 @@ import javax.enterprise.inject.spi.PassivationCapable;
  * @author Tomi Virkki / Vaadin
  * @author Petter Holmström / Vaadin
  */
-public class VaadinUIScopedBeanStore implements java.io.Serializable {
+class VaadinUIScopedBeanStore implements java.io.Serializable {
 
     private static final Logger logger = Logger.getLogger(VaadinUIScopedBeanStore.class.getCanonicalName());
     private final Map<Contextual<?>, SerializableContextualInstance<?>> instances = new HashMap<Contextual<?>, SerializableContextualInstance<?>>();
+
+    VaadinUIScopedBeanStore() {
+    }
 
     /**
      * Returns the bean instance of the specified bean. If no bean instance is
      * found in the store, a new instance is created, stored and returned.
      */
-    public <T> T getBeanInstance(Contextual<T> contextual, CreationalContext<T> creationalContext) {
+    <T> T getBeanInstance(Contextual<T> contextual, CreationalContext<T> creationalContext) {
         assert contextual != null : "contextual must not be null";
         assert creationalContext != null : "creationalContext must not be null";
         T instance = getBeanInstance(contextual);
@@ -80,7 +83,7 @@ public class VaadinUIScopedBeanStore implements java.io.Serializable {
     /**
      * Destroys all bean instances and removes them from the store.
      */
-    public void destroyAllBeanInstances() {
+    void destroyAllBeanInstances() {
         for (Contextual<?> bean : new LinkedList<Contextual<?>>(getAllBeans())) {
             destroyBeanInstance(bean);
         }
@@ -89,7 +92,7 @@ public class VaadinUIScopedBeanStore implements java.io.Serializable {
     /**
      * Destroys the specified bean instance and removes it from the store.
      */
-    public <T> void destroyBeanInstance(Contextual<T> bean) {
+    <T> void destroyBeanInstance(Contextual<T> bean) {
         assert bean != null : "bean must not be null";
         SerializableContextualInstance<T> contextualInstance = (SerializableContextualInstance<T>) instances.get(bean);
         if (contextualInstance != null) {
@@ -100,7 +103,7 @@ public class VaadinUIScopedBeanStore implements java.io.Serializable {
         }
     }
 
-    class SerializableContextualInstance<T> implements java.io.Serializable {
+    private class SerializableContextualInstance<T> implements java.io.Serializable {
 
         final T instance;
         final CreationalContext<T> creationalContext;

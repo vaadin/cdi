@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Vaadin Ltd.
+ * Copyright 2013 Vaadin Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,17 +14,20 @@
  * the License.
  */
 
-package com.vaadin.cdi.uis;
+package com.vaadin.cdi.integrationtests.uis;
 
-import java.io.Serializable;
+import com.vaadin.cdi.VaadinUI;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import javax.annotation.PostConstruct;
-import javax.enterprise.event.Observes;
+import javax.annotation.PreDestroy;
 
-public class DependentCDIEventListener implements Serializable {
+@VaadinUI
+public class PlainUI extends UI {
 
-    private final static AtomicInteger EVENT_COUNTER = new AtomicInteger(0);
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
 
     @PostConstruct
@@ -32,13 +35,17 @@ public class DependentCDIEventListener implements Serializable {
         COUNTER.incrementAndGet();
     }
 
-    public void onEventArrival(@Observes String message) {
-        EVENT_COUNTER.incrementAndGet();
-        System.out.println("+DependentCDIEventListener Message arrived!");
+    @PreDestroy
+    public void destroy() {
+        COUNTER.decrementAndGet();
     }
 
-    public static int getNumberOfDeliveredEvents() {
-        return EVENT_COUNTER.get();
+    @Override
+    protected void init(VaadinRequest request) {
+        final Label label = new Label();
+        label.setId("label");
+        label.setValue("Hello " + getUIId());
+        setContent(new VerticalLayout(label));
     }
 
     public static int getNumberOfInstances() {
@@ -48,9 +55,4 @@ public class DependentCDIEventListener implements Serializable {
     public static void resetCounter() {
         COUNTER.set(0);
     }
-
-    public static void resetEventCounter() {
-        EVENT_COUNTER.set(0);
-    }
-
 }

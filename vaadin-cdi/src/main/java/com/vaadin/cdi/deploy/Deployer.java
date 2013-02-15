@@ -176,6 +176,10 @@ public class Deployer implements ServletContextListener {
     private Set<Bean<?>> getRootAnnotatedBeans() {
         Set<Bean<?>> beans = beanManager.getBeans(UI.class,
                 new AnnotationLiteral<Root>() {
+                    // TODO Implement this method to get the first test running!
+                    String urlMapping() {
+                        return "/*";
+                    }
                 });
         return beans;
     }

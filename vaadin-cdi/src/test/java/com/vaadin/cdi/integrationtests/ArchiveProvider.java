@@ -14,8 +14,27 @@
  * the License.
  */
 
-package com.vaadin.cdi;
+package com.vaadin.cdi.integrationtests;
 
+import com.vaadin.cdi.Root;
+import com.vaadin.cdi.UIScoped;
+import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.component.ComponentTools;
+import com.vaadin.cdi.component.JaasTools;
+import com.vaadin.cdi.deploy.Deployer;
+import com.vaadin.cdi.deploy.InconsistentDeploymentException;
+import com.vaadin.cdi.internal.BeanManagerUtil;
+import com.vaadin.cdi.internal.BeanStore;
+import com.vaadin.cdi.internal.CDIUIProvider;
+import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.UIBeanStoreContainer;
+import com.vaadin.cdi.internal.UIScopedContext;
+import com.vaadin.cdi.internal.VaadinCDIServlet;
+import com.vaadin.cdi.internal.VaadinUIBean;
+import com.vaadin.cdi.internal.VaadinUIContext;
+import com.vaadin.cdi.spi.VaadinExtension;
+import com.vaadin.cdi.view.CDIViewProvider;
+import com.vaadin.cdi.view.VaadinView;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
@@ -24,20 +43,29 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
 
-import com.vaadin.cdi.component.ComponentTools;
-import com.vaadin.cdi.component.JaasTools;
 
-/**
- * 
- * @author adam-bien.com
- */
 public class ArchiveProvider {
 
     public final static Class FRAMEWORK_CLASSES[] = new Class[] {
-            ComponentTools.class, JaasTools.class, BeanStoreContainer.class,
-            CDIUIProvider.class, CDIViewProvider.class, ContextDeployer.class,
-            UIBeanStore.class, VaadinCDIServlet.class, UIScopedContext.class,
-            VaadinUI.class };
+            ComponentTools.class,
+            JaasTools.class, 
+            Deployer.class,
+            InconsistentDeploymentException.class,
+            BeanManagerUtil.class,
+            BeanStore.class,
+            CDIUIProvider.class,
+            Conventions.class,
+            UIBeanStoreContainer.class,
+            UIScopedContext.class,
+            VaadinCDIServlet.class,
+            VaadinUIBean.class,
+            VaadinUIContext.class,
+            VaadinExtension.class,
+            Root.class,
+            UIScoped.class,
+            VaadinUI.class,
+            // TODO View classes
+    };
 
 
     public static WebArchive createWebArchive(String warName,Class... classes) {
@@ -55,11 +83,11 @@ public class ArchiveProvider {
                 .addClasses(FRAMEWORK_CLASSES)
                 .addAsLibraries(
                         resolver.artifact(
-                                "com.vaadin:vaadin-server:7.0-SNAPSHOT")
+                                "com.vaadin:vaadin-server:7.0.0")
                                 .resolveAsFiles())
                 .addAsLibraries(
                         resolver.artifact(
-                                "com.vaadin:vaadin-shared:7.0-SNAPSHOT")
+                                "com.vaadin:vaadin-shared:7.0.0")
                                 .resolveAsFiles())
                 .addAsWebInfResource(
                         new ByteArrayAsset(VaadinExtension.class.getName()

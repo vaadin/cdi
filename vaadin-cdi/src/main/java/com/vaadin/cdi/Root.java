@@ -13,32 +13,35 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
+import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 
 /**
- * UIs annotated with @Root are bound to the context path of the application.
- * There can be only one UI annotated with @Root per application.
- * 
+ * UIs annotated with
+ * <code>&#064;Root</code> are bound to the context path of the application.
+ * There can be only one UI class with this annotation in a web application.<p>
  * <pre>
- *     <code>
- *  @Root
- *  @VaadinUI
- *  public class EntryPoint extends UI {}
- *     </code>
+ * <code>&#064;Root
+ * &#064;VaadinUI
+ * public class EntryPoint extends UI {}</code>
  * </pre>
- * 
- * @author adam-bien.com
  */
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD, ElementType.TYPE })
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
+@Documented
 public @interface Root {
+
+    /**
+     * The URL mapping of the Vaadin Servlet. By default, this is "/*".
+     */
+    @Nonbinding
+    String urlMapping() default "/*";
 }

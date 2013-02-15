@@ -1,9 +1,18 @@
+NOTE! This is my playground branch for trying out and learning new stuff.
+Do not use in production applications, since everything may change!
+
+    Petter Holmström, Vaadin Architect
+    petter@vaadin.com
+
+
+
+
 vaadin-cdi
 ==========
 
 Vaadin-CDI is official CDI integration for Vaadin framework version 7.
 
-Copyright 2012 Vaadin Ltd.
+Copyright 2012, 2013 Vaadin Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this file except in compliance with the License. You may obtain a copy of

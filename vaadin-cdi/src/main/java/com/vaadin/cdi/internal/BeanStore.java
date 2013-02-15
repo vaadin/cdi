@@ -26,19 +26,18 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.PassivationCapable;
 
 /**
- * Container for beans that are scoped to a specific Vaadin
- * {@link com.vaadin.ui.UI} instance. This class is not part of the public API
- * and should not be used by clients directly.
+ * Container for beans that belong to a specific scope. This class is not part
+ * of the public API and should not be used by clients directly.
  *
  * @author Tomi Virkki / Vaadin
  * @author Petter Holmström / Vaadin
  */
-class VaadinUIScopedBeanStore implements java.io.Serializable {
+class BeanStore implements java.io.Serializable {
 
-    private static final Logger logger = Logger.getLogger(VaadinUIScopedBeanStore.class.getCanonicalName());
+    private static final Logger logger = Logger.getLogger(BeanStore.class.getCanonicalName());
     private final Map<Contextual<?>, SerializableContextualInstance<?>> instances = new HashMap<Contextual<?>, SerializableContextualInstance<?>>();
 
-    VaadinUIScopedBeanStore() {
+    BeanStore() {
     }
 
     /**

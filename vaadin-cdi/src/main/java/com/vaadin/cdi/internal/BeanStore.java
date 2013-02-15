@@ -28,7 +28,7 @@ import javax.enterprise.inject.spi.PassivationCapable;
 /**
  * Container for beans that belong to a specific scope.
  */
-class BeanStore implements java.io.Serializable {
+public class BeanStore implements java.io.Serializable {
 
     private static final Logger logger = Logger.getLogger(BeanStore.class.getCanonicalName());
     private final Map<Contextual<?>, SerializableContextualInstance<?>> instances = new HashMap<Contextual<?>, SerializableContextualInstance<?>>();

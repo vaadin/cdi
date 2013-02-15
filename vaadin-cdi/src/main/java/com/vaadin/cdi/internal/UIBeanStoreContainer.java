@@ -31,7 +31,7 @@ import javax.enterprise.context.SessionScoped;
  * is only one {@code UIBeanStoreContainer} per session.
  */
 @SessionScoped
-class UIBeanStoreContainer implements java.io.Serializable {
+public class UIBeanStoreContainer implements java.io.Serializable {
 
     private static final Logger logger = Logger.getLogger(UIBeanStoreContainer.class.getCanonicalName());
     private final Map<Integer, BeanStore> beanStores = new ConcurrentHashMap<Integer, BeanStore>();

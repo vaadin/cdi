@@ -21,7 +21,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import javax.enterprise.util.Nonbinding;
-import javax.inject.Qualifier;
 
 /**
  * UIs annotated with
@@ -33,9 +32,8 @@ import javax.inject.Qualifier;
  * public class EntryPoint extends UI {}</code>
  * </pre>
  */
-@Qualifier
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
+@Target({ElementType.TYPE})
 @Documented
 public @interface Root {
 

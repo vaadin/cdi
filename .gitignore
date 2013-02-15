@@ -3,6 +3,7 @@ target/
 .project
 .settings/
 nbactions.xml
+nb-configuration.xml
 .idea/
 .iml
 *.iml

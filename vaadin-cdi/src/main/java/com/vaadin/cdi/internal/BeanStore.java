@@ -28,9 +28,6 @@ import javax.enterprise.inject.spi.PassivationCapable;
 /**
  * Container for beans that belong to a specific scope. This class is not part
  * of the public API and should not be used by clients directly.
- *
- * @author Tomi Virkki / Vaadin
- * @author Petter Holmström / Vaadin
  */
 class BeanStore implements java.io.Serializable {
 

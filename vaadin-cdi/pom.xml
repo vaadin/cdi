@@ -4,12 +4,12 @@
 
     <groupId>com.vaadin</groupId>
     <artifactId>vaadin-cdi</artifactId>
-    <version>7.0.0.rc2</version>
+    <version>7.0.1</version>
     <packaging>jar</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>7.0.0.rc2</vaadin.version>
+        <vaadin.version>7.0.1</vaadin.version>
     </properties>
 
     <name>vaadin-cdi</name>

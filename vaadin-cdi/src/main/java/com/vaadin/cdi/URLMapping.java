@@ -26,8 +26,6 @@ import java.lang.annotation.Target;
  * Used in conjunction with a @Root annotation, as there may only be one @URLMapping
  * annotation per project.
  * 
- * @author Marcus Hellberg / Vaadin
- * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })

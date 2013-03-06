@@ -27,7 +27,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * @author adam-bien.com
  */
 public class ViewWithoutAnnotation extends CustomComponent implements View {
 

@@ -35,8 +35,6 @@ import com.vaadin.cdi.internal.VaadinCDIServlet;
 import com.vaadin.cdi.internal.VaadinExtension;
 
 /**
- * 
- * @author adam-bien.com
  */
 public class ArchiveProvider {
 

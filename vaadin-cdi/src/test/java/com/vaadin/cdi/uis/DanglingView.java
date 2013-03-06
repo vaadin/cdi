@@ -28,7 +28,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * @author adam-bien.com
  */
 @CDIView(ui = NotExistingUI.class)
 public class DanglingView extends CustomComponent implements View {

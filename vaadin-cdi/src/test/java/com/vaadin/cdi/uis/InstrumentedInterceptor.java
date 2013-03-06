@@ -22,7 +22,6 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
 /**
- * @author: adam-bien.com
  */
 public class InstrumentedInterceptor {
 

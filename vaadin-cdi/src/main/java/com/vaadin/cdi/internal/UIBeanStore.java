@@ -30,8 +30,6 @@ import com.vaadin.cdi.CDIUI;
 
 /**
  * Datastructure for storing bean instances in {@link CDIUI} context.
- * 
- * @author Tomi Virkki / Vaadin Ltd
  */
 public class UIBeanStore implements Serializable {
 

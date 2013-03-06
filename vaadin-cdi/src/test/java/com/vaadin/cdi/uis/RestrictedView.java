@@ -28,7 +28,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * @author adam-bien.com
  */
 @CDIView(ui = SecondUI.class)
 public class RestrictedView extends CustomComponent implements View {

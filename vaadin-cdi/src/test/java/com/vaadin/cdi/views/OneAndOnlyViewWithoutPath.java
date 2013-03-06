@@ -22,7 +22,6 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 /**
  * 
- * @author adam-bien.com
  */
 @CDIView
 public class OneAndOnlyViewWithoutPath implements View {

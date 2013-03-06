@@ -28,7 +28,6 @@ import javax.annotation.PostConstruct;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author: adam-bien.com
  */
 @Root
 @CDIUI

@@ -28,7 +28,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * @author: adam-bien.com
  */
 @Root
 @CDIUI

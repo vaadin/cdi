@@ -20,7 +20,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 
 /**
- * @author: adam-bien.com
  */
 public class NotExistingUI extends UI {
     @Override

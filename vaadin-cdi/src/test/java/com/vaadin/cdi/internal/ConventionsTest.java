@@ -32,8 +32,6 @@ import com.vaadin.cdi.views.OneAndOnlyViewWithoutPath;
 import com.vaadin.cdi.views.OneAndOnlyViewWithoutPathAndAnnotation;
 
 /**
- * 
- * @author adam-bien.com
  */
 public class ConventionsTest {
 

@@ -22,8 +22,6 @@ package com.vaadin.cdi.internal;
  * <li>Several UIs annotated with @Root annotations are packaged</li>
  * <li>A servlet defined in the web.xml cannot be loaded.</li>
  * </ol>
- * 
- * @author: adam-bien.com
  */
 public class InconsistentDeploymentException extends RuntimeException {
 

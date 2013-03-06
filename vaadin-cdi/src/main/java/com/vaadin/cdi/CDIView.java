@@ -27,8 +27,6 @@ import com.vaadin.ui.UI;
  * Similar semantics to
  * 
  * @see javax.inject.Named
- * 
- * @author adam-bien.com
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })

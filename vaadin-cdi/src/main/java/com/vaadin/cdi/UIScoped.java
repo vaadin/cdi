@@ -23,8 +23,6 @@ import javax.inject.Scope;
 
 /**
  * The lifecycle of a UIScoped component is bound to a browser tab.
- * 
- * @author adam-bien.com
  */
 @Scope
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })

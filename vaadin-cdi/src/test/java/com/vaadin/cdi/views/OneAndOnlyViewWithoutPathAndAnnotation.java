@@ -21,7 +21,6 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 /**
  * 
- * @author adam-bien.com
  */
 public class OneAndOnlyViewWithoutPathAndAnnotation implements View {
 

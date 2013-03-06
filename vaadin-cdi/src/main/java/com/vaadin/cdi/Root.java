@@ -34,8 +34,6 @@ import javax.inject.Qualifier;
  *  public class EntryPoint extends UI {}
  *     </code>
  * </pre>
- * 
- * @author adam-bien.com
  */
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)

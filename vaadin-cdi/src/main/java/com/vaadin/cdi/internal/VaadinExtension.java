@@ -25,8 +25,6 @@ import javax.enterprise.inject.spi.Extension;
 
 /**
  * CDI Extension needed to register the @CDIUI scope to the runtime.
- * 
- * @author Tomi Virkki / Vaadin Ltd
  */
 public class VaadinExtension implements Extension {
 

@@ -36,8 +36,8 @@ public @interface CDIView {
 
     /**
      * 
-     * The name of the CDIView can be derived from the simple class name So
-     * it is optional. Also multiple views without a value may exist at the same
+     * The name of the CDIView can be derived from the simple class name So it
+     * is optional. Also multiple views without a value may exist at the same
      * time
      */
     public String value() default "";

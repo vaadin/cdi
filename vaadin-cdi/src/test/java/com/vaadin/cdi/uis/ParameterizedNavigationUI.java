@@ -58,7 +58,8 @@ public class ParameterizedNavigationUI extends UI {
         Button navigate = new Button("button", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                Navigator navigator = new Navigator(ParameterizedNavigationUI.this, layout);
+                Navigator navigator = new Navigator(
+                        ParameterizedNavigationUI.this, layout);
                 navigator.addProvider(viewProvider);
                 navigator.navigateTo(NAVIGATE_TO);
             }

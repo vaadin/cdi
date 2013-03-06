@@ -32,8 +32,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @CDIUI
 public class PlainUI extends UI {
 
-
-
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
     private int clickCount;
 

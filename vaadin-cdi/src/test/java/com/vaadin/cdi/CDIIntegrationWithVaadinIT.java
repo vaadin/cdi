@@ -73,37 +73,42 @@ public class CDIIntegrationWithVaadinIT {
 
     @Deployment
     public static WebArchive archiveWithDefaultRootUI() {
-        return ArchiveProvider.createWebArchive("default",InstrumentedUI.class,
-                InstrumentedView.class, ScopedInstrumentedView.class,
-                ViewWithoutAnnotation.class, RootUI.class,
-                SecondUI.class, UnsecuredUI.class,
+        return ArchiveProvider.createWebArchive("default",
+                InstrumentedUI.class, InstrumentedView.class,
+                ScopedInstrumentedView.class, ViewWithoutAnnotation.class,
+                RootUI.class, SecondUI.class, UnsecuredUI.class,
                 WithAnnotationRegisteredView.class,
                 UIWithCDISelfListener.class, UIWithCDIDependentListener.class,
                 DependentCDIEventListener.class, InterceptedUI.class,
                 InstrumentedInterceptor.class, InterceptedBean.class,
-                RestrictedView.class, PlainUI.class, ParameterizedNavigationUI.class,
-                EnterpriseUI.class,Boundary.class,SubUI.class,PlainAlternativeUI.class,
+                RestrictedView.class, PlainUI.class,
+                ParameterizedNavigationUI.class, EnterpriseUI.class,
+                Boundary.class, SubUI.class, PlainAlternativeUI.class,
                 NoViewProviderNavigationUI.class);
     }
 
     @Deployment(name = "customURIMapping")
     public static WebArchive archiveWithCustomURIMapping() {
-        return ArchiveProvider.createWebArchive("custom",RootWithCustomMappingUI.class);
+        return ArchiveProvider.createWebArchive("custom",
+                RootWithCustomMappingUI.class);
     }
 
-    @Deployment(name = "multipleRoots",managed = false)
+    @Deployment(name = "multipleRoots", managed = false)
     public static WebArchive multipleRootsInWar() {
-        return ArchiveProvider.createWebArchive("multipleroots",RootWithCustomMappingUI.class,RootUI.class);
+        return ArchiveProvider.createWebArchive("multipleroots",
+                RootWithCustomMappingUI.class, RootUI.class);
     }
 
-    @Deployment(name = "uiPathCollision",managed = false)
+    @Deployment(name = "uiPathCollision", managed = false)
     public static WebArchive multipleUIsWithSamePath() {
-        return ArchiveProvider.createWebArchive("uiPathCollision",PathCollisionUI.class,AnotherPathCollisionUI.class);
+        return ArchiveProvider.createWebArchive("uiPathCollision",
+                PathCollisionUI.class, AnotherPathCollisionUI.class);
     }
 
     @Deployment(name = "alternativeUiPathCollision")
     public static WebArchive alternativeAndActiveWithSamePath() {
-        return ArchiveProvider.createWebArchive("alternativeUiPathCollision",PlainUI.class,PlainColidingAlternativeUI.class);
+        return ArchiveProvider.createWebArchive("alternativeUiPathCollision",
+                PlainUI.class, PlainColidingAlternativeUI.class);
     }
 
     @Before
@@ -135,12 +140,12 @@ public class CDIIntegrationWithVaadinIT {
 
     void openWindow(GrapheneSelenium window, String uri)
             throws MalformedURLException {
-        openWindowNoWait(window,uri);
+        openWindowNoWait(window, uri);
         waitModel.until(elementPresent.locator(LABEL));
     }
 
     void openWindowNoWait(String uri) throws MalformedURLException {
-        openWindowNoWait(this.firstWindow,uri);
+        openWindowNoWait(this.firstWindow, uri);
     }
 
     void openWindowNoWait(GrapheneSelenium window, String uri)
@@ -150,8 +155,7 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     @Test
-    public void browserRestartCreatesNewInstance()
-            throws MalformedURLException {
+    public void browserRestartCreatesNewInstance() throws MalformedURLException {
         String uri = deriveMappingForUI(PlainUI.class);
         openWindow(uri);
         assertTrue("PlainUI should contain a label",
@@ -216,7 +220,7 @@ public class CDIIntegrationWithVaadinIT {
             throws MalformedURLException {
         String uri = deriveMappingForUI(NoViewProviderNavigationUI.class);
         openWindow(uri);
-        assertThat(InstrumentedView.getNumberOfInstances(),is(1));
+        assertThat(InstrumentedView.getNumberOfInstances(), is(1));
         firstWindow.click(NAVIGATE_BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(InstrumentedView.getNumberOfInstances(), is(1));
@@ -250,7 +254,6 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(RootUI.getNumberOfInstances(), is(1));
     }
 
-
     @Test
     public void uiInheritance() throws MalformedURLException {
         openWindow(deriveMappingForUI(SubUI.class));
@@ -280,7 +283,8 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(DanglingView.getNumberOfInstances(), is(0));
     }
 
-    @Test  @OperateOnDeployment("alternativeUiPathCollision")
+    @Test
+    @OperateOnDeployment("alternativeUiPathCollision")
     public void alternativeDoesNotColideWithPath() throws MalformedURLException {
         final String plainUIPath = deriveMappingForUI(PlainUI.class);
         final String plainAlternativeUI = deriveMappingForUI(PlainColidingAlternativeUI.class);
@@ -373,7 +377,8 @@ public class CDIIntegrationWithVaadinIT {
 
     }
 
-    @Test @OperateOnDeployment("customURIMapping")
+    @Test
+    @OperateOnDeployment("customURIMapping")
     public void customServletMapping() throws MalformedURLException {
         assertThat(RootWithCustomMappingUI.getNumberOfInstances(), is(0));
         openWindow("customURI/rootWithCustomMappingUI");
@@ -383,33 +388,37 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     /**
-     *
-     * Tests invalid deployment of multiple roots within a WAR
-     * Should be before the regular tests--arquillian deployments are not perfectly isolated.
+     * 
+     * Tests invalid deployment of multiple roots within a WAR Should be before
+     * the regular tests--arquillian deployments are not perfectly isolated.
      */
-    @Test @InSequence(-1)
+    @Test
+    @InSequence(-1)
     public void multipleRootsBreakDeployment() throws MalformedURLException {
         assertThat(RootUI.getNumberOfInstances(), is(0));
         deployer.deploy("multipleRoots");
         openWindowNoWait("");
         final String expectedErrorMessage = this.firstWindow.getBodyText();
-        assertThat(expectedErrorMessage, containsString("VaadinCDIServlet deployment aborted. Reason:"));
+        assertThat(expectedErrorMessage,
+                containsString("VaadinCDIServlet deployment aborted. Reason:"));
         assertThat(RootUI.getNumberOfInstances(), is(0));
 
     }
 
     /**
-     *
-     * Tests invalid deployment of multiple roots within a WAR
-     * Should be started first--arquillian deployments are not perfectly isolated.
+     * 
+     * Tests invalid deployment of multiple roots within a WAR Should be started
+     * first--arquillian deployments are not perfectly isolated.
      */
-    @Test @InSequence(-2)
+    @Test
+    @InSequence(-2)
     public void uiPathCollisionBreaksDeployment() throws MalformedURLException {
         assertThat(RootUI.getNumberOfInstances(), is(0));
         deployer.deploy("uiPathCollision");
         openWindowNoWait(deriveMappingForUI(PathCollisionUI.class));
         final String expectedErrorMessage = this.firstWindow.getBodyText();
-        assertThat(expectedErrorMessage, containsString("VaadinCDIServlet deployment aborted. Reason:"));
+        assertThat(expectedErrorMessage,
+                containsString("VaadinCDIServlet deployment aborted. Reason:"));
         assertThat(RootUI.getNumberOfInstances(), is(0));
 
     }
@@ -422,7 +431,7 @@ public class CDIIntegrationWithVaadinIT {
         firstWindow.click(BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));
         final String labelText = retrieveText.locator(LABEL).retrieve();
-        assertThat(labelText,startsWith("Echo:"));
+        assertThat(labelText, startsWith("Echo:"));
         assertThat(EnterpriseUI.getNumberOfInstances(), is(1));
         assertDefaultRootNotInstantiated();
     }

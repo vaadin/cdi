@@ -46,8 +46,7 @@ public class ArchiveProvider {
             UIBeanStore.class, VaadinCDIServlet.class, UIScopedContext.class,
             CDIUI.class };
 
-
-    public static WebArchive createWebArchive(String warName,Class... classes) {
+    public static WebArchive createWebArchive(String warName, Class... classes) {
         WebArchive archive = base(warName);
         archive.addClasses(classes);
         System.out.println(archive.toString(true));
@@ -58,7 +57,7 @@ public class ArchiveProvider {
         MavenDependencyResolver resolver = DependencyResolvers.use(
                 MavenDependencyResolver.class).loadMetadataFromPom("pom.xml");
         return ShrinkWrap
-                .create(WebArchive.class,warName + ".war")
+                .create(WebArchive.class, warName + ".war")
                 .addClasses(FRAMEWORK_CLASSES)
                 .addAsLibraries(
                         resolver.artifact(

@@ -18,24 +18,27 @@ package com.vaadin.cdi.internal;
 /**
  * Thrown in case the contents of the deployment archive are not consistent:
  * <ol>
- *     <li>Multiple VaadinUIs are using the same path e.g. @CDIUI("a"), @CDIUI("b")</li>
- *     <li>Several UIs annotated with @Root annotations are packaged</li>
- *     <li>A servlet defined in the web.xml cannot be loaded.</li>
+ * <li>Multiple VaadinUIs are using the same path e.g. @CDIUI("a"), @CDIUI("b")</li>
+ * <li>Several UIs annotated with @Root annotations are packaged</li>
+ * <li>A servlet defined in the web.xml cannot be loaded.</li>
  * </ol>
+ * 
  * @author: adam-bien.com
  */
 public class InconsistentDeploymentException extends RuntimeException {
 
-    enum ID{ MULTIPLE_ROOTS, PATH_COLLISION,CLASS_NOT_FOUND}
+    enum ID {
+        MULTIPLE_ROOTS, PATH_COLLISION, CLASS_NOT_FOUND
+    }
 
     private ID id;
 
-    public InconsistentDeploymentException(ID id,String message) {
+    public InconsistentDeploymentException(ID id, String message) {
         super(message);
         this.id = id;
     }
 
-    public InconsistentDeploymentException(ID id,Exception e) {
+    public InconsistentDeploymentException(ID id, Exception e) {
         super(e);
         this.id = id;
     }

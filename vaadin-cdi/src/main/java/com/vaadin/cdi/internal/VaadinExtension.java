@@ -30,9 +30,8 @@ import javax.enterprise.inject.spi.Extension;
  */
 public class VaadinExtension implements Extension {
 
-    void afterBeanDiscovery(
-            @Observes final AfterBeanDiscovery afterBeanDiscovery,
-            final BeanManager beanManager) {
+    void afterBeanDiscovery(@Observes
+    final AfterBeanDiscovery afterBeanDiscovery, final BeanManager beanManager) {
         afterBeanDiscovery.addContext(new UIScopedContext(beanManager));
         getLogger().info("UIScopedContext registered");
     }

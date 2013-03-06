@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @CDIUI("collision")
 public class PathCollisionUI extends UI {
 
-
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
     private int clickCount;
 

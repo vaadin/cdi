@@ -59,10 +59,10 @@ public class ContextDeployer implements ServletContextListener {
         getLogger()
                 .info("Initializing web context for path "
                         + context.getContextPath());
-        try{
+        try {
             discoverUIMappingsFromAnnotations();
             discoverURLMappingFromRoot();
-        }catch(InconsistentDeploymentException e){
+        } catch (InconsistentDeploymentException e) {
             vaadinCDIServlet.stopDeployment(e.toString());
             throw e;
         }
@@ -87,7 +87,8 @@ public class ContextDeployer implements ServletContextListener {
                 }
 
             } catch (ClassNotFoundException e) {
-                throw new InconsistentDeploymentException(InconsistentDeploymentException.ID.CLASS_NOT_FOUND,e);
+                throw new InconsistentDeploymentException(
+                        InconsistentDeploymentException.ID.CLASS_NOT_FOUND, e);
             }
         }
 
@@ -115,8 +116,10 @@ public class ContextDeployer implements ServletContextListener {
             String uiMapping = Conventions.deriveMappingForUI(uiBeanClass);
 
             if (configuredUIs.contains(uiMapping)) {
-                throw new InconsistentDeploymentException(InconsistentDeploymentException.ID.PATH_COLLISION,
-                        "Multiple UIs configured with @CDIUI(" + uiMapping+")");
+                throw new InconsistentDeploymentException(
+                        InconsistentDeploymentException.ID.PATH_COLLISION,
+                        "Multiple UIs configured with @CDIUI(" + uiMapping
+                                + ")");
             }
 
             configuredUIs.add(uiMapping);
@@ -132,7 +135,8 @@ public class ContextDeployer implements ServletContextListener {
                             + "this UI is accessible from context root of deployment");
         }
         if (numberOfRootUIs > 1) {
-            throw new InconsistentDeploymentException(InconsistentDeploymentException.ID.MULTIPLE_ROOTS,
+            throw new InconsistentDeploymentException(
+                    InconsistentDeploymentException.ID.MULTIPLE_ROOTS,
                     "Multiple UIs configured with @Root annotation, "
                             + "only one UI can be root");
         }
@@ -240,7 +244,6 @@ public class ContextDeployer implements ServletContextListener {
 
     }
 
-
     private void registerServletToContext(ServletContext context) {
         getLogger().info("Registering VaadinCDIServlet");
 
@@ -248,15 +251,14 @@ public class ContextDeployer implements ServletContextListener {
                 "VaadinCDIServlet", vaadinCDIServlet);
 
         registration.addMapping("/VAADIN/*");
-        getLogger()
-                .info("Mapping " + registration.getName() + " to " + urlMapping);
+        getLogger().info(
+                "Mapping " + registration.getName() + " to " + urlMapping);
         registration.addMapping(urlMapping);
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        getLogger()
-                .info("Context destroyed");
+        getLogger().info("Context destroyed");
     }
 
     private static Logger getLogger() {

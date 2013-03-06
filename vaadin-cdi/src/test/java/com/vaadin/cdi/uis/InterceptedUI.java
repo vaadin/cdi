@@ -15,6 +15,7 @@
  */
 
 package com.vaadin.cdi.uis;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
@@ -27,7 +28,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-
 
 @CDIUI
 public class InterceptedUI extends UI {
@@ -64,7 +64,8 @@ public class InterceptedUI extends UI {
         setContent(layout);
     }
 
-    public void onEventArrival(@Observes String message) {
+    public void onEventArrival(@Observes
+    String message) {
         this.EVENT_COUNTER.incrementAndGet();
         System.out.println("Message arrived!");
     }

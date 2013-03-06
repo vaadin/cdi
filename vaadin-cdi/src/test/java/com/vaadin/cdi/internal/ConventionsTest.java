@@ -74,6 +74,7 @@ public class ConventionsTest {
         String actual = deriveMappingForView(OneAndOnlyViewWithoutPath.class);
         assertThat(actual, is(expected));
     }
+
     @Test
     public void extractViewNameUsingConventionWithoutAnnotation() {
         String expected = "oneAndOnlyViewWithoutPathAndAnnotation";
@@ -96,7 +97,7 @@ public class ConventionsTest {
     }
 
     @Test
-    public void uiAnnotationNotPresent(){
+    public void uiAnnotationNotPresent() {
         final String uiPath = deriveMappingForUI(String.class);
         assertNull(uiPath);
     }

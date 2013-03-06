@@ -35,7 +35,6 @@ public class EnterpriseUI extends UI {
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
     private int clickCount;
 
-
     @Inject
     Boundary boundary;
 

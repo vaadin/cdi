@@ -47,21 +47,22 @@ public class VaadinCDIServlet extends VaadinServlet {
     };
 
     /**
-     * Call to this method prevents successful deployment of the VaadinCDIServlet
-     * This method is a workaround, because ContextDeployer is not able
-     * to stop the deployment reliably (tested with TomEE 1.5)
+     * Call to this method prevents successful deployment of the
+     * VaadinCDIServlet This method is a workaround, because ContextDeployer is
+     * not able to stop the deployment reliably (tested with TomEE 1.5)
      */
-    public void stopDeployment(String reason){
+    public void stopDeployment(String reason) {
         this.reason = reason;
     }
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
-        if(reason!=null){
+        if (reason != null) {
             String message = reason;
             reason = null;
-            throw new ServletException("VaadinCDIServlet deployment aborted. Reason: " + message);
+            throw new ServletException(
+                    "VaadinCDIServlet deployment aborted. Reason: " + message);
         }
         logger().info("VaadinCDIServlet initialized");
         getService().addSessionInitListener(sessionInitListener);

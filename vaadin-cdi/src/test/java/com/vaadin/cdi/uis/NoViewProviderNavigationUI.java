@@ -55,8 +55,9 @@ public class NoViewProviderNavigationUI extends UI {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 NAVIGATION_COUNTER.incrementAndGet();
-                Navigator navigator = new Navigator(NoViewProviderNavigationUI.this, horizontalLayout);
-                navigator.addView("instrumentedView",view);
+                Navigator navigator = new Navigator(
+                        NoViewProviderNavigationUI.this, horizontalLayout);
+                navigator.addView("instrumentedView", view);
                 navigator.navigateTo("instrumentedView");
             }
         });
@@ -71,7 +72,7 @@ public class NoViewProviderNavigationUI extends UI {
         return COUNTER.get();
     }
 
-    public static int getNumberOfNavigations(){
+    public static int getNumberOfNavigations() {
         return NAVIGATION_COUNTER.get();
     }
 

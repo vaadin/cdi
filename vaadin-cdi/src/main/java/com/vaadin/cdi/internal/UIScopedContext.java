@@ -31,7 +31,7 @@ import com.vaadin.ui.UI;
 
 /**
  * UIScopedContext is the context for
- *
+ * 
  * @UIScoped beans.
  */
 public class UIScopedContext implements Context {
@@ -64,7 +64,7 @@ public class UIScopedContext implements Context {
 
         getLogger().log(Level.INFO,
                 "Getting bean for contextual {0} and creational context {1}",
-                new Object[]{contextual, creationalContext});
+                new Object[] { contextual, creationalContext });
 
         BeanStoreContainer beanStoreContainer = getSessionBoundBeanStoreContainer();
         T beanInstance = null;
@@ -97,10 +97,10 @@ public class UIScopedContext implements Context {
             } else if (creationalContext != null) {
                 getLogger()
                         .log(Level.WARNING,
-                        "Tried to get a Bean that is not compatible with the current UI {0}. "
-                        + "Looks like you need to specify \"notifyObserver=Reception.IF_EXISTS\" on the event observer methods of {1}.",
-                        new Object[]{current,
-                    bean.getBeanClass().getName()});
+                                "Tried to get a Bean that is not compatible with the current UI {0}. "
+                                        + "Looks like you need to specify \"notifyObserver=Reception.IF_EXISTS\" on the event observer methods of {1}.",
+                                new Object[] { current,
+                                        bean.getBeanClass().getName() });
             }
         } else {
             throw new IllegalStateException(((Bean) contextual).getBeanClass()
@@ -110,15 +110,15 @@ public class UIScopedContext implements Context {
 
         getLogger()
                 .log(Level.INFO,
-                "Finished getting bean for contextual {0}, returning instance {1}",
-                new Object[]{contextual, beanInstance});
+                        "Finished getting bean for contextual {0}, returning instance {1}",
+                        new Object[] { contextual, beanInstance });
         return beanInstance;
     }
 
     /**
      * @param contextual
      * @return true if Vaadin UI is assignabled from given bean's representing
-     * type
+     *         type
      */
     private <T> boolean isInstanceOfUIBean(Contextual<T> contextual) {
         if (contextual instanceof UIBean) {

@@ -8,7 +8,7 @@ import javax.ejb.Stateless;
 @Stateless
 public class Boundary {
 
-    public String echo(String message){
+    public String echo(String message) {
         return "Echo: " + message;
     }
 }

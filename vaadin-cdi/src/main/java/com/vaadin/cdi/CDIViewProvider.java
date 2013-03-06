@@ -113,8 +113,7 @@ public class CDIViewProvider implements ViewProvider {
         }
         for (Bean<?> bean : all) {
             Class<?> beanClass = bean.getBeanClass();
-            CDIView viewAnnotation = beanClass
-                    .getAnnotation(CDIView.class);
+            CDIView viewAnnotation = beanClass.getAnnotation(CDIView.class);
             String mapping = null;
             if (viewAnnotation != null) {
                 mapping = viewAnnotation.value();
@@ -228,7 +227,7 @@ public class CDIViewProvider implements ViewProvider {
         if (viewName.startsWith("!")) {
             viewName = viewName.substring(1);
         }
-        
+
         if (viewName.contains("/")) {
             viewName = viewName.split("/")[0];
         }

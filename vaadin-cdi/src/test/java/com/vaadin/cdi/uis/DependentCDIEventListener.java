@@ -32,7 +32,8 @@ public class DependentCDIEventListener implements Serializable {
         COUNTER.incrementAndGet();
     }
 
-    public void onEventArrival(@Observes String message) {
+    public void onEventArrival(@Observes
+    String message) {
         EVENT_COUNTER.incrementAndGet();
         System.out.println("+DependentCDIEventListener Message arrived!");
     }

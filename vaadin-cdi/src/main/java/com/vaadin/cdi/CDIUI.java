@@ -25,15 +25,15 @@ import javax.enterprise.inject.Stereotype;
 import javax.inject.Scope;
 
 /**
- * All UIs need to be declared with this annotation. CDIUI annotation binds
- * the lifecycle of a given UI to Vaadin's view lifecycle. There is one UI
- * instance per tab and so multiple instances per session.
- *
+ * All UIs need to be declared with this annotation. CDIUI annotation binds the
+ * lifecycle of a given UI to Vaadin's view lifecycle. There is one UI instance
+ * per tab and so multiple instances per session.
+ * 
  */
 @Stereotype
 @UIScoped
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 @Inherited
 public @interface CDIUI {
 
@@ -41,7 +41,7 @@ public @interface CDIUI {
      * An optional URI mapping. If not specified, the mapping is going to be
      * derived from the simple name of the class. A class WelcomeVaadin is going
      * to be bound to "/welcomeVaadin" uri.
-     *
+     * 
      * @return the URI mapping of this UI
      */
     public String value() default "";

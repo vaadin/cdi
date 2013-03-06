@@ -17,8 +17,8 @@
 package com.vaadin.cdi.uis;
 
 import com.vaadin.cdi.VaadinUI;
-import com.vaadin.cdi.component.ComponentTools;
-import com.vaadin.cdi.component.JaasTools;
+import com.vaadin.cdi.access.ComponentTools;
+import com.vaadin.cdi.access.JaasTools;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;

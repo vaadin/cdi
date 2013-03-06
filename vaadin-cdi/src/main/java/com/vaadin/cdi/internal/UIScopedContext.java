@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.cdi;
+package com.vaadin.cdi.internal;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;
@@ -26,6 +26,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
+import com.vaadin.cdi.VaadinUIScoped;
 import com.vaadin.ui.UI;
 
 /**

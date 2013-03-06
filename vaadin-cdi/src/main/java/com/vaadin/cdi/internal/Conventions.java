@@ -14,7 +14,10 @@
  * the License.
  */
 
-package com.vaadin.cdi;
+package com.vaadin.cdi.internal;
+
+import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.VaadinView;
 
 public class Conventions {
 

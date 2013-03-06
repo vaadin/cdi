@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.vaadin.cdi;
+package com.vaadin.cdi.internal;
 
 import java.io.Serializable;
 import java.util.Map;

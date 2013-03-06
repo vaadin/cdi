@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.vaadin.cdi;
+package com.vaadin.cdi.internal;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -25,6 +25,8 @@ import java.util.logging.Logger;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
+
+import com.vaadin.cdi.VaadinUI;
 
 /**
  * Datastructure for storing bean instances in {@link VaadinUI} context.

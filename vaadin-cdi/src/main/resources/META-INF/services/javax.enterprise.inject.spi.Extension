@@ -1,1 +1,1 @@
-com.vaadin.cdi.VaadinExtension
+com.vaadin.cdi.internal.VaadinExtension

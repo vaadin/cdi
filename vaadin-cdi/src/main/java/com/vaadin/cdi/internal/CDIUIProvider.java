@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.vaadin.cdi;
+package com.vaadin.cdi.internal;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -26,6 +26,8 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
+import com.vaadin.cdi.Root;
+import com.vaadin.cdi.VaadinUI;
 import com.vaadin.server.DefaultUIProvider;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;

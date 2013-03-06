@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.vaadin.cdi.component;
+package com.vaadin.cdi.access;
 
 import java.security.Principal;
 import java.util.logging.Logger;

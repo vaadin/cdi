@@ -24,8 +24,15 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
 
-import com.vaadin.cdi.component.ComponentTools;
-import com.vaadin.cdi.component.JaasTools;
+import com.vaadin.cdi.access.ComponentTools;
+import com.vaadin.cdi.access.JaasTools;
+import com.vaadin.cdi.internal.BeanStoreContainer;
+import com.vaadin.cdi.internal.CDIUIProvider;
+import com.vaadin.cdi.internal.ContextDeployer;
+import com.vaadin.cdi.internal.UIBeanStore;
+import com.vaadin.cdi.internal.UIScopedContext;
+import com.vaadin.cdi.internal.VaadinCDIServlet;
+import com.vaadin.cdi.internal.VaadinExtension;
 
 /**
  * 

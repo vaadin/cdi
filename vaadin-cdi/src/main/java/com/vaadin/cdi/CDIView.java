@@ -32,11 +32,11 @@ import com.vaadin.ui.UI;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })
-public @interface VaadinView {
+public @interface CDIView {
 
     /**
      * 
-     * The name of the VaadinView can be derived from the simple class name So
+     * The name of the CDIView can be derived from the simple class name So
      * it is optional. Also multiple views without a value may exist at the same
      * time
      */

@@ -56,9 +56,9 @@ public class CDIViewProvider implements ViewProvider {
         }
 
         if (isUserHavingAccessToView(viewBean)) {
-            if (viewBean.getBeanClass().isAnnotationPresent(VaadinView.class)) {
+            if (viewBean.getBeanClass().isAnnotationPresent(CDIView.class)) {
                 String specifiedViewName = viewBean.getBeanClass()
-                        .getAnnotation(VaadinView.class).value();
+                        .getAnnotation(CDIView.class).value();
                 if (!specifiedViewName.isEmpty()) {
                     return specifiedViewName;
                 }
@@ -75,9 +75,9 @@ public class CDIViewProvider implements ViewProvider {
 
     private boolean isUserHavingAccessToView(Bean<?> viewBean) {
 
-        if (viewBean.getBeanClass().isAnnotationPresent(VaadinView.class)) {
-            VaadinView viewAnnotation = viewBean.getBeanClass().getAnnotation(
-                    VaadinView.class);
+        if (viewBean.getBeanClass().isAnnotationPresent(CDIView.class)) {
+            CDIView viewAnnotation = viewBean.getBeanClass().getAnnotation(
+                    CDIView.class);
 
             if (viewAnnotation.rolesAllowed().length == 0) {
                 // No roles defined, everyone is allowed
@@ -113,8 +113,8 @@ public class CDIViewProvider implements ViewProvider {
         }
         for (Bean<?> bean : all) {
             Class<?> beanClass = bean.getBeanClass();
-            VaadinView viewAnnotation = beanClass
-                    .getAnnotation(VaadinView.class);
+            CDIView viewAnnotation = beanClass
+                    .getAnnotation(CDIView.class);
             String mapping = null;
             if (viewAnnotation != null) {
                 mapping = viewAnnotation.value();
@@ -161,8 +161,8 @@ public class CDIViewProvider implements ViewProvider {
         Set<Bean<?>> viewBeans = new HashSet<Bean<?>>();
 
         for (Bean<?> bean : beans) {
-            VaadinView viewAnnotation = bean.getBeanClass().getAnnotation(
-                    VaadinView.class);
+            CDIView viewAnnotation = bean.getBeanClass().getAnnotation(
+                    CDIView.class);
 
             if (viewAnnotation == null || viewAnnotation.ui().equals(UI.class)) {
                 viewBeans.add(bean);

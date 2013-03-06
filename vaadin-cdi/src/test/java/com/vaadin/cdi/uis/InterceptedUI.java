@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.CDIUI;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -29,7 +29,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 
-@VaadinUI
+@CDIUI
 public class InterceptedUI extends UI {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);

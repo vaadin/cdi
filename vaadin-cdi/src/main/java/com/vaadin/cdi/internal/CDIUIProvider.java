@@ -27,7 +27,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.Root;
-import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.CDIUI;
 import com.vaadin.server.DefaultUIProvider;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
@@ -47,13 +47,13 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         Bean<?> bean = scanForBeans(type);
         String uiMapping = "";
         if (bean == null) {
-            if (type.isAnnotationPresent(VaadinUI.class)) {
+            if (type.isAnnotationPresent(CDIUI.class)) {
                 uiMapping = parseUIMapping(request);
                 bean = getUIBeanWithMapping(uiMapping);
             } else {
                 throw new IllegalStateException("UI class: " + type.getName()
                         + " with mapping: " + uiMapping
-                        + " is not annotated with VaadinUI!");
+                        + " is not annotated with CDIUI!");
             }
         }
         UIBean uiBean = new UIBean(bean, uiId);
@@ -126,7 +126,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
                 Class<? extends UI> beanClass = bean.getBeanClass().asSubclass(
                         UI.class);
 
-                if (beanClass.isAnnotationPresent(VaadinUI.class)) {
+                if (beanClass.isAnnotationPresent(CDIUI.class)) {
                     String computedMapping = Conventions
                             .deriveMappingForUI(beanClass);
                     if (mapping.equals(computedMapping)) {

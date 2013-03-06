@@ -17,7 +17,7 @@
 package com.vaadin.cdi.uis;
 
 import com.vaadin.cdi.CDIViewProvider;
-import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.CDIUI;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
@@ -29,7 +29,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@VaadinUI
+@CDIUI
 public class PlainUI extends UI {
 
 

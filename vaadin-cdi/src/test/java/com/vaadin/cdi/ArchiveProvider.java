@@ -44,7 +44,7 @@ public class ArchiveProvider {
             ComponentTools.class, JaasTools.class, BeanStoreContainer.class,
             CDIUIProvider.class, CDIViewProvider.class, ContextDeployer.class,
             UIBeanStore.class, VaadinCDIServlet.class, UIScopedContext.class,
-            VaadinUI.class };
+            CDIUI.class };
 
 
     public static WebArchive createWebArchive(String warName,Class... classes) {

@@ -18,7 +18,7 @@ package com.vaadin.cdi.uis;
 
 import com.vaadin.cdi.Root;
 import com.vaadin.cdi.URLMapping;
-import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.CDIUI;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author: adam-bien.com
  */
 @Root
-@VaadinUI
+@CDIUI
 @URLMapping("/customURI/*")
 public class RootWithCustomMappingUI extends UI {
     private final static AtomicInteger COUNTER = new AtomicInteger(0);

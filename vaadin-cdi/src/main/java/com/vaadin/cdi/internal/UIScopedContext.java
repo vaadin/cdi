@@ -26,13 +26,13 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
-import com.vaadin.cdi.VaadinUIScoped;
+import com.vaadin.cdi.UIScoped;
 import com.vaadin.ui.UI;
 
 /**
  * UIScopedContext is the context for
  *
- * @VaadinUIScoped beans.
+ * @UIScoped beans.
  */
 public class UIScopedContext implements Context {
 
@@ -45,7 +45,7 @@ public class UIScopedContext implements Context {
 
     @Override
     public Class<? extends Annotation> getScope() {
-        return VaadinUIScoped.class;
+        return UIScoped.class;
     }
 
     @Override
@@ -105,7 +105,7 @@ public class UIScopedContext implements Context {
         } else {
             throw new IllegalStateException(((Bean) contextual).getBeanClass()
                     .getName()
-                    + " is not a UI, only UIs can be annotated with @VaadinUI!");
+                    + " is not a UI, only UIs can be annotated with @CDIUI!");
         }
 
         getLogger()

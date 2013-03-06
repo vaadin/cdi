@@ -16,7 +16,7 @@
 
 package com.vaadin.cdi.views;
 
-import com.vaadin.cdi.VaadinView;
+import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
@@ -24,7 +24,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
  * 
  * @author adam-bien.com
  */
-@VaadinView("custom")
+@CDIView("custom")
 public class OneAndOnlyViewWithPath implements View {
 
     @Override

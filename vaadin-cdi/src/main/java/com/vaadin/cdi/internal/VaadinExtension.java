@@ -24,7 +24,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 
 /**
- * CDI Extension needed to register the @VaadinUI scope to the runtime.
+ * CDI Extension needed to register the @CDIUI scope to the runtime.
  * 
  * @author Tomi Virkki / Vaadin Ltd
  */

@@ -16,7 +16,7 @@
 
 package com.vaadin.cdi.uis;
 
-import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.uis.Boundary;
 import com.vaadin.cdi.uis.InstrumentedView;
 import com.vaadin.server.VaadinRequest;
@@ -29,7 +29,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@VaadinUI
+@CDIUI
 public class EnterpriseUI extends UI {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);

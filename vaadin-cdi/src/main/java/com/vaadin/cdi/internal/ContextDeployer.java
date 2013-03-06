@@ -33,7 +33,7 @@ import javax.servlet.annotation.WebListener;
 
 import com.vaadin.cdi.Root;
 import com.vaadin.cdi.URLMapping;
-import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.CDIUI;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
 
@@ -116,7 +116,7 @@ public class ContextDeployer implements ServletContextListener {
 
             if (configuredUIs.contains(uiMapping)) {
                 throw new InconsistentDeploymentException(InconsistentDeploymentException.ID.PATH_COLLISION,
-                        "Multiple UIs configured with @VaadinUI(" + uiMapping+")");
+                        "Multiple UIs configured with @CDIUI(" + uiMapping+")");
             }
 
             configuredUIs.add(uiMapping);
@@ -189,10 +189,10 @@ public class ContextDeployer implements ServletContextListener {
     }
 
     /**
-     * From the given set of beans, removes all without @VaadinUI annotation
+     * From the given set of beans, removes all without @CDIUI annotation
      * 
      * @param uiBeans
-     * @return set of beans having @VaadinUI annotation
+     * @return set of beans having @CDIUI annotation
      */
     Set<Bean<?>> dropBeansWithOutVaadinUIAnnotation(Set<Bean<?>> uiBeans) {
         Set<Bean<?>> result = new HashSet<Bean<?>>();
@@ -200,11 +200,11 @@ public class ContextDeployer implements ServletContextListener {
         for (Bean<?> bean : uiBeans) {
             Class<?> beanClass = bean.getBeanClass();
 
-            if (beanClass.isAnnotationPresent(VaadinUI.class)) {
+            if (beanClass.isAnnotationPresent(CDIUI.class)) {
                 result.add(bean);
             } else {
                 getLogger().warning(
-                        "UI without VaadinUI annotation found: "
+                        "UI without CDIUI annotation found: "
                                 + beanClass.getName()
                                 + ", it is not available in CDI deployment");
             }
@@ -231,7 +231,7 @@ public class ContextDeployer implements ServletContextListener {
         if (configuredUIs.isEmpty()) {
             getLogger()
                     .warning(
-                            "No Vaadin UI classes with @VaadinUI or @Root annotation found. "
+                            "No Vaadin UI classes with @CDIUI or @Root annotation found. "
                                     + "Skipping automated deployment of VaadinCDIServlet.");
             return;
         }

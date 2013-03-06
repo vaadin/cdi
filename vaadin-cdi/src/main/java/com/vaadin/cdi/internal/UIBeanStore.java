@@ -26,10 +26,10 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
-import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.CDIUI;
 
 /**
- * Datastructure for storing bean instances in {@link VaadinUI} context.
+ * Datastructure for storing bean instances in {@link CDIUI} context.
  * 
  * @author Tomi Virkki / Vaadin Ltd
  */

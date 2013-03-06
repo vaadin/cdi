@@ -22,7 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.CDIViewProvider;
-import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.views.OneAndOnlyViewWithPath;
 import com.vaadin.cdi.views.OneAndOnlyViewWithoutPath;
 import com.vaadin.navigator.Navigator;
@@ -32,7 +32,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-@VaadinUI
+@CDIUI
 public class InstrumentedUI extends UI {
 
     @Inject

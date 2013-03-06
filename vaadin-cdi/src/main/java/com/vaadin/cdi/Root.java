@@ -30,7 +30,7 @@ import javax.inject.Qualifier;
  * <pre>
  *     <code>
  *  @Root
- *  @VaadinUI
+ *  @CDIUI
  *  public class EntryPoint extends UI {}
  *     </code>
  * </pre>

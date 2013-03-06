@@ -15,7 +15,7 @@
  */
 package com.vaadin.cdi.uis;
 
-import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.CDIUI;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -25,7 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Alternative;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@VaadinUI
+@CDIUI
 @Alternative
 public class PlainAlternativeUI extends UI {
 

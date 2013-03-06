@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 
 import com.vaadin.cdi.Root;
-import com.vaadin.cdi.VaadinUI;
+import com.vaadin.cdi.CDIUI;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -31,7 +31,7 @@ import com.vaadin.ui.VerticalLayout;
  * @author: adam-bien.com
  */
 @Root
-@VaadinUI
+@CDIUI
 public class RootUI extends UI {
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
     private int clickCount;

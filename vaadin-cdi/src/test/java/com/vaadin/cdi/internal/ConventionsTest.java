@@ -14,11 +14,11 @@
  * the License.
  */
 
-package com.vaadin.cdi;
+package com.vaadin.cdi.internal;
 
-import static com.vaadin.cdi.Conventions.deriveMappingForUI;
-import static com.vaadin.cdi.Conventions.deriveMappingForView;
-import static com.vaadin.cdi.Conventions.firstToLower;
+import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
+import static com.vaadin.cdi.internal.Conventions.deriveMappingForView;
+import static com.vaadin.cdi.internal.Conventions.firstToLower;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;

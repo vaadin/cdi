@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.vaadin.cdi;
+package com.vaadin.cdi.internal;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,6 +31,9 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRegistration;
 import javax.servlet.annotation.WebListener;
 
+import com.vaadin.cdi.Root;
+import com.vaadin.cdi.URLMapping;
+import com.vaadin.cdi.VaadinUI;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
 

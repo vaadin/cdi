@@ -16,7 +16,7 @@
 
 package com.vaadin.cdi;
 
-import static com.vaadin.cdi.Conventions.*;
+import static com.vaadin.cdi.internal.Conventions.*;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;

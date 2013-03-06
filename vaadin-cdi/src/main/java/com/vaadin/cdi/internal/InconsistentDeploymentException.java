@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.cdi;
+package com.vaadin.cdi.internal;
 
 /**
  * Thrown in case the contents of the deployment archive are not consistent:

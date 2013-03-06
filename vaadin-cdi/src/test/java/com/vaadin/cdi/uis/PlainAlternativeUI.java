@@ -1,12 +1,12 @@
 /*
- * Copyright 2012 Vaadin Ltd.
- *
+ * Copyright 2000-2013 Vaadin Ltd.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,15 +15,16 @@
  */
 package com.vaadin.cdi.uis;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Alternative;
+
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Alternative;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @CDIUI
 @Alternative
@@ -35,7 +36,7 @@ public class PlainAlternativeUI extends UI {
     @PostConstruct
     public void initialize() {
         COUNTER.incrementAndGet();
-        this.clickCount = 0;
+        clickCount = 0;
 
     }
 

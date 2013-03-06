@@ -85,13 +85,6 @@
 			<version>${vaadin.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		<!-- Java EE 6 API -->
-		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
-			<version>6.0</version>
-			<scope>provided</scope>
-		</dependency>
 
 		<!-- Test dependencies -->
 		<!-- Embedded TomEE -->
@@ -154,6 +147,16 @@
 			<version>${vaadin.version}</version>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- Java EE 6 API. Must be last to be overridden by tomee for the test 
+			phase -->
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>6.0</version>
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -216,6 +219,20 @@
 					<skip>true</skip>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.10</version>
+				<configuration>
+					<enableRulesSummary>false</enableRulesSummary>
+					<includeTestSourceDirectory>true</includeTestSourceDirectory>
+					<configLocation>checkstyle/vaadin-checkstyle.xml</configLocation>
+					<violationSeverity>error</violationSeverity>
+					<headerLocation>checkstyle/header</headerLocation>
+				</configuration>
+			</plugin>
 		</plugins>
+
 	</build>
+
 </project>

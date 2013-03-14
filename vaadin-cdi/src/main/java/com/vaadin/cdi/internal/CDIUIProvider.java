@@ -26,13 +26,14 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
-import com.vaadin.cdi.Root;
 import com.vaadin.cdi.CDIUI;
+import com.vaadin.cdi.Root;
 import com.vaadin.server.DefaultUIProvider;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
+import com.vaadin.util.CurrentInstance;
 
 public class CDIUIProvider extends DefaultUIProvider implements Serializable {
 
@@ -57,8 +58,15 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
             }
         }
         UIBean uiBean = new UIBean(bean, uiId);
-        return (UI) beanManager.getReference(uiBean, type,
-                beanManager.createCreationalContext(bean));
+        try {
+            // Make the UIBean available to UIScopedContext when creating nested
+            // injected objects
+            CurrentInstance.set(UIBean.class, uiBean);
+            return (UI) beanManager.getReference(uiBean, type,
+                    beanManager.createCreationalContext(bean));
+        } finally {
+            CurrentInstance.set(UIBean.class, null);
+        }
     }
 
     @Override

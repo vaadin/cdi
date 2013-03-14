@@ -19,6 +19,7 @@ package com.vaadin.cdi.uis;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
 
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
@@ -30,6 +31,7 @@ import com.vaadin.ui.VerticalLayout;
 /**
  */
 @CDIView
+@Dependent
 public class InstrumentedView extends CustomComponent implements View {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);

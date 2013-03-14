@@ -20,6 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.enterprise.inject.Stereotype;
+
 import com.vaadin.ui.UI;
 
 /**
@@ -27,8 +29,10 @@ import com.vaadin.ui.UI;
  * 
  * @see javax.inject.Named
  */
+@Stereotype
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })
+@UIScoped
 public @interface CDIView {
 
     /**
@@ -48,7 +52,7 @@ public @interface CDIView {
      */
     public boolean supportsParameters() default false;
 
-    // why not @RollesAllowed?
+    // why not @RolesAllowed?
     public String[] rolesAllowed() default {};
 
     public Class<? extends UI> ui() default UI.class;

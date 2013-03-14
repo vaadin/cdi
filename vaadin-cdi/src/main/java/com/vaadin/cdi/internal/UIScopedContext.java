@@ -28,6 +28,7 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.cdi.UIScoped;
 import com.vaadin.ui.UI;
+import com.vaadin.util.CurrentInstance;
 
 /**
  * UIScopedContext is the context for
@@ -68,44 +69,41 @@ public class UIScopedContext implements Context {
 
         BeanStoreContainer beanStoreContainer = getSessionBoundBeanStoreContainer();
         T beanInstance = null;
-        int uiId;
-        UIBeanStore beanStore;
 
-        if (isInstanceOfUIBean(contextual)) {
-            UIBean uiBean = (UIBean) contextual;
-            uiId = uiBean.getUiId();
+        UIBeanStore beanStore = null;
+
+        // Get the correct UIBeanStore, or bean instance if available
+
+        if (CurrentInstance.get(UIBean.class) != null) {
+            // Not necessarily a UI but can be some other class in UI scope.
+            // When creating a UI and the instances injected (directly or
+            // indirectly) to it, the UI instance might not be fully constructed
+            // yet but we have the UIBean.
+            final UIBean uiBean = CurrentInstance.get(UIBean.class);
+
             beanStore = beanStoreContainer.getOrCreateUIBeanStoreFor(uiBean);
-            beanInstance = beanStore.getBeanInstance(contextual,
-                    creationalContext);
-            if (beanStoreContainer.isBeanStoreCreationPending()) {
-                beanStoreContainer.assignPendingBeanStoreFor((UI) beanInstance,
-                        uiId);
-            }
-            /**
-             * In case of a CDI event listener, the Contextual is NOT a UIBean,
-             * rather than just a Bean.
-             */
-        } else if (isUIBean(contextual)) {
-            final UI current = UI.getCurrent();
-            if (current == null) {
-                throw new IllegalStateException(
-                        "CDI listener identified, but there is no active UI available.");
-            }
-            Bean<T> bean = (Bean<T>) contextual;
-            if (bean.getBeanClass().isAssignableFrom(current.getClass())) {
-                beanInstance = (T) current;
-            } else if (creationalContext != null) {
-                getLogger()
-                        .log(Level.WARNING,
-                                "Tried to get a Bean that is not compatible with the current UI {0}. "
-                                        + "Looks like you need to specify \"notifyObserver=Reception.IF_EXISTS\" on the event observer methods of {1}.",
-                                new Object[] { current,
-                                        bean.getBeanClass().getName() });
+        } else if (UI.getCurrent() != null) {
+            if (contextual instanceof Bean
+                    && UI.class.isAssignableFrom(((Bean) contextual)
+                            .getBeanClass())
+                    && ((Bean) contextual).getBeanClass().isAssignableFrom(
+                            UI.getCurrent().getClass())) {
+                // for CDI events etc.
+                // TODO ideally, this branch should not be needed
+                beanInstance = (T) UI.getCurrent();
+            } else {
+                int uiId = UI.getCurrent().getUIId();
+
+                beanStore = beanStoreContainer.getUIBeanStore(uiId);
             }
         } else {
-            throw new IllegalStateException(((Bean) contextual).getBeanClass()
-                    .getName()
-                    + " is not a UI, only UIs can be annotated with @CDIUI!");
+            throw new IllegalStateException(
+                    "CDI listener identified, but there is no active UI available.");
+        }
+
+        if (beanInstance == null && beanStore != null) {
+            beanInstance = beanStore.getBeanInstance(contextual,
+                    creationalContext);
         }
 
         getLogger()
@@ -113,29 +111,6 @@ public class UIScopedContext implements Context {
                         "Finished getting bean for contextual {0}, returning instance {1}",
                         new Object[] { contextual, beanInstance });
         return beanInstance;
-    }
-
-    /**
-     * @param contextual
-     * @return true if Vaadin UI is assignabled from given bean's representing
-     *         type
-     */
-    private <T> boolean isInstanceOfUIBean(Contextual<T> contextual) {
-        if (contextual instanceof UIBean) {
-            return UI.class.isAssignableFrom(((Bean<T>) contextual)
-                    .getBeanClass());
-        }
-
-        return false;
-    }
-
-    private <T> boolean isUIBean(Contextual<T> contextual) {
-        if (contextual instanceof Bean) {
-            return UI.class.isAssignableFrom(((Bean<T>) contextual)
-                    .getBeanClass());
-        }
-
-        return false;
     }
 
     /**

@@ -16,7 +16,8 @@
 
 package com.vaadin.cdi;
 
-import static com.vaadin.cdi.internal.Conventions.*;
+import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
+import static com.vaadin.cdi.internal.Conventions.deriveMappingForView;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -32,10 +33,12 @@ import static org.junit.Assert.fail;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.vaadin.cdi.uis.*;
 import org.jboss.arquillian.ajocado.framework.GrapheneSelenium;
 import org.jboss.arquillian.ajocado.locator.IdLocator;
-import org.jboss.arquillian.container.test.api.*;
+import org.jboss.arquillian.container.test.api.Deployer;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -46,6 +49,33 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.thoughtworks.selenium.SeleniumException;
+import com.vaadin.cdi.uis.AnotherPathCollisionUI;
+import com.vaadin.cdi.uis.Boundary;
+import com.vaadin.cdi.uis.DanglingView;
+import com.vaadin.cdi.uis.DependentCDIEventListener;
+import com.vaadin.cdi.uis.EnterpriseUI;
+import com.vaadin.cdi.uis.InstrumentedInterceptor;
+import com.vaadin.cdi.uis.InstrumentedUI;
+import com.vaadin.cdi.uis.InstrumentedView;
+import com.vaadin.cdi.uis.InterceptedBean;
+import com.vaadin.cdi.uis.InterceptedUI;
+import com.vaadin.cdi.uis.NoViewProviderNavigationUI;
+import com.vaadin.cdi.uis.ParameterizedNavigationUI;
+import com.vaadin.cdi.uis.PathCollisionUI;
+import com.vaadin.cdi.uis.PlainAlternativeUI;
+import com.vaadin.cdi.uis.PlainColidingAlternativeUI;
+import com.vaadin.cdi.uis.PlainUI;
+import com.vaadin.cdi.uis.RestrictedView;
+import com.vaadin.cdi.uis.RootUI;
+import com.vaadin.cdi.uis.RootWithCustomMappingUI;
+import com.vaadin.cdi.uis.ScopedInstrumentedView;
+import com.vaadin.cdi.uis.SecondUI;
+import com.vaadin.cdi.uis.SubUI;
+import com.vaadin.cdi.uis.UIWithCDIDependentListener;
+import com.vaadin.cdi.uis.UIWithCDISelfListener;
+import com.vaadin.cdi.uis.UnsecuredUI;
+import com.vaadin.cdi.uis.ViewWithoutAnnotation;
+import com.vaadin.cdi.uis.WithAnnotationRegisteredView;
 
 @RunAsClient
 @RunWith(Arquillian.class)
@@ -135,7 +165,7 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     private void openWindow(String uri) throws MalformedURLException {
-        openWindow(this.firstWindow, uri);
+        openWindow(firstWindow, uri);
     }
 
     void openWindow(GrapheneSelenium window, String uri)
@@ -145,7 +175,7 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     void openWindowNoWait(String uri) throws MalformedURLException {
-        openWindowNoWait(this.firstWindow, uri);
+        openWindowNoWait(firstWindow, uri);
     }
 
     void openWindowNoWait(GrapheneSelenium window, String uri)
@@ -235,16 +265,17 @@ public class CDIIntegrationWithVaadinIT {
 
     }
 
-    @Test
-    public void recognitionOfViewWithoutAnnotation()
-            throws MalformedURLException {
-        ParameterizedNavigationUI.NAVIGATE_TO = "viewWithoutAnnotation";
-        openWindow(deriveMappingForUI(ParameterizedNavigationUI.class));
-        firstWindow.click(NAVIGATE_BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
-        assertThat(ViewWithoutAnnotation.getNumberOfInstances(), is(1));
-        assertDefaultRootNotInstantiated();
-    }
+    // automatic view name generation no longer supported
+    // @Test
+    // public void recognitionOfViewWithoutAnnotation()
+    // throws MalformedURLException {
+    // ParameterizedNavigationUI.NAVIGATE_TO = "viewWithoutAnnotation";
+    // openWindow(deriveMappingForUI(ParameterizedNavigationUI.class));
+    // firstWindow.click(NAVIGATE_BUTTON);
+    // waitModel.waitForChange(retrieveText.locator(LABEL));
+    // assertThat(ViewWithoutAnnotation.getNumberOfInstances(), is(1));
+    // assertDefaultRootNotInstantiated();
+    // }
 
     @Test
     public void rootUIDiscovery() throws MalformedURLException {
@@ -298,7 +329,7 @@ public class CDIIntegrationWithVaadinIT {
     @Test
     public void alternativeIsNotAccessible() throws MalformedURLException {
         openWindowNoWait(deriveMappingForUI(PlainAlternativeUI.class));
-        final String expectedErrorMessage = this.firstWindow.getBodyText();
+        final String expectedErrorMessage = firstWindow.getBodyText();
         assertThat(expectedErrorMessage, containsString("404"));
         assertThat(PlainAlternativeUI.getNumberOfInstances(), is(0));
     }
@@ -398,7 +429,7 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(RootUI.getNumberOfInstances(), is(0));
         deployer.deploy("multipleRoots");
         openWindowNoWait("");
-        final String expectedErrorMessage = this.firstWindow.getBodyText();
+        final String expectedErrorMessage = firstWindow.getBodyText();
         assertThat(expectedErrorMessage,
                 containsString("VaadinCDIServlet deployment aborted. Reason:"));
         assertThat(RootUI.getNumberOfInstances(), is(0));
@@ -416,7 +447,7 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(RootUI.getNumberOfInstances(), is(0));
         deployer.deploy("uiPathCollision");
         openWindowNoWait(deriveMappingForUI(PathCollisionUI.class));
-        final String expectedErrorMessage = this.firstWindow.getBodyText();
+        final String expectedErrorMessage = firstWindow.getBodyText();
         assertThat(expectedErrorMessage,
                 containsString("VaadinCDIServlet deployment aborted. Reason:"));
         assertThat(RootUI.getNumberOfInstances(), is(0));
@@ -438,7 +469,9 @@ public class CDIIntegrationWithVaadinIT {
 
     @Test
     public void unsecuredUI() throws MalformedURLException {
-        String uri = deriveMappingForUI(UnsecuredUI.class);
+        // debug mode to work around a strange issue where one of the Labels
+        // lacked an ID on the client side
+        String uri = deriveMappingForUI(UnsecuredUI.class) + "?debug";
         openWindow(uri);
         final String principalName = firstWindow.getText(id("principalName"));
         final String isUserInRole = firstWindow.getText(id("isUserInRole"));

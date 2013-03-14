@@ -9,7 +9,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<vaadin.version>7.0.1</vaadin.version>
+		<vaadin.version>7.0.2</vaadin.version>
 	</properties>
 	<distributionManagement>
 		<snapshotRepository>
@@ -42,7 +42,7 @@
 			<name>Peter Lehto</name>
 		</developer>
 		<developer>
-			<name>Adam Bean</name>
+			<name>Adam Bien</name>
 		</developer>
 		<developer>
 			<name>Henri Sara</name>

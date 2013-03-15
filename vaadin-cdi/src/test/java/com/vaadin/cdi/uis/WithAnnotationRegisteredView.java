@@ -29,7 +29,7 @@ import com.vaadin.ui.VerticalLayout;
 
 /**
  */
-@CDIView
+@CDIView(value = "withAnnotationRegisteredView")
 public class WithAnnotationRegisteredView extends CustomComponent implements
         View {
 

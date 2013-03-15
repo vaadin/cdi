@@ -30,7 +30,7 @@ import com.vaadin.ui.VerticalLayout;
 
 /**
  */
-@CDIView
+@CDIView(value = "instrumentedView")
 @Dependent
 public class InstrumentedView extends CustomComponent implements View {
 

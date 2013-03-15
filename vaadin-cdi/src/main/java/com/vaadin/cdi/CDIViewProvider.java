@@ -30,7 +30,6 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.access.JaasTools;
-import com.vaadin.cdi.internal.Conventions;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.UI;
@@ -114,20 +113,19 @@ public class CDIViewProvider implements ViewProvider {
         for (Bean<?> bean : all) {
             Class<?> beanClass = bean.getBeanClass();
             CDIView viewAnnotation = beanClass.getAnnotation(CDIView.class);
-            String mapping = null;
-            if (viewAnnotation != null) {
-                mapping = viewAnnotation.value();
-                LOG().log(Level.INFO,
-                        "{0} is annotated, the viewName is \"{1}\"",
-                        new Object[] { beanClass.getName(), mapping });
+            if (viewAnnotation == null) {
+                continue;
             }
-            if (viewAnnotation == null || mapping == null || mapping.isEmpty()) {
-                mapping = Conventions.deriveMappingForView(beanClass);
-                LOG().log(Level.INFO,
-                        "No viewName for view {0} found, using \"{1}\"",
-                        new Object[] { beanClass.getName(), mapping });
-            }
-            if (viewAnnotation != null && viewAnnotation.supportsParameters()
+
+            String mapping = viewAnnotation.value();
+            LOG().log(Level.INFO, "{0} is annotated, the viewName is \"{1}\"",
+                    new Object[] { beanClass.getName(), mapping });
+
+            // In the case of an empty fragment, use the root view.
+            // Note that the root view should not support parameters if other
+            // views are used.
+
+            if (viewAnnotation.supportsParameters()
                     && viewName.startsWith(mapping)) {
                 matching.add(bean);
                 LOG().log(

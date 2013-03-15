@@ -398,7 +398,7 @@ public class CDIIntegrationWithVaadinIT {
     public void navigationToRestrictedViewFails() throws MalformedURLException {
         assertThat(ParameterizedNavigationUI.getNumberOfInstances(), is(0));
         assertThat(RestrictedView.getNumberOfInstances(), is(0));
-        ParameterizedNavigationUI.NAVIGATE_TO = deriveMappingForView(RestrictedView.class);
+        ParameterizedNavigationUI.NAVIGATE_TO = "restrictedView";
         openWindow(deriveMappingForUI(ParameterizedNavigationUI.class));
         firstWindow.click(NAVIGATE_BUTTON);
         waitModel.waitForChange(retrieveText.locator(LABEL));

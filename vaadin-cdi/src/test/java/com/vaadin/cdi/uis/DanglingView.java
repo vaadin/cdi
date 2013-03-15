@@ -29,7 +29,7 @@ import com.vaadin.ui.VerticalLayout;
 
 /**
  */
-@CDIView(ui = NotExistingUI.class)
+@CDIView(value = "danglingView", ui = NotExistingUI.class)
 public class DanglingView extends CustomComponent implements View {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);

@@ -29,7 +29,7 @@ import com.vaadin.ui.VerticalLayout;
 
 /**
  */
-@CDIView
+@CDIView(value = "scopedInstrumentedView")
 public class ScopedInstrumentedView extends CustomComponent implements View {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);

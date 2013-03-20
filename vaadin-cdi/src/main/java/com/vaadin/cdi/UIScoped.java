@@ -26,7 +26,7 @@ import javax.inject.Scope;
  * The lifecycle of a UIScoped component is bound to a browser tab.
  */
 @Scope
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UIScoped {
 }

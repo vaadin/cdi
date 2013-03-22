@@ -52,8 +52,5 @@ public @interface CDIView {
      */
     public boolean supportsParameters() default false;
 
-    // why not @RolesAllowed?
-    public String[] rolesAllowed() default {};
-
     public Class<? extends UI> ui() default UI.class;
 }

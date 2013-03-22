@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PreDestroy;
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Bean;
@@ -75,15 +76,15 @@ public class CDIViewProvider implements ViewProvider {
     private boolean isUserHavingAccessToView(Bean<?> viewBean) {
 
         if (viewBean.getBeanClass().isAnnotationPresent(CDIView.class)) {
-            CDIView viewAnnotation = viewBean.getBeanClass().getAnnotation(
-                    CDIView.class);
-
-            if (viewAnnotation.rolesAllowed().length == 0) {
+            if (!viewBean.getBeanClass()
+                    .isAnnotationPresent(RolesAllowed.class)) {
                 // No roles defined, everyone is allowed
                 return true;
             } else {
-                boolean hasAccess = JaasTools.isUserInSomeRole(viewAnnotation
-                        .rolesAllowed());
+                RolesAllowed rolesAnnotation = viewBean.getBeanClass()
+                        .getAnnotation(RolesAllowed.class);
+                boolean hasAccess = JaasTools.isUserInSomeRole(rolesAnnotation
+                        .value());
 
                 LOG().log(
                         Level.INFO,

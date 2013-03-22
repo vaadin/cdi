@@ -52,5 +52,16 @@ public @interface CDIView {
      */
     public boolean supportsParameters() default false;
 
-    public Class<? extends UI> ui() default UI.class;
+    /**
+     * Specifies which UIs can show the view. {@link CDIViewProvider} only lists
+     * the views that have the current UI on this list.
+     * 
+     * If this list contains UI.class, the view is available for all UIs.
+     * 
+     * This only needs to be specified if the application has multiple UIs that
+     * use {@link CDIViewProvider}.
+     * 
+     * @return list of UIs in which the view can be shown.
+     */
+    public Class<? extends UI>[] uis() default { UI.class };
 }

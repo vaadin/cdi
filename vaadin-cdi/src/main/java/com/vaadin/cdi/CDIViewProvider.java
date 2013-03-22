@@ -16,7 +16,9 @@
 
 package com.vaadin.cdi;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -162,12 +164,15 @@ public class CDIViewProvider implements ViewProvider {
             CDIView viewAnnotation = bean.getBeanClass().getAnnotation(
                     CDIView.class);
 
-            if (viewAnnotation == null || viewAnnotation.ui().equals(UI.class)) {
-                viewBeans.add(bean);
+            if (viewAnnotation == null) {
                 continue;
             }
 
-            if (UI.getCurrent().getClass().equals(viewAnnotation.ui())) {
+            List<Class<? extends UI>> uiClasses = Arrays.asList(viewAnnotation
+                    .uis());
+
+            if (uiClasses.contains(UI.class)
+                    || uiClasses.contains(UI.getCurrent().getClass())) {
                 viewBeans.add(bean);
             }
         }

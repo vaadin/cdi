@@ -29,7 +29,7 @@ import com.vaadin.ui.VerticalLayout;
 
 /**
  */
-@CDIView(value = "restrictedView", ui = SecondUI.class)
+@CDIView(value = "restrictedView", uis = { SecondUI.class })
 public class RestrictedView extends CustomComponent implements View {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);

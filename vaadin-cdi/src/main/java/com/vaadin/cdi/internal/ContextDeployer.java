@@ -20,10 +20,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -31,9 +29,8 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRegistration;
 import javax.servlet.annotation.WebListener;
 
-import com.vaadin.cdi.Root;
-import com.vaadin.cdi.URLMapping;
 import com.vaadin.cdi.CDIUI;
+import com.vaadin.cdi.URLMapping;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
 
@@ -102,9 +99,7 @@ public class ContextDeployer implements ServletContextListener {
     private void discoverUIMappingsFromAnnotations() {
         getLogger().info("Discovering Vaadin UIs...");
 
-        Set<Bean<?>> uiBeans = beanManager.getBeans(UI.class,
-                new AnnotationLiteral<Any>() {
-                });
+        Set<Bean<?>> uiBeans = AnnotationUtil.getUiBeans(beanManager);
 
         getLogger().info(
                 uiBeans.size() + " beans inheriting from UI discovered!");
@@ -131,13 +126,15 @@ public class ContextDeployer implements ServletContextListener {
             getLogger()
                     .info("Vaadin UI "
                             + getRootClassName()
-                            + " is marked as @Root, "
+                            + " is marked as @CDIUI without context path, "
                             + "this UI is accessible from context root of deployment");
         }
+        // this test might be redundant as the loop above tests for path
+        // collisions
         if (numberOfRootUIs > 1) {
             throw new InconsistentDeploymentException(
                     InconsistentDeploymentException.ID.MULTIPLE_ROOTS,
-                    "Multiple UIs configured with @Root annotation, "
+                    "Multiple UIs configured with @CDIUI annotation without context path, "
                             + "only one UI can be root");
         }
 
@@ -146,10 +143,11 @@ public class ContextDeployer implements ServletContextListener {
     }
 
     /**
-     * @return number of UI beans annotated with @Root annotation
+     * @return number of UI beans annotated with {@link CDIUI} annotation
+     *         without context path
      */
     private int getNumberOfRootUIs() {
-        Set<Bean<?>> beans = getRootAnnotatedBeans();
+        Set<Bean<?>> beans = AnnotationUtil.getRootUiBeans(beanManager);
 
         return beans.size();
     }
@@ -158,17 +156,17 @@ public class ContextDeployer implements ServletContextListener {
      * @return name of the root class
      */
     private String getRootClassName() {
-        Set<Bean<?>> beans = getRootAnnotatedBeans();
+        Set<Bean<?>> beans = AnnotationUtil.getRootUiBeans(beanManager);
 
         return beans.iterator().next().getBeanClass().getCanonicalName();
     }
 
     /**
-     * Checks if there is a @Root with a urlMapping. If so, it retrieves the URL
-     * mapping from it.
+     * Checks if there is a bean with no path for {@link CDIUI} but with a
+     * urlMapping. If so, it retrieves the URL mapping from it.
      */
     private void discoverURLMappingFromRoot() {
-        Set<Bean<?>> beans = getRootAnnotatedBeans();
+        Set<Bean<?>> beans = AnnotationUtil.getRootUiBeans(beanManager);
         if (beans != null && !beans.isEmpty()) {
             Class<?> rootClass = beans.iterator().next().getBeanClass();
 
@@ -180,16 +178,6 @@ public class ContextDeployer implements ServletContextListener {
                         "Will map VaadinCDIServlet to '" + urlMapping + "'");
             }
         }
-    }
-
-    /**
-     * @return all UI beans annotated with @Root annotation.
-     */
-    private Set<Bean<?>> getRootAnnotatedBeans() {
-        Set<Bean<?>> beans = beanManager.getBeans(UI.class,
-                new AnnotationLiteral<Root>() {
-                });
-        return beans;
     }
 
     /**
@@ -235,7 +223,7 @@ public class ContextDeployer implements ServletContextListener {
         if (configuredUIs.isEmpty()) {
             getLogger()
                     .warning(
-                            "No Vaadin UI classes with @CDIUI or @Root annotation found. "
+                            "No Vaadin UI classes with @CDIUI annotation found. "
                                     + "Skipping automated deployment of VaadinCDIServlet.");
             return;
         }

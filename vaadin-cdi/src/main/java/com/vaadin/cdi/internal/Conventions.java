@@ -41,7 +41,8 @@ public class Conventions {
             if (mapping != null && !mapping.isEmpty()) {
                 return mapping;
             } else {
-                return deriveNameFromConvention(beanClass);
+                // context root by default
+                return "";
             }
         } else {
             return null;
@@ -51,7 +52,7 @@ public class Conventions {
     public static String deriveMappingForView(Class<?> clazz) {
         CDIView annotation = clazz.getAnnotation(CDIView.class);
         if (annotation == null || annotation.value().isEmpty()) {
-            return Conventions.deriveNameFromConvention(clazz);
+            return null;
         } else {
             return annotation.value();
         }

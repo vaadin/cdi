@@ -23,10 +23,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-import com.vaadin.cdi.uis.PlainColidingAlternativeUI;
-import com.vaadin.cdi.uis.PlainUI;
 import org.junit.Test;
 
+import com.vaadin.cdi.uis.PlainColidingAlternativeUI;
+import com.vaadin.cdi.uis.PlainUI;
 import com.vaadin.cdi.views.OneAndOnlyViewWithPath;
 import com.vaadin.cdi.views.OneAndOnlyViewWithoutPath;
 import com.vaadin.cdi.views.OneAndOnlyViewWithoutPathAndAnnotation;
@@ -68,14 +68,14 @@ public class ConventionsTest {
 
     @Test
     public void extractViewNameUsingConvention() {
-        String expected = "oneAndOnlyViewWithoutPath";
+        String expected = null;
         String actual = deriveMappingForView(OneAndOnlyViewWithoutPath.class);
         assertThat(actual, is(expected));
     }
 
     @Test
     public void extractViewNameUsingConventionWithoutAnnotation() {
-        String expected = "oneAndOnlyViewWithoutPathAndAnnotation";
+        String expected = null;
         String actual = deriveMappingForView(OneAndOnlyViewWithoutPathAndAnnotation.class);
         assertThat(actual, is(expected));
     }

@@ -19,7 +19,8 @@ package com.vaadin.cdi.internal;
  * Thrown in case the contents of the deployment archive are not consistent:
  * <ol>
  * <li>Multiple VaadinUIs are using the same path e.g. @CDIUI("a"), @CDIUI("b")</li>
- * <li>Several UIs annotated with @Root annotations are packaged</li>
+ * <li>Several UIs annotated with @CDIUI annotations without context path are
+ * packaged</li>
  * <li>A servlet defined in the web.xml cannot be loaded.</li>
  * </ol>
  */

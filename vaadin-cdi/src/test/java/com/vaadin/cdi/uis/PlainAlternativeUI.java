@@ -26,7 +26,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-@CDIUI
+@CDIUI(value = "plainAlternativeUI")
 @Alternative
 public class PlainAlternativeUI extends UI {
 

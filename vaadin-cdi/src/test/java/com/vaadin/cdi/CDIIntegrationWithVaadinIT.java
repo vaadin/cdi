@@ -17,7 +17,6 @@
 package com.vaadin.cdi;
 
 import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
-import static com.vaadin.cdi.internal.Conventions.deriveMappingForView;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -412,7 +411,7 @@ public class CDIIntegrationWithVaadinIT {
     @OperateOnDeployment("customURIMapping")
     public void customServletMapping() throws MalformedURLException {
         assertThat(RootWithCustomMappingUI.getNumberOfInstances(), is(0));
-        openWindow("customURI/rootWithCustomMappingUI");
+        openWindow("customURI/");
         waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(RootWithCustomMappingUI.getNumberOfInstances(), is(1));
 

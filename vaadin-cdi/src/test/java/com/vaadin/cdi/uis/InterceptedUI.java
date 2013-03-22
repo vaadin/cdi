@@ -29,7 +29,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-@CDIUI
+@CDIUI(value = "interceptedUI")
 public class InterceptedUI extends UI {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
@@ -66,7 +66,7 @@ public class InterceptedUI extends UI {
 
     public void onEventArrival(@Observes
     String message) {
-        this.EVENT_COUNTER.incrementAndGet();
+        EVENT_COUNTER.incrementAndGet();
         System.out.println("Message arrived!");
     }
 

@@ -27,7 +27,6 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.CDIUI;
-import com.vaadin.cdi.Root;
 import com.vaadin.server.DefaultUIProvider;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
@@ -102,31 +101,27 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
     }
 
     Class<? extends UI> rootUI() {
-        Set<Bean<?>> beans = beanManager.getBeans(UI.class,
-                new AnnotationLiteral<Root>() {
-                });
-        if (beans.isEmpty()) {
+        Set<Bean<?>> rootBeans = AnnotationUtil.getRootUiBeans(beanManager);
+        if (rootBeans.isEmpty()) {
             return null;
         }
-        if (beans.size() > 1) {
+        if (rootBeans.size() > 1) {
             StringBuilder errorMessage = new StringBuilder();
-            for (Bean<?> bean : beans) {
+            for (Bean<?> bean : rootBeans) {
                 errorMessage.append(bean.getBeanClass().getName());
-                errorMessage.append("/n");
+                errorMessage.append("\n");
             }
             throw new IllegalStateException(
-                    "Multiple beans are annotated with @Root: "
+                    "Multiple beans are annotated with @CDIUI without context path: "
                             + errorMessage.toString());
         }
-        Bean<?> uiBean = beans.iterator().next();
+        Bean<?> uiBean = rootBeans.iterator().next();
         Class<?> rootUI = uiBean.getBeanClass();
         return rootUI.asSubclass(UI.class);
     }
 
     private Bean<?> getUIBeanWithMapping(String mapping) {
-        Set<Bean<?>> beans = beanManager.getBeans(UI.class,
-                new AnnotationLiteral<Any>() {
-                });
+        Set<Bean<?>> beans = AnnotationUtil.getUiBeans(beanManager);
 
         for (Bean<?> bean : beans) {
             // We need this check since the returned beans can also be producers

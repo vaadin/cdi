@@ -22,8 +22,9 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation that can be used to specify the URL mapping of the Vaadin servlet.
- * Used in conjunction with a @Root annotation, as there may only be one @URLMapping
- * annotation per project.
+ * Used in conjunction with a {@link CDIUI} annotation with empty context path
+ * (root UI), as there may only be one {@link URLMapping} annotation per
+ * project.
  * 
  */
 @Retention(RetentionPolicy.RUNTIME)

@@ -16,17 +16,21 @@
 
 package com.vaadin.cdi.uis;
 
-import com.vaadin.cdi.CDIViewProvider;
-import com.vaadin.cdi.CDIUI;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.concurrent.atomic.AtomicInteger;
 
-@CDIUI
+import com.vaadin.cdi.CDIUI;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+
+@CDIUI(value = "noViewProviderNavigationUI")
 public class NoViewProviderNavigationUI extends UI {
 
     @Inject

@@ -24,7 +24,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-@CDIUI
+@CDIUI(value = "unsecuredUI")
 public class UnsecuredUI extends UI {
 
     @Override

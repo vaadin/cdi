@@ -15,7 +15,10 @@
  */
 package com.vaadin.cdi.uis;
 
+import com.vaadin.cdi.CDIUI;
+
 /**
  */
+@CDIUI(value = "subUI")
 public class SubUI extends PlainUI {
 }

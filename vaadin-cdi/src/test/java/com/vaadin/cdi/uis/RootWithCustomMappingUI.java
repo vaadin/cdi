@@ -16,20 +16,19 @@
 
 package com.vaadin.cdi.uis;
 
-import com.vaadin.cdi.Root;
-import com.vaadin.cdi.URLMapping;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.annotation.PostConstruct;
+
 import com.vaadin.cdi.CDIUI;
+import com.vaadin.cdi.URLMapping;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import javax.annotation.PostConstruct;
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  */
-@Root
 @CDIUI
 @URLMapping("/customURI/*")
 public class RootWithCustomMappingUI extends UI {
@@ -39,7 +38,7 @@ public class RootWithCustomMappingUI extends UI {
     @PostConstruct
     public void initialize() {
         COUNTER.incrementAndGet();
-        this.clickCount = 0;
+        clickCount = 0;
 
     }
 

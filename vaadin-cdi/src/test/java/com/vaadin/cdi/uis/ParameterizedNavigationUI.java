@@ -16,8 +16,13 @@
 
 package com.vaadin.cdi.uis;
 
-import com.vaadin.cdi.CDIViewProvider;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
 import com.vaadin.cdi.CDIUI;
+import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
@@ -25,11 +30,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import java.util.concurrent.atomic.AtomicInteger;
-
-@CDIUI
+@CDIUI(value = "parameterizedNavigationUI")
 public class ParameterizedNavigationUI extends UI {
 
     @Inject
@@ -42,7 +43,7 @@ public class ParameterizedNavigationUI extends UI {
     @PostConstruct
     public void initialize() {
         COUNTER.incrementAndGet();
-        this.clickCount = 0;
+        clickCount = 0;
 
     }
 

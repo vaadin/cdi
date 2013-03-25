@@ -36,14 +36,14 @@ public class UIBeanStore implements Serializable {
     private final Map<Contextual<?>, UIBeanStore.ContextualInstance<?>> instances = new HashMap<Contextual<?>, UIBeanStore.ContextualInstance<?>>();
 
     public UIBeanStore() {
-        getLogger().info("Creating new UIBeanStore " + this);
+        getLogger().fine("Creating new UIBeanStore " + this);
     }
 
     @SuppressWarnings("unchecked")
     public <T> T getBeanInstance(final Contextual<T> contextual,
             final CreationalContext<T> creationalContext) {
 
-        getLogger().info(
+        getLogger().fine(
                 "Getting bean instance for " + contextual + " from " + this);
 
         UIBeanStore.ContextualInstance<T> contextualInstance = (UIBeanStore.ContextualInstance<T>) instances

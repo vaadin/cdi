@@ -40,7 +40,7 @@ public class UIScopedContext implements Context {
     private final BeanManager beanManager;
 
     public UIScopedContext(final BeanManager beanManager) {
-        getLogger().info("Instantiating UIScoped context");
+        getLogger().fine("Instantiating UIScoped context");
         this.beanManager = beanManager;
     }
 
@@ -63,7 +63,7 @@ public class UIScopedContext implements Context {
     public <T> T get(final Contextual<T> contextual,
             final CreationalContext<T> creationalContext) {
 
-        getLogger().log(Level.INFO,
+        getLogger().log(Level.FINE,
                 "Getting bean for contextual {0} and creational context {1}",
                 new Object[] { contextual, creationalContext });
 
@@ -107,7 +107,7 @@ public class UIScopedContext implements Context {
         }
 
         getLogger()
-                .log(Level.INFO,
+                .log(Level.FINE,
                         "Finished getting bean for contextual {0}, returning instance {1}",
                         new Object[] { contextual, beanInstance });
         return beanInstance;

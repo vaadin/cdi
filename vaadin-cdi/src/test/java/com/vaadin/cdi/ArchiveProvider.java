@@ -24,8 +24,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
 
-import com.vaadin.cdi.access.ComponentTools;
-import com.vaadin.cdi.access.JaasTools;
+import com.vaadin.cdi.access.AccessControl;
+import com.vaadin.cdi.access.JaasAccessControl;
 import com.vaadin.cdi.internal.BeanStoreContainer;
 import com.vaadin.cdi.internal.CDIUIProvider;
 import com.vaadin.cdi.internal.ContextDeployer;
@@ -39,10 +39,10 @@ import com.vaadin.cdi.internal.VaadinExtension;
 public class ArchiveProvider {
 
     public final static Class FRAMEWORK_CLASSES[] = new Class[] {
-            ComponentTools.class, JaasTools.class, BeanStoreContainer.class,
-            CDIUIProvider.class, CDIViewProvider.class, ContextDeployer.class,
-            UIBeanStore.class, VaadinCDIServlet.class, UIScopedContext.class,
-            CDIUI.class };
+            AccessControl.class, BeanStoreContainer.class, CDIUIProvider.class,
+            CDIViewProvider.class, ContextDeployer.class,
+            JaasAccessControl.class, UIBeanStore.class, VaadinCDIServlet.class,
+            UIScopedContext.class, CDIUI.class };
 
     public static WebArchive createWebArchive(String warName, Class... classes) {
         WebArchive archive = base(warName);

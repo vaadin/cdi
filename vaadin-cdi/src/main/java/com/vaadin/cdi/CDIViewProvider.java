@@ -32,7 +32,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
-import com.vaadin.cdi.access.JaasTools;
+import com.vaadin.cdi.access.AccessControl;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.UI;
@@ -41,6 +41,8 @@ public class CDIViewProvider implements ViewProvider {
 
     @Inject
     private BeanManager beanManager;
+    @Inject
+    private AccessControl accessControl;
     private transient CreationalContext<?> currentViewCreationalContext;
 
     @Override
@@ -69,7 +71,7 @@ public class CDIViewProvider implements ViewProvider {
         } else {
             LOG().log(Level.INFO,
                     "User {0} did not have access to view \"{1}\"",
-                    new Object[] { JaasTools.getPrincipalName(), viewBean });
+                    new Object[] { accessControl.getPrincipalName(), viewBean });
         }
 
         return null;
@@ -85,14 +87,14 @@ public class CDIViewProvider implements ViewProvider {
             } else {
                 RolesAllowed rolesAnnotation = viewBean.getBeanClass()
                         .getAnnotation(RolesAllowed.class);
-                boolean hasAccess = JaasTools.isUserInSomeRole(rolesAnnotation
-                        .value());
+                boolean hasAccess = accessControl
+                        .isUserInSomeRole(rolesAnnotation.value());
 
                 LOG().log(
                         Level.INFO,
                         "Checking if user {0} is having access to {1}: {2}",
-                        new Object[] { JaasTools.getPrincipalName(), viewBean,
-                                Boolean.toString(hasAccess) });
+                        new Object[] { accessControl.getPrincipalName(),
+                                viewBean, Boolean.toString(hasAccess) });
 
                 return hasAccess;
             }
@@ -188,9 +190,11 @@ public class CDIViewProvider implements ViewProvider {
 
         if (viewBean != null) {
             if (!isUserHavingAccessToView(viewBean)) {
-                LOG().log(Level.INFO,
+                LOG().log(
+                        Level.INFO,
                         "User {0} did not have access to view {1}",
-                        new Object[] { JaasTools.getPrincipalName(), viewBean });
+                        new Object[] { accessControl.getPrincipalName(),
+                                viewBean });
                 return null;
             }
 

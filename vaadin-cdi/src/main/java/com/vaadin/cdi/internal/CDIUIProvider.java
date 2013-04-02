@@ -154,13 +154,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
             return null;
         }
 
-        if (beans.size() > 1) {
-            getLogger().warning(
-                    "Found multiple UI beans for " + type.getCanonicalName());
-            return null;
-        }
-
-        return beans.iterator().next();
+        return beanManager.resolve(beans);
     }
 
     String parseUIMapping(VaadinRequest request) {

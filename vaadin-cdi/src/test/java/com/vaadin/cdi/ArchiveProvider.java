@@ -31,7 +31,6 @@ import com.vaadin.cdi.internal.CDIUIProvider;
 import com.vaadin.cdi.internal.ContextDeployer;
 import com.vaadin.cdi.internal.UIBeanStore;
 import com.vaadin.cdi.internal.UIScopedContext;
-import com.vaadin.cdi.internal.VaadinCDIServlet;
 import com.vaadin.cdi.internal.VaadinExtension;
 
 /**
@@ -41,8 +40,8 @@ public class ArchiveProvider {
     public final static Class FRAMEWORK_CLASSES[] = new Class[] {
             AccessControl.class, BeanStoreContainer.class, CDIUIProvider.class,
             CDIViewProvider.class, ContextDeployer.class,
-            JaasAccessControl.class, UIBeanStore.class, VaadinCDIServlet.class,
-            UIScopedContext.class, CDIUI.class };
+            JaasAccessControl.class, UIBeanStore.class, UIScopedContext.class,
+            CDIUI.class };
 
     public static WebArchive createWebArchive(String warName, Class... classes) {
         WebArchive archive = base(warName);

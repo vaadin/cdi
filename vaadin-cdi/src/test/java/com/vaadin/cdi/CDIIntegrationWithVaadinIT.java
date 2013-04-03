@@ -122,12 +122,6 @@ public class CDIIntegrationWithVaadinIT {
                 RootWithCustomMappingUI.class);
     }
 
-    @Deployment(name = "multipleRoots", managed = false)
-    public static WebArchive multipleRootsInWar() {
-        return ArchiveProvider.createWebArchive("multipleroots",
-                RootWithCustomMappingUI.class, RootUI.class);
-    }
-
     @Deployment(name = "uiPathCollision", managed = false)
     public static WebArchive multipleUIsWithSamePath() {
         return ArchiveProvider.createWebArchive("uiPathCollision",
@@ -418,27 +412,8 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     /**
-     * 
-     * Tests invalid deployment of multiple roots within a WAR Should be before
-     * the regular tests--arquillian deployments are not perfectly isolated.
-     */
-    @Test
-    @InSequence(-1)
-    public void multipleRootsBreakDeployment() throws MalformedURLException {
-        assertThat(RootUI.getNumberOfInstances(), is(0));
-        deployer.deploy("multipleRoots");
-        openWindowNoWait("");
-        final String expectedErrorMessage = firstWindow.getBodyText();
-        assertThat(expectedErrorMessage,
-                containsString("VaadinCDIServlet deployment aborted. Reason:"));
-        assertThat(RootUI.getNumberOfInstances(), is(0));
-
-    }
-
-    /**
-     * 
      * Tests invalid deployment of multiple roots within a WAR Should be started
-     * first--arquillian deployments are not perfectly isolated.
+     * first -- Arquillian deployments are not perfectly isolated.
      */
     @Test
     @InSequence(-2)
@@ -447,10 +422,9 @@ public class CDIIntegrationWithVaadinIT {
         deployer.deploy("uiPathCollision");
         openWindowNoWait(deriveMappingForUI(PathCollisionUI.class));
         final String expectedErrorMessage = firstWindow.getBodyText();
-        assertThat(expectedErrorMessage,
-                containsString("VaadinCDIServlet deployment aborted. Reason:"));
+        // page not found - the real error message is in the server log
+        assertThat(expectedErrorMessage, containsString("404"));
         assertThat(RootUI.getNumberOfInstances(), is(0));
-
     }
 
     @Test

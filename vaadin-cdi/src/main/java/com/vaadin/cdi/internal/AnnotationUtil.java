@@ -54,10 +54,7 @@ public class AnnotationUtil {
                 continue;
             }
 
-            String path = null;
-            if (uiAnnotation != null) {
-                path = uiAnnotation.value();
-            }
+            String path = uiAnnotation.value();
             if (null == path || path.isEmpty()) {
                 rootBeans.add(bean);
             }

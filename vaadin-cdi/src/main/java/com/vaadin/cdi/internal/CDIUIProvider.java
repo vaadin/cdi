@@ -24,7 +24,8 @@ import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
-import javax.inject.Inject;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.server.DefaultUIProvider;
@@ -35,9 +36,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.util.CurrentInstance;
 
 public class CDIUIProvider extends DefaultUIProvider implements Serializable {
-
-    @Inject
-    private BeanManager beanManager;
 
     @Override
     public UI createInstance(UICreateEvent uiCreateEvent) {
@@ -61,8 +59,8 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
             // Make the UIBean available to UIScopedContext when creating nested
             // injected objects
             CurrentInstance.set(UIBean.class, uiBean);
-            return (UI) beanManager.getReference(uiBean, type,
-                    beanManager.createCreationalContext(bean));
+            return (UI) getBeanManager().getReference(uiBean, type,
+                    getBeanManager().createCreationalContext(bean));
         } finally {
             CurrentInstance.set(UIBean.class, null);
         }
@@ -101,7 +99,8 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
     }
 
     Class<? extends UI> rootUI() {
-        Set<Bean<?>> rootBeans = AnnotationUtil.getRootUiBeans(beanManager);
+        Set<Bean<?>> rootBeans = AnnotationUtil
+                .getRootUiBeans(getBeanManager());
         if (rootBeans.isEmpty()) {
             return null;
         }
@@ -121,7 +120,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
     }
 
     private Bean<?> getUIBeanWithMapping(String mapping) {
-        Set<Bean<?>> beans = AnnotationUtil.getUiBeans(beanManager);
+        Set<Bean<?>> beans = AnnotationUtil.getUiBeans(getBeanManager());
 
         for (Bean<?> bean : beans) {
             // We need this check since the returned beans can also be producers
@@ -144,7 +143,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
 
     private Bean<?> scanForBeans(Class<? extends UI> type) {
 
-        Set<Bean<?>> beans = beanManager.getBeans(type,
+        Set<Bean<?>> beans = getBeanManager().getBeans(type,
                 new AnnotationLiteral<Any>() {
                 });
 
@@ -185,6 +184,25 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
             }
         }
         return "";
+    }
+
+    // TODO a better way to do this could be custom injection management in the
+    // Extension if feasible
+    private BeanManager beanManager;
+
+    private BeanManager getBeanManager() {
+        if (beanManager == null) {
+            // as the CDIUIProvider is not injected, need to use JNDI lookup
+            try {
+                InitialContext initialContext = new InitialContext();
+                beanManager = (BeanManager) initialContext
+                        .lookup("java:comp/BeanManager");
+            } catch (NamingException e) {
+                getLogger().severe("Could not get BeanManager through JNDI");
+                beanManager = null;
+            }
+        }
+        return beanManager;
     }
 
     private static Logger getLogger() {

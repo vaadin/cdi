@@ -22,6 +22,7 @@
 
 	<name>vaadin-cdi</name>
 	<url>http://vaadin.com</url>
+	<description>Provides CDI integration for Vaadin projects</description>
 
 	<organization>
 		<name>Vaadin Ltd</name>

@@ -23,8 +23,9 @@ import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.PassivationCapable;
 
-public class UIBean implements Bean {
+public class UIBean implements Bean, PassivationCapable {
     private Bean delegate;
     private int uiId;
 
@@ -93,6 +94,18 @@ public class UIBean implements Bean {
     }
 
     @Override
+    public String getId() {
+        if (delegate instanceof PassivationCapable) {
+            String delegatePassivationId = ((PassivationCapable) delegate).getId();
+            if (delegatePassivationId != null && delegatePassivationId.length() > 0) {
+                return "VaadinUIBean#" + delegatePassivationId;
+            }
+        }
+        return null;
+    }
+
+
+    @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;
@@ -115,4 +128,5 @@ public class UIBean implements Bean {
         result = 31 * result + uiId;
         return result;
     }
+
 }

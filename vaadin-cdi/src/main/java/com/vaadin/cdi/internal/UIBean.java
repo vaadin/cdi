@@ -98,7 +98,10 @@ public class UIBean implements Bean, PassivationCapable {
         if (delegate instanceof PassivationCapable) {
             String delegatePassivationId = ((PassivationCapable) delegate).getId();
             if (delegatePassivationId != null && delegatePassivationId.length() > 0) {
-                return "VaadinUIBean#" + delegatePassivationId;
+                StringBuilder sb = new StringBuilder("VaadinUIBean#");
+                sb.append(uiId);
+                sb.append(delegatePassivationId);
+                return sb.toString();
             }
         }
         return null;

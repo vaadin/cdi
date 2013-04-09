@@ -27,7 +27,6 @@ import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
 import com.vaadin.cdi.access.AccessControl;
 import com.vaadin.cdi.access.JaasAccessControl;
 import com.vaadin.cdi.internal.BeanStoreContainer;
-import com.vaadin.cdi.internal.CDIUIProvider;
 import com.vaadin.cdi.internal.ContextDeployer;
 import com.vaadin.cdi.internal.UIBeanStore;
 import com.vaadin.cdi.internal.UIScopedContext;

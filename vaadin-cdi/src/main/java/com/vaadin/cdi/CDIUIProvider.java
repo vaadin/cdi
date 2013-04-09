@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.vaadin.cdi.internal;
+package com.vaadin.cdi;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -27,7 +27,9 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import com.vaadin.cdi.CDIUI;
+import com.vaadin.cdi.internal.AnnotationUtil;
+import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.UIBean;
 import com.vaadin.server.DefaultUIProvider;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;

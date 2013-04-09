@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.vaadin.cdi.internal;
+package com.vaadin.cdi;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.cdi.internal.CDIUIProvider;
+import com.vaadin.cdi.CDIUIProvider;
 
 public class CDIUIProviderTest {
 

@@ -30,6 +30,7 @@ import javax.servlet.ServletRegistration;
 import javax.servlet.annotation.WebListener;
 
 import com.vaadin.cdi.CDIUI;
+import com.vaadin.cdi.CDIUIProvider;
 import com.vaadin.cdi.URLMapping;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;

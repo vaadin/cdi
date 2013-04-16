@@ -10,7 +10,16 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<vaadin.version>7.0.2</vaadin.version>
+
+		<!-- ZIP Manifest fields -->
+		<Implementation-Version>${project.version}</Implementation-Version>
+		<!-- Must not change this because of the Directory -->
+		<Implementation-Title>Vaadin CDI</Implementation-Title>
+		<Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+		<Vaadin-License-Title>Apache License 2.0</Vaadin-License-Title>
+		<Vaadin-Addon>vaadin-cdi-${project.version}.jar</Vaadin-Addon>
 	</properties>
+	
 	<distributionManagement>
 		<snapshotRepository>
 			<id>vaadin-snapshots</id>
@@ -18,7 +27,6 @@
 			<url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
-
 
 	<name>vaadin-cdi</name>
 	<url>http://vaadin.com</url>
@@ -57,6 +65,96 @@
 		</license>
 	</licenses>
 
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.1.2</version>
+						<configuration>
+							<excludeResources>true</excludeResources>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.9</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>properties-maven-plugin</artifactId>
+						<version>1.0-alpha-2</version>
+						<executions>
+							<execution>
+								<phase>initialize</phase>
+								<goals>
+									<goal>read-project-properties</goal>
+								</goals>
+								<configuration>
+									<files>
+										<file>${gpg.passphrase.file}</file>
+									</files>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.4</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<version>2.2.1</version>
+						<configuration>
+							<appendAssemblyId>false</appendAssemblyId>
+							<descriptors>
+								<descriptor>assembly/assembly.xml</descriptor>
+							</descriptors>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>single</goal>
+								</goals>
+								<phase>install</phase>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -173,32 +271,30 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.1.2</version>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.1</version>
 				<configuration>
-					<excludeResources>true</excludeResources>
+					<archive>
+						<index>true</index>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<!-- Implementation-Title and Implementation-Version come from the 
+								POM by default -->
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+						<manifestEntries>
+							<!-- Package format version - do not change -->
+							<Vaadin-Package-Version>1</Vaadin-Package-Version>
+
+							<Vaadin-License-Title>${Vaadin-License-Title}</Vaadin-License-Title>
+						</manifestEntries>
+					</archive>
+					<!-- exclude other META-INF data under build directory -->
+					<includes>
+						<include>META-INF/maven/${project.groupId}/${project.artifactId}/**</include>
+						<include>com/**</include>
+					</includes>
 				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -230,38 +326,6 @@
 					<violationSeverity>error</violationSeverity>
 					<headerLocation>checkstyle/header</headerLocation>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>properties-maven-plugin</artifactId>
-				<version>1.0-alpha-2</version>
-				<executions>
-					<execution>
-						<phase>initialize</phase>
-						<goals>
-							<goal>read-project-properties</goal>
-						</goals>
-						<configuration>
-							<files>
-								<file>${gpg.passphrase.file}</file>
-							</files>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.4</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 
 		</plugins>

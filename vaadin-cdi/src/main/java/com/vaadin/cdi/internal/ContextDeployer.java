@@ -47,6 +47,13 @@ public class ContextDeployer implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+    	
+    	if(beanManager == null)
+    	{
+    		getLogger().info("The container does not support injection into a servlet listener!");
+    		return;
+    	}
+    	
         configuredUIs = new HashSet<String>();
 
         ServletContext context = sce.getServletContext();

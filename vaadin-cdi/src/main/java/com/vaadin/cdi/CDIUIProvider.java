@@ -196,12 +196,23 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         if (beanManager == null) {
             // as the CDIUIProvider is not injected, need to use JNDI lookup
             try {
-                InitialContext initialContext = new InitialContext();
+            	InitialContext initialContext = new InitialContext();
                 beanManager = (BeanManager) initialContext
                         .lookup("java:comp/BeanManager");
             } catch (NamingException e) {
-                getLogger().severe("Could not get BeanManager through JNDI");
-                beanManager = null;
+                getLogger().info("Could not get BeanManager through JNDI by name 'java:comp/BeanManager'. Try with name 'java:comp/env/BeanManager'");
+
+                try
+                {
+	            	InitialContext initialContext = new InitialContext();
+	                beanManager = (BeanManager) initialContext
+	                        .lookup("java:comp/env/BeanManager");
+                }
+                catch(NamingException e2)
+                {
+                    getLogger().info("Could not get BeanManager through JNDI");
+                    beanManager = null;
+                }
             }
         }
         return beanManager;

@@ -156,31 +156,34 @@ public class CDIViewProvider implements ViewProvider {
             } else {
             	// The viewName contains "/" and the view supports parameters --> find longest (most levels) match
             	String[] mappingSplit = mapping.split("/");
-            	// Iterate over all viewName tokens
-            	int maxLevels = 0;
-            	for (int i = 0; i < mappingSplit.length; i++) {
-					if (!viewNameSplit[i].equals(mappingSplit[i])) {
-						// All tokens of the mapping have to match, if one doesn't match, reset maxLevels to 0
-						maxLevels = 0;
-						break;
-					} else {
-						maxLevels++;
+            	// The number of mapping tokens has to be smaller than the number of tokens of the requested view name 
+            	if (mappingSplit.length <= viewNameSplit.length) {
+	            	// Iterate over all viewName tokens
+	            	int maxLevels = 0;
+	            	for (int i = 0; i < mappingSplit.length; i++) {
+						if (!viewNameSplit[i].equals(mappingSplit[i])) {
+							// All tokens of the mapping have to match, if one doesn't match, reset maxLevels to 0
+							maxLevels = 0;
+							break;
+						} else {
+							maxLevels++;
+						}
 					}
-				}
-            	if (maxLevels > currentMaxLevels) {
-        			matching.clear();
-        			matching.add(bean);
-        			currentMaxLevels = maxLevels;
-        			LOG().log(Level.INFO,
-        					"Removed all matches, and added the bean {0} with viewName \"{1}\" as it has a longer match",
-        					new Object[] { bean, mapping });
-            	} else if (currentMaxLevels > 0 && (maxLevels == currentMaxLevels)) {
-        			matching.add(bean);
-        			LOG().log(Level.INFO,
-        					"Bean {0} with viewName \"{1}\" is one alternative",
-        					new Object[] { bean, mapping });
-        		}
-            }
+	            	if (maxLevels > currentMaxLevels) {
+	        			matching.clear();
+	        			matching.add(bean);
+	        			currentMaxLevels = maxLevels;
+	        			LOG().log(Level.INFO,
+	        					"Removed all matches, and added the bean {0} with viewName \"{1}\" as it has a longer match",
+	        					new Object[] { bean, mapping });
+	            	} else if (currentMaxLevels > 0 && (maxLevels == currentMaxLevels)) {
+	        			matching.add(bean);
+	        			LOG().log(Level.INFO,
+	        					"Bean {0} with viewName \"{1}\" is one alternative",
+	        					new Object[] { bean, mapping });
+	        		}
+	            }
+	        }
         }
 
         Set<Bean<?>> viewBeansForThisProvider = getViewBeansForCurrentUI(matching);

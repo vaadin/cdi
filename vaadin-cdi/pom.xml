@@ -298,6 +298,8 @@
                     <includes>
                         <include>META-INF/maven/${project.groupId}/${project.artifactId}/**</include>
                         <include>com/**</include>
+                        <include>META-INF/services/**</include>
+                        <include>META-INF/beans.xml</include>
                     </includes>
                 </configuration>
             </plugin>

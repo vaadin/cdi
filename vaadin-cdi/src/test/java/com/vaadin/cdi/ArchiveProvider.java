@@ -57,11 +57,11 @@ public class ArchiveProvider {
                 .addClasses(FRAMEWORK_CLASSES)
                 .addAsLibraries(
                         resolver.artifact(
-                                "com.vaadin:vaadin-server:7.0-SNAPSHOT")
+                                "com.vaadin:vaadin-server:7.2.0.beta1")
                                 .resolveAsFiles())
                 .addAsLibraries(
                         resolver.artifact(
-                                "com.vaadin:vaadin-shared:7.0-SNAPSHOT")
+                                "com.vaadin:vaadin-shared:7.2.0.beta1")
                                 .resolveAsFiles())
                 .addAsWebInfResource(
                         new ByteArrayAsset(VaadinExtension.class.getName()

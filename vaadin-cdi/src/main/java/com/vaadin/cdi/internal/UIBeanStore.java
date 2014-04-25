@@ -20,16 +20,18 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
 
 import com.vaadin.cdi.CDIUI;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.UI;
 
 /**
- * Datastructure for storing bean instances in {@link CDIUI} context.
+ * Data structure for storing bean instances in {@link CDIUI} context.
  */
 public class UIBeanStore implements Serializable {
 
@@ -49,6 +51,8 @@ public class UIBeanStore implements Serializable {
         UIBeanStore.ContextualInstance<T> contextualInstance = (UIBeanStore.ContextualInstance<T>) instances
                 .get(contextual);
 
+        contextualInstance = releaseUIIfInvalid(contextual, contextualInstance);
+
         if (contextualInstance == null && creationalContext != null) {
             contextualInstance = new UIBeanStore.ContextualInstance<T>(
                     contextual.create(creationalContext), creationalContext);
@@ -57,6 +61,56 @@ public class UIBeanStore implements Serializable {
 
         return contextualInstance != null ? contextualInstance.getInstance()
                 : null;
+    }
+
+    /**
+     * Checks if the UI (or the VaadinSession it's attached to) is closed or
+     * closing and, if it is, releases the reference.
+     * 
+     * @param contextual
+     *            the contextual
+     * @param contextualInstance
+     *            the contextual instance
+     * @param <T>
+     *            the type parameter of the contextual
+     * @return The contextual instance that was passed in or null if the UI was
+     *         released.
+     */
+    private <T> ContextualInstance<T> releaseUIIfInvalid(
+            Contextual<T> contextual, ContextualInstance<T> contextualInstance) {
+        if (contextualInstance != null
+                && contextualInstance.getInstance() instanceof UI) {
+            UI ui = (UI) contextualInstance.getInstance();
+            if (ui.getSession() != null
+                    && ui.getSession().getState() != VaadinSession.State.OPEN) {
+                // The session is closing, clean up all attached UIs
+                for (UI u : ui.getSession().getUIs()) {
+                    for (Entry<Contextual<?>, ContextualInstance<?>> entry : instances
+                            .entrySet()) {
+                        if (entry.getValue().getInstance().equals(u)) {
+                            dereferenceBeanInstance(entry.getKey());
+                        }
+                    }
+                }
+                return null;
+            } else if (ui.isClosing()) {
+                // only the current UI is closing and should be released
+                dereferenceBeanInstance(contextual);
+                return null;
+            }
+        }
+        return contextualInstance;
+    }
+
+    /**
+     * @param ui
+     *            A UI instance
+     * @return true if the UI or VaadinSession it's attached to is closing or
+     *         closed.
+     */
+    private boolean isUIOrVaadinSessionClosing(UI ui) {
+        return ui.isClosing()
+                || (ui.getSession() != null && ui.getSession().getState() != VaadinSession.State.OPEN);
     }
 
     public void dereferenceAllBeanInstances() {

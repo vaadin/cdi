@@ -14,7 +14,7 @@
         <!-- ZIP Manifest fields -->
         <Implementation-Version>${project.version}</Implementation-Version>
         <!-- Must not change this because of the Directory -->
-        <Implementation-Title>vaadin-cdi</Implementation-Title>
+        <Implementation-Title>Vaadin CDI</Implementation-Title>
         <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
         <Vaadin-License-Title>Apache License 2.0</Vaadin-License-Title>
         <Vaadin-Addon>vaadin-cdi-${project.version}.jar</Vaadin-Addon>
@@ -288,6 +288,7 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                         <manifestEntries>
+                            <Implementation-Title>${Implementation-Title}</Implementation-Title>
                             <!-- Package format version - do not change -->
                             <Vaadin-Package-Version>1</Vaadin-Package-Version>
 

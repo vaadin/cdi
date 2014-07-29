@@ -24,24 +24,30 @@ import java.net.MalformedURLException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.cdi.uis.RootWithCustomMappingUI;
+import com.vaadin.cdi.uis.CustomMappingUI;
 
 public class CDIIntegrationWithCustomDeployment extends
         AbstractManagedCDIIntegrationTest {
 
+    @Before
+    public void resetCounter() {
+        CustomMappingUI.resetCounter();
+    }
+
     @Deployment(name = "customURIMapping")
     public static WebArchive archiveWithCustomURIMapping() {
-        return ArchiveProvider.createWebArchive("custom",
-                RootWithCustomMappingUI.class);
+        return ArchiveProvider
+                .createWebArchive("custom", CustomMappingUI.class);
     }
 
     @Test
     @OperateOnDeployment("customURIMapping")
     public void customServletMapping() throws MalformedURLException {
-        assertThat(RootWithCustomMappingUI.getNumberOfInstances(), is(0));
+        assertThat(CustomMappingUI.getNumberOfInstances(), is(0));
         openWindow("customURI/");
-        assertThat(RootWithCustomMappingUI.getNumberOfInstances(), is(1));
+        assertThat(CustomMappingUI.getNumberOfInstances(), is(1));
     }
 }

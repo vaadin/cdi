@@ -39,9 +39,19 @@ public @interface CDIUI {
     /**
      * An optional URI mapping. If not specified, the mapping is going to be
      * derived from the simple name of the class. A class WelcomeVaadin is going
-     * to be bound to "/welcomeVaadin" uri.
+     * to be bound to "/welcome-vaadin" uri. A class SampleApplicationUI will be
+     * bound to "/sample-application".
+     * 
+     * Passing an empty string as the value will be interpreted as the root of
+     * the application.
      * 
      * @return the URI mapping of this UI
      */
-    public String value() default "";
+    public String value() default USE_CONVENTIONS;
+
+    /**
+     * USE_CONVENTIONS is treated as a special case that will cause the
+     * automatic UI mapping to occur.
+     */
+    public final static String USE_CONVENTIONS = "USE CONVENTIONS";
 }

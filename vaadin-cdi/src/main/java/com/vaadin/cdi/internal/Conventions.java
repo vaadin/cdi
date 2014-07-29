@@ -16,6 +16,7 @@
 
 package com.vaadin.cdi.internal;
 
+import com.google.common.base.CaseFormat;
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.CDIView;
 
@@ -38,11 +39,12 @@ public class Conventions {
         if (beanClass.isAnnotationPresent(CDIUI.class)) {
             CDIUI annotation = beanClass.getAnnotation(CDIUI.class);
             String mapping = annotation.value();
-            if (mapping != null && !mapping.isEmpty()) {
+            if (mapping != null && !CDIUI.USE_CONVENTIONS.equals(mapping)) {
                 return mapping;
             } else {
-                // context root by default
-                return "";
+                // derive mapping from classname
+                mapping = beanClass.getSimpleName().replaceFirst("UI$", "");
+                return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, mapping);
             }
         } else {
             return null;

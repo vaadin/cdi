@@ -25,6 +25,7 @@ import java.net.MalformedURLException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.vaadin.cdi.uis.PlainColidingAlternativeUI;
@@ -32,6 +33,12 @@ import com.vaadin.cdi.uis.PlainUI;
 
 public class CDIIntegrationWithConflictingDeployment extends
         AbstractManagedCDIIntegrationTest {
+
+    @Before
+    public void resetCounter() {
+        PlainUI.resetCounter();
+        PlainColidingAlternativeUI.resetCounter();
+    }
 
     @Deployment(name = "alternativeUiPathCollision")
     public static WebArchive alternativeAndActiveWithSamePath() {

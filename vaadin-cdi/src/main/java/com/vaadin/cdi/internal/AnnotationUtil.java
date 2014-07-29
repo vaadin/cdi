@@ -54,8 +54,8 @@ public class AnnotationUtil {
                 continue;
             }
 
-            String path = uiAnnotation.value();
-            if (null == path || path.isEmpty()) {
+            String path = Conventions.deriveMappingForUI(beanClass);
+            if (null != path && path.isEmpty()) {
                 rootBeans.add(bean);
             }
         }

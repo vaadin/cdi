@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 
 import com.vaadin.cdi.CDIUI;
-import com.vaadin.cdi.URLMapping;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -29,9 +28,8 @@ import com.vaadin.ui.VerticalLayout;
 
 /**
  */
-@CDIUI
-@URLMapping("/customURI/*")
-public class RootWithCustomMappingUI extends UI {
+@CDIUI("")
+public class ConflictingRootUI extends UI {
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
     private int clickCount;
 

@@ -141,8 +141,8 @@ public class ContextDeployer implements ServletContextListener {
     }
 
     /**
-     * @return number of UI beans annotated with {@link CDIUI} annotation
-     *         without context path
+     * @return number of UI beans annotated with {@link CDIUI} annotation with
+     *         an empty context path.
      */
     private int getNumberOfRootUIs() {
         Set<Bean<?>> beans = AnnotationUtil.getRootUiBeans(beanManager);

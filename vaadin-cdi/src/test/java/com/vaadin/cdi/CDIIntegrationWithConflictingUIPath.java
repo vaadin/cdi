@@ -10,6 +10,7 @@ import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.vaadin.cdi.uis.AnotherPathCollisionUI;
@@ -18,6 +19,12 @@ import com.vaadin.cdi.uis.RootUI;
 
 public class CDIIntegrationWithConflictingUIPath extends
         AbstractCDIIntegrationTest {
+
+    @Before
+    public void resetCounter() {
+        PathCollisionUI.resetCounter();
+        AnotherPathCollisionUI.resetCounter();
+    }
 
     @Deployment(name = "uiPathCollision", managed = false)
     public static WebArchive multipleUIsWithSamePath() {

@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.graphene.Graphene;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -63,6 +64,28 @@ import com.vaadin.cdi.uis.WithAnnotationRegisteredView;
 
 public class CDIIntegrationWithDefaultDeployment extends
         AbstractManagedCDIIntegrationTest {
+
+    @Before
+    public void resetCounter() {
+        PlainUI.resetCounter();
+        PlainAlternativeUI.resetCounter();
+        InstrumentedUI.resetCounter();
+        InstrumentedView.resetCounter();
+        ScopedInstrumentedView.resetCounter();
+        ViewWithoutAnnotation.resetCounter();
+        WithAnnotationRegisteredView.resetCounter();
+        SecondUI.resetCounter();
+        RootUI.resetCounter();
+        UIWithCDIDependentListener.resetCounter();
+        UIWithCDISelfListener.resetCounter();
+        DependentCDIEventListener.resetCounter();
+        DependentCDIEventListener.resetEventCounter();
+        ParameterizedNavigationUI.reset();
+        NoViewProviderNavigationUI.resetCounter();
+        InterceptedUI.resetCounter();
+        EnterpriseUI.resetCounter();
+
+    }
 
     @Deployment
     public static WebArchive archiveWithDefaultRootUI() {

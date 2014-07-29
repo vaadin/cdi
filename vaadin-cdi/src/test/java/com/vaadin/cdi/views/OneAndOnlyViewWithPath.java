@@ -23,7 +23,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 /**
  * 
  */
-@CDIView("custom")
+@CDIView("customTest")
 public class OneAndOnlyViewWithPath implements View {
 
     @Override

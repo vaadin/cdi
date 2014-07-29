@@ -20,35 +20,23 @@ import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.jboss.arquillian.ajocado.Graphene.elementPresent;
-import static org.jboss.arquillian.ajocado.Graphene.id;
-import static org.jboss.arquillian.ajocado.Graphene.retrieveText;
-import static org.jboss.arquillian.ajocado.Graphene.waitModel;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
-import org.jboss.arquillian.ajocado.framework.GrapheneSelenium;
-import org.jboss.arquillian.ajocado.locator.IdLocator;
-import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.junit.InSequence;
-import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.arquillian.graphene.Graphene;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
 
-import com.thoughtworks.selenium.SeleniumException;
-import com.vaadin.cdi.uis.AnotherPathCollisionUI;
+import com.google.common.base.Predicate;
 import com.vaadin.cdi.uis.Boundary;
 import com.vaadin.cdi.uis.DanglingView;
 import com.vaadin.cdi.uis.DependentCDIEventListener;
@@ -60,13 +48,10 @@ import com.vaadin.cdi.uis.InterceptedBean;
 import com.vaadin.cdi.uis.InterceptedUI;
 import com.vaadin.cdi.uis.NoViewProviderNavigationUI;
 import com.vaadin.cdi.uis.ParameterizedNavigationUI;
-import com.vaadin.cdi.uis.PathCollisionUI;
 import com.vaadin.cdi.uis.PlainAlternativeUI;
-import com.vaadin.cdi.uis.PlainColidingAlternativeUI;
 import com.vaadin.cdi.uis.PlainUI;
 import com.vaadin.cdi.uis.RestrictedView;
 import com.vaadin.cdi.uis.RootUI;
-import com.vaadin.cdi.uis.RootWithCustomMappingUI;
 import com.vaadin.cdi.uis.ScopedInstrumentedView;
 import com.vaadin.cdi.uis.SecondUI;
 import com.vaadin.cdi.uis.SubUI;
@@ -76,29 +61,8 @@ import com.vaadin.cdi.uis.UnsecuredUI;
 import com.vaadin.cdi.uis.ViewWithoutAnnotation;
 import com.vaadin.cdi.uis.WithAnnotationRegisteredView;
 
-@RunAsClient
-@RunWith(Arquillian.class)
-public class CDIIntegrationWithVaadinIT {
-
-    @Drone
-    GrapheneSelenium firstWindow;
-
-    @ArquillianResource
-    URL contextPath;
-
-    @ArquillianResource
-    private Deployer deployer;
-
-    private final static IdLocator LABEL = id("label");
-    private final static IdLocator BUTTON = id("button");
-    private final static IdLocator NAVIGATE_BUTTON = id("navigate");
-
-    private final static String INSTRUMENTED_UI_URI = "instrumentedUI";
-    private final static String SECOND_UI_URI = "secondUI";
-    private final static String INSTRUMENTED_VIEW_URI = INSTRUMENTED_UI_URI
-            + "/#!instrumentedView";
-    private final static String DANGLING_VIEW_URI = SECOND_UI_URI
-            + "/#!danglingView";
+public class CDIIntegrationWithDefaultDeployment extends
+        AbstractManagedCDIIntegrationTest {
 
     @Deployment
     public static WebArchive archiveWithDefaultRootUI() {
@@ -116,79 +80,22 @@ public class CDIIntegrationWithVaadinIT {
                 NoViewProviderNavigationUI.class);
     }
 
-    @Deployment(name = "customURIMapping")
-    public static WebArchive archiveWithCustomURIMapping() {
-        return ArchiveProvider.createWebArchive("custom",
-                RootWithCustomMappingUI.class);
-    }
-
-    @Deployment(name = "uiPathCollision", managed = false)
-    public static WebArchive multipleUIsWithSamePath() {
-        return ArchiveProvider.createWebArchive("uiPathCollision",
-                PathCollisionUI.class, AnotherPathCollisionUI.class);
-    }
-
-    @Deployment(name = "alternativeUiPathCollision")
-    public static WebArchive alternativeAndActiveWithSamePath() {
-        return ArchiveProvider.createWebArchive("alternativeUiPathCollision",
-                PlainUI.class, PlainColidingAlternativeUI.class);
-    }
-
-    @Before
-    public void resetCounter() {
-        PlainUI.resetCounter();
-        PlainAlternativeUI.resetCounter();
-        PlainColidingAlternativeUI.resetCounter();
-        InstrumentedUI.resetCounter();
-        InstrumentedView.resetCounter();
-        ScopedInstrumentedView.resetCounter();
-        ViewWithoutAnnotation.resetCounter();
-        WithAnnotationRegisteredView.resetCounter();
-        SecondUI.resetCounter();
-        RootUI.resetCounter();
-        RootWithCustomMappingUI.resetCounter();
-        UIWithCDIDependentListener.resetCounter();
-        UIWithCDISelfListener.resetCounter();
-        DependentCDIEventListener.resetCounter();
-        DependentCDIEventListener.resetEventCounter();
-        ParameterizedNavigationUI.reset();
-        NoViewProviderNavigationUI.resetCounter();
-        firstWindow.restartBrowser();
-
-    }
-
-    private void openWindow(String uri) throws MalformedURLException {
-        openWindow(firstWindow, uri);
-    }
-
-    void openWindow(GrapheneSelenium window, String uri)
-            throws MalformedURLException {
-        openWindowNoWait(window, uri);
-        waitModel.until(elementPresent.locator(LABEL));
-    }
-
-    void openWindowNoWait(String uri) throws MalformedURLException {
-        openWindowNoWait(firstWindow, uri);
-    }
-
-    void openWindowNoWait(GrapheneSelenium window, String uri)
-            throws MalformedURLException {
-        URL url = new URL(contextPath.toString() + uri);
-        window.open(url);
-    }
-
     @Test
     public void browserRestartCreatesNewInstance() throws MalformedURLException {
         String uri = deriveMappingForUI(PlainUI.class);
         openWindow(uri);
-        assertTrue("PlainUI should contain a label",
-                firstWindow.isElementPresent(LABEL));
+
+        // Throws exception if element not found
+        firstWindow.findElement(LABEL);
+
         assertThat(PlainUI.getNumberOfInstances(), is(1));
+
         // reset session
-        firstWindow.restartBrowser();
         openWindow(uri);
-        assertTrue("PlainUI should contain a label",
-                firstWindow.isElementPresent(LABEL));
+
+        // Throws exception if element not found
+        firstWindow.findElement(LABEL);
+
         assertThat(PlainUI.getNumberOfInstances(), is(2));
         assertDefaultRootNotInstantiated();
 
@@ -200,41 +107,52 @@ public class CDIIntegrationWithVaadinIT {
 
         openWindow(INSTRUMENTED_UI_URI);
 
-        firstWindow.click(BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
-        int clickCount = number(firstWindow.getText(LABEL));
-        assertThat(clickCount, is(1));
+        firstWindow.findElement(BUTTON).click();
+        waitForValue(LABEL, 1);
         assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
 
-        firstWindow.click(BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
-        clickCount = number(firstWindow.getText(LABEL));
-        assertThat(clickCount, is(2));
+        firstWindow.findElement(BUTTON).click();
+        waitForValue(LABEL, 2);
         assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
 
-        firstWindow.restartBrowser();
         openWindow(INSTRUMENTED_UI_URI);
 
-        firstWindow.click(BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
-        clickCount = number(firstWindow.getText(LABEL));
-        assertThat(clickCount, is(1));
+        firstWindow.findElement(BUTTON).click();
+        waitForValue(LABEL, 1);
         assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
 
-        firstWindow.click(BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
-        clickCount = number(firstWindow.getText(LABEL));
-        assertThat(clickCount, is(2));
+        firstWindow.findElement(BUTTON).click();
+        waitForValue(LABEL, 2);
         assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
         assertDefaultRootNotInstantiated();
+    }
+
+    private void waitForValue(final By by, final int value) {
+        Graphene.waitModel(firstWindow).withTimeout(10, TimeUnit.SECONDS)
+                .until(new Predicate<WebDriver>() {
+                    @Override
+                    public boolean apply(WebDriver driver) {
+                        return number(driver.findElement(by).getText()) == value;
+                    }
+                });
+    }
+
+    private void waitForValue(final By by, final String value) {
+        Graphene.waitModel(firstWindow).withTimeout(10, TimeUnit.SECONDS)
+                .until(new Predicate<WebDriver>() {
+                    @Override
+                    public boolean apply(WebDriver driver) {
+                        return value.equals(driver.findElement(by).getText());
+                    }
+                });
     }
 
     @Test
     public void dependentScopedViewIsInstantiatedTwiceWithViewProvider()
             throws MalformedURLException {
         openWindow(firstWindow, INSTRUMENTED_VIEW_URI);
-        firstWindow.click(NAVIGATE_BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
+        firstWindow.findElement(NAVIGATE_BUTTON).click();
+        waitForValue(VIEW_LABEL, "ViewLabel");
         assertThat(InstrumentedView.getNumberOfInstances(), is(2));
     }
 
@@ -244,44 +162,31 @@ public class CDIIntegrationWithVaadinIT {
         String uri = deriveMappingForUI(NoViewProviderNavigationUI.class);
         openWindow(uri);
         assertThat(InstrumentedView.getNumberOfInstances(), is(1));
-        firstWindow.click(NAVIGATE_BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
+        firstWindow.findElement(NAVIGATE_BUTTON).click();
+
+        waitForValue(VIEW_LABEL, "ViewLabel");
         assertThat(InstrumentedView.getNumberOfInstances(), is(1));
         assertThat(NoViewProviderNavigationUI.getNumberOfInstances(), is(1));
         assertThat(NoViewProviderNavigationUI.getNumberOfNavigations(), is(1));
 
-        firstWindow.click(NAVIGATE_BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
+        firstWindow.findElement(NAVIGATE_BUTTON).click();
+        waitForValue(VIEW_LABEL, "ViewLabel");
         assertThat(InstrumentedView.getNumberOfInstances(), is(1));
         assertThat(NoViewProviderNavigationUI.getNumberOfInstances(), is(1));
         assertThat(NoViewProviderNavigationUI.getNumberOfNavigations(), is(2));
 
     }
 
-    // automatic view name generation no longer supported
-    // @Test
-    // public void recognitionOfViewWithoutAnnotation()
-    // throws MalformedURLException {
-    // ParameterizedNavigationUI.NAVIGATE_TO = "viewWithoutAnnotation";
-    // openWindow(deriveMappingForUI(ParameterizedNavigationUI.class));
-    // firstWindow.click(NAVIGATE_BUTTON);
-    // waitModel.waitForChange(retrieveText.locator(LABEL));
-    // assertThat(ViewWithoutAnnotation.getNumberOfInstances(), is(1));
-    // assertDefaultRootNotInstantiated();
-    // }
-
     @Test
     public void rootUIDiscovery() throws MalformedURLException {
         assertThat(RootUI.getNumberOfInstances(), is(0));
         openWindow("");
-        waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(RootUI.getNumberOfInstances(), is(1));
     }
 
     @Test
     public void uiInheritance() throws MalformedURLException {
         openWindow(deriveMappingForUI(SubUI.class));
-        waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(SubUI.getNumberOfInstances(), is(1));
         assertDefaultRootNotInstantiated();
     }
@@ -291,8 +196,7 @@ public class CDIIntegrationWithVaadinIT {
             throws MalformedURLException {
         openWindow(INSTRUMENTED_UI_URI);
         assertThat(InstrumentedUI.getNumberOfInstances(), is(1));
-        firstWindow.refresh();
-        waitModel.until(elementPresent.locator(LABEL));
+        firstWindow.navigate().refresh();
         assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
         assertDefaultRootNotInstantiated();
     }
@@ -300,29 +204,15 @@ public class CDIIntegrationWithVaadinIT {
     @Test
     public void danglingViewCauses404() throws MalformedURLException {
         openWindow(DANGLING_VIEW_URI);
-        waitModel.until(elementPresent.locator(LABEL));
-        firstWindow.click(NAVIGATE_BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
+        firstWindow.findElement(NAVIGATE_BUTTON).click();
         assertThat(SecondUI.getNumberOfInstances(), is(1));
         assertThat(DanglingView.getNumberOfInstances(), is(0));
     }
 
     @Test
-    @OperateOnDeployment("alternativeUiPathCollision")
-    public void alternativeDoesNotColideWithPath() throws MalformedURLException {
-        final String plainUIPath = deriveMappingForUI(PlainUI.class);
-        final String plainAlternativeUI = deriveMappingForUI(PlainColidingAlternativeUI.class);
-        assertThat(plainUIPath, is(plainAlternativeUI));
-        openWindow(plainUIPath);
-        waitModel.until(elementPresent.locator(LABEL));
-        assertThat(PlainUI.getNumberOfInstances(), is(1));
-        assertThat(PlainColidingAlternativeUI.getNumberOfInstances(), is(0));
-    }
-
-    @Test
     public void alternativeIsNotAccessible() throws MalformedURLException {
         openWindowNoWait(deriveMappingForUI(PlainAlternativeUI.class));
-        final String expectedErrorMessage = firstWindow.getBodyText();
+        final String expectedErrorMessage = firstWindow.getPageSource();
         assertThat(expectedErrorMessage, containsString("404"));
         assertThat(PlainAlternativeUI.getNumberOfInstances(), is(0));
     }
@@ -334,13 +224,10 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(UIWithCDISelfListener.getNumberOfDeliveredEvents(), is(0));
         String uri = deriveMappingForUI(UIWithCDISelfListener.class);
         openWindow(uri);
-        waitModel.until(elementPresent.locator(LABEL));
-        firstWindow.click(BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
+        firstWindow.findElement(BUTTON).click();
         assertThat(UIWithCDISelfListener.getNumberOfInstances(), is(1));
         assertThat(UIWithCDISelfListener.getNumberOfDeliveredEvents(), is(1));
-        firstWindow.click(BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
+        firstWindow.findElement(BUTTON).click();
         assertThat(UIWithCDISelfListener.getNumberOfInstances(), is(1));
         assertThat(UIWithCDISelfListener.getNumberOfDeliveredEvents(), is(2));
 
@@ -355,15 +242,12 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(DependentCDIEventListener.getNumberOfInstances(), is(0));
         String uri = deriveMappingForUI(UIWithCDIDependentListener.class);
         openWindow(uri);
-        waitModel.until(elementPresent.locator(LABEL));
-        firstWindow.click(BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
+        firstWindow.findElement(BUTTON).click();
         assertThat(UIWithCDIDependentListener.getNumberOfInstances(), is(1));
         assertThat(DependentCDIEventListener.getNumberOfInstances(), is(1));
         assertThat(DependentCDIEventListener.getNumberOfDeliveredEvents(),
                 is(1));
-        firstWindow.click(BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
+        firstWindow.findElement(BUTTON).click();
         assertThat(UIWithCDIDependentListener.getNumberOfInstances(), is(1));
         assertThat(DependentCDIEventListener.getNumberOfInstances(), is(2));
         assertThat(DependentCDIEventListener.getNumberOfDeliveredEvents(),
@@ -377,12 +261,10 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(InstrumentedInterceptor.getCounter(), is(0));
         String uri = deriveMappingForUI(InterceptedUI.class);
         openWindow(uri);
-        waitModel.until(elementPresent.locator(LABEL));
-        firstWindow.click(BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
+        firstWindow.findElement(BUTTON).click();
+        waitForValue(LABEL, "hello from intercepted bean");
         assertThat(InstrumentedInterceptor.getCounter(), is(1));
-        firstWindow.click(BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
+        firstWindow.findElement(BUTTON).click();
         assertThat(InstrumentedInterceptor.getCounter(), is(2));
 
     }
@@ -393,8 +275,7 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(RestrictedView.getNumberOfInstances(), is(0));
         ParameterizedNavigationUI.NAVIGATE_TO = "restrictedView";
         openWindow(deriveMappingForUI(ParameterizedNavigationUI.class));
-        firstWindow.click(NAVIGATE_BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
+        firstWindow.findElement(NAVIGATE_BUTTON).click();
         assertThat(ParameterizedNavigationUI.getNumberOfInstances(), is(1));
         assertThat(RestrictedView.getNumberOfInstances(), is(0));
         assertDefaultRootNotInstantiated();
@@ -402,39 +283,12 @@ public class CDIIntegrationWithVaadinIT {
     }
 
     @Test
-    @OperateOnDeployment("customURIMapping")
-    public void customServletMapping() throws MalformedURLException {
-        assertThat(RootWithCustomMappingUI.getNumberOfInstances(), is(0));
-        openWindow("customURI/");
-        waitModel.waitForChange(retrieveText.locator(LABEL));
-        assertThat(RootWithCustomMappingUI.getNumberOfInstances(), is(1));
-
-    }
-
-    /**
-     * Tests invalid deployment of multiple roots within a WAR Should be started
-     * first -- Arquillian deployments are not perfectly isolated.
-     */
-    @Test
-    @InSequence(-2)
-    public void uiPathCollisionBreaksDeployment() throws MalformedURLException {
-        assertThat(RootUI.getNumberOfInstances(), is(0));
-        deployer.deploy("uiPathCollision");
-        openWindowNoWait(deriveMappingForUI(PathCollisionUI.class));
-        final String expectedErrorMessage = firstWindow.getBodyText();
-        // page not found - the real error message is in the server log
-        assertThat(expectedErrorMessage, containsString("404"));
-        assertThat(RootUI.getNumberOfInstances(), is(0));
-    }
-
-    @Test
     public void ejbInvocation() throws MalformedURLException {
         openWindow(deriveMappingForUI(EnterpriseUI.class));
-        waitModel.waitForChange(retrieveText.locator(LABEL));
         assertThat(EnterpriseUI.getNumberOfInstances(), is(1));
-        firstWindow.click(BUTTON);
-        waitModel.waitForChange(retrieveText.locator(LABEL));
-        final String labelText = retrieveText.locator(LABEL).retrieve();
+        firstWindow.findElement(BUTTON).click();
+        waitForValue(LABEL, "Echo: 1");
+        final String labelText = firstWindow.findElement(LABEL).getText();
         assertThat(labelText, startsWith("Echo:"));
         assertThat(EnterpriseUI.getNumberOfInstances(), is(1));
         assertDefaultRootNotInstantiated();
@@ -446,18 +300,22 @@ public class CDIIntegrationWithVaadinIT {
         // lacked an ID on the client side
         String uri = deriveMappingForUI(UnsecuredUI.class) + "?debug";
         openWindow(uri);
-        final String principalName = firstWindow.getText(id("principalName"));
-        final String isUserInRole = firstWindow.getText(id("isUserInRole"));
-        final String isUserInSomeRole = firstWindow
-                .getText(id("isUserInSomeRole"));
-        final String currentRequestNotNull = firstWindow
-                .getText(id("currentRequestNotNull"));
-        final String isUserSignedIn = firstWindow.getText(id("isUserSignedIn"));
-        final String disabled = firstWindow.getText(id("disabled"));
+        final String principalName = firstWindow.findElement(
+                By.id("principalName")).getText();
+        final String isUserInRole = firstWindow.findElement(
+                By.id("isUserInRole")).getText();
+        final String isUserInSomeRole = firstWindow.findElement(
+                By.id("isUserInSomeRole")).getText();
+        final String currentRequestNotNull = firstWindow.findElement(
+                By.id("currentRequestNotNull")).getText();
+        final String isUserSignedIn = firstWindow.findElement(
+                By.id("isUserSignedIn")).getText();
+        final String disabled = firstWindow.findElement(By.id("disabled"))
+                .getText();
         try {
-            firstWindow.getText(id("invisible"));
+            firstWindow.findElement(By.id("invisible")).getText();
             fail("Invisible element should not be accessible");
-        } catch (SeleniumException ex) {
+        } catch (NoSuchElementException ex) {
         }
         assertFalse(Boolean.parseBoolean(principalName));
         assertFalse(Boolean.parseBoolean(isUserInRole));
@@ -467,11 +325,4 @@ public class CDIIntegrationWithVaadinIT {
         assertThat(disabled, is("DisabledLabel"));
     }
 
-    void assertDefaultRootNotInstantiated() {
-        assertThat(RootUI.getNumberOfInstances(), is(0));
-    }
-
-    public int number(String txt) {
-        return Integer.parseInt(txt);
-    }
 }

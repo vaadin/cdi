@@ -26,7 +26,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-@CDIUI(value = "plainUI")
+@CDIUI("PlainUI")
 public class PlainUI extends UI {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);

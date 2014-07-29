@@ -48,7 +48,7 @@ public class InstrumentedView extends CustomComponent implements View {
         layout.setSizeFull();
         setCompositionRoot(layout);
         Label label = new Label("ViewLabel");
-        label.setId("label");
+        label.setId("view");
         layout.addComponent(label);
     }
 

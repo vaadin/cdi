@@ -28,7 +28,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 @Alternative
-@CDIUI("plainUI")
+@CDIUI("PlainUI")
 public class PlainColidingAlternativeUI extends UI {
 
     private final static AtomicInteger COUNTER = new AtomicInteger(0);

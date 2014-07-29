@@ -26,7 +26,6 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 import com.vaadin.cdi.uis.PlainColidingAlternativeUI;
-import com.vaadin.cdi.uis.PlainUI;
 import com.vaadin.cdi.views.OneAndOnlyViewWithPath;
 import com.vaadin.cdi.views.OneAndOnlyViewWithoutPath;
 import com.vaadin.cdi.views.OneAndOnlyViewWithoutPathAndAnnotation;
@@ -61,7 +60,7 @@ public class ConventionsTest {
 
     @Test
     public void extractViewNameUsingPath() {
-        String expected = "custom";
+        String expected = "customTest";
         String actual = deriveMappingForView(OneAndOnlyViewWithPath.class);
         assertThat(actual, is(expected));
     }
@@ -81,15 +80,8 @@ public class ConventionsTest {
     }
 
     @Test
-    public void extractUIPathUsingConvention() {
-        String expected = "plainUI";
-        String actual = deriveMappingForUI(PlainUI.class);
-        assertThat(actual, is(expected));
-    }
-
-    @Test
     public void extractUIPathUsingAnnotation() {
-        String expected = "plainUI";
+        String expected = "PlainUI";
         String actual = deriveMappingForUI(PlainColidingAlternativeUI.class);
         assertThat(actual, is(expected));
     }

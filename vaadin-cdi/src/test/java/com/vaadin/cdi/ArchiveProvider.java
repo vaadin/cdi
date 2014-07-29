@@ -21,8 +21,8 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 
 import com.vaadin.cdi.access.AccessControl;
 import com.vaadin.cdi.access.JaasAccessControl;
@@ -50,19 +50,12 @@ public class ArchiveProvider {
     }
 
     static WebArchive base(String warName) {
-        MavenDependencyResolver resolver = DependencyResolvers.use(
-                MavenDependencyResolver.class).loadMetadataFromPom("pom.xml");
+        PomEquippedResolveStage pom = Maven.resolver().loadPomFromFile("pom.xml");
         return ShrinkWrap
                 .create(WebArchive.class, warName + ".war")
                 .addClasses(FRAMEWORK_CLASSES)
                 .addAsLibraries(
-                        resolver.artifact(
-                                "com.vaadin:vaadin-server:7.2.0.beta1")
-                                .resolveAsFiles())
-                .addAsLibraries(
-                        resolver.artifact(
-                                "com.vaadin:vaadin-shared:7.2.0.beta1")
-                                .resolveAsFiles())
+                        pom.resolve("com.vaadin:vaadin-server:7.2.5").withTransitivity().asFile())
                 .addAsWebInfResource(
                         new ByteArrayAsset(VaadinExtension.class.getName()
                                 .getBytes()),

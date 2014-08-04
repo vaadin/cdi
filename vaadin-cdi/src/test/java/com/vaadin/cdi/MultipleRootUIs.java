@@ -33,7 +33,7 @@ import com.vaadin.cdi.uis.RootWithCustomMappingUI;
 
 @RunAsClient
 @RunWith(Arquillian.class)
-public class MultipleRootUIsIT extends AbstractCDIIntegrationTest {
+public class MultipleRootUIs extends AbstractCDIIntegrationTest {
 
     @Deployment(name = "multipleRoots", managed = false)
     public static WebArchive archiveWithMultipleRoots() {

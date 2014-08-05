@@ -39,9 +39,17 @@ public @interface CDIView {
      * 
      * The name of the CDIView can be derived from the simple class name So it
      * is optional. Also multiple views without a value may exist at the same
-     * time
+     * time.
+     * 
+     * Example: UserDetailView by convention becomes "user-detail"
      */
-    public String value() default "";
+    public String value() default USE_CONVENTIONS;
+
+    /**
+     * USE_CONVENTIONS is treated as a special case that will cause the
+     * automatic View mapping to occur.
+     */
+    public static final String USE_CONVENTIONS = "USE CONVENTIONS";
 
     /**
      * Specifies whether view parameters can be passed to the view as part of

@@ -61,6 +61,7 @@ import com.vaadin.cdi.uis.UIWithCDISelfListener;
 import com.vaadin.cdi.uis.UnsecuredUI;
 import com.vaadin.cdi.uis.ViewWithoutAnnotation;
 import com.vaadin.cdi.uis.WithAnnotationRegisteredView;
+import com.vaadin.cdi.views.ConventionalView;
 
 public class CDIIntegrationWithDefaultDeployment extends
         AbstractManagedCDIIntegrationTest {
@@ -100,7 +101,7 @@ public class CDIIntegrationWithDefaultDeployment extends
                 RestrictedView.class, PlainUI.class,
                 ParameterizedNavigationUI.class, EnterpriseUI.class,
                 Boundary.class, SubUI.class, PlainAlternativeUI.class,
-                NoViewProviderNavigationUI.class);
+                NoViewProviderNavigationUI.class, ConventionalView.class);
     }
 
     @Test
@@ -348,4 +349,17 @@ public class CDIIntegrationWithDefaultDeployment extends
         assertThat(disabled, is("DisabledLabel"));
     }
 
+    @Test
+    public void viewConventions() throws MalformedURLException {
+        assertThat(ParameterizedNavigationUI.getNumberOfInstances(), is(0));
+        assertThat(ConventionalView.getNumberOfInstances(), is(0));
+        ParameterizedNavigationUI.NAVIGATE_TO = "conventional";
+        openWindow(deriveMappingForUI(ParameterizedNavigationUI.class));
+        firstWindow.findElement(NAVIGATE_BUTTON).click();
+        waitForValue(VIEW_LABEL, "conventional");
+        assertThat(ParameterizedNavigationUI.getNumberOfInstances(), is(1));
+        assertThat(ConventionalView.getNumberOfInstances(), is(1));
+        assertDefaultRootNotInstantiated();
+
+    }
 }

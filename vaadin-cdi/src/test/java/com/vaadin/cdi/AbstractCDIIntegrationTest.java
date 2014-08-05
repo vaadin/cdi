@@ -26,7 +26,7 @@ abstract public class AbstractCDIIntegrationTest {
     Deployer deployer;
     
     protected static final By LABEL = By.id("label");
-    protected static final By VIEW_LABEL = By.id("view");
+    public static final By VIEW_LABEL = By.id("view");
     protected static final By BUTTON = By.id("button");
     protected static final By NAVIGATE_BUTTON = By.id("navigate");
     protected static final String INSTRUMENTED_UI_URI = "instrumentedUI";

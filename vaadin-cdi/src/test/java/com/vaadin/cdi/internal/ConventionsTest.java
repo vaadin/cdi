@@ -68,7 +68,7 @@ public class ConventionsTest {
 
     @Test
     public void extractViewNameUsingConvention() {
-        String expected = null;
+        String expected = "one-and-only-view-without-path";
         String actual = deriveMappingForView(OneAndOnlyViewWithoutPath.class);
         assertThat(actual, is(expected));
     }

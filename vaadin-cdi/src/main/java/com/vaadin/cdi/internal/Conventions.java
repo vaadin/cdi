@@ -51,12 +51,20 @@ public class Conventions {
         }
     }
 
-    public static String deriveMappingForView(Class<?> clazz) {
-        CDIView annotation = clazz.getAnnotation(CDIView.class);
-        if (annotation == null || annotation.value().isEmpty()) {
-            return null;
+    public static String deriveMappingForView(Class<?> beanClass) {
+        if (beanClass.isAnnotationPresent(CDIView.class)) {
+            CDIView annotation = beanClass.getAnnotation(CDIView.class);
+            if (annotation != null
+                    && !CDIView.USE_CONVENTIONS.equals(annotation.value())) {
+                return annotation.value();
+            } else {
+                String mapping = beanClass.getSimpleName().replaceFirst(
+                        "View$", "");
+                return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN,
+                        mapping);
+            }
         } else {
-            return annotation.value();
+            return null;
         }
     }
 }

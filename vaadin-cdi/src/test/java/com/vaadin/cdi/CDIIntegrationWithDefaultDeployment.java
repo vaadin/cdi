@@ -26,18 +26,14 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.MalformedURLException;
-import java.util.concurrent.TimeUnit;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.graphene.Graphene;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
 
-import com.google.common.base.Predicate;
 import com.vaadin.cdi.uis.Boundary;
 import com.vaadin.cdi.uis.DanglingView;
 import com.vaadin.cdi.uis.DependentCDIEventListener;
@@ -149,26 +145,6 @@ public class CDIIntegrationWithDefaultDeployment extends
         waitForValue(LABEL, 2);
         assertThat(InstrumentedUI.getNumberOfInstances(), is(2));
         assertDefaultRootNotInstantiated();
-    }
-
-    private void waitForValue(final By by, final int value) {
-        Graphene.waitModel(firstWindow).withTimeout(10, TimeUnit.SECONDS)
-                .until(new Predicate<WebDriver>() {
-                    @Override
-                    public boolean apply(WebDriver driver) {
-                        return number(driver.findElement(by).getText()) == value;
-                    }
-                });
-    }
-
-    private void waitForValue(final By by, final String value) {
-        Graphene.waitModel(firstWindow).withTimeout(10, TimeUnit.SECONDS)
-                .until(new Predicate<WebDriver>() {
-                    @Override
-                    public boolean apply(WebDriver driver) {
-                        return value.equals(driver.findElement(by).getText());
-                    }
-                });
     }
 
     @Test

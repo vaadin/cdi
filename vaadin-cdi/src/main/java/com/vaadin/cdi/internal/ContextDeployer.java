@@ -238,6 +238,8 @@ public class ContextDeployer implements ServletContextListener {
         ServletRegistration.Dynamic registration = context.addServlet(
                 "VaadinServlet", vaadinServlet);
 
+        registration.setAsyncSupported(true);
+
         registration.addMapping("/VAADIN/*");
         getLogger().info(
                 "Mapping " + registration.getName() + " to " + urlMapping);

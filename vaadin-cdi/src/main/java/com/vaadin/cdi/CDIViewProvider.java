@@ -79,7 +79,7 @@ public class CDIViewProvider implements ViewProvider {
     }
 
     private boolean isUserHavingAccessToView(Bean<?> viewBean) {
-
+    	
         if (viewBean.getBeanClass().isAnnotationPresent(CDIView.class)) {
             if (!viewBean.getBeanClass()
                     .isAnnotationPresent(RolesAllowed.class)) {
@@ -116,6 +116,11 @@ public class CDIViewProvider implements ViewProvider {
                     "No Views found! Please add at least one class implemeting the View interface.");
             return null;
         }
+        
+        // Split up the viewNameParametes string to view and parameter tokens
+        final String[] viewNameSplit = viewName.split("/");
+        int currentMaxLevels = 0;
+        
         for (Bean<?> bean : all) {
             Class<?> beanClass = bean.getBeanClass();
             CDIView viewAnnotation = beanClass.getAnnotation(CDIView.class);
@@ -130,23 +135,60 @@ public class CDIViewProvider implements ViewProvider {
             // In the case of an empty fragment, use the root view.
             // Note that the root view should not support parameters if other
             // views are used.
-
-            if (viewAnnotation.supportsParameters()
-                    && viewName.startsWith(mapping)) {
-                matching.add(bean);
-                LOG().log(
-                        Level.INFO,
-                        "Bean {0} with viewName \"{1}\" is one alternative for viewAndParameters \"{2}\"",
-                        new Object[] { bean, mapping, viewName });
-            } else if (viewName.equals(mapping)) {
-                matching.add(bean);
-                LOG().log(Level.INFO,
-                        "Bean {0} with viewName \"{1}\" is one alternative",
-                        new Object[] { bean, mapping });
-            }
+            
+            // If the view does not support parameters or the viewName doesn't contain "/" then the
+            // viewName and the mapping have to be equal
+            if (!viewAnnotation.supportsParameters() || viewNameSplit.length == 1) {
+            	if (viewName.equals(mapping)) {
+            		if (viewNameSplit.length > currentMaxLevels) {
+            			matching.clear();
+            			matching.add(bean);
+            			currentMaxLevels = viewNameSplit.length;
+            			LOG().log(Level.INFO,
+            					"Removed all matches, and added the bean {0} with viewName \"{1}\" as it has a longer match",
+            					new Object[] { bean, mapping });
+            		} else if (viewNameSplit.length == currentMaxLevels) {
+            			matching.add(bean);
+            			LOG().log(Level.INFO,
+            					"Bean {0} with viewName \"{1}\" is one alternative",
+            					new Object[] { bean, mapping });
+            		}
+            	}
+            } else {
+            	// The viewName contains "/" and the view supports parameters --> find longest (most levels) match
+            	String[] mappingSplit = mapping.split("/");
+            	// The number of mapping tokens has to be smaller than the number of tokens of the requested view name 
+            	if (mappingSplit.length <= viewNameSplit.length) {
+	            	// Iterate over all viewName tokens
+	            	int maxLevels = 0;
+	            	for (int i = 0; i < mappingSplit.length; i++) {
+						if (!viewNameSplit[i].equals(mappingSplit[i])) {
+							// All tokens of the mapping have to match, if one doesn't match, reset maxLevels to 0
+							maxLevels = 0;
+							break;
+						} else {
+							maxLevels++;
+						}
+					}
+	            	if (maxLevels > currentMaxLevels) {
+	        			matching.clear();
+	        			matching.add(bean);
+	        			currentMaxLevels = maxLevels;
+	        			LOG().log(Level.INFO,
+	        					"Removed all matches, and added the bean {0} with viewName \"{1}\" as it has a longer match",
+	        					new Object[] { bean, mapping });
+	            	} else if (currentMaxLevels > 0 && (maxLevels == currentMaxLevels)) {
+	        			matching.add(bean);
+	        			LOG().log(Level.INFO,
+	        					"Bean {0} with viewName \"{1}\" is one alternative",
+	        					new Object[] { bean, mapping });
+	        		}
+	            }
+	        }
         }
 
         Set<Bean<?>> viewBeansForThisProvider = getViewBeansForCurrentUI(matching);
+        
         if (viewBeansForThisProvider.isEmpty()) {
             LOG().log(Level.INFO, "No view beans found for current UI");
             return null;
@@ -235,10 +277,6 @@ public class CDIViewProvider implements ViewProvider {
         String viewName = viewAndParameters;
         if (viewName.startsWith("!")) {
             viewName = viewName.substring(1);
-        }
-
-        if (viewName.contains("/")) {
-            viewName = viewName.split("/")[0];
         }
 
         return viewName;

@@ -31,7 +31,7 @@ public class VaadinExtension implements Extension {
     void afterBeanDiscovery(@Observes
     final AfterBeanDiscovery afterBeanDiscovery, final BeanManager beanManager) {
         afterBeanDiscovery.addContext(new UIScopedContext(beanManager));
-        getLogger().info("UIScopedContext registered");
+        getLogger().info("UIScopedContext registered for Vaadin CDI");
     }
 
     private static Logger getLogger() {

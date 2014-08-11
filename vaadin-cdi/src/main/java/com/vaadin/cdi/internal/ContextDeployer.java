@@ -251,7 +251,7 @@ public class ContextDeployer implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        getLogger().info("Context destroyed");
+        getLogger().info("Vaadin web context destroyed");
     }
 
     private static Logger getLogger() {

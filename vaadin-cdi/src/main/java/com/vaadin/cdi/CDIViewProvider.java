@@ -78,7 +78,7 @@ public class CDIViewProvider implements ViewProvider {
         return null;
     }
 
-    private boolean isUserHavingAccessToView(Bean<?> viewBean) {
+    protected boolean isUserHavingAccessToView(Bean<?> viewBean) {
 
         if (viewBean.getBeanClass().isAnnotationPresent(CDIView.class)) {
             if (!viewBean.getBeanClass()

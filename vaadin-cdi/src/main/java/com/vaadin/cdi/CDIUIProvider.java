@@ -39,6 +39,9 @@ import com.vaadin.util.CurrentInstance;
 
 public class CDIUIProvider extends DefaultUIProvider implements Serializable {
 
+    private static final String[] commonBeanManagerLookups = {
+            "java:comp/BeanManager", "java:comp/env/BeanManager" };
+
     @Override
     public UI createInstance(UICreateEvent uiCreateEvent) {
         Class<? extends UI> type = uiCreateEvent.getUIClass();
@@ -194,14 +197,30 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
 
     private BeanManager getBeanManager() {
         if (beanManager == null) {
+            getLogger()
+                    .fine("CDIUIProvider is not injected, using JNDI lookup");
             // as the CDIUIProvider is not injected, need to use JNDI lookup
             try {
                 InitialContext initialContext = new InitialContext();
-                beanManager = (BeanManager) initialContext
-                        .lookup("java:comp/BeanManager");
+                for (String beanManagerLookup : commonBeanManagerLookups) {
+                    try {
+                        beanManager = (BeanManager) initialContext
+                                .lookup(beanManagerLookup);
+                        getLogger().fine(
+                                "BeanManager found by '" + beanManagerLookup
+                                        + "'");
+                        break;
+                    } catch (NamingException e) {
+                        getLogger().fine(
+                                "BeanManager was not found by '"
+                                        + beanManagerLookup + "'");
+                    }
+                }
             } catch (NamingException e) {
+                getLogger().warning("Could not instantiate InitialContext");
+            }
+            if (beanManager == null) {
                 getLogger().severe("Could not get BeanManager through JNDI");
-                beanManager = null;
             }
         }
         return beanManager;

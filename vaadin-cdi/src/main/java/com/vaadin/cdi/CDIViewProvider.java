@@ -16,6 +16,7 @@
 
 package com.vaadin.cdi;
 
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +40,9 @@ import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.UI;
 
 public class CDIViewProvider implements ViewProvider {
+
+    private static final Annotation QUALIFIER_ANY = new AnnotationLiteral<Any>() {
+    };
 
     @Inject
     private BeanManager beanManager;
@@ -108,9 +112,7 @@ public class CDIViewProvider implements ViewProvider {
         getLogger().log(Level.FINE, "Looking for view with name \"{0}\"",
                 viewName);
         Set<Bean<?>> matching = new HashSet<Bean<?>>();
-        Set<Bean<?>> all = beanManager.getBeans(View.class,
-                new AnnotationLiteral<Any>() {
-                });
+        Set<Bean<?>> all = beanManager.getBeans(View.class, QUALIFIER_ANY);
         if (all.isEmpty()) {
             getLogger()
                     .severe("No Views found! Please add at least one class implementing the View interface.");

@@ -124,12 +124,7 @@ public class UIScopedContext implements Context {
                     "No bean store container bound for session");
         }
 
-        if (beans.size() > 1) {
-            throw new IllegalStateException(
-                    "More than one bean store container available for session");
-        }
-
-        Bean<?> bean = beans.iterator().next();
+        Bean<?> bean = beanManager.resolve(beans);
 
         return (BeanStoreContainer) beanManager.getReference(bean,
                 bean.getBeanClass(), beanManager.createCreationalContext(bean));

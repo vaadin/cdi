@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -47,18 +48,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         Class<? extends UI> type = uiCreateEvent.getUIClass();
         int uiId = uiCreateEvent.getUiId();
         VaadinRequest request = uiCreateEvent.getRequest();
-        Bean<?> bean = scanForBeans(type);
-        String uiMapping = "";
-        if (bean == null) {
-            if (type.isAnnotationPresent(CDIUI.class)) {
-                uiMapping = parseUIMapping(request);
-                bean = getUIBeanWithMapping(uiMapping);
-            } else {
-                throw new IllegalStateException("UI class: " + type.getName()
-                        + " with mapping: " + uiMapping
-                        + " is not annotated with CDIUI!");
-            }
-        }
+        Bean<?> bean = scanForBeans(type, request);
         UIBean uiBean = new UIBean(bean, uiId);
         try {
             // Make the UIBean available to UIScopedContext when creating nested
@@ -146,8 +136,8 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         return null;
     }
 
-    private Bean<?> scanForBeans(Class<? extends UI> type) {
-
+    private Bean<?> scanForBeans(Class<? extends UI> type, VaadinRequest request) {
+        Bean<?> bean = null;
         Set<Bean<?>> beans = getBeanManager().getBeans(type,
                 new AnnotationLiteral<Any>() {
                 });
@@ -156,15 +146,26 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
             getLogger().warning(
                     "Could not find UI bean for " + type.getCanonicalName());
             return null;
+        } else {
+            try {
+                bean = beanManager.resolve(beans);
+            } catch (AmbiguousResolutionException e) {
+                bean = null;
+            }
         }
 
-        if (beans.size() > 1) {
-            getLogger().warning(
-                    "Found multiple UI beans for " + type.getCanonicalName());
-            return null;
+        String uiMapping = "";
+        if (bean == null) {
+            if (type.isAnnotationPresent(CDIUI.class)) {
+                uiMapping = parseUIMapping(request);
+                bean = getUIBeanWithMapping(uiMapping);
+            } else {
+                throw new IllegalStateException("UI class: " + type.getName()
+                        + " with mapping: " + uiMapping
+                        + " is not annotated with CDIUI!");
+            }
         }
-
-        return beans.iterator().next();
+        return bean;
     }
 
     String parseUIMapping(VaadinRequest request) {

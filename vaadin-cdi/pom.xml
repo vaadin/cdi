@@ -143,6 +143,7 @@
                             <descriptors>
                                 <descriptor>assembly/assembly.xml</descriptor>
                             </descriptors>
+                            <attach>false</attach>
                         </configuration>
                         <executions>
                             <execution>

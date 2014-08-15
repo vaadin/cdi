@@ -10,7 +10,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-@CDIUI
+@CDIUI("")
 public class ExampleUI extends UI {
 
     @Inject

@@ -11,7 +11,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-@CDIView
+@CDIView("")
 public class RootView extends AbstractView {
 
     // UI scoped

@@ -15,7 +15,7 @@ import org.junit.Test;
 import com.vaadin.cdi.uis.ParameterizedNavigationUI;
 import com.vaadin.cdi.views.RootView;
 
-public class RootViewTest extends AbstractManagedCDIIntegrationTest {
+public class RootViewAtContextRoot extends AbstractManagedCDIIntegrationTest {
 
     @Before
     public void resetCounter() {

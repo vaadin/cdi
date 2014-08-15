@@ -219,12 +219,13 @@ public class CDIIntegrationWithDefaultDeployment extends
 
     @Test
     public void cdiEventsArrivesInTheSameUIScopedInstance()
-            throws MalformedURLException {
+            throws MalformedURLException, InterruptedException {
         assertThat(UIWithCDISelfListener.getNumberOfInstances(), is(0));
         assertThat(UIWithCDISelfListener.getNumberOfDeliveredEvents(), is(0));
         String uri = deriveMappingForUI(UIWithCDISelfListener.class);
         openWindow(uri);
         firstWindow.findElement(BUTTON).click();
+        Thread.sleep(100);
         assertThat(UIWithCDISelfListener.getNumberOfInstances(), is(1));
         assertThat(UIWithCDISelfListener.getNumberOfDeliveredEvents(), is(1));
         firstWindow.findElement(BUTTON).click();

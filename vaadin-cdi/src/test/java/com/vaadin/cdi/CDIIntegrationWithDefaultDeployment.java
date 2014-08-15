@@ -236,7 +236,7 @@ public class CDIIntegrationWithDefaultDeployment extends
 
     @Test
     public void cdiEventsArrivesInDependentListener()
-            throws MalformedURLException {
+            throws MalformedURLException, InterruptedException {
         assertThat(UIWithCDIDependentListener.getNumberOfInstances(), is(0));
         assertThat(DependentCDIEventListener.getNumberOfDeliveredEvents(),
                 is(0));
@@ -244,11 +244,13 @@ public class CDIIntegrationWithDefaultDeployment extends
         String uri = deriveMappingForUI(UIWithCDIDependentListener.class);
         openWindow(uri);
         firstWindow.findElement(BUTTON).click();
+        Thread.sleep(100);
         assertThat(UIWithCDIDependentListener.getNumberOfInstances(), is(1));
         assertThat(DependentCDIEventListener.getNumberOfInstances(), is(1));
         assertThat(DependentCDIEventListener.getNumberOfDeliveredEvents(),
                 is(1));
         firstWindow.findElement(BUTTON).click();
+        Thread.sleep(100);
         assertThat(UIWithCDIDependentListener.getNumberOfInstances(), is(1));
         assertThat(DependentCDIEventListener.getNumberOfInstances(), is(2));
         assertThat(DependentCDIEventListener.getNumberOfDeliveredEvents(),
@@ -257,7 +259,8 @@ public class CDIIntegrationWithDefaultDeployment extends
     }
 
     @Test
-    public void interceptedScopedEventListener() throws MalformedURLException {
+    public void interceptedScopedEventListener() throws MalformedURLException,
+            InterruptedException {
         assertThat(InterceptedUI.getNumberOfInstances(), is(0));
         assertThat(InstrumentedInterceptor.getCounter(), is(0));
         String uri = deriveMappingForUI(InterceptedUI.class);
@@ -266,6 +269,7 @@ public class CDIIntegrationWithDefaultDeployment extends
         waitForValue(LABEL, "hello from intercepted bean");
         assertThat(InstrumentedInterceptor.getCounter(), is(1));
         firstWindow.findElement(BUTTON).click();
+        Thread.sleep(100);
         assertThat(InstrumentedInterceptor.getCounter(), is(2));
 
     }
@@ -280,7 +284,6 @@ public class CDIIntegrationWithDefaultDeployment extends
         assertThat(ParameterizedNavigationUI.getNumberOfInstances(), is(1));
         assertThat(RestrictedView.getNumberOfInstances(), is(0));
         assertDefaultRootNotInstantiated();
-
     }
 
     @Test

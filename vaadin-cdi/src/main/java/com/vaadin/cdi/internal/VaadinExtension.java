@@ -28,13 +28,34 @@ import javax.enterprise.inject.spi.Extension;
  */
 public class VaadinExtension implements Extension {
 
+    private UIScopedContext uiScopedContext;
+
     void afterBeanDiscovery(@Observes
     final AfterBeanDiscovery afterBeanDiscovery, final BeanManager beanManager) {
-        afterBeanDiscovery.addContext(new UIScopedContext(beanManager));
+        uiScopedContext = new UIScopedContext(beanManager);
+        afterBeanDiscovery.addContext(uiScopedContext);
         getLogger().info("UIScopedContext registered for Vaadin CDI");
     }
 
     private static Logger getLogger() {
         return Logger.getLogger(VaadinExtension.class.getCanonicalName());
+    }
+
+    private void sessionClose(@Observes VaadinSessionDestroyEvent event) {
+        if (uiScopedContext != null) {
+            uiScopedContext.dropSessionData(event);
+        }
+    }
+
+    private void uiClose(@Observes VaadinUICloseEvent event) {
+        if (uiScopedContext != null) {
+            uiScopedContext.queueUICloseEvent(event);
+        }
+    }
+
+    private void requestEnd(@Observes VaadinRequestEndEvent event) {
+        if (uiScopedContext != null) {
+            uiScopedContext.cleanup();
+        }
     }
 }

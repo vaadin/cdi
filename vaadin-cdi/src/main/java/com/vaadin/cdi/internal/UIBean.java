@@ -25,13 +25,25 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.PassivationCapable;
 
+import com.vaadin.ui.UI;
+
 public class UIBean implements Bean, PassivationCapable {
     private Bean delegate;
     private int uiId;
+    private long sessionId;
 
-    public UIBean(Bean delegate, int uiId) {
+    public UIBean(Bean delegate, long sessionId, int uiId) {
         this.delegate = delegate;
         this.uiId = uiId;
+        this.sessionId = sessionId;
+    }
+
+    public UIBean(Bean delegate, int uiId) {
+        this(delegate, CDIUtil.getSessionId(), uiId);
+    }
+
+    public UIBean(Bean delegate) {
+        this(delegate, UI.getCurrent().getUIId());
     }
 
     public int getUiId() {
@@ -104,6 +116,8 @@ public class UIBean implements Bean, PassivationCapable {
 
         if (uiId != uiBean.uiId)
             return false;
+        if (sessionId != uiBean.sessionId)
+            return false;
         if (!delegate.getBeanClass().equals(uiBean.delegate.getBeanClass()))
             return false;
 
@@ -112,7 +126,7 @@ public class UIBean implements Bean, PassivationCapable {
 
     @Override
     public int hashCode() {
-        int result = delegate.getBeanClass().hashCode();
+        int result = (int) sessionId;
         result = 31 * result + uiId;
         return result;
     }
@@ -127,6 +141,8 @@ public class UIBean implements Bean, PassivationCapable {
                 StringBuilder sb = new StringBuilder(
                         "com.vaadin.cdi.internal.UIBean#");
                 sb.append(uiId);
+                sb.append("#");
+                sb.append(sessionId);
                 sb.append("#");
                 sb.append(delegatePassivationID);
                 return sb.toString();

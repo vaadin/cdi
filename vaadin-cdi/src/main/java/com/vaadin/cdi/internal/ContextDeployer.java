@@ -30,7 +30,6 @@ import javax.servlet.ServletRegistration;
 import javax.servlet.annotation.WebListener;
 
 import com.vaadin.cdi.CDIUI;
-import com.vaadin.cdi.CDIUIProvider;
 import com.vaadin.cdi.URLMapping;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
@@ -233,7 +232,7 @@ public class ContextDeployer implements ServletContextListener {
     private void registerServletToContext(ServletContext context) {
         getLogger().info("Registering VaadinServlet with CDIUIProvider");
 
-        VaadinServlet vaadinServlet = new VaadinServlet();
+        VaadinServlet vaadinServlet = new VaadinCDIServlet();
 
         ServletRegistration.Dynamic registration = context.addServlet(
                 "VaadinServlet", vaadinServlet);
@@ -244,9 +243,6 @@ public class ContextDeployer implements ServletContextListener {
         getLogger().info(
                 "Mapping " + registration.getName() + " to " + urlMapping);
         registration.addMapping(urlMapping);
-
-        registration.setInitParameter("uiprovider",
-                CDIUIProvider.class.getCanonicalName());
     }
 
     @Override

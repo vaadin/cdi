@@ -26,21 +26,29 @@ import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 
 import com.vaadin.cdi.access.AccessControl;
 import com.vaadin.cdi.access.JaasAccessControl;
-import com.vaadin.cdi.internal.BeanStoreContainer;
 import com.vaadin.cdi.internal.ContextDeployer;
-import com.vaadin.cdi.internal.UIBeanStore;
+import com.vaadin.cdi.internal.UIBean;
 import com.vaadin.cdi.internal.UIScopedContext;
+import com.vaadin.cdi.internal.VaadinCDIServlet;
+import com.vaadin.cdi.internal.VaadinCDIServletService;
 import com.vaadin.cdi.internal.VaadinExtension;
+import com.vaadin.cdi.internal.VaadinRequestEndEvent;
+import com.vaadin.cdi.internal.VaadinSessionDestroyEvent;
+import com.vaadin.cdi.internal.VaadinUICloseEvent;
 
 /**
  */
 public class ArchiveProvider {
 
     public final static Class FRAMEWORK_CLASSES[] = new Class[] {
-            AccessControl.class, BeanStoreContainer.class, CDIUIProvider.class,
-            CDIViewProvider.class, ContextDeployer.class,
-            JaasAccessControl.class, UIBeanStore.class, UIScopedContext.class,
-            CDIUI.class };
+            AccessControl.class, CDIUIProvider.class, CDIViewProvider.class,
+            ContextDeployer.class, JaasAccessControl.class, UIBean.class,
+            UIScopedContext.class, CDIUI.class,
+            VaadinSessionDestroyEvent.class, VaadinUICloseEvent.class,
+            VaadinRequestEndEvent.class, VaadinCDIServlet.class,
+            VaadinCDIServletService.class,
+            VaadinCDIServletService.SessionListenerImpl.class,
+            CDIUIProvider.DetachListenerImpl.class };
 
     public static WebArchive createWebArchive(String warName, Class... classes) {
         WebArchive archive = base(warName);
@@ -55,7 +63,12 @@ public class ArchiveProvider {
                 .create(WebArchive.class, warName + ".war")
                 .addClasses(FRAMEWORK_CLASSES)
                 .addAsLibraries(
-                        pom.resolve("com.vaadin:vaadin-server:7.2.5").withTransitivity().asFile())
+                        pom.resolve("com.vaadin:vaadin-server:7.2.6")
+                                .withTransitivity().asFile())
+                .addAsLibraries(
+                        pom.resolve(
+                                "org.apache.deltaspike:deltaspike-core-impl:1.0.1")
+                                .withTransitivity().asFile())
                 .addAsWebInfResource(
                         new ByteArrayAsset(VaadinExtension.class.getName()
                                 .getBytes()),

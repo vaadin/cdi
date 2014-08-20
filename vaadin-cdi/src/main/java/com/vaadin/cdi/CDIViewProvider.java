@@ -35,6 +35,7 @@ import javax.inject.Inject;
 
 import com.vaadin.cdi.access.AccessControl;
 import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.UIBean;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.UI;
@@ -216,7 +217,10 @@ public class CDIViewProvider implements ViewProvider {
             getLogger().log(Level.FINER,
                     "Created new creational context for current view {0}",
                     currentViewCreationalContext);
-            View view = (View) beanManager.getReference(viewBean,
+
+            // UIBean by default uses the current session and active UI.
+            UIBean uiBean = new UIBean(viewBean);
+            View view = (View) beanManager.getReference(uiBean,
                     viewBean.getBeanClass(), currentViewCreationalContext);
             getLogger().log(Level.FINE, "Returning view instance {0}", view);
             return view;

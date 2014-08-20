@@ -25,12 +25,14 @@ import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 import com.vaadin.cdi.internal.AnnotationUtil;
+import com.vaadin.cdi.internal.CDIUtil;
 import com.vaadin.cdi.internal.Conventions;
 import com.vaadin.cdi.internal.UIBean;
+import com.vaadin.cdi.internal.VaadinUICloseEvent;
+import com.vaadin.server.ClientConnector.DetachEvent;
+import com.vaadin.server.ClientConnector.DetachListener;
 import com.vaadin.server.DefaultUIProvider;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
@@ -40,11 +42,37 @@ import com.vaadin.util.CurrentInstance;
 
 public class CDIUIProvider extends DefaultUIProvider implements Serializable {
 
-    private static final String[] commonBeanManagerLookups = {
-            "java:comp/BeanManager", "java:comp/env/BeanManager" };
+    public final class DetachListenerImpl implements DetachListener {
+        @Override
+        public void detach(DetachEvent event) {
+            Object source = event.getSource();
+            if (source instanceof UI) {
+
+                UI ui = (UI) source;
+                getBeanManager().fireEvent(
+                        new VaadinUICloseEvent(ui.getSession(), ui.getUIId()));
+            }
+
+        }
+    }
+
+    // TODO a better way to do this could be custom injection management in the
+    // Extension if feasible
+    private BeanManager beanManager = null;
+
+    public BeanManager getBeanManager() {
+        if (beanManager == null) {
+            getLogger()
+                    .fine("CDIUIProvider is not injected, using JNDI lookup");
+            // as the CDIUIProvider is not injected, need to use JNDI lookup
+            beanManager = CDIUtil.lookupBeanManager();
+        }
+        return beanManager;
+    }
 
     @Override
     public UI createInstance(UICreateEvent uiCreateEvent) {
+        getLogger().info("Creating new UI instance");
         Class<? extends UI> type = uiCreateEvent.getUIClass();
         int uiId = uiCreateEvent.getUiId();
         VaadinRequest request = uiCreateEvent.getRequest();
@@ -54,8 +82,10 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
             // Make the UIBean available to UIScopedContext when creating nested
             // injected objects
             CurrentInstance.set(UIBean.class, uiBean);
-            return (UI) getBeanManager().getReference(uiBean, type,
+            UI ui = (UI) getBeanManager().getReference(uiBean, type,
                     getBeanManager().createCreationalContext(bean));
+            ui.addDetachListener(new DetachListenerImpl());
+            return ui;
         } finally {
             CurrentInstance.set(UIBean.class, null);
         }
@@ -137,8 +167,9 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
     }
 
     private Bean<?> scanForBeans(Class<? extends UI> type, VaadinRequest request) {
+        BeanManager beanManager = getBeanManager();
         Bean<?> bean = null;
-        Set<Bean<?>> beans = getBeanManager().getBeans(type,
+        Set<Bean<?>> beans = beanManager.getBeans(type,
                 new AnnotationLiteral<Any>() {
                 });
 
@@ -192,40 +223,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         return "";
     }
 
-    // TODO a better way to do this could be custom injection management in the
-    // Extension if feasible
-    private BeanManager beanManager;
 
-    private BeanManager getBeanManager() {
-        if (beanManager == null) {
-            getLogger()
-                    .fine("CDIUIProvider is not injected, using JNDI lookup");
-            // as the CDIUIProvider is not injected, need to use JNDI lookup
-            try {
-                InitialContext initialContext = new InitialContext();
-                for (String beanManagerLookup : commonBeanManagerLookups) {
-                    try {
-                        beanManager = (BeanManager) initialContext
-                                .lookup(beanManagerLookup);
-                        getLogger().fine(
-                                "BeanManager found by '" + beanManagerLookup
-                                        + "'");
-                        break;
-                    } catch (NamingException e) {
-                        getLogger().fine(
-                                "BeanManager was not found by '"
-                                        + beanManagerLookup + "'");
-                    }
-                }
-            } catch (NamingException e) {
-                getLogger().warning("Could not instantiate InitialContext");
-            }
-            if (beanManager == null) {
-                getLogger().severe("Could not get BeanManager through JNDI");
-            }
-        }
-        return beanManager;
-    }
 
     private static Logger getLogger() {
         return Logger.getLogger(CDIUIProvider.class.getCanonicalName());

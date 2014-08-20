@@ -6,6 +6,8 @@ import static org.junit.Assert.assertThat;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.enterprise.inject.New;
+
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
@@ -20,6 +22,7 @@ import com.vaadin.cdi.uis.RootUI;
 abstract public class AbstractCDIIntegrationTest {
 
     @Drone
+    @New
     WebDriver firstWindow;
 
     @ArquillianResource

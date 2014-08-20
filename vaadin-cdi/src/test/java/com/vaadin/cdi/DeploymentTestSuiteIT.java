@@ -10,7 +10,8 @@ import com.vaadin.cdi.internal.ConventionsTest;
         CDIUIProviderTest.class, ConventionsTest.class,
         MultipleRootUIs.class, CDIIntegrationWithConflictingDeployment.class,
         CDIIntegrationWithConflictingUIPath.class,
-        CDIIntegrationWithDefaultDeployment.class, RootViewAtContextRoot.class })
+        CDIIntegrationWithDefaultDeployment.class, RootViewAtContextRoot.class,
+        MultipleAccessIsolation.class })
 public class DeploymentTestSuiteIT {
 
 }

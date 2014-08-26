@@ -95,6 +95,7 @@ public class ContextDeployer implements ServletContextListener {
      * same value
      */
     private void discoverUIMappingsFromAnnotations() {
+        Set<String> informativeMapping = new HashSet<String>();
         getLogger().info("Discovering Vaadin UIs...");
 
         Set<Bean<?>> uiBeans = AnnotationUtil.getUiBeans(beanManager);
@@ -123,6 +124,8 @@ public class ContextDeployer implements ServletContextListener {
             }
 
             configuredUIs.add(uiMapping);
+            informativeMapping.add("/" + uiMapping + " => "
+                    + uiBean.getBeanClass().getSimpleName());
         }
 
         int numberOfRootUIs = getNumberOfRootUIs();
@@ -135,8 +138,9 @@ public class ContextDeployer implements ServletContextListener {
                             + "this UI is accessible from context root of deployment");
         }
 
-        getLogger().info(
-                "Available Vaadin UIs for CDI deployment " + configuredUIs);
+        getLogger()
+                .info("Available Vaadin UIs for CDI deployment "
+                        + informativeMapping);
     }
 
     /**

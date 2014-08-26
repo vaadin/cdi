@@ -179,9 +179,16 @@ public class CDIViewProvider implements ViewProvider {
             List<Class<? extends UI>> uiClasses = Arrays.asList(viewAnnotation
                     .uis());
 
-            if (uiClasses.contains(UI.class)
-                    || uiClasses.contains(UI.getCurrent().getClass())) {
+            if (uiClasses.contains(UI.class)) {
                 viewBeans.add(bean);
+            } else {
+                Class<? extends UI> currentUI = UI.getCurrent().getClass();
+                for (Class<? extends UI> uiClass : uiClasses) {
+                    if (uiClass.isAssignableFrom(currentUI)) {
+                        viewBeans.add(bean);
+                        break;
+                    }
+                }
             }
         }
 

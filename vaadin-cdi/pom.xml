@@ -315,6 +315,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.13</version>
+                <configuration>
+                   <!-- Assertions must be disabled when @UIScoped is a @NormalScope
+                        otherwise the core framework will fail assertions that compare
+                        a direct reference to a proxy, such as in VaadinSession#removeUI
+                        and ConnectorTracker#cleanConnectorMap (#14508) -->
+                   <enableAssertions>false</enableAssertions>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>

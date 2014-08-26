@@ -21,12 +21,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.inject.Scope;
+import javax.enterprise.context.NormalScope;
 
 /**
  * The lifecycle of a UIScoped component is bound to a browser tab.
+ * 
+ * Note that classes that have this annotation should be aware that an internal
+ * 'this' reference might not equal an external reference to the object, as the
+ * object may be a proxy instead of the underlying object.
  */
-@Scope
+@NormalScope
 @Inherited
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)

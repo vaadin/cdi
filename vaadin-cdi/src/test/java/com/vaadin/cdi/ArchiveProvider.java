@@ -66,6 +66,9 @@ public class ArchiveProvider {
                         pom.resolve("com.vaadin:vaadin-server:7.2.6")
                                 .withTransitivity().asFile())
                 .addAsLibraries(
+                        pom.resolve("com.vaadin:vaadin-themes:7.2.6")
+                                .withTransitivity().asFile())
+                .addAsLibraries(
                         pom.resolve(
                                 "org.apache.deltaspike:deltaspike-core-impl:1.0.1")
                                 .withTransitivity().asFile())

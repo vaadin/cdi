@@ -254,6 +254,12 @@
             <version>${vaadin.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-themes</artifactId>
+            <version>${vaadin.version}</version>
+            <scope>test</scope>
+        </dependency>
 
         <!-- Java EE 6 API. Must be last to be overridden by tomee for the test
             phase -->

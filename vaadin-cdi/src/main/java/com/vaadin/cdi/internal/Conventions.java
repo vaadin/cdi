@@ -16,7 +16,7 @@
 
 package com.vaadin.cdi.internal;
 
-import com.google.common.base.CaseFormat;
+import com.google.gwt.thirdparty.guava.common.base.CaseFormat;
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.CDIView;
 

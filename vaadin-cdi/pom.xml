@@ -183,11 +183,6 @@
             <version>${vaadin.version}</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>15.0</version>
-        </dependency>
         
         <!-- DeltaSpike -->
         <dependency>

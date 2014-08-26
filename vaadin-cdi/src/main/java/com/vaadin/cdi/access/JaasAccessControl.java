@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
-import javax.enterprise.inject.Produces;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -83,7 +82,6 @@ public class JaasAccessControl extends AccessControl implements Serializable {
         getCurrentRequest().logout();
     }
 
-    @Produces
     @RequestScoped
     public static HttpServletRequest getCurrentRequest() {
         HttpServletRequest request = VaadinServletService

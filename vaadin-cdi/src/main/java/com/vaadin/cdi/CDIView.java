@@ -32,7 +32,7 @@ import com.vaadin.ui.UI;
 @Stereotype
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.TYPE })
-@UIScoped
+@ViewScoped
 public @interface CDIView {
 
     /**

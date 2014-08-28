@@ -15,7 +15,11 @@
  */
 package com.vaadin.cdi.internal;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.inject.Any;
@@ -24,7 +28,9 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 
 import com.vaadin.cdi.CDIUI;
+import com.vaadin.cdi.CDIView;
 import com.vaadin.cdi.URLMapping;
+import com.vaadin.navigator.View;
 import com.vaadin.ui.UI;
 
 /**
@@ -75,6 +81,34 @@ public class AnnotationUtil {
                 new AnnotationLiteral<Any>() {
                 });
         return uiBeans;
+    }
+
+    public static List<String> getCDIViewMappings(BeanManager beanManager) {
+        Set<Bean<?>> viewBeans = beanManager.getBeans(View.class,
+                new AnnotationLiteral<Any>() {
+                });
+        List<String> mappingList = new LinkedList<String>();
+        for (Bean<?> viewBean : viewBeans) {
+            Class<?> beanClass = viewBean.getBeanClass();
+            if (beanClass.getAnnotation(CDIView.class) == null) {
+                continue;
+            }
+            String mapping = Conventions.deriveMappingForView(viewBean
+                    .getBeanClass());
+            if (mapping != null) {
+                mappingList.add(mapping);
+            }
+        }
+        Collections.sort(mappingList, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                // descending string length order to get the longest view
+                // mappings first
+                return o1.length() - o2.length();
+            }
+        });
+
+        return mappingList;
     }
 
 }

@@ -23,14 +23,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
-import org.apache.deltaspike.core.util.context.AbstractContext;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 import com.vaadin.cdi.UIScoped;
@@ -40,17 +38,17 @@ import com.vaadin.ui.UI;
 /**
  * UIScopedContext is the context for @UIScoped beans.
  */
-public class UIScopedContext extends AbstractContext {
+public class UIScopedContext extends AbstractVaadinContext {
+
+    private TreeMap<Long, VaadinUICloseEvent> uiCloseQueue = new TreeMap<Long, VaadinUICloseEvent>();
+
+    private final Object cleanupLock = new Object();
 
     private static final int CLEANUP_DELAY = 5000;
-
-    private BeanManager beanManager;
-    private Map<VaadinSession, Map<Contextual, ContextualStorage>> storageMap = new ConcurrentHashMap<VaadinSession, Map<Contextual, ContextualStorage>>();
 
     public UIScopedContext(final BeanManager beanManager) {
         super(beanManager);
         getLogger().fine("Instantiating UIScoped context");
-        this.beanManager = beanManager;
     }
 
     @Override
@@ -59,13 +57,8 @@ public class UIScopedContext extends AbstractContext {
     }
 
     @Override
-    public boolean isActive() {
-        return true;
-    }
-
-    @Override
-    protected ContextualStorage getContextualStorage(Contextual<?> contextual,
-            boolean createIfNotExist) {
+    protected synchronized ContextualStorage getContextualStorage(
+            Contextual<?> contextual, boolean createIfNotExist) {
         Map<Contextual, ContextualStorage> map = getStorageMapForSession();
         if (map == null) {
             return null;
@@ -75,15 +68,14 @@ public class UIScopedContext extends AbstractContext {
         // that we can clean up its storage once the UI has been closed.
         if (!(contextual instanceof UIBean)
                 && contextual instanceof Bean
-                && !UI.class
-                        .isAssignableFrom(((Bean) contextual).getBeanClass())
-                && UI.getCurrent() != null) {
+                && !UI.class.isAssignableFrom(((Bean) contextual)
+                        .getBeanClass()) && UI.getCurrent() != null) {
             contextual = new UIBean((Bean) contextual);
         }
         if (map.containsKey(contextual)) {
             return map.get(contextual);
         } else if (createIfNotExist) {
-            ContextualStorage storage = new ContextualStorage(beanManager,
+            ContextualStorage storage = new ContextualStorage(getBeanManager(),
                     true, true);
             map.put(contextual, storage);
             return storage;
@@ -93,37 +85,22 @@ public class UIScopedContext extends AbstractContext {
 
     }
 
-    private Map<Contextual, ContextualStorage> getStorageMapForSession() {
-        VaadinSession session = VaadinSession.getCurrent();
-        if (session == null || session.isClosing()) {
-            return null;
-        }
-        if (storageMap.containsKey(session)) {
-            return storageMap.get(session);
-        } else {
-            Map<Contextual, ContextualStorage> map = new ConcurrentHashMap<Contextual, ContextualStorage>();
-            storageMap.put(session, map);
-            return map;
-        }
-    }
-
-    void dropSessionData(VaadinSessionDestroyEvent event) {
-        VaadinSession session = event.getSession();
-        getLogger().fine("Dropping session data for session: " + session);
-        Map<Contextual, ContextualStorage> map = storageMap.get(session);
-        if (map != null) {
-            for (Contextual contextual : new HashSet<Contextual>(map.keySet())) {
-                destroy(contextual);
-            }
-            storageMap.remove(session);
+    void queueUICloseEvent(VaadinUICloseEvent event) {
+        synchronized (cleanupLock) {
+            // We introduce a cleanup delay because the UI gets referred to
+            // later in the core cleanup process. If the UI is proxied this will
+            // cause a new UI to be initialized in some CDI implementations (for
+            // example Apache OpenWebBeans 1.2.1)
+            long closeTime = System.currentTimeMillis() + CLEANUP_DELAY;
+            while (uiCloseQueue.get(closeTime) != null)
+                closeTime++;
+            uiCloseQueue.put(closeTime, event);
         }
     }
 
-    private void dropUIData(VaadinUICloseEvent event) {
-        VaadinSession session = event.getSession();
-        int uiId = event.getUiId();
+    private void dropUIData(VaadinSession session, int uiId) {
         getLogger().fine("Dropping UI data for UI: " + uiId);
-        Map<Contextual, ContextualStorage> map = storageMap.get(session);
+        Map<Contextual, ContextualStorage> map = getStorageMapForSession(session);
         if (map != null) {
             for (Contextual contextual : new HashSet<Contextual>(map.keySet())) {
                 if (contextual instanceof UIBean
@@ -135,19 +112,6 @@ public class UIScopedContext extends AbstractContext {
         }
     }
 
-    private TreeMap<Long, VaadinUICloseEvent> uiCloseQueue = new TreeMap<Long, VaadinUICloseEvent>();
-
-    void queueUICloseEvent(VaadinUICloseEvent event) {
-        // We introduce a cleanup delay because the UI gets referred to later in
-        // the core cleanup process. If the UI is proxied this will cause a new
-        // UI to be initialized in some CDI implementations
-        // (for example Apache OpenWebBeans 1.2.1)
-        long closeTime = System.currentTimeMillis() + CLEANUP_DELAY;
-        while (uiCloseQueue.get(closeTime) != null)
-            closeTime++;
-        uiCloseQueue.put(closeTime, event);
-    }
-
     void cleanup() {
         // Remove the UI's that have been previously queued for closing. We need
         // to protect the UI context from deletion long enough that the core
@@ -156,20 +120,26 @@ public class UIScopedContext extends AbstractContext {
         // results of the latest query have been sent. We do it this way to
         // avoid using a background thread and to maintain cross-implementation
         // compatibility.
-        long currentTime = System.currentTimeMillis();
-        SortedMap<Long, VaadinUICloseEvent> subMap = uiCloseQueue
-                .headMap(currentTime);
-        if (!subMap.isEmpty()) {
-            Collection<Entry<Long, VaadinUICloseEvent>> entries = new ArrayList<Map.Entry<Long, VaadinUICloseEvent>>(
-                    subMap.entrySet());
-            for (Entry<Long, VaadinUICloseEvent> entry : entries) {
-                dropUIData(entry.getValue());
-                uiCloseQueue.remove(entry.getKey());
+        synchronized (cleanupLock) {
+            long currentTime = System.currentTimeMillis();
+            SortedMap<Long, VaadinUICloseEvent> subMap = uiCloseQueue
+                    .headMap(currentTime);
+            if (!subMap.isEmpty()) {
+                Collection<Entry<Long, VaadinUICloseEvent>> entries = new ArrayList<Map.Entry<Long, VaadinUICloseEvent>>(
+                        subMap.entrySet());
+                for (Entry<Long, VaadinUICloseEvent> entry : entries) {
+                    VaadinUICloseEvent event = entry.getValue();
+                    VaadinSession session = event.getSession();
+                    int uiId = event.getUiId();
+                    dropUIData(session, uiId);
+                    uiCloseQueue.remove(entry.getKey());
+                }
             }
         }
     }
 
-    private static Logger getLogger() {
+    @Override
+    protected Logger getLogger() {
         return Logger.getLogger(UIScopedContext.class.getCanonicalName());
     }
 }

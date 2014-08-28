@@ -42,14 +42,20 @@ import com.vaadin.util.CurrentInstance;
 
 public class CDIUIProvider extends DefaultUIProvider implements Serializable {
 
-    public final class DetachListenerImpl implements DetachListener {
+    public static final class DetachListenerImpl implements DetachListener {
+        private BeanManager beanManager;
+
+        public DetachListenerImpl(BeanManager beanManager) {
+            this.beanManager = beanManager;
+        }
+
         @Override
         public void detach(DetachEvent event) {
             Object source = event.getSource();
             if (source instanceof UI) {
 
                 UI ui = (UI) source;
-                getBeanManager().fireEvent(
+                beanManager.fireEvent(
                         new VaadinUICloseEvent(ui.getSession(), ui.getUIId()));
             }
 
@@ -72,7 +78,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
 
     @Override
     public UI createInstance(UICreateEvent uiCreateEvent) {
-        getLogger().info("Creating new UI instance");
+        getLogger().fine("Creating new UI instance");
         Class<? extends UI> type = uiCreateEvent.getUIClass();
         int uiId = uiCreateEvent.getUiId();
         VaadinRequest request = uiCreateEvent.getRequest();
@@ -84,7 +90,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
             CurrentInstance.set(UIBean.class, uiBean);
             UI ui = (UI) getBeanManager().getReference(uiBean, type,
                     getBeanManager().createCreationalContext(bean));
-            ui.addDetachListener(new DetachListenerImpl());
+            ui.addDetachListener(new DetachListenerImpl(getBeanManager()));
             return ui;
         } finally {
             CurrentInstance.set(UIBean.class, null);

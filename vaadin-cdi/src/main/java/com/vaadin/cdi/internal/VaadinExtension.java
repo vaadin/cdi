@@ -23,18 +23,25 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.VaadinSession;
+
 /**
  * CDI Extension needed to register the @CDIUI scope to the runtime.
  */
 public class VaadinExtension implements Extension {
 
     private UIScopedContext uiScopedContext;
+    private ViewScopedContext viewScopedContext;
 
     void afterBeanDiscovery(@Observes
     final AfterBeanDiscovery afterBeanDiscovery, final BeanManager beanManager) {
         uiScopedContext = new UIScopedContext(beanManager);
         afterBeanDiscovery.addContext(uiScopedContext);
         getLogger().info("UIScopedContext registered for Vaadin CDI");
+        viewScopedContext = new ViewScopedContext(beanManager);
+        afterBeanDiscovery.addContext(viewScopedContext);
+        getLogger().info("ViewScopedContext registered for Vaadin CDI");
     }
 
     private static Logger getLogger() {
@@ -45,17 +52,34 @@ public class VaadinExtension implements Extension {
         if (uiScopedContext != null) {
             uiScopedContext.dropSessionData(event);
         }
+        if (viewScopedContext != null) {
+            viewScopedContext.dropSessionData(event);
+        }
     }
 
     private void uiClose(@Observes VaadinUICloseEvent event) {
         if (uiScopedContext != null) {
             uiScopedContext.queueUICloseEvent(event);
         }
+        if (viewScopedContext != null) {
+            VaadinSession session = event.getSession();
+            int uiId = event.getUiId();
+            viewScopedContext.dropUIData(session, uiId);
+        }
     }
 
     private void requestEnd(@Observes VaadinRequestEndEvent event) {
         if (uiScopedContext != null) {
             uiScopedContext.cleanup();
+        }
+    }
+
+    private void navigationChanged(@Observes ViewChangeEvent event) {
+        if (viewScopedContext != null) {
+            viewScopedContext
+                    .dropExpiredViewData(VaadinSession.getCurrent(), event
+                            .getNavigator().getUI().getUIId(),
+                            event.getViewName());
         }
     }
 }

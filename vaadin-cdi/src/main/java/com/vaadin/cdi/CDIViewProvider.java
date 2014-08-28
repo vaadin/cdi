@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.spi.CreationalContext;
@@ -35,8 +36,10 @@ import javax.inject.Inject;
 
 import com.vaadin.cdi.access.AccessControl;
 import com.vaadin.cdi.internal.Conventions;
-import com.vaadin.cdi.internal.UIBean;
+import com.vaadin.cdi.internal.ViewBean;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.UI;
 
@@ -47,19 +50,49 @@ public class CDIViewProvider implements ViewProvider {
 
     @Inject
     private BeanManager beanManager;
+
     @Inject
     private AccessControl accessControl;
     private transient CreationalContext<?> currentViewCreationalContext;
 
+    public final static class ViewChangeListenerImpl implements
+            ViewChangeListener {
+
+        private BeanManager beanManager;
+
+        public ViewChangeListenerImpl(BeanManager beanManager) {
+            this.beanManager = beanManager;
+        }
+
+        @Override
+        public boolean beforeViewChange(ViewChangeEvent event) {
+            return true;
+        }
+
+        @Override
+        public void afterViewChange(ViewChangeEvent event) {
+            getLogger().fine(
+                    "Changing view from " + event.getOldView() + " to "
+                            + event.getNewView());
+            beanManager.fireEvent(event);
+        }
+    }
+
+    private ViewChangeListener viewChangeListener;
+
+    @PostConstruct
+    private void postConstruct() {
+        viewChangeListener = new ViewChangeListenerImpl(beanManager);
+    }
+
     @Override
     public String getViewName(String viewAndParameters) {
-        getLogger().log(Level.INFO,
+        getLogger().log(Level.FINE,
                 "Attempting to retrieve view name from string \"{0}\"",
                 viewAndParameters);
 
         String name = parseViewName(viewAndParameters);
-
-        Bean<?> viewBean = getViewBean(name);
+        ViewBean viewBean = getViewBean(name);
 
         if (viewBean == null) {
             return null;
@@ -109,7 +142,7 @@ public class CDIViewProvider implements ViewProvider {
         return true;
     }
 
-    private Bean<?> getViewBean(String viewName) {
+    private ViewBean getViewBean(String viewName) {
         getLogger().log(Level.FINE, "Looking for view with name \"{0}\"",
                 viewName);
         Set<Bean<?>> matching = new HashSet<Bean<?>>();
@@ -162,7 +195,8 @@ public class CDIViewProvider implements ViewProvider {
                     "Multiple views mapped with same name for same UI");
         }
 
-        return viewBeansForThisProvider.iterator().next();
+        return new ViewBean(viewBeansForThisProvider.iterator().next(),
+                viewName);
     }
 
     private Set<Bean<?>> getViewBeansForCurrentUI(Set<Bean<?>> beans) {
@@ -200,8 +234,7 @@ public class CDIViewProvider implements ViewProvider {
         getLogger().log(Level.FINE,
                 "Attempting to retrieve view with name \"{0}\"",
                 viewName);
-        Bean<?> viewBean = getViewBean(viewName);
-
+        ViewBean viewBean = getViewBean(viewName);
         if (viewBean != null) {
             if (!isUserHavingAccessToView(viewBean)) {
                 getLogger().log(
@@ -225,11 +258,21 @@ public class CDIViewProvider implements ViewProvider {
                     "Created new creational context for current view {0}",
                     currentViewCreationalContext);
 
-            // UIBean by default uses the current session and active UI.
-            UIBean uiBean = new UIBean(viewBean);
-            View view = (View) beanManager.getReference(uiBean,
+            View view = (View) beanManager.getReference(viewBean,
                     viewBean.getBeanClass(), currentViewCreationalContext);
-            getLogger().log(Level.FINE, "Returning view instance {0}", view);
+            getLogger().log(Level.FINE, "Returning view instance {0}", view.toString());
+
+            UI currentUI = UI.getCurrent();
+            if (currentUI != null) {
+                Navigator navigator = currentUI.getNavigator();
+                if (navigator != null) {
+                    // This is a fairly dumb way of making sure that there is
+                    // one and only one CDI viewChangeListener for this
+                    // Navigator.
+                    navigator.removeViewChangeListener(viewChangeListener);
+                    navigator.addViewChangeListener(viewChangeListener);
+                }
+            }
             return view;
         }
 

@@ -28,9 +28,9 @@ import javax.enterprise.inject.spi.PassivationCapable;
 import com.vaadin.ui.UI;
 
 public class UIBean implements Bean, PassivationCapable {
-    private Bean delegate;
-    private int uiId;
-    private long sessionId;
+    protected Bean delegate;
+    protected int uiId;
+    protected long sessionId;
 
     public UIBean(Bean delegate, long sessionId, int uiId) {
         this.delegate = delegate;

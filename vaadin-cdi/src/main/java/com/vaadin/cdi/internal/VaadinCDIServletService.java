@@ -50,6 +50,7 @@ public class VaadinCDIServletService extends VaadinServletService {
                     event.getSession());
             getBeanManager().fireEvent(sessionDestroyEvent);
         }
+
     }
 
     public VaadinCDIServletService(VaadinServlet servlet,

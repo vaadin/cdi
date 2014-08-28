@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import com.vaadin.cdi.CDIView;
 import com.vaadin.cdi.example.util.CounterService;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -31,7 +32,11 @@ public class RootView extends AbstractView {
                 + counterService.get());
         countLabel.setSizeUndefined();
         layout.addComponent(countLabel);
-
+        
+        final Label infoLabel = new Label("Session: " + VaadinSession.getCurrent() +",UI: " + getUI().getUIId() + ", View: " + this);
+        infoLabel.setSizeUndefined();
+        layout.addComponent(infoLabel);
+        
         Button incrementButton = new Button("Increment UI scoped");
         layout.addComponent(incrementButton);
         incrementButton.addClickListener(new ClickListener() {

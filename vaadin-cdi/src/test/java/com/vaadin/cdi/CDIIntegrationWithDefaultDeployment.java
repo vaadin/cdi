@@ -37,6 +37,7 @@ import org.openqa.selenium.NoSuchElementException;
 import com.vaadin.cdi.uis.Boundary;
 import com.vaadin.cdi.uis.DanglingView;
 import com.vaadin.cdi.uis.DependentCDIEventListener;
+import com.vaadin.cdi.uis.EnterpriseLabel;
 import com.vaadin.cdi.uis.EnterpriseUI;
 import com.vaadin.cdi.uis.InstrumentedInterceptor;
 import com.vaadin.cdi.uis.InstrumentedUI;
@@ -96,8 +97,9 @@ public class CDIIntegrationWithDefaultDeployment extends
                 InstrumentedInterceptor.class, InterceptedBean.class,
                 RestrictedView.class, PlainUI.class,
                 ParameterizedNavigationUI.class, EnterpriseUI.class,
-                Boundary.class, SubUI.class, PlainAlternativeUI.class,
-                NoViewProviderNavigationUI.class, ConventionalView.class);
+                Boundary.class, EnterpriseLabel.class, SubUI.class,
+                PlainAlternativeUI.class, NoViewProviderNavigationUI.class,
+                ConventionalView.class);
     }
 
     @Test
@@ -294,6 +296,9 @@ public class CDIIntegrationWithDefaultDeployment extends
         waitForValue(LABEL, "Echo: 1");
         final String labelText = firstWindow.findElement(LABEL).getText();
         assertThat(labelText, startsWith("Echo:"));
+        final String labelText2 = firstWindow.findElement(
+                By.id(EnterpriseLabel.ENTERPRISE_LABEL)).getText();
+        assertThat(labelText2, startsWith("Echo:"));
         assertThat(EnterpriseUI.getNumberOfInstances(), is(1));
         assertDefaultRootNotInstantiated();
     }

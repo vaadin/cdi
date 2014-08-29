@@ -36,6 +36,9 @@ public class EnterpriseUI extends UI {
 
     @Inject
     Boundary boundary;
+    
+    @Inject
+    private EnterpriseLabel injectedLabel;
 
     @PostConstruct
     public void initialize() {
@@ -64,6 +67,7 @@ public class EnterpriseUI extends UI {
 
         layout.addComponent(label);
         layout.addComponent(button);
+        layout.addComponent(injectedLabel);
         setContent(layout);
     }
 

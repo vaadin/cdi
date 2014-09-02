@@ -73,17 +73,21 @@ public class ContextDeployer implements ServletContextListener {
                 .getServletRegistrations().values()) {
             String servletClassName = servletRegistration.getClassName();
 
-            try {
-                Class<?> servletClass = context.getClassLoader().loadClass(
-                        servletClassName);
+            // For preliminary registrations / JSP servlets, class name is null.
+            // These should not prevent registration of the VaadinCDIServlet.
+            if (null != servletClassName) {
+                try {
+                    Class<?> servletClass = context.getClassLoader().loadClass(
+                            servletClassName);
 
-                if (VaadinServlet.class.isAssignableFrom(servletClass)) {
-                    return true;
+                    if (VaadinServlet.class.isAssignableFrom(servletClass)) {
+                        return true;
+                    }
+
+                } catch (ClassNotFoundException e) {
+                    throw new InconsistentDeploymentException(
+                            InconsistentDeploymentException.ID.CLASS_NOT_FOUND, e);
                 }
-
-            } catch (ClassNotFoundException e) {
-                throw new InconsistentDeploymentException(
-                        InconsistentDeploymentException.ID.CLASS_NOT_FOUND, e);
             }
         }
 

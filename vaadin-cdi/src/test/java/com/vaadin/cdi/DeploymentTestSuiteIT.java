@@ -11,7 +11,7 @@ import com.vaadin.cdi.internal.ConventionsTest;
         MultipleRootUIs.class, CDIIntegrationWithConflictingDeployment.class,
         CDIIntegrationWithConflictingUIPath.class,
         CDIIntegrationWithDefaultDeployment.class, RootViewAtContextRoot.class,
-        MultipleAccessIsolation.class })
+        MultipleAccessIsolation.class, ScopedInstances.class })
 public class DeploymentTestSuiteIT {
 
 }

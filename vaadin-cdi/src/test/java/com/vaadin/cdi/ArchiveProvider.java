@@ -26,6 +26,7 @@ import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 
 import com.vaadin.cdi.access.AccessControl;
 import com.vaadin.cdi.access.JaasAccessControl;
+import com.vaadin.cdi.internal.AbstractVaadinContext;
 import com.vaadin.cdi.internal.ContextDeployer;
 import com.vaadin.cdi.internal.UIBean;
 import com.vaadin.cdi.internal.UIScopedContext;
@@ -35,6 +36,8 @@ import com.vaadin.cdi.internal.VaadinExtension;
 import com.vaadin.cdi.internal.VaadinRequestEndEvent;
 import com.vaadin.cdi.internal.VaadinSessionDestroyEvent;
 import com.vaadin.cdi.internal.VaadinUICloseEvent;
+import com.vaadin.cdi.internal.VaadinViewChangeEvent;
+import com.vaadin.cdi.internal.VaadinViewCreationEvent;
 import com.vaadin.cdi.internal.ViewBean;
 import com.vaadin.cdi.internal.ViewScopedContext;
 
@@ -48,6 +51,8 @@ public class ArchiveProvider {
             UIScopedContext.class, CDIUI.class, ViewBean.class,
             ViewScopedContext.class, CDIView.class,
             VaadinSessionDestroyEvent.class, VaadinUICloseEvent.class,
+            VaadinViewChangeEvent.class, VaadinViewCreationEvent.class,
+            AbstractVaadinContext.class,
             VaadinRequestEndEvent.class, VaadinCDIServlet.class,
             VaadinCDIServletService.class,
             VaadinCDIServletService.SessionListenerImpl.class,

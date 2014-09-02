@@ -23,7 +23,6 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.VaadinSession;
 
 /**
@@ -62,24 +61,32 @@ public class VaadinExtension implements Extension {
             uiScopedContext.queueUICloseEvent(event);
         }
         if (viewScopedContext != null) {
-            VaadinSession session = event.getSession();
-            int uiId = event.getUiId();
-            viewScopedContext.dropUIData(session, uiId);
+            viewScopedContext.queueUICloseEvent(event);
         }
     }
 
     private void requestEnd(@Observes VaadinRequestEndEvent event) {
         if (uiScopedContext != null) {
-            uiScopedContext.cleanup();
+            uiScopedContext.uiCloseCleanup();
+        }
+        if (viewScopedContext != null) {
+            viewScopedContext.uiCloseCleanup();
+            viewScopedContext.clearPendingViewChange();
         }
     }
 
-    private void navigationChanged(@Observes ViewChangeEvent event) {
+    private void navigationChanged(@Observes VaadinViewChangeEvent event) {
         if (viewScopedContext != null) {
-            viewScopedContext
-                    .dropExpiredViewData(VaadinSession.getCurrent(), event
-                            .getNavigator().getUI().getUIId(),
-                            event.getViewName());
+            VaadinSession session = event.getSession();
+            int uiId = event.getUiId();
+            viewScopedContext.viewChangeCleanup(session, uiId);
+        }
+    }
+    
+    private void navigationStarting(@Observes VaadinViewCreationEvent event) {
+        if (viewScopedContext != null) {
+            viewScopedContext.prepareForViewChange(VaadinSession.getCurrent(),
+                    event.getUIId(), event.getViewMapping());
         }
     }
 }

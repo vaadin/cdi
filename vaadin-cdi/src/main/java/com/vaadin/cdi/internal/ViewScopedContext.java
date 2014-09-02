@@ -17,7 +17,6 @@ package com.vaadin.cdi.internal;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,7 +29,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 import com.vaadin.cdi.ViewScoped;
-import com.vaadin.navigator.Navigator;
+import com.vaadin.cdi.internal.AbstractVaadinContext.SessionData.UIData;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 
@@ -39,13 +38,6 @@ import com.vaadin.ui.UI;
  */
 
 public class ViewScopedContext extends AbstractVaadinContext {
-
-    // When the user is injecting a bean with the @ViewScoped annotation we end
-    // up having something other than a ViewBean as our contextual. We proceed
-    // to give our best guess as to what the correct ViewBean is, but we then
-    // need to keep a reference to it so that we the mapping remains consistent.
-    // We store the relationships in this map.
-    private Map<Contextual<?>, ViewBean> transientBeanMap = new HashMap<Contextual<?>, ViewBean>();
 
     private List<String> viewMappings;
 
@@ -64,45 +56,45 @@ public class ViewScopedContext extends AbstractVaadinContext {
             Contextual<?> contextual, boolean createIfNotExist) {
         getLogger().fine("Retrieving contextual storage for " + contextual);
 
-        Map<Contextual, ContextualStorage> map = getStorageMapForSession();
-        if (map == null) {
-            return null;
+        SessionData sessionData = getSessionData(createIfNotExist);
+        if (sessionData == null) {
+            if (createIfNotExist) {
+                throw new IllegalStateException(
+                        "Session data not recoverable for " + contextual);
+            } else {
+                // noop
+                return null;
+            }
         }
 
+        // The contextual is not a ViewBean if we're injecting something other
+        // than a CDIView with the @ViewScoped annotation. In those cases we'll
+        // look up the currently active view for the current UI. Due to
+        // technical limitations of the core framework this involves some
+        // guesswork during view transition.
         if (!(contextual instanceof ViewBean)) {
-            if (transientBeanMap.containsKey(contextual)) {
-                contextual = transientBeanMap.get(contextual);
-            } else {
-                if (contextual instanceof Bean) {
-                    Navigator navigator = UI.getCurrent().getNavigator();
-                    String viewName = null;
-                    if (navigator == null) {
-                        viewName = "";
-                    } else {
-                        String state = navigator.getState();
-                        // Look for the longest viewname from a sorted list.
-                        // Navigator uses the same logic to find the view to
-                        // use.
-                        // We cannot rely on view change events as we need to
-                        // get the exact navigation state even between the pre-
-                        // and postnavigation events, and we can't reliably
-                        // parse the navigationstate without knowing what views
-                        // have been registered.
-                        for (String mapping : getViewMappings()) {
-                            if (state.startsWith(mapping)) {
-                                viewName = mapping;
-                                break;
-                            }
-                        }
-                    }
-                    ViewBean bean = new ViewBean((Bean) contextual, viewName);
-                    transientBeanMap.put(contextual, bean);
-                    contextual = bean;
-                } else {
-                    throw new IllegalStateException(
-                            "Invalid contextual get request: " + contextual);
+
+            if (contextual instanceof Bean) {
+                UIData uiData = sessionData.getUIData(
+                        UI.getCurrent().getUIId(), true);
+                String viewName = uiData.getProbableInjectionPointView();
+                if (viewName == null) {
+                    getLogger().warning("Could not determine active View");
                 }
+
+                contextual = new ViewBean((Bean) contextual, viewName);
+
+            } else {
+                throw new IllegalStateException(
+                        "Invalid contextual get request: " + contextual);
             }
+
+        }
+
+        Map<Contextual<?>, ContextualStorage> map = sessionData.getStorageMap();
+
+        if (map == null) {
+            return null;
         }
 
         if (map.containsKey(contextual)) {
@@ -118,39 +110,27 @@ public class ViewScopedContext extends AbstractVaadinContext {
 
     }
 
-    synchronized void dropUIData(VaadinSession session, int uiId) {
-        for (Entry<Contextual<?>, ViewBean> entry : new ArrayList<Entry<Contextual<?>, ViewBean>>(
-                transientBeanMap.entrySet())) {
-            if (entry.getValue().uiId == uiId) {
-                transientBeanMap.remove(entry.getKey());
-            }
-        }
-
-        Map<Contextual, ContextualStorage> map = getStorageMapForSession(session);
-        for (Entry<Contextual, ContextualStorage> entry : new ArrayList<Entry<Contextual, ContextualStorage>>(
-                map.entrySet())) {
-            ViewBean contextual = (ViewBean) entry.getKey();
-            if (contextual.uiId == uiId) {
-                map.remove(contextual);
-                destroy(contextual);
-            }
-        }
+    synchronized void prepareForViewChange(VaadinSession session, int uiId,
+            String activeViewName) {
+        getLogger().fine("Setting next view to " + activeViewName);
+        SessionData sessionData = getSessionData(session, true);
+        UIData uiData = sessionData.getUIData(uiId, true);
+        uiData.setOpeningView(activeViewName);
     }
 
-    synchronized void dropExpiredViewData(VaadinSession session, int uiId,
-            String activeViewName) {
-        getLogger().fine("Setting active view to " + activeViewName);
+    synchronized void viewChangeCleanup(VaadinSession session, int uiId) {
 
-        for (Entry<Contextual<?>, ViewBean> entry : new ArrayList<Entry<Contextual<?>, ViewBean>>(
-                transientBeanMap.entrySet())) {
-            if (entry.getValue().uiId == uiId
-                    && !entry.getValue().viewIdentifier.equals(activeViewName)) {
-                transientBeanMap.remove(entry.getKey());
-            }
+        SessionData sessionData = getSessionData(session, true);
+        UIData uiData = sessionData.getUIData(uiId, true);
+        if (uiData == null) {
+            return;
         }
 
-        Map<Contextual, ContextualStorage> map = getStorageMapForSession(session);
-        for (Entry<Contextual, ContextualStorage> entry : new ArrayList<Entry<Contextual, ContextualStorage>>(
+        uiData.validateTransition();
+        String activeViewName = uiData.getActiveView();
+
+        Map<Contextual<?>, ContextualStorage> map = sessionData.getStorageMap();
+        for (Entry<Contextual<?>, ContextualStorage> entry : new ArrayList<Entry<Contextual<?>, ContextualStorage>>(
                 map.entrySet())) {
             ViewBean contextual = (ViewBean) entry.getKey();
             if (contextual.uiId == uiId
@@ -159,6 +139,19 @@ public class ViewScopedContext extends AbstractVaadinContext {
                         "dropping " + contextual + " : " + entry.getValue());
                 map.remove(contextual);
                 destroy(contextual);
+            }
+        }
+    }
+
+    synchronized void clearPendingViewChange() {
+        SessionData sessionData = getSessionData(false);
+        if (sessionData != null) {
+            UI currentUI = UI.getCurrent();
+            if (currentUI != null) {
+                UIData uiData = sessionData.getUIData(currentUI.getUIId());
+                if (uiData != null) {
+                    uiData.clearPendingViewChange();
+                }
             }
         }
     }

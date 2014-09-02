@@ -36,11 +36,14 @@ import javax.inject.Inject;
 
 import com.vaadin.cdi.access.AccessControl;
 import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.VaadinViewChangeEvent;
+import com.vaadin.cdi.internal.VaadinViewCreationEvent;
 import com.vaadin.cdi.internal.ViewBean;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewProvider;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 
 public class CDIViewProvider implements ViewProvider {
@@ -74,7 +77,11 @@ public class CDIViewProvider implements ViewProvider {
             getLogger().fine(
                     "Changing view from " + event.getOldView() + " to "
                             + event.getNewView());
-            beanManager.fireEvent(event);
+            VaadinSession session = VaadinSession.getCurrent();
+            int uiId = event.getNavigator().getUI().getUIId();
+            String viewName = event.getViewName();
+            beanManager.fireEvent(new VaadinViewChangeEvent(session, uiId,
+                    viewName));
         }
     }
 
@@ -258,11 +265,15 @@ public class CDIViewProvider implements ViewProvider {
                     "Created new creational context for current view {0}",
                     currentViewCreationalContext);
 
+            UI currentUI = UI.getCurrent();
+            beanManager.fireEvent(new VaadinViewCreationEvent(currentUI
+                    .getUIId(), viewName));
+
             View view = (View) beanManager.getReference(viewBean,
                     viewBean.getBeanClass(), currentViewCreationalContext);
             getLogger().log(Level.FINE, "Returning view instance {0}", view.toString());
 
-            UI currentUI = UI.getCurrent();
+
             if (currentUI != null) {
                 Navigator navigator = currentUI.getNavigator();
                 if (navigator != null) {

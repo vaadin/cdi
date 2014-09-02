@@ -15,8 +15,12 @@
  */
 package com.vaadin.cdi.internal;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -26,6 +30,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import org.apache.deltaspike.core.util.context.AbstractContext;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
 
+import com.vaadin.cdi.internal.AbstractVaadinContext.SessionData.UIData;
 import com.vaadin.server.VaadinSession;
 
 /**
@@ -33,8 +38,100 @@ import com.vaadin.server.VaadinSession;
  */
 public abstract class AbstractVaadinContext extends AbstractContext {
 
+    private TreeMap<Long, VaadinUICloseEvent> uiCloseQueue = new TreeMap<Long, VaadinUICloseEvent>();
+
+    private final Object cleanupLock = new Object();
+
+    private static final int CLEANUP_DELAY = 5000;
+
     private BeanManager beanManager;
-    private Map<VaadinSession, Map<Contextual, ContextualStorage>> storageMap = new ConcurrentHashMap<VaadinSession, Map<Contextual, ContextualStorage>>();
+    private Map<VaadinSession, SessionData> storageMap = new ConcurrentHashMap<VaadinSession, SessionData>();
+
+    protected static class SessionData {
+
+        protected static class UIData {
+
+            private int uiId; 
+
+            private String activeView = null;
+            private String openingView = null;
+
+            public UIData(int uiId) {
+                this.uiId = uiId;
+            }
+            
+            private int getUiId() {
+                return uiId;
+            }
+
+            public String getActiveView() {
+                return activeView;
+            }
+
+            public String getOpeningView() {
+                return openingView;
+            }
+
+            public String getProbableInjectionPointView() {
+                if (openingView != null) {
+                    return openingView;
+                }
+                if (activeView != null) {
+                    return activeView;
+                }
+                throw new IllegalStateException(
+                        "Can't find proper view for @ViewScoped bean, no views are active for this ui.");
+            }
+
+            public void setOpeningView(String openingView) {
+                this.openingView = openingView;
+            }
+
+            public void validateTransition() {
+                this.activeView = this.openingView;
+                this.openingView = null;
+            }
+
+            public void clearPendingViewChange() {
+                this.openingView = null;
+            }
+
+
+
+        }
+
+        private Map<Contextual<?>, ContextualStorage> storageMap = new ConcurrentHashMap<Contextual<?>, ContextualStorage>();
+
+        private Map<Integer, UIData> uiDataMap = new ConcurrentHashMap<Integer, UIData>();
+
+        public SessionData() {
+        }
+
+        public UIData getUIData(int uiId) {
+            return getUIData(uiId, false);
+        }
+
+        public UIData getUIData(int uiId, boolean createIfNotExist) {
+            if (uiDataMap.containsKey(uiId)) {
+                return uiDataMap.get(uiId);
+            } else if (createIfNotExist) {
+                UIData data = new UIData(uiId);
+                uiDataMap.put(uiId, data);
+                return data;
+            } else {
+                return null;
+            }
+        }
+
+        private Map<Integer, UIData> getUiDataMap() {
+            return uiDataMap;
+        }
+
+        public Map<Contextual<?>, ContextualStorage> getStorageMap() {
+            return storageMap;
+        }
+
+    }
 
     public AbstractVaadinContext(final BeanManager beanManager) {
         super(beanManager);
@@ -46,34 +143,101 @@ public abstract class AbstractVaadinContext extends AbstractContext {
         return true;
     }
 
-    protected synchronized Map<Contextual, ContextualStorage> getStorageMapForSession() {
-        return getStorageMapForSession(VaadinSession.getCurrent());
+    protected synchronized SessionData getSessionData(boolean createIfNotExist) {
+        return getSessionData(VaadinSession.getCurrent(), createIfNotExist);
     }
 
-    protected synchronized Map<Contextual, ContextualStorage> getStorageMapForSession(
-            VaadinSession session) {
-        if (session == null || session.isClosing()) {
+    protected synchronized SessionData getSessionData(VaadinSession session,
+            boolean createIfNotExist) {
+        if (session == null) {
             return null;
         }
         if (storageMap.containsKey(session)) {
             return storageMap.get(session);
         } else {
-            Map<Contextual, ContextualStorage> map = new ConcurrentHashMap<Contextual, ContextualStorage>();
-            storageMap.put(session, map);
-            return map;
+            if (createIfNotExist) {
+                SessionData data = new SessionData();
+                storageMap.put(session, data);
+                return data;
+            } else {
+                return null;
+            }
         }
     }
 
-    synchronized void dropSessionData(VaadinSessionDestroyEvent event) {
+    void dropSessionData(VaadinSessionDestroyEvent event) {
         VaadinSession session = event.getSession();
         getLogger().fine("Dropping session data for session: " + session);
-        Map<Contextual, ContextualStorage> map = storageMap.get(session);
-        if (map != null) {
-            for (Contextual contextual : new HashSet<Contextual>(map.keySet())) {
-                destroy(contextual);
+        SessionData sessionData = storageMap.remove(session);
+        if (sessionData != null) {
+            synchronized (sessionData) {
+                Map<Integer, UIData> map = sessionData.getUiDataMap();
+                for (UIData uiData : new ArrayList<UIData>(map.values())) {
+                    dropUIData(sessionData, uiData);
+                }
             }
-            storageMap.remove(session);
         }
+    }
+
+    private synchronized void dropUIData(SessionData sessionData, UIData uiData) {
+        getLogger().fine("Dropping UI data for UI: " + uiData.getUiId());
+
+        for (Entry<Contextual<?>, ContextualStorage> entry : new ArrayList<Entry<Contextual<?>, ContextualStorage>>(
+                sessionData.getStorageMap().entrySet())) {
+            Contextual<?> key = entry.getKey();
+            if ((key instanceof UIBean && ((UIBean) key).getUiId() == uiData.uiId)
+                    || (key instanceof ViewBean && ((ViewBean) key).getUiId() == uiData.uiId)) {
+                destroy(entry.getKey());
+            }
+            sessionData.uiDataMap.remove(key);
+        }
+
+    }
+
+    void queueUICloseEvent(VaadinUICloseEvent event) {
+        synchronized (cleanupLock) {
+            // We introduce a cleanup delay because the UI gets referred to
+            // later in the core cleanup process. If the UI is proxied this will
+            // cause a new UI to be initialized in some CDI implementations (for
+            // example Apache OpenWebBeans 1.2.1)
+            long closeTime = System.currentTimeMillis() + CLEANUP_DELAY;
+            while (uiCloseQueue.get(closeTime) != null)
+                closeTime++;
+            uiCloseQueue.put(closeTime, event);
+        }
+    }
+
+    void uiCloseCleanup() {
+        // Remove the UI's that have been previously queued for closing. We need
+        // to protect the UI context from deletion long enough that the core
+        // framework has time to do it's own cleanup.
+        // We run the cleanup process from VaadinCDIServletService after the
+        // results of the latest query have been sent. We do it this way to
+        // avoid using a background thread and to maintain cross-implementation
+        // compatibility.
+        Collection<Entry<Long, VaadinUICloseEvent>> entries = null;
+        synchronized (cleanupLock) {
+            long currentTime = System.currentTimeMillis();
+            SortedMap<Long, VaadinUICloseEvent> subMap = uiCloseQueue.headMap(currentTime);
+            entries = new ArrayList<Map.Entry<Long, VaadinUICloseEvent>>(subMap.entrySet());
+            // Remove the entries from the underlying uiCloseQueue
+            subMap.clear();
+        }
+        if (entries != null && !entries.isEmpty()) {
+            for (Entry<Long, VaadinUICloseEvent> entry : entries) {
+                VaadinUICloseEvent event = entry.getValue();
+                int uiId = event.getUiId();
+                SessionData sessionData = getSessionData(event.getSession(),
+                        false);
+                if (sessionData != null) {
+                    UIData uiData = sessionData.getUIData(uiId);
+                    if (uiData != null) {
+                        dropUIData(sessionData, uiData);
+                    }
+                }
+            }
+        }
+
     }
 
     protected abstract Logger getLogger();

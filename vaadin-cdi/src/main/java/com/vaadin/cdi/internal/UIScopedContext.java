@@ -27,6 +27,7 @@ import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 import com.vaadin.cdi.UIScoped;
 import com.vaadin.ui.UI;
+import com.vaadin.util.CurrentInstance;
 
 /**
  * UIScopedContext is the context for @UIScoped beans.
@@ -62,11 +63,14 @@ public class UIScopedContext extends AbstractVaadinContext {
         // If a non-UI class has the @UIScoped annotation the contextual
         // parameter is a CDI managed bean. We need to wrap this in a UIBean so
         // that we can clean up its storage once the UI has been closed.
-        if (!(contextual instanceof UIBean)
-                && contextual instanceof Bean
-                && !UI.class.isAssignableFrom(((Bean) contextual)
-                        .getBeanClass()) && UI.getCurrent() != null) {
-            contextual = new UIBean((Bean) contextual);
+        if (!(contextual instanceof UIBean)) {
+            if (contextual instanceof Bean
+                    && !UI.class.isAssignableFrom(((Bean) contextual)
+                            .getBeanClass()) && UI.getCurrent() != null) {
+                contextual = new UIBean((Bean) contextual);
+            } else if (CurrentInstance.get(UIBean.class) != null) {
+                contextual = CurrentInstance.get(UIBean.class);
+            }
         }
 
         Map<Contextual<?>, ContextualStorage> map = sessionData.getStorageMap();

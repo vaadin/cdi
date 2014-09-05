@@ -7,11 +7,12 @@ import com.vaadin.cdi.internal.ConventionsTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ CDIIntegrationWithCustomDeployment.class,
-        CDIUIProviderTest.class, ConventionsTest.class,
-        MultipleRootUIs.class, CDIIntegrationWithConflictingDeployment.class,
+        CDIUIProviderTest.class, ConventionsTest.class, MultipleRootUIs.class,
+        CDIIntegrationWithConflictingDeployment.class,
         CDIIntegrationWithConflictingUIPath.class,
         CDIIntegrationWithDefaultDeployment.class, RootViewAtContextRoot.class,
-        MultipleAccessIsolation.class, ScopedInstances.class })
+        MultipleAccessIsolation.class, ScopedInstances.class,
+        InjectionTest.class })
 public class DeploymentTestSuiteIT {
 
 }

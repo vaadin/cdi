@@ -12,7 +12,8 @@ import com.vaadin.cdi.internal.ConventionsTest;
         CDIIntegrationWithConflictingUIPath.class,
         CDIIntegrationWithDefaultDeployment.class, RootViewAtContextRoot.class,
         MultipleAccessIsolation.class, ScopedInstances.class,
-        InjectionTest.class, ConsistentInjectionTest.class })
+        InjectionTest.class, ConsistentInjectionTest.class,
+        QualifiedInjection.class })
 public class DeploymentTestSuiteIT {
 
 }

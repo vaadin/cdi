@@ -69,24 +69,34 @@ public class ViewBean extends UIBean {
 
     @Override
     public String getId() {
+        StringBuilder sb = new StringBuilder(
+                "com.vaadin.cdi.internal.ViewBean#");
+        sb.append(uiId);
+        sb.append("#");
+        sb.append(sessionId);
+        sb.append("#");
+        sb.append(viewIdentifier);
+
         if (delegate instanceof PassivationCapable) {
             String delegatePassivationID = ((PassivationCapable) delegate)
                     .getId();
             if (delegatePassivationID != null
                     && !delegatePassivationID.isEmpty()) {
-                StringBuilder sb = new StringBuilder(
-                        "com.vaadin.cdi.internal.ViewBean#");
-                sb.append(uiId);
-                sb.append("#");
-                sb.append(sessionId);
-                sb.append("#");
-                sb.append(viewIdentifier);
                 sb.append("#");
                 sb.append(delegatePassivationID);
-                return sb.toString();
+            } else {
+                sb.append("#null#");
+                sb.append(delegate.getBeanClass().getCanonicalName());
             }
+        } else {
+            // Even if the bean itself is not passivation capable, we're still
+            // using ViewBean.getid() as a key in ContextualStorage. It may mix
+            // up beans in some cases, specifically if we're injecting
+            // non-passivation-capable beans as @ViewScoped
+            sb.append("#");
+            sb.append(delegate.getBeanClass().getCanonicalName());
         }
-        return null;
+        return sb.toString();
     }
 
     private Logger getLogger() {

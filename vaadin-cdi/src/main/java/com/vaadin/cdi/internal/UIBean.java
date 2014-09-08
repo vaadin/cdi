@@ -118,8 +118,6 @@ public class UIBean implements Bean, PassivationCapable {
             return false;
         if (sessionId != uiBean.sessionId)
             return false;
-        if (!delegate.getBeanClass().equals(uiBean.delegate.getBeanClass()))
-            return false;
 
         return true;
     }
@@ -133,22 +131,30 @@ public class UIBean implements Bean, PassivationCapable {
 
     @Override
     public String getId() {
+        StringBuilder sb = new StringBuilder("com.vaadin.cdi.internal.UIBean#");
+        sb.append(sessionId);
+        sb.append("#");
+        sb.append(uiId);
         if (delegate instanceof PassivationCapable) {
             String delegatePassivationID = ((PassivationCapable) delegate)
                     .getId();
             if (delegatePassivationID != null
                     && !delegatePassivationID.isEmpty()) {
-                StringBuilder sb = new StringBuilder(
-                        "com.vaadin.cdi.internal.UIBean#");
-                sb.append(uiId);
-                sb.append("#");
-                sb.append(sessionId);
                 sb.append("#");
                 sb.append(delegatePassivationID);
-                return sb.toString();
+            } else {
+                sb.append("#null#");
+                sb.append(delegate.getBeanClass().getCanonicalName());
             }
+        } else {
+            // Even if the bean itself is not passivation capable, we're still
+            // using UIBean.getid() as a key in ContextualStorage. It may mix up
+            // beans in some cases, specifically if we're injecting
+            // non-passivation-capable beans as @UIScoped
+            sb.append("#");
+            sb.append(delegate.getBeanClass().getCanonicalName());
         }
-        return null;
+        return sb.toString();
     }
 
 }

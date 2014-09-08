@@ -79,7 +79,7 @@ public class ArchiveProvider {
                                 .withTransitivity().asFile())
                 .addAsLibraries(
                         pom.resolve(
-                                "org.apache.deltaspike:deltaspike-core-impl:1.0.1")
+                                "org.apache.deltaspike.core:deltaspike-core-impl:1.0.1")
                                 .withTransitivity().asFile())
                 .addAsWebInfResource(
                         new ByteArrayAsset(VaadinExtension.class.getName()

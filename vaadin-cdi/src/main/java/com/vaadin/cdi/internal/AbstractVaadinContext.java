@@ -45,7 +45,7 @@ public abstract class AbstractVaadinContext extends AbstractContext {
     private static final int CLEANUP_DELAY = 5000;
 
     private BeanManager beanManager;
-    private Map<VaadinSession, SessionData> storageMap = new ConcurrentHashMap<VaadinSession, SessionData>();
+    private Map<Long, SessionData> storageMap = new ConcurrentHashMap<Long, SessionData>();
 
     protected static class SessionData {
 
@@ -96,8 +96,6 @@ public abstract class AbstractVaadinContext extends AbstractContext {
                 this.openingView = null;
             }
 
-
-
         }
 
         private Map<Contextual<?>, ContextualStorage> storageMap = new ConcurrentHashMap<Contextual<?>, ContextualStorage>();
@@ -143,21 +141,25 @@ public abstract class AbstractVaadinContext extends AbstractContext {
         return true;
     }
 
+    protected synchronized SessionData getSessionData(VaadinSession session, boolean createIfNotExist) {
+        if (session == null) {
+            return null;
+        }
+        long sessionId = CDIUtil.getSessionId(session);
+        return getSessionData(sessionId, createIfNotExist);
+    }
+
     protected synchronized SessionData getSessionData(boolean createIfNotExist) {
         return getSessionData(VaadinSession.getCurrent(), createIfNotExist);
     }
 
-    protected synchronized SessionData getSessionData(VaadinSession session,
-            boolean createIfNotExist) {
-        if (session == null) {
-            return null;
-        }
-        if (storageMap.containsKey(session)) {
-            return storageMap.get(session);
+    protected synchronized SessionData getSessionData(long sessionId, boolean createIfNotExist) {
+        if (storageMap.containsKey(sessionId)) {
+            return storageMap.get(sessionId);
         } else {
             if (createIfNotExist) {
                 SessionData data = new SessionData();
-                storageMap.put(session, data);
+                storageMap.put(sessionId, data);
                 return data;
             } else {
                 return null;
@@ -168,7 +170,9 @@ public abstract class AbstractVaadinContext extends AbstractContext {
     void dropSessionData(VaadinSessionDestroyEvent event) {
         VaadinSession session = event.getSession();
         getLogger().fine("Dropping session data for session: " + session);
-        SessionData sessionData = storageMap.remove(session);
+        long sessionId = CDIUtil.getSessionId(session);
+
+        SessionData sessionData = storageMap.remove(sessionId);
         if (sessionData != null) {
             synchronized (sessionData) {
                 Map<Integer, UIData> map = sessionData.getUiDataMap();

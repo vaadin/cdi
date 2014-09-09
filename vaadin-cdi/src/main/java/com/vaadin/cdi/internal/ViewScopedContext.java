@@ -56,7 +56,13 @@ public class ViewScopedContext extends AbstractVaadinContext {
             Contextual<?> contextual, boolean createIfNotExist) {
         getLogger().fine("Retrieving contextual storage for " + contextual);
 
-        SessionData sessionData = getSessionData(createIfNotExist);
+        SessionData sessionData;
+        if (contextual instanceof UIBean) {
+            sessionData = getSessionData(((UIBean) contextual).getSessionId(),
+                    createIfNotExist);
+        } else {
+            sessionData = getSessionData(createIfNotExist);
+        }
         if (sessionData == null) {
             if (createIfNotExist) {
                 throw new IllegalStateException(

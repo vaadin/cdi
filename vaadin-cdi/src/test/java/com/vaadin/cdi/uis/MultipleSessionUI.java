@@ -1,0 +1,78 @@
+package com.vaadin.cdi.uis;
+
+import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.inject.Inject;
+
+import com.vaadin.cdi.CDIUI;
+import com.vaadin.cdi.internal.MyBean;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.util.CurrentInstance;
+
+@CDIUI("")
+public class MultipleSessionUI extends UI {
+
+    private Layout layout = new VerticalLayout();
+
+    public static final String MAINSESSION_ID = "mainsession";
+    public static final String MAINSESSION2_ID = "mainsession2";
+    public static final String OTHERSESSION_ID = "othersession";
+
+    @Inject
+    private MyBean bean;
+
+    @Inject
+    private BeanManager beanManager;
+
+    @PostConstruct
+    private void test() {
+        Label mainSessionLabel = new Label("" + bean.getId());
+        mainSessionLabel.setId(MAINSESSION_ID);
+        layout.addComponent(mainSessionLabel);
+
+        // set another session as the current session to simulate a second user
+        VaadinSession otherSession = new VaadinSession(
+                VaadinService.getCurrent()) {
+            private ReentrantLock lock = new ReentrantLock();
+
+            @Override
+            public Lock getLockInstance() {
+                return lock;
+            }
+        };
+        Map<Class<?>, CurrentInstance> oldCurrentInstance = CurrentInstance
+                .setCurrent(otherSession);
+        otherSession.getLockInstance().lock();
+        // proxy looks up actual bean based on session and UI ID
+        Label otherSessionLabel = new Label("" + bean.getId());
+        otherSessionLabel.setId(OTHERSESSION_ID);
+        layout.addComponent(otherSessionLabel);
+        otherSession.getLockInstance().unlock();
+        CurrentInstance.restoreInstances(oldCurrentInstance);
+
+        Label mainSessionLabel2 = new Label("" + bean.getId());
+        mainSessionLabel2.setId(MAINSESSION2_ID);
+        layout.addComponent(mainSessionLabel2);
+    }
+
+    @Override
+    protected void init(VaadinRequest request) {
+        System.out.println("init(): " + bean.getId());
+
+        Label label = new Label("+MultipleSessionUI");
+        label.setId("label");
+        layout.addComponent(label);
+
+        setContent(layout);
+    }
+}

@@ -50,6 +50,10 @@ public class UIBean implements Bean, PassivationCapable {
         return uiId;
     }
 
+    public long getSessionId() {
+        return sessionId;
+    }
+
     @Override
     public Set<Type> getTypes() {
         return delegate.getTypes();

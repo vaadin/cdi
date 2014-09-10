@@ -12,12 +12,17 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.common.base.Predicate;
+import com.vaadin.cdi.internal.Conventions;
 
 public abstract class AbstractManagedCDIIntegrationTest extends
         AbstractCDIIntegrationTest {
 
     @ArquillianResource
     URL contextPath;
+
+    public void openWindow(Class uiClass) throws MalformedURLException {
+        openWindow(Conventions.deriveMappingForUI(uiClass));
+    }
 
     public void openWindow(String uri) throws MalformedURLException {
         openWindow(firstWindow, uri);

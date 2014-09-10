@@ -15,19 +15,18 @@
  */
 package com.vaadin.cdi.internal;
 
-import com.vaadin.server.VaadinSession;
 
 public class VaadinSessionDestroyEvent {
 
-    private VaadinSession session;
+    private long sessionId;
 
-    public VaadinSessionDestroyEvent(VaadinSession session) {
-        this.session = session;
+    public VaadinSessionDestroyEvent(long sessionId) {
+        this.sessionId = sessionId;
 
     }
 
-    public VaadinSession getSession() {
-        return session;
+    public long getSessionId() {
+        return sessionId;
     }
 
 }

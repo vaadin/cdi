@@ -17,10 +17,12 @@ package com.vaadin.cdi.internal;
 
 public class VaadinViewCreationEvent {
 
+    private long sessionId;
     private String viewMapping;
     private int uiId;
 
-    public VaadinViewCreationEvent(int uiId, String viewMapping) {
+    public VaadinViewCreationEvent(long sessionId, int uiId, String viewMapping) {
+        this.sessionId = sessionId;
         this.viewMapping = viewMapping;
         this.uiId = uiId;
     }
@@ -31,5 +33,9 @@ public class VaadinViewCreationEvent {
 
     public int getUIId() {
         return uiId;
+    }
+
+    public long getSessionId() {
+        return sessionId;
     }
 }

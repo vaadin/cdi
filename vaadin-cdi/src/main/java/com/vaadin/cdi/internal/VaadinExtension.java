@@ -23,8 +23,6 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 
-import com.vaadin.server.VaadinSession;
-
 /**
  * CDI Extension needed to register the @CDIUI scope to the runtime.
  */
@@ -77,15 +75,15 @@ public class VaadinExtension implements Extension {
 
     private void navigationChanged(@Observes VaadinViewChangeEvent event) {
         if (viewScopedContext != null) {
-            VaadinSession session = event.getSession();
+            long sessionId = event.getSessionId();
             int uiId = event.getUiId();
-            viewScopedContext.viewChangeCleanup(session, uiId);
+            viewScopedContext.viewChangeCleanup(sessionId, uiId);
         }
     }
     
     private void navigationStarting(@Observes VaadinViewCreationEvent event) {
         if (viewScopedContext != null) {
-            viewScopedContext.prepareForViewChange(VaadinSession.getCurrent(),
+            viewScopedContext.prepareForViewChange(event.getSessionId(),
                     event.getUIId(), event.getViewMapping());
         }
     }

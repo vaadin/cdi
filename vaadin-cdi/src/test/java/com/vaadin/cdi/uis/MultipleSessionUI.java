@@ -5,7 +5,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.CDIUI;
@@ -30,9 +29,6 @@ public class MultipleSessionUI extends UI {
 
     @Inject
     private MyBean bean;
-
-    @Inject
-    private BeanManager beanManager;
 
     @PostConstruct
     private void test() {

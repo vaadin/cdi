@@ -88,12 +88,12 @@ public abstract class AbstractVaadinContext extends AbstractContext {
             }
 
             public void validateTransition() {
-                this.activeView = this.openingView;
-                this.openingView = null;
+                activeView = openingView;
+                openingView = null;
             }
 
             public void clearPendingViewChange() {
-                this.openingView = null;
+                openingView = null;
             }
 
         }
@@ -168,9 +168,8 @@ public abstract class AbstractVaadinContext extends AbstractContext {
     }
 
     void dropSessionData(VaadinSessionDestroyEvent event) {
-        VaadinSession session = event.getSession();
-        getLogger().fine("Dropping session data for session: " + session);
-        long sessionId = CDIUtil.getSessionId(session);
+        long sessionId = event.getSessionId();
+        getLogger().fine("Dropping session data for session: " + sessionId);
 
         SessionData sessionData = storageMap.remove(sessionId);
         if (sessionData != null) {
@@ -205,8 +204,9 @@ public abstract class AbstractVaadinContext extends AbstractContext {
             // cause a new UI to be initialized in some CDI implementations (for
             // example Apache OpenWebBeans 1.2.1)
             long closeTime = System.currentTimeMillis() + CLEANUP_DELAY;
-            while (uiCloseQueue.get(closeTime) != null)
+            while (uiCloseQueue.get(closeTime) != null) {
                 closeTime++;
+            }
             uiCloseQueue.put(closeTime, event);
         }
     }
@@ -231,7 +231,7 @@ public abstract class AbstractVaadinContext extends AbstractContext {
             for (Entry<Long, VaadinUICloseEvent> entry : entries) {
                 VaadinUICloseEvent event = entry.getValue();
                 int uiId = event.getUiId();
-                SessionData sessionData = getSessionData(event.getSession(),
+                SessionData sessionData = getSessionData(event.getSessionId(),
                         false);
                 if (sessionData != null) {
                     UIData uiData = sessionData.getUIData(uiId);

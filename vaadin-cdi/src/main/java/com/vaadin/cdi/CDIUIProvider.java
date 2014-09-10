@@ -55,8 +55,8 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
             if (source instanceof UI) {
 
                 UI ui = (UI) source;
-                beanManager.fireEvent(
-                        new VaadinUICloseEvent(ui.getSession(), ui.getUIId()));
+                beanManager.fireEvent(new VaadinUICloseEvent(CDIUtil
+                        .getSessionId(ui.getSession()), ui.getUIId()));
             }
 
         }

@@ -30,7 +30,6 @@ import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 import com.vaadin.cdi.ViewScoped;
 import com.vaadin.cdi.internal.AbstractVaadinContext.SessionData.UIData;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 
 /**
@@ -116,17 +115,17 @@ public class ViewScopedContext extends AbstractVaadinContext {
 
     }
 
-    synchronized void prepareForViewChange(VaadinSession session, int uiId,
+    synchronized void prepareForViewChange(long sessionId, int uiId,
             String activeViewName) {
         getLogger().fine("Setting next view to " + activeViewName);
-        SessionData sessionData = getSessionData(session, true);
+        SessionData sessionData = getSessionData(sessionId, true);
         UIData uiData = sessionData.getUIData(uiId, true);
         uiData.setOpeningView(activeViewName);
     }
 
-    synchronized void viewChangeCleanup(VaadinSession session, int uiId) {
+    synchronized void viewChangeCleanup(long sessionId, int uiId) {
 
-        SessionData sessionData = getSessionData(session, true);
+        SessionData sessionData = getSessionData(sessionId, true);
         UIData uiData = sessionData.getUIData(uiId, true);
         if (uiData == null) {
             return;

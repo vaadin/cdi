@@ -15,21 +15,19 @@
  */
 package com.vaadin.cdi.internal;
 
-import com.vaadin.server.VaadinSession;
-
 public class VaadinUICloseEvent {
 
-    private VaadinSession session;
+    private long sessionId;
     private int uiId;
 
-    public VaadinUICloseEvent(VaadinSession session, int uiId) {
-        this.session = session;
+    public VaadinUICloseEvent(long sessionId, int uiId) {
+        this.sessionId = sessionId;
         this.uiId = uiId;
 
     }
 
-    public VaadinSession getSession() {
-        return session;
+    public long getSessionId() {
+        return sessionId;
     }
 
     public int getUiId() {

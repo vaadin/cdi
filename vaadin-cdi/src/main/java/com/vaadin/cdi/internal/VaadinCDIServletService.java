@@ -47,7 +47,7 @@ public class VaadinCDIServletService extends VaadinServletService {
         public void sessionDestroy(SessionDestroyEvent event) {
             getLogger().fine("Firing session destroy event.");
             VaadinSessionDestroyEvent sessionDestroyEvent = new VaadinSessionDestroyEvent(
-                    event.getSession());
+                    CDIUtil.getSessionId(event.getSession()));
             getBeanManager().fireEvent(sessionDestroyEvent);
         }
 

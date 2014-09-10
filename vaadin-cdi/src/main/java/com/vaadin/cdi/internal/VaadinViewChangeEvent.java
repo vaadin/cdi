@@ -15,23 +15,21 @@
  */
 package com.vaadin.cdi.internal;
 
-import com.vaadin.server.VaadinSession;
-
 public class VaadinViewChangeEvent {
 
-    private VaadinSession session;
+    private long sessionId;
     private int uiId;
     private String viewName;
 
-    public VaadinViewChangeEvent(VaadinSession session, int uiId,
+    public VaadinViewChangeEvent(long sessionId, int uiId,
             String viewName) {
-        this.session = session;
+        this.sessionId = sessionId;
         this.uiId = uiId;
         this.viewName = viewName;
     }
 
-    public VaadinSession getSession() {
-        return session;
+    public long getSessionId() {
+        return sessionId;
     }
 
     public int getUiId() {

@@ -15,6 +15,21 @@
  */
 package com.vaadin.cdi.internal;
 
-public class VaadinRequestEndEvent {
+public class VaadinViewChangeCleanupEvent {
 
+    private final long sessionId;
+    private final int uiId;
+
+    public VaadinViewChangeCleanupEvent(long sessionId, int uiId) {
+        this.sessionId = sessionId;
+        this.uiId = uiId;
+    }
+
+    public long getSessionId() {
+        return sessionId;
+    }
+
+    public int getUiId() {
+        return uiId;
+    }
 }

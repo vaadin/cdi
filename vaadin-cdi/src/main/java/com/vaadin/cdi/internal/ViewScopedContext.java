@@ -124,7 +124,7 @@ public class ViewScopedContext extends AbstractVaadinContext {
     }
 
     synchronized void viewChangeCleanup(long sessionId, int uiId) {
-
+        getLogger().fine("ViewChangeCleanup for " + sessionId + " " + uiId);
         SessionData sessionData = getSessionData(sessionId, true);
         UIData uiData = sessionData.getUIData(uiId, true);
         if (uiData == null) {
@@ -148,15 +148,12 @@ public class ViewScopedContext extends AbstractVaadinContext {
         }
     }
 
-    synchronized void clearPendingViewChange() {
-        SessionData sessionData = getSessionData(false);
+    synchronized void clearPendingViewChange(long sessionId, int uiId) {
+        SessionData sessionData = getSessionData(sessionId, false);
         if (sessionData != null) {
-            UI currentUI = UI.getCurrent();
-            if (currentUI != null) {
-                UIData uiData = sessionData.getUIData(currentUI.getUIId());
-                if (uiData != null) {
-                    uiData.clearPendingViewChange();
-                }
+            UIData uiData = sessionData.getUIData(uiId);
+            if (uiData != null) {
+                uiData.clearPendingViewChange();
             }
         }
     }

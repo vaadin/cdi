@@ -33,7 +33,7 @@ import com.vaadin.cdi.internal.UIScopedContext;
 import com.vaadin.cdi.internal.VaadinCDIServlet;
 import com.vaadin.cdi.internal.VaadinCDIServletService;
 import com.vaadin.cdi.internal.VaadinExtension;
-import com.vaadin.cdi.internal.VaadinRequestEndEvent;
+import com.vaadin.cdi.internal.VaadinViewChangeCleanupEvent;
 import com.vaadin.cdi.internal.VaadinSessionDestroyEvent;
 import com.vaadin.cdi.internal.VaadinUICloseEvent;
 import com.vaadin.cdi.internal.VaadinViewChangeEvent;
@@ -53,7 +53,7 @@ public class ArchiveProvider {
             VaadinSessionDestroyEvent.class, VaadinUICloseEvent.class,
             VaadinViewChangeEvent.class, VaadinViewCreationEvent.class,
             AbstractVaadinContext.class,
-            VaadinRequestEndEvent.class, VaadinCDIServlet.class,
+            VaadinViewChangeCleanupEvent.class, VaadinCDIServlet.class,
             VaadinCDIServletService.class,
             VaadinCDIServletService.SessionListenerImpl.class,
             CDIUIProvider.DetachListenerImpl.class,

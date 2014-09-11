@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import javax.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.cdi.CDIUIProvider;
+import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.SessionDestroyEvent;
@@ -79,8 +80,12 @@ public class VaadinCDIServletService extends VaadinServletService {
     public void handleRequest(VaadinRequest request, VaadinResponse response)
             throws ServiceException {
         super.handleRequest(request, response);
-        getLogger().fine("Firing cleanup event");
-        getBeanManager().fireEvent(new VaadinRequestEndEvent());
+        VaadinViewChangeCleanupEvent event = CDIViewProvider.getCleanupEvent();
+        if (event != null) {
+            getLogger().fine("Cleaning up after View changing request.");
+            getBeanManager().fireEvent(event);
+            CDIViewProvider.removeCleanupEvent();
+        }
 
     }
 }

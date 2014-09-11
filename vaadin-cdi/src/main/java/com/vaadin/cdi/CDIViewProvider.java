@@ -37,6 +37,7 @@ import javax.inject.Inject;
 import com.vaadin.cdi.access.AccessControl;
 import com.vaadin.cdi.internal.CDIUtil;
 import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.VaadinViewChangeCleanupEvent;
 import com.vaadin.cdi.internal.VaadinViewChangeEvent;
 import com.vaadin.cdi.internal.VaadinViewCreationEvent;
 import com.vaadin.cdi.internal.ViewBean;
@@ -53,6 +54,8 @@ public class CDIViewProvider implements ViewProvider {
 
     @Inject
     private BeanManager beanManager;
+
+    private static ThreadLocal<VaadinViewChangeCleanupEvent> cleanupEvent = new ThreadLocal<VaadinViewChangeCleanupEvent>();
 
     @Inject
     private AccessControl accessControl;
@@ -269,8 +272,11 @@ public class CDIViewProvider implements ViewProvider {
             // current session and UI
             long sessionId = CDIUtil.getSessionId();
             UI currentUI = UI.getCurrent();
+
             beanManager.fireEvent(new VaadinViewCreationEvent(sessionId,
                     currentUI.getUIId(), viewName));
+            cleanupEvent.set(new VaadinViewChangeCleanupEvent(sessionId, currentUI
+                    .getUIId()));
 
             View view = (View) beanManager.getReference(viewBean,
                     viewBean.getBeanClass(), currentViewCreationalContext);
@@ -315,6 +321,14 @@ public class CDIViewProvider implements ViewProvider {
         }
 
         return viewName;
+    }
+
+    public static VaadinViewChangeCleanupEvent getCleanupEvent() {
+        return cleanupEvent.get();
+    }
+
+    public static void removeCleanupEvent() {
+        cleanupEvent.remove();
     }
 
     private static Logger getLogger() {

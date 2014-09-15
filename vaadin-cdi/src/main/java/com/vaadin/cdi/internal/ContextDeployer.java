@@ -32,6 +32,7 @@ import javax.servlet.annotation.WebListener;
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.URLMapping;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.shared.Version;
 import com.vaadin.ui.UI;
 
 @WebListener
@@ -46,6 +47,9 @@ public class ContextDeployer implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+
+        verifyCompatibleVaadinVersion();
+
         configuredUIs = new HashSet<String>();
 
         ServletContext context = sce.getServletContext();
@@ -260,5 +264,26 @@ public class ContextDeployer implements ServletContextListener {
 
     private static Logger getLogger() {
         return Logger.getLogger(ContextDeployer.class.getCanonicalName());
+    }
+
+    private void verifyCompatibleVaadinVersion() {
+        boolean compatible = false;
+        if (Version.getMajorVersion() > 7) {
+            compatible = true;
+        } else if (Version.getMajorVersion() == 7) {
+            if (Version.getMinorVersion() > 3) {
+                compatible = true;
+            } else if (Version.getMinorVersion() == 3
+                    && Version.getRevision() >= 1) {
+                compatible = true;
+            }
+        }
+
+        if (!compatible) {
+            getLogger()
+                    .warning(
+                            "This Vaadin version is incompatible with the Vaadin CDI plugin. Vaadin CDI requires at least version 7.3.1, your version is "
+                                    + Version.getFullVersion());
+        }
     }
 }

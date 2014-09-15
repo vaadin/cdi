@@ -9,7 +9,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<vaadin.version>7.2.6</vaadin.version>
+        <!-- In addition to POMs, the version number is in ArchiveProvider for tests -->
+		<vaadin.version>7.3.1</vaadin.version>
 	</properties>
 	<repositories>
 		<repository>

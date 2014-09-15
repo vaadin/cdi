@@ -33,9 +33,9 @@ import com.vaadin.cdi.internal.UIScopedContext;
 import com.vaadin.cdi.internal.VaadinCDIServlet;
 import com.vaadin.cdi.internal.VaadinCDIServletService;
 import com.vaadin.cdi.internal.VaadinExtension;
-import com.vaadin.cdi.internal.VaadinViewChangeCleanupEvent;
 import com.vaadin.cdi.internal.VaadinSessionDestroyEvent;
 import com.vaadin.cdi.internal.VaadinUICloseEvent;
+import com.vaadin.cdi.internal.VaadinViewChangeCleanupEvent;
 import com.vaadin.cdi.internal.VaadinViewChangeEvent;
 import com.vaadin.cdi.internal.VaadinViewCreationEvent;
 import com.vaadin.cdi.internal.ViewBean;
@@ -68,14 +68,15 @@ public class ArchiveProvider {
 
     static WebArchive base(String warName) {
         PomEquippedResolveStage pom = Maven.resolver().loadPomFromFile("pom.xml");
+        // these version numbers should match the POM files
         return ShrinkWrap
                 .create(WebArchive.class, warName + ".war")
                 .addClasses(FRAMEWORK_CLASSES)
                 .addAsLibraries(
-                        pom.resolve("com.vaadin:vaadin-server:7.2.6")
+                        pom.resolve("com.vaadin:vaadin-server:7.3.1")
                                 .withTransitivity().asFile())
                 .addAsLibraries(
-                        pom.resolve("com.vaadin:vaadin-themes:7.2.6")
+                        pom.resolve("com.vaadin:vaadin-themes:7.3.1")
                                 .withTransitivity().asFile())
                 .addAsLibraries(
                         pom.resolve(

@@ -33,10 +33,6 @@ Overriding createServletService() is possible, in which case the service
 should inherit VaadinCDIServletService if possible or duplicate its
 functionality otherwise.
 
-To use Vaadin CDI in a portlet, the functionality of VaadinCDIServlet and
-VaadinCDIServletService needs to be duplicated.
-See http://dev.vaadin.com/ticket/14682 .
-
 Changes in 1.0.0.alpha3
 -----------------------
 

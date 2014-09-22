@@ -242,6 +242,18 @@ public class CDIViewProvider implements ViewProvider {
         getLogger().log(Level.FINE,
                 "Attempting to retrieve view with name \"{0}\"",
                 viewName);
+
+        // current session and UI
+        long sessionId = CDIUtil.getSessionId();
+        UI currentUI = UI.getCurrent();
+
+        if (currentUI == null) {
+            getLogger().log(Level.WARNING,
+                    "No current UI - cannot create view {0}", viewName);
+            throw new IllegalStateException("Cannot create View " + viewName
+                    + " - current UI is not set");
+        }
+
         ViewBean viewBean = getViewBean(viewName);
         if (viewBean != null) {
             if (!isUserHavingAccessToView(viewBean)) {
@@ -266,10 +278,6 @@ public class CDIViewProvider implements ViewProvider {
                     "Created new creational context for current view {0}",
                     currentViewCreationalContext);
 
-            // current session and UI
-            long sessionId = CDIUtil.getSessionId();
-            UI currentUI = UI.getCurrent();
-
             beanManager.fireEvent(new VaadinViewCreationEvent(sessionId,
                     currentUI.getUIId(), viewName));
             cleanupEvent.set(new VaadinViewChangeCleanupEvent(sessionId, currentUI
@@ -279,16 +287,13 @@ public class CDIViewProvider implements ViewProvider {
                     viewBean.getBeanClass(), currentViewCreationalContext);
             getLogger().log(Level.FINE, "Returning view instance {0}", view.toString());
 
-
-            if (currentUI != null) {
-                Navigator navigator = currentUI.getNavigator();
-                if (navigator != null) {
-                    // This is a fairly dumb way of making sure that there is
-                    // one and only one CDI viewChangeListener for this
-                    // Navigator.
-                    navigator.removeViewChangeListener(viewChangeListener);
-                    navigator.addViewChangeListener(viewChangeListener);
-                }
+            Navigator navigator = currentUI.getNavigator();
+            if (navigator != null) {
+                // This is a fairly dumb way of making sure that there is
+                // one and only one CDI viewChangeListener for this
+                // Navigator.
+                navigator.removeViewChangeListener(viewChangeListener);
+                navigator.addViewChangeListener(viewChangeListener);
             }
             return view;
         }

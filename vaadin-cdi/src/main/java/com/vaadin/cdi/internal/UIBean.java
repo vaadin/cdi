@@ -27,15 +27,11 @@ import javax.enterprise.inject.spi.PassivationCapable;
 
 import com.vaadin.ui.UI;
 
-public class UIBean implements Bean, PassivationCapable {
-    protected Bean delegate;
-    protected int uiId;
-    protected long sessionId;
+public class UIBean extends UIContextual implements Bean, PassivationCapable {
+    
 
     public UIBean(Bean delegate, long sessionId, int uiId) {
-        this.delegate = delegate;
-        this.uiId = uiId;
-        this.sessionId = sessionId;
+        super(delegate, sessionId, uiId);
     }
 
     public UIBean(Bean delegate, int uiId) {
@@ -46,67 +42,53 @@ public class UIBean implements Bean, PassivationCapable {
         this(delegate, UI.getCurrent().getUIId());
     }
 
-    public int getUiId() {
-        return uiId;
+    private Bean getDelegate() {
+        return (Bean) delegate;
     }
-
-    public long getSessionId() {
-        return sessionId;
-    }
-
+    
     @Override
     public Set<Type> getTypes() {
-        return delegate.getTypes();
+        return getDelegate().getTypes();
     }
 
     @Override
     public Set<Annotation> getQualifiers() {
-        return delegate.getQualifiers();
+        return getDelegate().getQualifiers();
     }
 
     @Override
     public Class<? extends Annotation> getScope() {
-        return delegate.getScope();
+        return getDelegate().getScope();
     }
 
     @Override
     public String getName() {
-        return delegate.getName();
+        return getDelegate().getName();
     }
 
     @Override
     public Set<Class<? extends Annotation>> getStereotypes() {
-        return delegate.getStereotypes();
+        return getDelegate().getStereotypes();
     }
 
     @Override
     public Class<?> getBeanClass() {
-        return delegate.getBeanClass();
+        return getDelegate().getBeanClass();
     }
 
     @Override
     public boolean isAlternative() {
-        return delegate.isAlternative();
+        return getDelegate().isAlternative();
     }
 
     @Override
     public boolean isNullable() {
-        return delegate.isNullable();
+        return getDelegate().isNullable();
     }
 
     @Override
     public Set<InjectionPoint> getInjectionPoints() {
-        return delegate.getInjectionPoints();
-    }
-
-    @Override
-    public Object create(CreationalContext uiCreationalContext) {
-        return delegate.create(uiCreationalContext);
-    }
-
-    @Override
-    public void destroy(Object components, CreationalContext uiCreationalContext) {
-        delegate.destroy(components, uiCreationalContext);
+        return getDelegate().getInjectionPoints();
     }
 
     @Override
@@ -116,21 +98,7 @@ public class UIBean implements Bean, PassivationCapable {
         if (!(o instanceof UIBean))
             return false;
 
-        UIBean uiBean = (UIBean) o;
-
-        if (uiId != uiBean.uiId)
-            return false;
-        if (sessionId != uiBean.sessionId)
-            return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) sessionId;
-        result = 31 * result + uiId;
-        return result;
+        return super.equals(o);
     }
 
     @Override
@@ -148,7 +116,7 @@ public class UIBean implements Bean, PassivationCapable {
                 sb.append(delegatePassivationID);
             } else {
                 sb.append("#null#");
-                sb.append(delegate.getBeanClass().getCanonicalName());
+                sb.append(getBeanClass().getCanonicalName());
             }
         } else {
             // Even if the bean itself is not passivation capable, we're still
@@ -156,7 +124,7 @@ public class UIBean implements Bean, PassivationCapable {
             // beans in some cases, specifically if we're injecting
             // non-passivation-capable beans as @UIScoped
             sb.append("#");
-            sb.append(delegate.getBeanClass().getCanonicalName());
+            sb.append(getBeanClass().getCanonicalName());
         }
         return sb.toString();
     }

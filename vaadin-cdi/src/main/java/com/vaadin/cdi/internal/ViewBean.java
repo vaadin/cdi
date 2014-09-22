@@ -16,55 +16,92 @@
 
 package com.vaadin.cdi.internal;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.PassivationCapable;
 
 import com.vaadin.ui.UI;
 
-public class ViewBean extends UIBean {
-
-    /**
-     * The mapped name of the view this ViewBean is associated with.
-     * 
-     * Must be a non-null value.
-     */
-    protected String viewIdentifier;
+public class ViewBean extends ViewContextual implements Bean, PassivationCapable {
 
     public ViewBean(Bean delegate, long sessionId, int uiId,
             String viewIdentifier) {
-        super(delegate, sessionId, uiId);
-        this.viewIdentifier = viewIdentifier;
+        super(delegate, sessionId, uiId, viewIdentifier);
     }
 
     public ViewBean(Bean delegate, int uiId, String viewName) {
-        super(delegate, CDIUtil.getSessionId(), uiId);
-        this.viewIdentifier = viewName;
+        super(delegate, CDIUtil.getSessionId(), uiId, viewName);
     }
 
     public ViewBean(Bean delegate, String viewName) {
-        super(delegate, CDIUtil.getSessionId(), UI.getCurrent().getUIId());
-        this.viewIdentifier = viewName;
+        super(delegate, CDIUtil.getSessionId(), UI.getCurrent().getUIId(), viewName);
     }
 
+    private Bean getDelegate() {
+        return (Bean) delegate;
+    }
+    
+    @Override
+    public Set<Type> getTypes() {
+        return getDelegate().getTypes();
+    }
+
+    @Override
+    public Set<Annotation> getQualifiers() {
+        return getDelegate().getQualifiers();
+    }
+
+    @Override
+    public Class<? extends Annotation> getScope() {
+        return getDelegate().getScope();
+    }
+
+    @Override
+    public String getName() {
+        return getDelegate().getName();
+    }
+
+    @Override
+    public Set<Class<? extends Annotation>> getStereotypes() {
+        return getDelegate().getStereotypes();
+    }
+
+    @Override
+    public Class<?> getBeanClass() {
+        return getDelegate().getBeanClass();
+    }
+
+    @Override
+    public boolean isAlternative() {
+        return getDelegate().isAlternative();
+    }
+
+    @Override
+    public boolean isNullable() {
+        return getDelegate().isNullable();
+    }
+
+    @Override
+    public Set<InjectionPoint> getInjectionPoints() {
+        return getDelegate().getInjectionPoints();
+    }
+    
     @Override
     public boolean equals(Object o) {
-        ViewBean bean = null;
-        if (o instanceof ViewBean) {
-            bean = (ViewBean) o;
-            return super.equals(o)
-                    && this.viewIdentifier.equals(bean.viewIdentifier);
-        } else {
+        if(this == o) {
+            return true;
+        }
+        
+        if(o == null || !(o instanceof ViewBean)) {
             return false;
         }
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) sessionId;
-        result = (31 * result + uiId) ^ viewIdentifier.hashCode();
-        return result;
+        
+        return super.equals(o);
     }
 
     @Override
@@ -86,7 +123,7 @@ public class ViewBean extends UIBean {
                 sb.append(delegatePassivationID);
             } else {
                 sb.append("#null#");
-                sb.append(delegate.getBeanClass().getCanonicalName());
+                sb.append(getBeanClass().getCanonicalName());
             }
         } else {
             // Even if the bean itself is not passivation capable, we're still
@@ -94,7 +131,7 @@ public class ViewBean extends UIBean {
             // up beans in some cases, specifically if we're injecting
             // non-passivation-capable beans as @ViewScoped
             sb.append("#");
-            sb.append(delegate.getBeanClass().getCanonicalName());
+            sb.append(getBeanClass().getCanonicalName());
         }
         return sb.toString();
     }
@@ -102,4 +139,5 @@ public class ViewBean extends UIBean {
     private Logger getLogger() {
         return Logger.getLogger(ViewBean.class.getCanonicalName());
     }
+
 }

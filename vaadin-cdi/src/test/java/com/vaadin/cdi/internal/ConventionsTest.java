@@ -18,7 +18,6 @@ package com.vaadin.cdi.internal;
 
 import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
 import static com.vaadin.cdi.internal.Conventions.deriveMappingForView;
-import static com.vaadin.cdi.internal.Conventions.firstToLower;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -34,30 +33,6 @@ import com.vaadin.cdi.views.OneAndOnlyViewWithoutPathAndAnnotation;
 /**
  */
 public class ConventionsTest {
-
-    @Test
-    public void normalizeLowerFirstCase() {
-        String origin = "LoginPage";
-        String expected = "loginPage";
-        String actual = firstToLower(origin);
-        assertThat(actual, is(expected));
-    }
-
-    @Test
-    public void lowerFirstCaseWithOneCharacter() {
-        String origin = "A";
-        String expected = "a";
-        String actual = firstToLower(origin);
-        assertThat(actual, is(expected));
-    }
-
-    @Test
-    public void normalizeNothingToDo() {
-        String origin = "loginPage";
-        String expected = "loginPage";
-        String actual = firstToLower(origin);
-        assertThat(actual, is(expected));
-    }
 
     @Test
     public void extractViewNameUsingPath() {
@@ -98,6 +73,41 @@ public class ConventionsTest {
     public void uiAnnotationNotPresent() {
         final String uiPath = deriveMappingForUI(String.class);
         assertNull(uiPath);
+    }
+    
+    @Test
+    public void upperCamelCaseToLowerHyphenatedTest() {
+        String original = "AlphaBetaGamma";
+        String expected = "alpha-beta-gamma";
+        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+
+        original = "alphaBetaGamma";
+        expected = "alpha-beta-gamma";
+        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+
+        original = "";
+        expected = "";
+        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+
+        original = "a";
+        expected = "a";
+        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+
+        original = "A";
+        expected = "a";
+        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+
+        original = "ABC";
+        expected = "a-b-c";
+        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+
+        original = "alllowercase";
+        expected = "alllowercase";
+        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+
+        original = "main/sub";
+        expected = "main/sub";
+        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
     }
 
 }

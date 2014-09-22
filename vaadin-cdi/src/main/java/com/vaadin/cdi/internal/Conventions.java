@@ -16,26 +16,12 @@
 
 package com.vaadin.cdi.internal;
 
-import com.google.gwt.thirdparty.guava.common.base.CaseFormat;
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.CDIView;
 
 public class Conventions {
 
-    static String firstToLower(String name) {
-        char firstLower = Character.toLowerCase(name.charAt(0));
-        if (name.length() > 1) {
-            return firstLower + name.substring(1);
-        } else {
-            return String.valueOf(firstLower);
-        }
-    }
-
-    static String deriveNameFromConvention(Class<?> clazz) {
-        return firstToLower(clazz.getSimpleName());
-    }
-
-    public static String deriveMappingForUI(Class<?> beanClass) {
+     public static String deriveMappingForUI(Class<?> beanClass) {
         if (beanClass.isAnnotationPresent(CDIUI.class)) {
             CDIUI annotation = beanClass.getAnnotation(CDIUI.class);
             String mapping = annotation.value();
@@ -44,7 +30,7 @@ public class Conventions {
             } else {
                 // derive mapping from classname
                 mapping = beanClass.getSimpleName().replaceFirst("UI$", "");
-                return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, mapping);
+                return upperCamelToLowerHyphen(mapping);
             }
         } else {
             return null;
@@ -60,11 +46,29 @@ public class Conventions {
             } else {
                 String mapping = beanClass.getSimpleName().replaceFirst(
                         "View$", "");
-                return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN,
-                        mapping);
+                return upperCamelToLowerHyphen(mapping);
             }
         } else {
             return null;
         }
+    }
+    
+    public static String upperCamelToLowerHyphen(String string) {
+        StringBuilder sb = new StringBuilder();
+        int startOfWord = 0;
+        int endOfWord = -1;
+        int i = 1;
+        while(i <= string.length()) {
+            if(i == string.length() || Character.isUpperCase(string.charAt(i))) {
+                endOfWord = i;
+                if(sb.length() != 0) {
+                    sb.append('-');
+                }
+                sb.append(string.substring(startOfWord, endOfWord).toLowerCase());
+                startOfWord = i;
+            }
+            ++i;
+        }
+        return sb.toString();
     }
 }

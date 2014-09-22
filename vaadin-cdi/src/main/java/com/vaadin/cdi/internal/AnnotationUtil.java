@@ -104,7 +104,7 @@ public class AnnotationUtil {
             public int compare(String o1, String o2) {
                 // descending string length order to get the longest view
                 // mappings first
-                return o1.length() - o2.length();
+                return o2.length() - o1.length();
             }
         });
 

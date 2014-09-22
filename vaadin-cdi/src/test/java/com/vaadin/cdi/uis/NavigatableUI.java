@@ -9,7 +9,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 
 
-@CDIUI("")
+@CDIUI
 public class NavigatableUI extends UI {
     
     @Inject

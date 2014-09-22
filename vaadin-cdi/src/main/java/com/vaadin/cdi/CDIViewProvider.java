@@ -35,6 +35,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.access.AccessControl;
+import com.vaadin.cdi.internal.AnnotationUtil;
 import com.vaadin.cdi.internal.CDIUtil;
 import com.vaadin.cdi.internal.Conventions;
 import com.vaadin.cdi.internal.VaadinViewChangeCleanupEvent;
@@ -156,6 +157,11 @@ public class CDIViewProvider implements ViewProvider {
     private ViewBean getViewBean(String viewName) {
         getLogger().log(Level.FINE, "Looking for view with name \"{0}\"",
                 viewName);
+
+        if (viewName == null) {
+            return null;
+        }
+
         Set<Bean<?>> matching = new HashSet<Bean<?>>();
         Set<Bean<?>> all = beanManager.getBeans(View.class, QUALIFIER_ANY);
         if (all.isEmpty()) {
@@ -176,17 +182,8 @@ public class CDIViewProvider implements ViewProvider {
                     new Object[] { beanClass.getName(), mapping });
 
             // In the case of an empty fragment, use the root view.
-            // Note that the root view should not support parameters if other
-            // views are used.
 
-            if (viewAnnotation.supportsParameters()
-                    && viewName.startsWith(mapping)) {
-                matching.add(bean);
-                getLogger()
-                        .log(Level.FINER,
-                                "Bean {0} with viewName \"{1}\" is one alternative for viewAndParameters \"{2}\"",
-                                new Object[] { bean, mapping, viewName });
-            } else if (viewName.equals(mapping)) {
+            if (viewName.equals(mapping)) {
                 matching.add(bean);
                 getLogger().log(Level.FINER,
                         "Bean {0} with viewName \"{1}\" is one alternative",
@@ -316,11 +313,13 @@ public class CDIViewProvider implements ViewProvider {
             viewName = viewName.substring(1);
         }
 
-        if (viewName.contains("/")) {
-            viewName = viewName.split("/")[0];
+        for (String name : AnnotationUtil.getCDIViewMappings(beanManager)) {
+            if (viewName.equals(name) || (viewName.startsWith(name + "/"))) {
+                return name;
+            }
         }
 
-        return viewName;
+        return null;
     }
 
     public static VaadinViewChangeCleanupEvent getCleanupEvent() {

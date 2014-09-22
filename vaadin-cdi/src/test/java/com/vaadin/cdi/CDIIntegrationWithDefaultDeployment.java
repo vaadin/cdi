@@ -44,6 +44,7 @@ import com.vaadin.cdi.uis.InstrumentedUI;
 import com.vaadin.cdi.uis.InstrumentedView;
 import com.vaadin.cdi.uis.InterceptedBean;
 import com.vaadin.cdi.uis.InterceptedUI;
+import com.vaadin.cdi.uis.NavigatableUI;
 import com.vaadin.cdi.uis.NoViewProviderNavigationUI;
 import com.vaadin.cdi.uis.ParameterizedNavigationUI;
 import com.vaadin.cdi.uis.PlainAlternativeUI;
@@ -59,6 +60,8 @@ import com.vaadin.cdi.uis.UnsecuredUI;
 import com.vaadin.cdi.uis.ViewWithoutAnnotation;
 import com.vaadin.cdi.uis.WithAnnotationRegisteredView;
 import com.vaadin.cdi.views.ConventionalView;
+import com.vaadin.cdi.views.MainView;
+import com.vaadin.cdi.views.SubView;
 
 public class CDIIntegrationWithDefaultDeployment extends
         AbstractManagedCDIIntegrationTest {
@@ -99,7 +102,8 @@ public class CDIIntegrationWithDefaultDeployment extends
                 ParameterizedNavigationUI.class, EnterpriseUI.class,
                 Boundary.class, EnterpriseLabel.class, SubUI.class,
                 PlainAlternativeUI.class, NoViewProviderNavigationUI.class,
-                ConventionalView.class);
+                ConventionalView.class, MainView.class, SubView.class,
+                NavigatableUI.class);
     }
 
     @Test
@@ -346,5 +350,13 @@ public class CDIIntegrationWithDefaultDeployment extends
         assertThat(ConventionalView.getNumberOfInstances(), is(1));
         assertDefaultRootNotInstantiated();
 
+    }
+
+    @Test
+    public void subView() throws MalformedURLException {
+        openWindow(deriveMappingForUI(NavigatableUI.class) + "#!main");
+        waitForValue(LABEL, MainView.VIEW_ID);
+        openWindow(deriveMappingForUI(NavigatableUI.class) + "#!main/subview");
+        waitForValue(LABEL, SubView.VIEW_ID);
     }
 }

@@ -158,13 +158,6 @@ public class ViewScopedContext extends AbstractVaadinContext {
         }
     }
 
-    private List<String> getViewMappings() {
-        if (viewMappings == null) {
-            viewMappings = AnnotationUtil.getCDIViewMappings(getBeanManager());
-        }
-        return viewMappings;
-    }
-
     @Override
     protected Logger getLogger() {
         return Logger.getLogger(ViewScopedContext.class.getCanonicalName());

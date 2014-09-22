@@ -20,6 +20,8 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
+import com.vaadin.ui.UI;
+
 /**
  * Instances of this class are used as an identifier for determining 
  * the correct ContextualStorage in UIScopedContext
@@ -37,7 +39,15 @@ public class UIContextual implements Contextual {
         this.uiId = uiId;
         this.sessionId = sessionId;
     }
+    
+    public UIContextual(Contextual delegate, long sessionId) {
+        this(delegate, sessionId, UI.getCurrent().getUIId());
+    }
 
+    public UIContextual(Contextual delegate) {
+        this(delegate, CDIUtil.getSessionId());
+    }
+    
     public int getUiId() {
         return uiId;
     }
@@ -47,18 +57,8 @@ public class UIContextual implements Contextual {
     }
     
     @Override
-    public Object create(CreationalContext context) {
-        return delegate.create(context);
-    }
-
-    @Override
-    public void destroy(Object instance, CreationalContext context) {
-        delegate.destroy(instance, context);        
-    }
-    
-    @Override
     public boolean equals(Object o) {
-        if(o == null || !(o instanceof UIContextual)) {
+        if(!(o instanceof UIContextual)) {
             return false;
         }
         
@@ -78,6 +78,16 @@ public class UIContextual implements Contextual {
         int result = (int) sessionId;
         result = 31 * result + uiId;
         return result;
+    }
+
+    @Override
+    public Object create(CreationalContext context) {
+        return delegate.create(context);
+    }
+
+    @Override
+    public void destroy(Object instance, CreationalContext context) {
+        delegate.destroy(instance, context);
     }
 
 }

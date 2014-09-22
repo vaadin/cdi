@@ -34,7 +34,6 @@ import com.vaadin.util.CurrentInstance;
  */
 public class UIScopedContext extends AbstractVaadinContext {
 
-
     public UIScopedContext(final BeanManager beanManager) {
         super(beanManager);
         getLogger().fine("Instantiating UIScoped context");
@@ -49,8 +48,10 @@ public class UIScopedContext extends AbstractVaadinContext {
     protected synchronized ContextualStorage getContextualStorage(
             Contextual<?> contextual, boolean createIfNotExist) {
         SessionData sessionData;
-        if (contextual instanceof UIBean) {
-            sessionData = getSessionData(((UIBean) contextual).getSessionId(), createIfNotExist);
+        if (contextual instanceof UIContextual) {
+            sessionData = getSessionData(
+                    ((UIContextual) contextual).getSessionId(),
+                    createIfNotExist);
         } else {
             sessionData = getSessionData(createIfNotExist);
         }
@@ -64,17 +65,15 @@ public class UIScopedContext extends AbstractVaadinContext {
             }
         }
 
-
         // If a non-UI class has the @UIScoped annotation the contextual
-        // parameter is a CDI managed bean. We need to wrap this in a UIBean so
-        // that we can clean up its storage once the UI has been closed.
-        if (!(contextual instanceof UIBean)) {
-            if (contextual instanceof Bean
-                    && !UI.class.isAssignableFrom(((Bean) contextual)
-                            .getBeanClass()) && UI.getCurrent() != null) {
-                contextual = new UIBean((Bean) contextual);
-            } else if (CurrentInstance.get(UIBean.class) != null) {
+        // parameter is a CDI managed bean. We need to wrap this in a
+        // UIContextual so that we can clean up its storage once the UI has been
+        // closed.
+        if (!(contextual instanceof UIContextual)) {
+            if (CurrentInstance.get(UIBean.class) != null) {
                 contextual = CurrentInstance.get(UIBean.class);
+            } else {
+                contextual = new UIContextual(contextual);
             }
         }
 
@@ -84,7 +83,8 @@ public class UIScopedContext extends AbstractVaadinContext {
         }
 
         if (map.containsKey(contextual)) {
-            return map.get(contextual);
+            ContextualStorage storage = map.get(contextual);
+            return storage;
         } else if (createIfNotExist) {
             ContextualStorage storage = new ContextualStorage(getBeanManager(),
                     true, true);

@@ -29,6 +29,7 @@ import com.vaadin.cdi.access.JaasAccessControl;
 import com.vaadin.cdi.internal.AbstractVaadinContext;
 import com.vaadin.cdi.internal.ContextDeployer;
 import com.vaadin.cdi.internal.UIBean;
+import com.vaadin.cdi.internal.UIContextual;
 import com.vaadin.cdi.internal.UIScopedContext;
 import com.vaadin.cdi.internal.VaadinCDIServlet;
 import com.vaadin.cdi.internal.VaadinCDIServletService;
@@ -39,6 +40,7 @@ import com.vaadin.cdi.internal.VaadinViewChangeCleanupEvent;
 import com.vaadin.cdi.internal.VaadinViewChangeEvent;
 import com.vaadin.cdi.internal.VaadinViewCreationEvent;
 import com.vaadin.cdi.internal.ViewBean;
+import com.vaadin.cdi.internal.ViewContextual;
 import com.vaadin.cdi.internal.ViewScopedContext;
 
 /**
@@ -47,15 +49,14 @@ public class ArchiveProvider {
 
     public final static Class FRAMEWORK_CLASSES[] = new Class[] {
             AccessControl.class, CDIUIProvider.class, CDIViewProvider.class,
-            ContextDeployer.class, JaasAccessControl.class, UIBean.class,
-            UIScopedContext.class, CDIUI.class, ViewBean.class,
-            ViewScopedContext.class, CDIView.class,
-            VaadinSessionDestroyEvent.class, VaadinUICloseEvent.class,
-            VaadinViewChangeEvent.class, VaadinViewCreationEvent.class,
-            AbstractVaadinContext.class,
+            ContextDeployer.class, JaasAccessControl.class, UIContextual.class,
+            UIBean.class, UIScopedContext.class, CDIUI.class,
+            ViewContextual.class, ViewBean.class, ViewScopedContext.class,
+            CDIView.class, VaadinSessionDestroyEvent.class,
+            VaadinUICloseEvent.class, VaadinViewChangeEvent.class,
+            VaadinViewCreationEvent.class, AbstractVaadinContext.class,
             VaadinViewChangeCleanupEvent.class, VaadinCDIServlet.class,
             VaadinCDIServletService.class,
-            VaadinCDIServletService.SessionListenerImpl.class,
             CDIUIProvider.DetachListenerImpl.class,
             CDIViewProvider.ViewChangeListenerImpl.class };
 
@@ -67,7 +68,8 @@ public class ArchiveProvider {
     }
 
     static WebArchive base(String warName) {
-        PomEquippedResolveStage pom = Maven.resolver().loadPomFromFile("pom.xml");
+        PomEquippedResolveStage pom = Maven.resolver().loadPomFromFile(
+                "pom.xml");
         // these version numbers should match the POM files
         return ShrinkWrap
                 .create(WebArchive.class, warName + ".war")

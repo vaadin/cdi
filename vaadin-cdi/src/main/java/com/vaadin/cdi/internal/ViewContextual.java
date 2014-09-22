@@ -18,6 +18,8 @@ package com.vaadin.cdi.internal;
 
 import javax.enterprise.context.spi.Contextual;
 
+import com.vaadin.ui.UI;
+
 /**
  * Instances of this class are used as an identifier for determining 
  * the correct ContextualStorage in ViewScopedContext
@@ -38,13 +40,21 @@ public class ViewContextual extends UIContextual {
         this.viewIdentifier = viewIdentifier;
     }
     
+    public ViewContextual(Contextual delegate, long sessionId, String viewIdentifier) {
+        this(delegate, sessionId, UI.getCurrent().getUIId(), viewIdentifier);
+    }
+    
+    public ViewContextual(Contextual delegate, String viewIdentifier) {
+        this(delegate, CDIUtil.getSessionId(), viewIdentifier);
+    }
+    
     @Override
     public boolean equals(Object o) {
-        ViewContextual bean = null;
+        ViewContextual vc = null;
         if (o instanceof ViewContextual) {
-            bean = (ViewContextual) o;
+            vc = (ViewContextual) o;
             return super.equals(o)
-                    && this.viewIdentifier.equals(bean.viewIdentifier);
+                    && this.viewIdentifier.equals(vc.viewIdentifier);
         } else {
             return false;
         }

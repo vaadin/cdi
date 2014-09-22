@@ -25,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.spi.Contextual;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.deltaspike.core.util.context.AbstractContext;
@@ -32,6 +34,7 @@ import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 import com.vaadin.cdi.internal.AbstractVaadinContext.SessionData.UIData;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.UI;
 
 /**
  * UIScopedContext is the context for @UIScoped beans.
@@ -51,7 +54,7 @@ public abstract class AbstractVaadinContext extends AbstractContext {
 
         protected static class UIData {
 
-            private int uiId; 
+            private int uiId;
 
             private String activeView = null;
             private String openingView = null;
@@ -59,7 +62,7 @@ public abstract class AbstractVaadinContext extends AbstractContext {
             public UIData(int uiId) {
                 this.uiId = uiId;
             }
-            
+
             private int getUiId() {
                 return uiId;
             }
@@ -141,7 +144,25 @@ public abstract class AbstractVaadinContext extends AbstractContext {
         return true;
     }
 
-    protected synchronized SessionData getSessionData(VaadinSession session, boolean createIfNotExist) {
+    @Override
+    public <T> T get(Contextual<T> bean) {
+        return super.get(wrapBean(bean));
+    }
+
+    @Override
+    public <T> T get(Contextual<T> bean, CreationalContext<T> creationalContext) {
+        return super.get(wrapBean(bean), creationalContext);
+    }
+
+    private <T> Contextual<T> wrapBean(Contextual<T> bean) {
+        if(!(bean instanceof UIContextual) && bean instanceof Bean && UI.class.isAssignableFrom(((Bean) bean).getBeanClass())) {
+            return new UIBean((Bean) bean);
+        }
+        return bean;
+    }
+
+    protected synchronized SessionData getSessionData(VaadinSession session,
+            boolean createIfNotExist) {
         if (session == null) {
             return null;
         }
@@ -153,7 +174,8 @@ public abstract class AbstractVaadinContext extends AbstractContext {
         return getSessionData(VaadinSession.getCurrent(), createIfNotExist);
     }
 
-    protected synchronized SessionData getSessionData(long sessionId, boolean createIfNotExist) {
+    protected synchronized SessionData getSessionData(long sessionId,
+            boolean createIfNotExist) {
         if (storageMap.containsKey(sessionId)) {
             return storageMap.get(sessionId);
         } else {
@@ -188,8 +210,8 @@ public abstract class AbstractVaadinContext extends AbstractContext {
         for (Entry<Contextual<?>, ContextualStorage> entry : new ArrayList<Entry<Contextual<?>, ContextualStorage>>(
                 sessionData.getStorageMap().entrySet())) {
             Contextual<?> key = entry.getKey();
-            if ((key instanceof UIBean && ((UIBean) key).getUiId() == uiData.uiId)
-                    || (key instanceof ViewBean && ((ViewBean) key).getUiId() == uiData.uiId)) {
+            if (key instanceof UIContextual
+                    && ((UIContextual) key).getUiId() == uiData.uiId) {
                 destroy(entry.getKey());
             }
             sessionData.uiDataMap.remove(key);
@@ -222,8 +244,10 @@ public abstract class AbstractVaadinContext extends AbstractContext {
         Collection<Entry<Long, VaadinUICloseEvent>> entries = null;
         synchronized (cleanupLock) {
             long currentTime = System.currentTimeMillis();
-            SortedMap<Long, VaadinUICloseEvent> subMap = uiCloseQueue.headMap(currentTime);
-            entries = new ArrayList<Map.Entry<Long, VaadinUICloseEvent>>(subMap.entrySet());
+            SortedMap<Long, VaadinUICloseEvent> subMap = uiCloseQueue
+                    .headMap(currentTime);
+            entries = new ArrayList<Map.Entry<Long, VaadinUICloseEvent>>(
+                    subMap.entrySet());
             // Remove the entries from the underlying uiCloseQueue
             subMap.clear();
         }

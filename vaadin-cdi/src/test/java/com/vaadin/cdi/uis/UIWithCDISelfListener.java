@@ -35,6 +35,9 @@ public class UIWithCDISelfListener extends UI {
     private final static AtomicInteger COUNTER = new AtomicInteger(0);
     private final static AtomicInteger EVENT_COUNTER = new AtomicInteger(0);
 
+    private Label messageLabel = new Label("No messages.");
+    public static final String MESSAGE_ID = "message";
+    
     @Inject
     private javax.enterprise.event.Event<String> events;
 
@@ -46,7 +49,7 @@ public class UIWithCDISelfListener extends UI {
     @Override
     protected void init(VaadinRequest request) {
         setSizeFull();
-
+        
         VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
 
@@ -59,15 +62,19 @@ public class UIWithCDISelfListener extends UI {
             }
         });
         button.setId("button");
+        
+        messageLabel.setId(MESSAGE_ID);
+        
         layout.addComponent(label);
         layout.addComponent(button);
+        layout.addComponent(messageLabel);
         setContent(layout);
     }
 
     public void onEventArrival(@Observes
     String message) {
-        EVENT_COUNTER.incrementAndGet();
-        System.out.println("Message arrived!");
+        int count = EVENT_COUNTER.incrementAndGet();
+        messageLabel.setValue(count + " message" + (count != 1 ? "s" : ""));
     }
 
     public static int getNumberOfInstances() {

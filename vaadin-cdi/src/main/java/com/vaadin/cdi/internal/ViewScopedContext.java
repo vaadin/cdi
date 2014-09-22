@@ -56,8 +56,8 @@ public class ViewScopedContext extends AbstractVaadinContext {
         getLogger().fine("Retrieving contextual storage for " + contextual);
 
         SessionData sessionData;
-        if (contextual instanceof UIBean) {
-            sessionData = getSessionData(((UIBean) contextual).getSessionId(),
+        if (contextual instanceof UIContextual) {
+            sessionData = getSessionData(((UIContextual) contextual).getSessionId(),
                     createIfNotExist);
         } else {
             sessionData = getSessionData(createIfNotExist);
@@ -72,26 +72,23 @@ public class ViewScopedContext extends AbstractVaadinContext {
             }
         }
 
-        // The contextual is not a ViewBean if we're injecting something other
+        // The contextual is not a ViewContextual if we're injecting something other
         // than a CDIView with the @ViewScoped annotation. In those cases we'll
         // look up the currently active view for the current UI. Due to
         // technical limitations of the core framework this involves some
         // guesswork during view transition.
-        if (!(contextual instanceof ViewBean)) {
-
+        if (!(contextual instanceof ViewContextual)) {
+            
+            UIData uiData = sessionData.getUIData(
+                    UI.getCurrent().getUIId(), true);
+            String viewName = uiData.getProbableInjectionPointView();
+            if (viewName == null) {
+                getLogger().warning("Could not determine active View");
+            }
             if (contextual instanceof Bean) {
-                UIData uiData = sessionData.getUIData(
-                        UI.getCurrent().getUIId(), true);
-                String viewName = uiData.getProbableInjectionPointView();
-                if (viewName == null) {
-                    getLogger().warning("Could not determine active View");
-                }
-
                 contextual = new ViewBean((Bean) contextual, viewName);
-
             } else {
-                throw new IllegalStateException(
-                        "Invalid contextual get request: " + contextual);
+                contextual = new ViewContextual(contextual, viewName);
             }
 
         }
@@ -137,7 +134,7 @@ public class ViewScopedContext extends AbstractVaadinContext {
         Map<Contextual<?>, ContextualStorage> map = sessionData.getStorageMap();
         for (Entry<Contextual<?>, ContextualStorage> entry : new ArrayList<Entry<Contextual<?>, ContextualStorage>>(
                 map.entrySet())) {
-            ViewBean contextual = (ViewBean) entry.getKey();
+            ViewContextual contextual = (ViewContextual) entry.getKey();
             if (contextual.uiId == uiId
                     && !contextual.viewIdentifier.equals(activeViewName)) {
                 getLogger().fine(

@@ -228,13 +228,16 @@ public class CDIIntegrationWithDefaultDeployment extends
             throws MalformedURLException, InterruptedException {
         assertThat(UIWithCDISelfListener.getNumberOfInstances(), is(0));
         assertThat(UIWithCDISelfListener.getNumberOfDeliveredEvents(), is(0));
-        String uri = deriveMappingForUI(UIWithCDISelfListener.class);
-        openWindow(uri);
-        firstWindow.findElement(BUTTON).click();
-        Thread.sleep(100);
+        
+        openWindow(UIWithCDISelfListener.class);
+        
+        firstWindow.findElement(BUTTON).click();        
+        waitForValue(By.id(UIWithCDISelfListener.MESSAGE_ID), "1 message");
         assertThat(UIWithCDISelfListener.getNumberOfInstances(), is(1));
         assertThat(UIWithCDISelfListener.getNumberOfDeliveredEvents(), is(1));
+        
         firstWindow.findElement(BUTTON).click();
+        waitForValue(By.id(UIWithCDISelfListener.MESSAGE_ID), "2 messages");
         assertThat(UIWithCDISelfListener.getNumberOfInstances(), is(1));
         assertThat(UIWithCDISelfListener.getNumberOfDeliveredEvents(), is(2));
 

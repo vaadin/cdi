@@ -16,6 +16,7 @@ import org.openqa.selenium.By;
 import com.vaadin.cdi.internal.UIScopedBean;
 import com.vaadin.cdi.internal.ViewScopedBean;
 import com.vaadin.cdi.uis.NavigatableUI;
+import com.vaadin.cdi.views.AbstractScopedInstancesView;
 import com.vaadin.cdi.views.AbstractNavigatableView;
 import com.vaadin.cdi.views.UIScopedView;
 import com.vaadin.cdi.views.ViewScopedView;
@@ -25,9 +26,9 @@ public class ScopedInstances extends AbstractManagedCDIIntegrationTest {
     @Deployment(name = "scopedNavigation")
     public static WebArchive alternativeAndActiveWithSamePath() {
         return ArchiveProvider.createWebArchive("scopedNavigation",
-                UIScopedView.class, AbstractNavigatableView.class,
-                ViewScopedView.class, NavigatableUI.class, UIScopedBean.class,
-                ViewScopedBean.class);
+                UIScopedView.class, AbstractScopedInstancesView.class,
+                AbstractNavigatableView.class, ViewScopedView.class, NavigatableUI.class,
+                UIScopedBean.class, ViewScopedBean.class);
     }
 
     @Test
@@ -117,13 +118,13 @@ public class ScopedInstances extends AbstractManagedCDIIntegrationTest {
 
     private void navigateToUIScoped() {
         firstWindow.findElement(
-                By.id(AbstractNavigatableView.NAVIGATE_TO_UISCOPED)).click();
+                By.id(AbstractScopedInstancesView.NAVIGATE_TO_UISCOPED)).click();
         waitForValue(By.id(UIScopedView.DESCRIPTION_LABEL), "UIScopedView");
     }
 
     private void navigateToViewScoped() {
         firstWindow.findElement(
-                By.id(AbstractNavigatableView.NAVIGATE_TO_VIEWSCOPED)).click();
+                By.id(AbstractScopedInstancesView.NAVIGATE_TO_VIEWSCOPED)).click();
         waitForValue(By.id(ViewScopedView.DESCRIPTION_LABEL), "ViewScopedView");
     }
 

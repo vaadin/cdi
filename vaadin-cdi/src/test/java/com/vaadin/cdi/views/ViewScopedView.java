@@ -15,8 +15,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-@CDIView(value = AbstractNavigatableView.VIEWSCOPED_VIEW)
-public class ViewScopedView extends AbstractNavigatableView implements View {
+@CDIView(value = AbstractScopedInstancesView.VIEWSCOPED_VIEW)
+public class ViewScopedView extends AbstractScopedInstancesView implements View {
 
     public static final String DESCRIPTION_LABEL = "label";
     public static final String INSTANCE_LABEL = "view-instance";

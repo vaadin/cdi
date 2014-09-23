@@ -32,7 +32,7 @@ import javax.enterprise.context.NormalScope;
  */
 @NormalScope
 @Inherited
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD })
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UIScoped {
 }

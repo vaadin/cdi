@@ -20,8 +20,12 @@ public abstract class AbstractManagedCDIIntegrationTest extends
     @ArquillianResource
     URL contextPath;
 
-    public void openWindow(Class uiClass) throws MalformedURLException {
-        openWindow(Conventions.deriveMappingForUI(uiClass));
+    public void openWindow(Class uiClass) {
+        try {
+            openWindow(Conventions.deriveMappingForUI(uiClass));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Unable to open UI " + uiClass.getCanonicalName(), e);
+        }
     }
 
     public void openWindow(String uri) throws MalformedURLException {

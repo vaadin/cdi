@@ -15,6 +15,7 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import com.vaadin.cdi.uis.RootUI;
 
@@ -51,5 +52,13 @@ abstract public class AbstractCDIIntegrationTest {
 
     public int number(String txt) {
         return Integer.parseInt(txt);
+    }
+    
+    public WebElement findElement(By by) {
+        return firstWindow.findElement(by);
+    }
+    
+    public WebElement findElement(String id) {
+        return findElement(By.id(id));
     }
 }

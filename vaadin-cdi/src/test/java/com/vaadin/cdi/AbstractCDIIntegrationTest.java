@@ -61,4 +61,11 @@ abstract public class AbstractCDIIntegrationTest {
     public WebElement findElement(String id) {
         return findElement(By.id(id));
     }
+
+    public void sleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+        }
+    }
 }

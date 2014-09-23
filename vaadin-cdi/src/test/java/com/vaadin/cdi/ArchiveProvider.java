@@ -61,17 +61,22 @@ public class ArchiveProvider {
             CDIViewProvider.ViewChangeListenerImpl.class };
 
     public static WebArchive createWebArchive(String warName, Class... classes) {
-        WebArchive archive = base(warName);
+        return createWebArchive(warName, true, classes);
+    }
+
+    public static WebArchive createWebArchive(String warName,
+            boolean emptyBeansXml, Class... classes) {
+        WebArchive archive = base(warName, emptyBeansXml);
         archive.addClasses(classes);
         System.out.println(archive.toString(true));
         return archive;
     }
 
-    static WebArchive base(String warName) {
+    static WebArchive base(String warName, boolean emptyBeansXml) {
         PomEquippedResolveStage pom = Maven.resolver().loadPomFromFile(
                 "pom.xml");
         // these version numbers should match the POM files
-        return ShrinkWrap
+        WebArchive archive = ShrinkWrap
                 .create(WebArchive.class, warName + ".war")
                 .addClasses(FRAMEWORK_CLASSES)
                 .addAsLibraries(
@@ -88,10 +93,12 @@ public class ArchiveProvider {
                         new ByteArrayAsset(VaadinExtension.class.getName()
                                 .getBytes()),
                         ArchivePaths
-                                .create("services/javax.enterprise.inject.spi.Extension"))
-                .addAsWebInfResource(EmptyAsset.INSTANCE,
-                        ArchivePaths.create("beans.xml"));
-
+                                .create("services/javax.enterprise.inject.spi.Extension"));
+        if (emptyBeansXml) {
+            archive = archive.addAsWebInfResource(EmptyAsset.INSTANCE,
+                    ArchivePaths.create("beans.xml"));
+        }
+        return archive;
     }
 
 }

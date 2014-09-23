@@ -15,6 +15,7 @@
 
         <!-- Testing dependencies -->
         <selenium.version>2.43.1</selenium.version>
+        <shiro.version>1.2.3</shiro.version>
 
         <!-- ZIP Manifest fields -->
         <Implementation-Version>${project.version}</Implementation-Version>
@@ -272,6 +273,19 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-themes</artifactId>
             <version>${vaadin.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- shiro dependencies needed for integration testing -->
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+            <version>${shiro.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-web</artifactId>
+            <version>${shiro.version}</version>
             <scope>test</scope>
         </dependency>
 

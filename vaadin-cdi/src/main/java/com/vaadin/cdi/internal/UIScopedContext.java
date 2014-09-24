@@ -45,6 +45,14 @@ public class UIScopedContext extends AbstractVaadinContext {
     }
 
     @Override
+    protected <T> Contextual<T> wrapBean(Contextual<T> bean) {
+        if(!(bean instanceof UIContextual) && bean instanceof Bean && UI.class.isAssignableFrom(((Bean) bean).getBeanClass())) {
+            return new UIBean((Bean) bean);
+        }
+        return bean;
+    }
+
+    @Override
     protected synchronized ContextualStorage getContextualStorage(
             Contextual<?> contextual, boolean createIfNotExist) {
         SessionData sessionData;

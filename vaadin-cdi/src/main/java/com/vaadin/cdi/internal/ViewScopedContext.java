@@ -30,6 +30,7 @@ import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 import com.vaadin.cdi.ViewScoped;
 import com.vaadin.cdi.internal.AbstractVaadinContext.SessionData.UIData;
+import com.vaadin.navigator.View;
 import com.vaadin.ui.UI;
 
 /**
@@ -48,6 +49,15 @@ public class ViewScopedContext extends AbstractVaadinContext {
     @Override
     public Class<? extends Annotation> getScope() {
         return ViewScoped.class;
+    }
+
+    @Override
+    protected <T> Contextual<T> wrapBean(Contextual<T> bean) {
+        if(!(bean instanceof UIContextual) && bean instanceof Bean && View.class.isAssignableFrom(((Bean) bean).getBeanClass())) {
+            String mapping = Conventions.deriveMappingForView(((Bean) bean).getBeanClass());
+            return new ViewBean((Bean) bean, mapping);
+        }
+        return bean;
     }
 
     @Override

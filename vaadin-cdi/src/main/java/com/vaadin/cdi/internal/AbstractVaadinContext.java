@@ -154,10 +154,7 @@ public abstract class AbstractVaadinContext extends AbstractContext {
         return super.get(wrapBean(bean), creationalContext);
     }
 
-    private <T> Contextual<T> wrapBean(Contextual<T> bean) {
-        if(!(bean instanceof UIContextual) && bean instanceof Bean && UI.class.isAssignableFrom(((Bean) bean).getBeanClass())) {
-            return new UIBean((Bean) bean);
-        }
+    protected <T> Contextual<T> wrapBean(Contextual<T> bean) {
         return bean;
     }
 

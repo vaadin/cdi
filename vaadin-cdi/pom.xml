@@ -13,6 +13,9 @@
         <vaadin.version>7.3.1</vaadin.version>
         <deltaspike.version>1.0.1</deltaspike.version>
 
+        <!-- Testing dependencies -->
+        <selenium.version>2.43.1</selenium.version>
+
         <!-- ZIP Manifest fields -->
         <Implementation-Version>${project.version}</Implementation-Version>
         <!-- Must not change this because of the Directory -->
@@ -172,6 +175,13 @@
                 <version>1.1.5.Final</version>
                 <scope>import</scope>
                 <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian.selenium</groupId>
+                <artifactId>selenium-bom</artifactId>
+                <version>${selenium.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -20,7 +20,7 @@ import java.security.Principal;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Alternative;
+import javax.enterprise.inject.Default;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -34,7 +34,7 @@ import com.vaadin.server.VaadinServletService;
  * In order to use JaasAccessControl a proper security domain must be configured
  * in the underlying application server.
  */
-@Alternative
+@Default
 public class JaasAccessControl extends AccessControl implements Serializable {
 
     @Override

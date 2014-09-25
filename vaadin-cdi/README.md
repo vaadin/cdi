@@ -4,10 +4,24 @@ vaadin-cdi
 Vaadin-CDI is official CDI integration for Vaadin framework version 7.
 
 
+Changes in 1.0.0.beta2
+-----------------------
+
+- @UIScoped and @ViewScoped can be used on methods
+  (producer methods, setter injection, constructor injection)
+- Dependency on Guava eliminated
+- Various fixes including
+  - UI and View are now correctly included in their own scopes
+  - Sub-views with slash in view name are now handled correctly
+- See http://dev.vaadin.com/query?status=closed&status=released&milestone=Vaadin+CDI+1.0.0.beta2
+  for the complete list of changes.
+
+See also the notes for earlier releases below.
+
 Changes in 1.0.0.beta1
 -----------------------
 
-Note: Vaadin CDI 1.0.0.beta1 requires Vaadin 7.3.1 or later.
+Note: Vaadin CDI 1.0.0.beta1 and later requires Vaadin 7.3.1 or later.
 Injection of beans other than components also works with earlier Vaadin
 versions.
 

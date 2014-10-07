@@ -12,6 +12,6 @@ public class BeanView extends Label {
 
     @PostConstruct
     private void populate() {
-        setValue("Bean " + bean.getId());
+        setValue("Bean " + bean.getBeanId());
     }
 }

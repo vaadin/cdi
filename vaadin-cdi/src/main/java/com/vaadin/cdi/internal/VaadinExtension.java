@@ -22,22 +22,60 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.ProcessManagedBean;
+
+import com.vaadin.cdi.NormalUIScoped;
+import com.vaadin.cdi.NormalViewScoped;
+import com.vaadin.cdi.UIScoped;
+import com.vaadin.cdi.ViewScoped;
+import com.vaadin.ui.Component;
 
 /**
  * CDI Extension needed to register the @CDIUI scope to the runtime.
  */
 public class VaadinExtension implements Extension {
 
+    public static final class VaadinComponentProxyException extends Exception {
+        public VaadinComponentProxyException(String message) {
+            super(message);
+        }
+    }
+
     private UIScopedContext uiScopedContext;
     private ViewScopedContext viewScopedContext;
 
-    void afterBeanDiscovery(@Observes
-    final AfterBeanDiscovery afterBeanDiscovery, final BeanManager beanManager) {
+    void processManagedBean(@Observes ProcessManagedBean pmb,
+            final BeanManager beanManager) throws VaadinComponentProxyException {
+        if (Component.class.isAssignableFrom(pmb.getBean().getBeanClass())
+                && beanManager.isNormalScope(pmb.getBean().getScope())) {
+            StringBuilder errorStringBuilder = new StringBuilder();
+            errorStringBuilder
+                    .append("A Vaadin Component cannot be a proxy, attempted to inject ");
+            errorStringBuilder.append(pmb.getBean().getBeanClass()
+                    .getCanonicalName());
+            errorStringBuilder.append(" to a NormalScope (");
+            errorStringBuilder.append(pmb.getBean().getScope()
+                    .getCanonicalName());
+            errorStringBuilder.append(")");
+            throw new VaadinComponentProxyException(
+                    errorStringBuilder.toString());
+        }
+    }
+
+    void afterBeanDiscovery(
+            @Observes final AfterBeanDiscovery afterBeanDiscovery,
+            final BeanManager beanManager) {
         uiScopedContext = new UIScopedContext(beanManager);
-        afterBeanDiscovery.addContext(uiScopedContext);
+        afterBeanDiscovery.addContext(new ContextWrapper(uiScopedContext,
+                UIScoped.class));
+        afterBeanDiscovery.addContext(new ContextWrapper(uiScopedContext,
+                NormalUIScoped.class));
         getLogger().info("UIScopedContext registered for Vaadin CDI");
         viewScopedContext = new ViewScopedContext(beanManager);
-        afterBeanDiscovery.addContext(viewScopedContext);
+        afterBeanDiscovery.addContext(new ContextWrapper(viewScopedContext,
+                ViewScoped.class));
+        afterBeanDiscovery.addContext(new ContextWrapper(viewScopedContext,
+                NormalViewScoped.class));
         getLogger().info("ViewScopedContext registered for Vaadin CDI");
     }
 
@@ -81,7 +119,7 @@ public class VaadinExtension implements Extension {
             viewScopedContext.viewChangeCleanup(sessionId, uiId);
         }
     }
-    
+
     private void navigationStarting(@Observes VaadinViewCreationEvent event) {
         if (viewScopedContext != null) {
             viewScopedContext.prepareForViewChange(event.getSessionId(),

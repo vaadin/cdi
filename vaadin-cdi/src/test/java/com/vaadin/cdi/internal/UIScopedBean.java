@@ -1,8 +1,8 @@
 package com.vaadin.cdi.internal;
 
-import com.vaadin.cdi.UIScoped;
+import com.vaadin.cdi.NormalUIScoped;
 
-@UIScoped
+@NormalUIScoped
 public class UIScopedBean {
 
     public static final String ID = "ui-scoped-bean";

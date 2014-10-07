@@ -27,22 +27,27 @@ import javax.inject.Scope;
 /**
  * The lifecycle of a UIScoped component is bound to a browser tab.
  * <p>
- * Injection with this annotation will create a direct reference to the object
- * rather than a proxy.
+ * Injecting with this annotation will create a proxy for the contextual
+ * instance rather than provide the contextual instance itself.
  * <p>
- * There are some limitations when not using proxies. Circular referencing (that
- * is, injecting A to B and B to A) will not work. Interceptors and decorators
- * will not work.
+ * When using proxies, be aware that it's not guaranteed that the hashcode or
+ * equals will match when comparing a proxy to it's underlying instance. It's
+ * imperative to be aware of this when (for example) adding proxies to a
+ * Collection.
  * <p>
- * The sister annotation to this is the {@link @NormalUIScoped}. Both
+ * You cannot use this scope with Vaadin Components. Proxy Components do not 
+ * work correctly within the Vaadin framework, so as a precaution the Vaadin
+ * CDI plugin will not deploy if any such beans are discovered.
+ * <p>
+ * The sister annotation to this is the {@link @UIScoped}. Both
  * annotations reference the same underlying scope, so it is possible to get
- * both a proxy and a direct reference to the same object by using different
+ * both a proxy and a direct reference to the same object by using different 
  * annotations.
  */
-@Scope
+@NormalScope
 @Inherited
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD,
         ElementType.METHOD, ElementType.CONSTRUCTOR })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface UIScoped {
+public @interface NormalUIScoped {
 }

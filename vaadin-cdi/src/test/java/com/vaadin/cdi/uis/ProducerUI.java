@@ -1,10 +1,11 @@
 package com.vaadin.cdi.uis;
 
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.CDIUI;
-import com.vaadin.cdi.UIScoped;
+import com.vaadin.cdi.NormalUIScoped;
 import com.vaadin.cdi.internal.Conventions;
 import com.vaadin.cdi.internal.Preferred;
 import com.vaadin.cdi.internal.ProducedBean;
@@ -28,10 +29,9 @@ public class ProducerUI extends UI {
     
     @Inject @Preferred ProducedBean bean2;
     
-    @Produces @Preferred @UIScoped ProducedBean produceUIScopedBean() {
+    @Produces @Preferred @NormalUIScoped ProducedBean produceUIScopedBean() {
         return new ProducedBean("produced");
     }
-
     @Override
     protected void init(VaadinRequest request) {
         setSizeFull();

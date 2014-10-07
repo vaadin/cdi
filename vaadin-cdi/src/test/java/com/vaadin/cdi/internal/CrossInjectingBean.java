@@ -2,15 +2,19 @@ package com.vaadin.cdi.internal;
 
 import javax.inject.Inject;
 
-import com.vaadin.cdi.ViewScoped;
+import com.vaadin.cdi.NormalViewScoped;
 import com.vaadin.cdi.views.CrossInjectingView;
-import com.vaadin.navigator.View;
 
+@NormalViewScoped
 public class CrossInjectingBean {
     
     private CrossInjectingView parent;
     
     private CrossInjectingView constructorParent;
+    
+    public CrossInjectingBean() {
+        constructorParent = null;
+    }
     
     @Inject
     public CrossInjectingBean(CrossInjectingView view) {
@@ -18,7 +22,6 @@ public class CrossInjectingBean {
     }
     
     @Inject
-    @ViewScoped
     public void setParentView(CrossInjectingView view) {
         this.parent = view;
     }

@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.CDIView;
+import com.vaadin.cdi.NormalViewScoped;
 import com.vaadin.cdi.internal.CrossInjectingBean;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;

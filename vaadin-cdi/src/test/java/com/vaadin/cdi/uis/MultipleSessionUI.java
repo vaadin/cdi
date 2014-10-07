@@ -32,7 +32,7 @@ public class MultipleSessionUI extends UI {
 
     @PostConstruct
     private void test() {
-        Label mainSessionLabel = new Label("" + bean.getId());
+        Label mainSessionLabel = new Label("" + bean.getBeanId());
         mainSessionLabel.setId(MAINSESSION_ID);
         layout.addComponent(mainSessionLabel);
 
@@ -50,20 +50,20 @@ public class MultipleSessionUI extends UI {
                 .setCurrent(otherSession);
         otherSession.getLockInstance().lock();
         // proxy looks up actual bean based on session and UI ID
-        Label otherSessionLabel = new Label("" + bean.getId());
+        Label otherSessionLabel = new Label("" + bean.getBeanId());
         otherSessionLabel.setId(OTHERSESSION_ID);
         layout.addComponent(otherSessionLabel);
         otherSession.getLockInstance().unlock();
         CurrentInstance.restoreInstances(oldCurrentInstance);
 
-        Label mainSessionLabel2 = new Label("" + bean.getId());
+        Label mainSessionLabel2 = new Label("" + bean.getBeanId());
         mainSessionLabel2.setId(MAINSESSION2_ID);
         layout.addComponent(mainSessionLabel2);
     }
 
     @Override
     protected void init(VaadinRequest request) {
-        System.out.println("init(): " + bean.getId());
+        System.out.println("init(): " + bean.getBeanId());
 
         Label label = new Label("+MultipleSessionUI");
         label.setId("label");

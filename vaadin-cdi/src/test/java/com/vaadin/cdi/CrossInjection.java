@@ -1,6 +1,7 @@
 package com.vaadin.cdi;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -32,6 +33,7 @@ public class CrossInjection extends AbstractManagedCDIIntegrationTest {
         String id1 = findElement(CrossInjectingView.TRUE_ID).getText();
         String id2 = findElement(CrossInjectingView.SETTER_INJECTED_ID).getText();
         assertThat(id1, is(id2));
+        assertThat(id1, not("null"));
     }
 
     @Test
@@ -44,6 +46,7 @@ public class CrossInjection extends AbstractManagedCDIIntegrationTest {
         String id1 = findElement(CrossInjectingView.TRUE_ID).getText();
         String id2 = findElement(CrossInjectingView.CONSTRUCTOR_INJECTED_ID).getText();
         assertThat(id1, is(id2));
+        assertThat(id1, not("null"));
     }
    
 }

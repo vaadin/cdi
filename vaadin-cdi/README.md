@@ -4,6 +4,19 @@ vaadin-cdi
 Vaadin-CDI is official CDI integration for Vaadin framework version 7.
 
 
+Changes in 1.0.0.beta3
+-----------------------
+
+- breaking change: @UIScoped and @ViewScoped are no longer @NormalScope
+  - added corresponding @NormalUIScoped and @NormalViewScoped
+- breaking change: NormalScopes (including @NormalUIScoped and
+  @NormalViewScoped) are not supported classes implementing
+  com.vaadin.ui.Component
+- See http://dev.vaadin.com/query?status=closed&status=released&milestone=Vaadin+CDI+1.0.0.beta3
+  for the complete list of changes.
+
+See also the notes for earlier releases below.
+
 Changes in 1.0.0.beta2
 -----------------------
 

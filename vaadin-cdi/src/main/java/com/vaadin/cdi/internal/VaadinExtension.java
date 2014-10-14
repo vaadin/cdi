@@ -16,6 +16,8 @@
 
 package com.vaadin.cdi.internal;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.enterprise.event.Observes;
@@ -44,27 +46,36 @@ public class VaadinExtension implements Extension {
     private UIScopedContext uiScopedContext;
     private ViewScopedContext viewScopedContext;
 
+    private List<String> normalScopedComponentWarnings = new LinkedList<String>();
+
     void processManagedBean(@Observes ProcessManagedBean pmb,
-            final BeanManager beanManager) throws VaadinComponentProxyException {
+            final BeanManager beanManager) {
         if (Component.class.isAssignableFrom(pmb.getBean().getBeanClass())
                 && beanManager.isNormalScope(pmb.getBean().getScope())) {
-            StringBuilder errorStringBuilder = new StringBuilder();
-            errorStringBuilder
-                    .append("A Vaadin Component cannot be a proxy, attempted to inject ");
-            errorStringBuilder.append(pmb.getBean().getBeanClass()
-                    .getCanonicalName());
-            errorStringBuilder.append(" to a NormalScope (");
-            errorStringBuilder.append(pmb.getBean().getScope()
-                    .getCanonicalName());
-            errorStringBuilder.append(")");
-            throw new VaadinComponentProxyException(
-                    errorStringBuilder.toString());
+            normalScopedComponentWarnings.add("@"
+                    + String.format("%-20s", pmb.getBean().getScope()
+                            .getSimpleName()) + " "
+                    + pmb.getBean().getBeanClass().getCanonicalName());
         }
     }
 
     void afterBeanDiscovery(
             @Observes final AfterBeanDiscovery afterBeanDiscovery,
             final BeanManager beanManager) {
+
+        if (normalScopedComponentWarnings.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("The following Vaadin components are injected into normal scoped contexts:\n");
+            for (String proxiedComponent : normalScopedComponentWarnings) {
+                sb.append("   ");
+                sb.append(proxiedComponent);
+                sb.append("\n");
+            }
+            sb.append("This approach uses proxy objects and has not been extensively tested with the framework. Please report any unexpected behavior. Switching to a pseudo-scoped context may also resolve potential issues.");
+            getLogger().info(sb.toString());
+
+        }
+
         uiScopedContext = new UIScopedContext(beanManager);
         afterBeanDiscovery.addContext(new ContextWrapper(uiScopedContext,
                 UIScoped.class));

@@ -15,10 +15,7 @@ import com.vaadin.cdi.shiro.ShiroTest;
         MultipleAccessIsolation.class, ScopedInstances.class,
         InjectionTest.class, ConsistentInjectionTest.class,
         QualifiedInjection.class, MultipleSessionTest.class,
-        ScopedProducer.class, CrossInjection.class, ShiroTest.class,
-        ComponentProxiesPreventDeployment.class,
-        ComponentProxiesThroughInheritance.class,
-        ComponentProxiesThroughStereotype.class })
+        ScopedProducer.class, CrossInjection.class, ShiroTest.class})
 public class DeploymentTestSuiteIT {
 
 }

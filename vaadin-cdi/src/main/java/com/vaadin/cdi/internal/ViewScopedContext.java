@@ -88,9 +88,12 @@ public class ViewScopedContext extends AbstractVaadinContext {
         // technical limitations of the core framework this involves some
         // guesswork during view transition.
         if (!(contextual instanceof ViewContextual)) {
-            
+            UI currentUI = UI.getCurrent();
+            if(currentUI == null) {
+                throw new IllegalStateException("Unable to resolve " + contextual + ", current UI not set.");
+            }
             UIData uiData = sessionData.getUIData(
-                    UI.getCurrent().getUIId(), true);
+                    currentUI.getUIId(), true);
             String viewName = uiData.getProbableInjectionPointView();
             if (viewName == null) {
                 getLogger().warning("Could not determine active View");

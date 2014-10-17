@@ -91,8 +91,10 @@ public abstract class AbstractVaadinContext extends AbstractContext {
             }
 
             public void validateTransition() {
-                activeView = openingView;
-                openingView = null;
+                if(openingView != null) {
+                    activeView = openingView;
+                    openingView = null;
+                }
             }
 
             public void clearPendingViewChange() {

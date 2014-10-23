@@ -17,6 +17,7 @@
 package com.vaadin.cdi;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -42,6 +43,9 @@ import com.vaadin.util.CurrentInstance;
 
 public class CDIUIProvider extends DefaultUIProvider implements Serializable {
 
+    private static final Annotation QUALIFIER_ANY = new AnnotationLiteral<Any>() {
+    };
+    
     public static final class DetachListenerImpl implements DetachListener {
         private BeanManager beanManager;
 
@@ -175,9 +179,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
     private Bean<?> scanForBeans(Class<? extends UI> type, VaadinRequest request) {
         BeanManager beanManager = getBeanManager();
         Bean<?> bean = null;
-        Set<Bean<?>> beans = beanManager.getBeans(type,
-                new AnnotationLiteral<Any>() {
-                });
+        Set<Bean<?>> beans = beanManager.getBeans(type, QUALIFIER_ANY);
 
         if (beans.isEmpty()) {
             getLogger().warning(

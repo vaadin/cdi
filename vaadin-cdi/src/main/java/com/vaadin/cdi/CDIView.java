@@ -22,10 +22,19 @@ import java.lang.annotation.Target;
 
 import javax.enterprise.inject.Stereotype;
 
+import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.View;
 import com.vaadin.ui.UI;
 
 /**
- * Similar semantics to
+ * Classes implementing {@link View} and annotated with <code>@CDIView</code>
+ * are automatically registered with {@link CDIViewProvider} for use by
+ * {@link Navigator}.
+ * <p>
+ * By default, the view name is derived from the class name of the annotated
+ * class, but this can also be overriden by defining a {@link #value()}.
+ * <p>
+ * <code>@CDIView</code> views are by default {@link ViewScoped}.
  * 
  * @see javax.inject.Named
  */
@@ -40,7 +49,7 @@ public @interface CDIView {
      * The name of the CDIView can be derived from the simple class name So it
      * is optional. Also multiple views without a value may exist at the same
      * time.
-     * 
+     * <p>
      * Example: UserDetailView by convention becomes "user-detail"
      */
     public String value() default USE_CONVENTIONS;
@@ -63,9 +72,9 @@ public @interface CDIView {
     /**
      * Specifies which UIs can show the view. {@link CDIViewProvider} only lists
      * the views that have the current UI on this list.
-     * 
+     * <p>
      * If this list contains UI.class, the view is available for all UIs.
-     * 
+     * <p>
      * This only needs to be specified if the application has multiple UIs that
      * use {@link CDIViewProvider}.
      * 

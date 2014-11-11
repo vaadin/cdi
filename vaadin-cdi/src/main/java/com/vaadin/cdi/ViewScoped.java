@@ -25,7 +25,7 @@ import javax.inject.Scope;
 
 /**
  * The lifecycle of a ViewScoped component starts when the view is navigated to
- * and ends when the ui is closed or it navigates to a different view.
+ * and ends when navigating to a different view or when the UI is closed.
  * <p>
  * Injection with this annotation will create a direct reference to the object
  * rather than a proxy.

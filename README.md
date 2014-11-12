@@ -1,13 +1,11 @@
-vaadin-cdi-integration
+Vaadin CDI
 ======================
 
-Vaadin-CDI is official CDI integration for Vaadin framework version 7.
-
-Multi Module Project for Vaadin 7 - CDI Integration
+Vaadin CDI is the official CDI integration for Vaadin Framework version 7.
 
 Building the project
 ----
-Execute `mvn clean install` in the root directory to build vaadin-cdi, as well as, the vaadin-cdi-integration projects.
+Execute `mvn clean install` in the root directory to build vaadin-cdi.
 
 Issue tracking
 ----

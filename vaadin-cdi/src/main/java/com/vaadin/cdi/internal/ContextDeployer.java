@@ -31,6 +31,7 @@ import javax.servlet.annotation.WebListener;
 
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.URLMapping;
+import com.vaadin.cdi.internal.InconsistentDeploymentException.ID;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.shared.Version;
 import com.vaadin.ui.UI;
@@ -71,7 +72,7 @@ public class ContextDeployer implements ServletContextListener {
         getLogger().info("Done deploying Vaadin UIs");
     }
 
-    private boolean isVaadinServletDefinedInDeploymentDescriptor(
+    private Class getVaadinServletDefinedInDeploymentDescriptor(
             ServletContext context) {
         for (ServletRegistration servletRegistration : context
                 .getServletRegistrations().values()) {
@@ -85,7 +86,9 @@ public class ContextDeployer implements ServletContextListener {
                             servletClassName);
 
                     if (VaadinServlet.class.isAssignableFrom(servletClass)) {
-                        return true;
+                        // return the first Vaadin servlet in the deployment
+                        // descriptor
+                        return servletClass;
                     }
 
                 } catch (ClassNotFoundException e) {
@@ -95,7 +98,7 @@ public class ContextDeployer implements ServletContextListener {
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -221,11 +224,22 @@ public class ContextDeployer implements ServletContextListener {
      * @param context
      */
     private void deployVaadinServlet(ServletContext context) {
-        if (isVaadinServletDefinedInDeploymentDescriptor(context)) {
+        Class vaadinServletClass = getVaadinServletDefinedInDeploymentDescriptor(context);
+        if (vaadinServletClass != null) {
             getLogger()
                     .warning(
                             "Vaadin related servlet is defined in deployment descriptor, "
                                     + "automated deployment of VaadinCDIServlet is now disabled");
+            Class enclosingClass = vaadinServletClass.getEnclosingClass();
+            if (!VaadinCDIServlet.class.isAssignableFrom(vaadinServletClass)
+                    && enclosingClass != null
+                    && enclosingClass.isAnnotationPresent(CDIUI.class)) {
+                throw new InconsistentDeploymentException(
+                        ID.EMBEDDED_SERVLET,
+                        "A Vaadin @CDIUI class should not contain a nested servlet class ("
+                                + vaadinServletClass.getCanonicalName()
+                                + ") other than a VaadinCDIServlet. In most cases, an appropriate servlet is auto-deployed.");
+            }
             return;
         }
 

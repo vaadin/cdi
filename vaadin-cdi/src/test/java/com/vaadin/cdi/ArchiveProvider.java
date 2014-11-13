@@ -27,7 +27,10 @@ import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 import com.vaadin.cdi.access.AccessControl;
 import com.vaadin.cdi.access.JaasAccessControl;
 import com.vaadin.cdi.internal.AbstractVaadinContext;
+import com.vaadin.cdi.internal.AnnotationUtil;
 import com.vaadin.cdi.internal.ContextDeployer;
+import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.InconsistentDeploymentException;
 import com.vaadin.cdi.internal.UIBean;
 import com.vaadin.cdi.internal.UIContextual;
 import com.vaadin.cdi.internal.UIScopedContext;
@@ -58,7 +61,9 @@ public class ArchiveProvider {
             VaadinViewChangeCleanupEvent.class, VaadinCDIServlet.class,
             VaadinCDIServletService.class,
             CDIUIProvider.DetachListenerImpl.class,
-            CDIViewProvider.ViewChangeListenerImpl.class };
+            CDIViewProvider.ViewChangeListenerImpl.class, Conventions.class,
+            InconsistentDeploymentException.class, AnnotationUtil.class,
+            URLMapping.class };
 
     public static WebArchive createWebArchive(String warName, Class... classes) {
         return createWebArchive(warName, true, classes);

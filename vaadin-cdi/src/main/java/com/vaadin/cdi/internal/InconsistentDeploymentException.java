@@ -22,12 +22,14 @@ package com.vaadin.cdi.internal;
  * <li>Several UIs annotated with @CDIUI annotations with an empty context path
  * are packaged</li>
  * <li>A servlet defined in the web.xml cannot be loaded.</li>
+ * <li>A nested servlet class of an inappropriate type is defined in a @CDIUI
+ * class.</li>
  * </ol>
  */
 public class InconsistentDeploymentException extends RuntimeException {
 
     enum ID {
-        MULTIPLE_ROOTS, PATH_COLLISION, CLASS_NOT_FOUND
+        MULTIPLE_ROOTS, PATH_COLLISION, CLASS_NOT_FOUND, EMBEDDED_SERVLET
     }
 
     private ID id;

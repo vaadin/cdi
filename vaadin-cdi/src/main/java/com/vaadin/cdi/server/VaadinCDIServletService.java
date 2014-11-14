@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.cdi.internal;
+package com.vaadin.cdi.server;
 
 import java.util.logging.Logger;
 
@@ -21,6 +21,9 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.cdi.CDIUIProvider;
 import com.vaadin.cdi.CDIViewProvider;
+import com.vaadin.cdi.internal.CDIUtil;
+import com.vaadin.cdi.internal.VaadinSessionDestroyEvent;
+import com.vaadin.cdi.internal.VaadinViewChangeCleanupEvent;
 import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.SessionDestroyEvent;
@@ -32,11 +35,18 @@ import com.vaadin.server.VaadinResponse;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinServletService;
 
+/**
+ * Servlet service implementation for Vaadin CDI.
+ * 
+ * This class automatically initializes CDIUIProvider and provides the CDI
+ * add-on events about session and request processing. For overriding this
+ * class, see VaadinCDIServlet.
+ */
 public class VaadinCDIServletService extends VaadinServletService {
 
     private BeanManager beanManager = null;
 
-    public final class SessionListenerImpl implements SessionInitListener,
+    protected final class SessionListenerImpl implements SessionInitListener,
             SessionDestroyListener {
         @Override
         public void sessionInit(SessionInitEvent event) {
@@ -64,7 +74,7 @@ public class VaadinCDIServletService extends VaadinServletService {
         addSessionDestroyListener(sessionListener);
     }
 
-    public BeanManager getBeanManager() {
+    protected BeanManager getBeanManager() {
         if (beanManager == null) {
             beanManager = CDIUtil.lookupBeanManager();
         }

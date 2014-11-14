@@ -32,6 +32,7 @@ import javax.servlet.annotation.WebListener;
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.URLMapping;
 import com.vaadin.cdi.internal.InconsistentDeploymentException.ID;
+import com.vaadin.cdi.server.VaadinCDIServlet;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.shared.Version;
 import com.vaadin.ui.UI;

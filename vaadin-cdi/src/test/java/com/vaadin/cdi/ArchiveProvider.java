@@ -34,8 +34,6 @@ import com.vaadin.cdi.internal.InconsistentDeploymentException;
 import com.vaadin.cdi.internal.UIBean;
 import com.vaadin.cdi.internal.UIContextual;
 import com.vaadin.cdi.internal.UIScopedContext;
-import com.vaadin.cdi.internal.VaadinCDIServlet;
-import com.vaadin.cdi.internal.VaadinCDIServletService;
 import com.vaadin.cdi.internal.VaadinExtension;
 import com.vaadin.cdi.internal.VaadinSessionDestroyEvent;
 import com.vaadin.cdi.internal.VaadinUICloseEvent;
@@ -45,6 +43,8 @@ import com.vaadin.cdi.internal.VaadinViewCreationEvent;
 import com.vaadin.cdi.internal.ViewBean;
 import com.vaadin.cdi.internal.ViewContextual;
 import com.vaadin.cdi.internal.ViewScopedContext;
+import com.vaadin.cdi.server.VaadinCDIServlet;
+import com.vaadin.cdi.server.VaadinCDIServletService;
 
 /**
  */

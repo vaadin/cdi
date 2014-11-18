@@ -50,7 +50,8 @@ public @interface CDIView {
      * is optional. Also multiple views without a value may exist at the same
      * time.
      * <p>
-     * Example: UserDetailView by convention becomes "user-detail"
+     * Example: UserDetailView by convention becomes "user-detail" and
+     * UserCDIExample becomes "user-cdi-example".
      */
     public String value() default USE_CONVENTIONS;
 

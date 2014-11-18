@@ -55,20 +55,32 @@ public class Conventions {
     
     public static String upperCamelToLowerHyphen(String string) {
         StringBuilder sb = new StringBuilder();
-        int startOfWord = 0;
-        int endOfWord = -1;
-        int i = 1;
-        while(i <= string.length()) {
-            if(i == string.length() || Character.isUpperCase(string.charAt(i))) {
-                endOfWord = i;
-                if(sb.length() != 0) {
+        for (int i = 0; i < string.length(); i++) {
+            char c = string.charAt(i);
+            if (Character.isUpperCase(c)) {
+                c = Character.toLowerCase(c);
+                if (shouldPrependHyphen(string, i)) {
                     sb.append('-');
                 }
-                sb.append(string.substring(startOfWord, endOfWord).toLowerCase());
-                startOfWord = i;
             }
-            ++i;
+            sb.append(c);
         }
         return sb.toString();
+    }
+
+    private static boolean shouldPrependHyphen(String string, int i) {
+        if (i == 0) {
+            // Never put a hyphen at the beginning
+            return false;
+        } else if (!Character.isUpperCase(string.charAt(i - 1))) {
+            // Append if previous char wasn't upper case
+            return true;
+        } else if (i + 1 < string.length()
+                && !Character.isUpperCase(string.charAt(i + 1))) {
+            // Append if next char isn't upper case
+            return true;
+        } else {
+            return false;
+        }
     }
 }

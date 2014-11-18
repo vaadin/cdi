@@ -98,7 +98,7 @@ public class ConventionsTest {
         assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
 
         original = "ABC";
-        expected = "a-b-c";
+        expected = "abc";
         assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
 
         original = "alllowercase";
@@ -107,6 +107,26 @@ public class ConventionsTest {
 
         original = "main/sub";
         expected = "main/sub";
+        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+
+        original = "MyCDITest";
+        expected = "my-cdi-test";
+        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+
+        original = "MyATest";
+        expected = "my-a-test";
+        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+
+        original = "aB";
+        expected = "a-b";
+        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+
+        original = "Ab";
+        expected = "ab";
+        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+
+        original = "MyCDI";
+        expected = "my-cdi";
         assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
     }
 

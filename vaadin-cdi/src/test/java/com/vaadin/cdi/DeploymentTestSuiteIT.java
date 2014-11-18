@@ -17,7 +17,7 @@ import com.vaadin.cdi.shiro.ShiroTest;
         QualifiedInjection.class, MultipleSessionTest.class,
         ScopedProducer.class, CrossInjection.class, ShiroTest.class,
         InappropriateNestedServletInDeployment.class,
-        InappropriateCDIViewInDeployment.class })
+        InappropriateCDIViewInDeployment.class, NonPassivatingBeanTest.class })
 public class DeploymentTestSuiteIT {
 
 }

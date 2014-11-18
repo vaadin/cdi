@@ -94,8 +94,8 @@ public class UIScopedContext extends AbstractVaadinContext {
             ContextualStorage storage = map.get(contextual);
             return storage;
         } else if (createIfNotExist) {
-            ContextualStorage storage = new ContextualStorage(getBeanManager(),
-                    true, true);
+            ContextualStorage storage = new VaadinContextualStorage(getBeanManager(),
+                    true);
             map.put(contextual, storage);
             return storage;
         } else {

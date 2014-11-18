@@ -52,7 +52,7 @@ public abstract class AbstractVaadinContext extends AbstractContext {
 
     protected static class SessionData {
 
-        protected static class UIData {
+        public static class UIData {
 
             private int uiId;
 

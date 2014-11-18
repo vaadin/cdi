@@ -34,9 +34,8 @@ import com.vaadin.navigator.View;
 import com.vaadin.ui.UI;
 
 /**
- * UIScopedContext is the context for @UIScoped beans.
+ * ViewScopedContext is the context for @ViewScoped beans.
  */
-
 public class ViewScopedContext extends AbstractVaadinContext {
 
     private List<String> viewMappings;
@@ -115,8 +114,8 @@ public class ViewScopedContext extends AbstractVaadinContext {
         if (map.containsKey(contextual)) {
             return map.get(contextual);
         } else if (createIfNotExist) {
-            ContextualStorage storage = new ContextualStorage(getBeanManager(),
-                    true, true);
+            ContextualStorage storage = new VaadinContextualStorage(getBeanManager(),
+                    true);
             map.put(contextual, storage);
             return storage;
         } else {

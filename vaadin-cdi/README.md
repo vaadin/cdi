@@ -4,6 +4,17 @@ vaadin-cdi
 Vaadin-CDI is the official CDI integration for Vaadin framework version 7.
 
 
+Changes in 1.0.0.rc1
+-----------------------
+
+- moved the classes VaadinCDIServlet and VaadinCDIServletService to the
+  package com.vaadin.cdi.servlet
+- do not add hyphens within all caps abbreviations in automatic UI/view names,
+  e.g. MyCDIUI becomes my-cdi and MyCDITestView becomes my-cdi-test
+- added check at deployment time: classes with @CDIView must implement View
+- added check at deployment time: if a servlet class is nested in a UI with
+  @CDIUI, it must extend VaadinCDIServlet
+
 Changes in 1.0.0.beta4
 -----------------------
 

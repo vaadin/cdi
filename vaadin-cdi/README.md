@@ -4,6 +4,11 @@ vaadin-cdi
 Vaadin-CDI is the official CDI integration for Vaadin framework version 7.
 
 
+Changes in 1.0.0
+-----------------------
+
+No changes since 1.0.0.rc1.
+
 Changes in 1.0.0.rc1
 -----------------------
 

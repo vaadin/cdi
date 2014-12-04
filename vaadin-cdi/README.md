@@ -4,6 +4,11 @@ vaadin-cdi
 Vaadin-CDI is the official CDI integration for Vaadin framework version 7.
 
 
+Changes in 1.0.1
+-----------------------
+
+- Upgrade DeltaSpike to version 1.0.3 for GlassFish 4.1 compatibility
+
 Changes in 1.0.0
 -----------------------
 

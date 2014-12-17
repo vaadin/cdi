@@ -4,6 +4,11 @@ vaadin-cdi
 Vaadin-CDI is the official CDI integration for Vaadin framework version 7.
 
 
+Changes in 1.0.2
+-----------------------
+
+- Accept beans that do not implement PassivationCapable (#15243)
+
 Changes in 1.0.1
 -----------------------
 

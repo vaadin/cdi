@@ -1,7 +1,9 @@
 package com.vaadin.cdi.views;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.CDIView;
@@ -20,6 +22,10 @@ public class ViewScopedView extends AbstractScopedInstancesView implements View 
 
     public static final String DESCRIPTION_LABEL = "label";
     public static final String INSTANCE_LABEL = "view-instance";
+    public static final String DESTROY_COUNT_LABEL = "destroy-count-label";
+
+    /** number of times {@code @PreDestroy} method was called */
+    private static final AtomicInteger destroyCount = new AtomicInteger();
 
     @Inject
     private UIScopedBean uiScopedBean;
@@ -50,6 +56,10 @@ public class ViewScopedView extends AbstractScopedInstancesView implements View 
         uiScopedLabel.setId(UIScopedBean.ID);
         layout.addComponent(uiScopedLabel);
 
+        Label destroyCountLabel = new Label(String.valueOf(destroyCount.get()));
+        destroyCountLabel.setId(ViewScopedView.DESTROY_COUNT_LABEL);
+        layout.addComponent(destroyCountLabel);
+
         Button refreshButton = new Button("Refresh labels");
         refreshButton.addClickListener(new ClickListener() {
 
@@ -70,4 +80,8 @@ public class ViewScopedView extends AbstractScopedInstancesView implements View 
         return Logger.getLogger(this.getClass().getCanonicalName());
     }
 
+    @PreDestroy
+    private void destroy() {
+        destroyCount.getAndIncrement();
+    }
 }

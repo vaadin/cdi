@@ -12,13 +12,13 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         
         <!-- In addition to POMs, these version numbers are in ArchiveProvider for tests -->
-        <vaadin.version>7.3.1</vaadin.version>
-        <deltaspike.version>1.0.3</deltaspike.version>
+        <vaadin.version>7.4.3</vaadin.version>
+        <deltaspike.version>1.3.0</deltaspike.version>
 
         <!-- Testing dependencies -->
         <selenium.version>2.43.1</selenium.version>
         <shiro.version>1.2.3</shiro.version>
-        <arquillian.version>1.1.5.Final</arquillian.version>
+        <arquillian.version>1.1.7.Final</arquillian.version>
 
         <!-- ZIP Manifest fields -->
         <Implementation-Version>${project.version}</Implementation-Version>

@@ -16,9 +16,10 @@
 
 package com.vaadin.cdi;
 
+import javax.enterprise.inject.spi.Extension;
+
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
@@ -85,20 +86,16 @@ public class ArchiveProvider {
                 .create(WebArchive.class, warName + ".war")
                 .addClasses(FRAMEWORK_CLASSES)
                 .addAsLibraries(
-                        pom.resolve("com.vaadin:vaadin-server:7.3.1")
+                        pom.resolve("com.vaadin:vaadin-server")
                                 .withTransitivity().asFile())
                 .addAsLibraries(
-                        pom.resolve("com.vaadin:vaadin-themes:7.3.1")
+                        pom.resolve("com.vaadin:vaadin-themes")
                                 .withTransitivity().asFile())
                 .addAsLibraries(
                         pom.resolve(
-                                "org.apache.deltaspike.core:deltaspike-core-impl:1.0.1")
+                                "org.apache.deltaspike.core:deltaspike-core-impl")
                                 .withTransitivity().asFile())
-                .addAsWebInfResource(
-                        new ByteArrayAsset(VaadinExtension.class.getName()
-                                .getBytes()),
-                        ArchivePaths
-                                .create("services/javax.enterprise.inject.spi.Extension"));
+                .addAsServiceProvider(Extension.class, VaadinExtension.class);
         if (emptyBeansXml) {
             archive = archive.addAsWebInfResource(EmptyAsset.INSTANCE,
                     ArchivePaths.create("beans.xml"));

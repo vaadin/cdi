@@ -12,7 +12,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         
         <!-- In addition to POMs, these version numbers are in ArchiveProvider for tests -->
-        <vaadin.version>7.4.3</vaadin.version>
+        <vaadin.version>7.5.1</vaadin.version>
         <deltaspike.version>1.4.1</deltaspike.version>
 
         <!-- Testing dependencies -->

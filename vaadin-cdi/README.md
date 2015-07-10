@@ -3,6 +3,11 @@ vaadin-cdi
 
 Vaadin-CDI is the official CDI integration for Vaadin framework version 7.
 
+Changes in 1.0.3
+-----------------------
+
+- Upgrade DeltaSpike to 1.4.1
+- Update Vaadin dependendency
 
 Changes in 1.0.2
 -----------------------

@@ -83,6 +83,12 @@ public class ContextDeployer implements ServletContextListener {
             // These should not prevent registration of the VaadinCDIServlet.
             if (null != servletClassName) {
                 try {
+                    if (servletClassName.equals("com.ibm.ws.wsoc.WsocServlet")) {
+                        // Websphere servlet which implements websocket
+                        // endpoints, dynamically added
+                        continue;
+                    }
+
                     Class<?> servletClass = context.getClassLoader().loadClass(
                             servletClassName);
 

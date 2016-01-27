@@ -272,10 +272,12 @@ public class ContextDeployer implements ServletContextListener {
 
         registration.setAsyncSupported(true);
 
-        registration.addMapping("/VAADIN/*");
+        // Register UI mapping before /VAADIN/* as Atmosphere uses the 
+        // first mapping to decide path for JSR-356 endpoints
         getLogger().info(
                 "Mapping " + registration.getName() + " to " + urlMapping);
         registration.addMapping(urlMapping);
+        registration.addMapping("/VAADIN/*");
     }
 
     @Override

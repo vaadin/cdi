@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.security.DenyAll;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Any;
@@ -131,6 +132,12 @@ public class CDIViewProvider implements ViewProvider {
     protected boolean isUserHavingAccessToView(Bean<?> viewBean) {
 
         if (viewBean.getBeanClass().isAnnotationPresent(CDIView.class)) {
+            if (viewBean.getBeanClass()
+                    .isAnnotationPresent(DenyAll.class)) {
+                // DenyAll defined, everyone is denied access
+                return false;
+            }
+
             if (!viewBean.getBeanClass()
                     .isAnnotationPresent(RolesAllowed.class)) {
                 // No roles defined, everyone is allowed
@@ -150,7 +157,7 @@ public class CDIViewProvider implements ViewProvider {
             }
         }
 
-        // No annotation defined, everyone is allowed
+        // No annotation (or PermitAll) defined, everyone is allowed
         return true;
     }
 

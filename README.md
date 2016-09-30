@@ -9,21 +9,21 @@ Execute `mvn clean install` in the root directory to build vaadin-cdi.
 
 Issue tracking
 ----
-Issues for the project are tracked in the Vaadin Trac at http://dev.vaadin.com
+If you find an issue, please report it in the GitHub issue tracker: https://github.com/vaadin/cdi/issues
 
 Contributions
 ----
-Contributions to the project can be done using the Vaadin Gerrit review system at http://dev.vaadin.com/review. Pull requests cannot be accepted due to Gerrit being used for code review.
+Contributions to the project can be done through pull requests in GitHub.
 
 
-Copyright 2012 Vaadin Ltd.
+Copyright 2016 Vaadin Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this file except in compliance with the License. You may obtain a copy of
 the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
- 
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the

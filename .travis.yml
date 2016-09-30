@@ -1,0 +1,17 @@
+language: java
+jdk: oraclejdk8
+after_success: "./.travis.after_success.sh"
+sudo: required
+dist: trusty
+branches:
+  only:
+  - master
+cache:
+  directories:
+  - "$HOME/.m2"
+before_cache:
+- rm -rf $HOME/.m2/repository/com/vaadin
+env:
+  global:
+  - secure: CWB5FABZ+HtT2YxpQgZVNjjG1zAX1fu/U+oS9lsiNMmm/WtP5UWZwT1w5jV97+gZNxN3c4GdKMrqDJDzfOfluSmd9VQ3VbTFjB/v2sIKpSrTVMOrteIsQyddcgBXZFnGnPlxDiPWFQ5JW6NMqDOQATEMzismamvKIDai8c2S1ck=
+  - secure: OvfkT2hyFw0i71Lexyc8Dm3bojbeX9qo1OOQuzSYUDl82rYjqvvfho0gKLCKsqfdGp4SmLZKBD6P+oo+uVVIrxfMTNDZ6d9+tN0QUd25Otd9mS81bhgPRH8dsxd5DA84e3g44y5IwcIstTlStgHrb1+86UHyxc75gl3j9TVYWxY=

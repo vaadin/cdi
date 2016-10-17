@@ -29,7 +29,7 @@ import javax.enterprise.util.AnnotationLiteral;
 
 import com.vaadin.cdi.internal.AnnotationUtil;
 import com.vaadin.cdi.internal.CDIUtil;
-import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.ConventionsAccess;
 import com.vaadin.cdi.internal.UIBean;
 import com.vaadin.cdi.internal.VaadinUICloseEvent;
 import com.vaadin.server.ClientConnector.DetachEvent;
@@ -45,27 +45,6 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
 
     private static final Annotation QUALIFIER_ANY = new AnnotationLiteral<Any>() {
     };
-    
-    public static final class DetachListenerImpl implements DetachListener {
-        private BeanManager beanManager;
-
-        public DetachListenerImpl(BeanManager beanManager) {
-            this.beanManager = beanManager;
-        }
-
-        @Override
-        public void detach(DetachEvent event) {
-            Object source = event.getSource();
-            if (source instanceof UI) {
-
-                UI ui = (UI) source;
-                beanManager.fireEvent(new VaadinUICloseEvent(CDIUtil
-                        .getSessionId(ui.getSession()), ui.getUIId()));
-            }
-
-        }
-    }
-
     // TODO a better way to do this could be custom injection management in the
     // Extension if feasible
     private BeanManager beanManager = null;
@@ -146,7 +125,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
                 errorMessage.append("\n");
             }
             throw new IllegalStateException(
-                    "Multiple beans are annotated with @CDIUI without context path: "
+                    "Multiple beans are declared as root UIs: "
                             + errorMessage.toString());
         }
         Bean<?> uiBean = rootBeans.iterator().next();
@@ -154,7 +133,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         return rootUI.asSubclass(UI.class);
     }
 
-    private Bean<?> getUIBeanWithMapping(String mapping) {
+    protected Bean<?> getUIBeanWithMapping(String mapping) {
         Set<Bean<?>> beans = AnnotationUtil.getUiBeans(getBeanManager());
 
         for (Bean<?> bean : beans) {
@@ -163,8 +142,8 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
                 Class<? extends UI> beanClass = bean.getBeanClass().asSubclass(
                         UI.class);
 
-                if (beanClass.isAnnotationPresent(CDIUI.class)) {
-                    String computedMapping = Conventions
+                if(ConventionsAccess.uiClassIsValid(beanClass)) {
+                    String computedMapping = ConventionsAccess
                             .deriveMappingForUI(beanClass);
                     if (mapping.equals(computedMapping)) {
                         return bean;
@@ -195,13 +174,13 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
 
         String uiMapping = "";
         if (bean == null) {
-            if (type.isAnnotationPresent(CDIUI.class)) {
+            if(ConventionsAccess.uiClassIsValid(type)) {
                 uiMapping = parseUIMapping(request);
                 bean = getUIBeanWithMapping(uiMapping);
             } else {
                 throw new IllegalStateException("UI class: " + type.getName()
                         + " with mapping: " + uiMapping
-                        + " is not annotated with CDIUI!");
+                        + " is not a valid Vaadin CDI UI!");
             }
         }
         return bean;
@@ -231,9 +210,27 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         return "";
     }
 
-
-
     private static Logger getLogger() {
         return Logger.getLogger(CDIUIProvider.class.getCanonicalName());
+    }
+
+    public static final class DetachListenerImpl implements DetachListener {
+        private BeanManager beanManager;
+
+        public DetachListenerImpl(BeanManager beanManager) {
+            this.beanManager = beanManager;
+        }
+
+        @Override
+        public void detach(DetachEvent event) {
+            Object source = event.getSource();
+            if(source instanceof UI) {
+
+                UI ui = (UI)source;
+                beanManager.fireEvent(new VaadinUICloseEvent(CDIUtil
+                        .getSessionId(ui.getSession()), ui.getUIId()));
+            }
+
+        }
     }
 }

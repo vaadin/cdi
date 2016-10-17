@@ -17,9 +17,7 @@
 package com.vaadin.cdi;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,7 +36,7 @@ import javax.inject.Inject;
 import com.vaadin.cdi.access.AccessControl;
 import com.vaadin.cdi.internal.AnnotationUtil;
 import com.vaadin.cdi.internal.CDIUtil;
-import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.ConventionsAccess;
 import com.vaadin.cdi.internal.VaadinViewChangeCleanupEvent;
 import com.vaadin.cdi.internal.VaadinViewChangeEvent;
 import com.vaadin.cdi.internal.VaadinViewCreationEvent;
@@ -53,44 +51,12 @@ public class CDIViewProvider implements ViewProvider {
 
     private static final Annotation QUALIFIER_ANY = new AnnotationLiteral<Any>() {
     };
-
+    private static ThreadLocal<VaadinViewChangeCleanupEvent> cleanupEvent = new ThreadLocal<VaadinViewChangeCleanupEvent>();
     @Inject
     private BeanManager beanManager;
-
-    private static ThreadLocal<VaadinViewChangeCleanupEvent> cleanupEvent = new ThreadLocal<VaadinViewChangeCleanupEvent>();
-
     @Inject
     private AccessControl accessControl;
     private transient CreationalContext<?> currentViewCreationalContext;
-
-    public final static class ViewChangeListenerImpl implements
-            ViewChangeListener {
-
-        private BeanManager beanManager;
-
-        public ViewChangeListenerImpl(BeanManager beanManager) {
-            this.beanManager = beanManager;
-        }
-
-        @Override
-        public boolean beforeViewChange(ViewChangeEvent event) {
-            return true;
-        }
-
-        @Override
-        public void afterViewChange(ViewChangeEvent event) {
-            getLogger().fine(
-                    "Changing view from " + event.getOldView() + " to "
-                            + event.getNewView());
-            // current session id
-            long sessionId = CDIUtil.getSessionId();
-            int uiId = event.getNavigator().getUI().getUIId();
-            String viewName = event.getViewName();
-            beanManager.fireEvent(new VaadinViewChangeEvent(sessionId, uiId,
-                    viewName));
-        }
-    }
-
     private ViewChangeListener viewChangeListener;
 
     @PostConstruct
@@ -113,8 +79,8 @@ public class CDIViewProvider implements ViewProvider {
 
         if (isUserHavingAccessToView(viewBean)) {
             if (viewBean.getBeanClass().isAnnotationPresent(CDIView.class)) {
-                String specifiedViewName = Conventions
-                        .deriveMappingForView(viewBean.getBeanClass());
+                String specifiedViewName = ConventionsAccess
+                        .deriveMappingForView((Class<? extends View>)viewBean.getBeanClass());
                 if (!specifiedViewName.isEmpty()) {
                     return specifiedViewName;
                 }
@@ -161,7 +127,7 @@ public class CDIViewProvider implements ViewProvider {
         return true;
     }
 
-    private ViewBean getViewBean(String viewName) {
+    protected ViewBean getViewBean(String viewName) {
         getLogger().log(Level.FINE, "Looking for view with name \"{0}\"",
                 viewName);
 
@@ -178,12 +144,11 @@ public class CDIViewProvider implements ViewProvider {
         }
         for (Bean<?> bean : all) {
             Class<?> beanClass = bean.getBeanClass();
-            CDIView viewAnnotation = beanClass.getAnnotation(CDIView.class);
-            if (viewAnnotation == null) {
+            if(!ConventionsAccess.viewClassIsValid((Class<? extends View>)beanClass)) {
                 continue;
             }
 
-            String mapping = Conventions.deriveMappingForView(beanClass);
+            String mapping = ConventionsAccess.deriveMappingForView((Class<? extends View>)beanClass);
             getLogger().log(Level.FINER,
                     "{0} is annotated, the viewName is \"{1}\"",
                     new Object[] { beanClass.getName(), mapping });
@@ -218,26 +183,8 @@ public class CDIViewProvider implements ViewProvider {
         Set<Bean<?>> viewBeans = new HashSet<Bean<?>>();
 
         for (Bean<?> bean : beans) {
-            CDIView viewAnnotation = bean.getBeanClass().getAnnotation(
-                    CDIView.class);
-
-            if (viewAnnotation == null) {
-                continue;
-            }
-
-            List<Class<? extends UI>> uiClasses = Arrays.asList(viewAnnotation
-                    .uis());
-
-            if (uiClasses.contains(UI.class)) {
+            if(ConventionsAccess.viewClassIsValid((Class<? extends View>)bean.getBeanClass(), UI.getCurrent())) {
                 viewBeans.add(bean);
-            } else {
-                Class<? extends UI> currentUI = UI.getCurrent().getClass();
-                for (Class<? extends UI> uiClass : uiClasses) {
-                    if (uiClass.isAssignableFrom(currentUI)) {
-                        viewBeans.add(bean);
-                        break;
-                    }
-                }
             }
         }
 
@@ -344,5 +291,33 @@ public class CDIViewProvider implements ViewProvider {
 
     private static Logger getLogger() {
         return Logger.getLogger(CDIViewProvider.class.getCanonicalName());
+    }
+
+    public static final class ViewChangeListenerImpl implements
+            ViewChangeListener {
+
+        private BeanManager beanManager;
+
+        public ViewChangeListenerImpl(BeanManager beanManager) {
+            this.beanManager = beanManager;
+        }
+
+        @Override
+        public boolean beforeViewChange(ViewChangeEvent event) {
+            return true;
+        }
+
+        @Override
+        public void afterViewChange(ViewChangeEvent event) {
+            getLogger().fine(
+                    "Changing view from " + event.getOldView() + " to "
+                            + event.getNewView());
+            // current session id
+            long sessionId = CDIUtil.getSessionId();
+            int uiId = event.getNavigator().getUI().getUIId();
+            String viewName = event.getViewName();
+            beanManager.fireEvent(new VaadinViewChangeEvent(sessionId, uiId,
+                    viewName));
+        }
     }
 }

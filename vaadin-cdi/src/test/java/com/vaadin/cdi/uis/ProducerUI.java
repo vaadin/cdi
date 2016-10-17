@@ -1,12 +1,11 @@
 package com.vaadin.cdi.uis;
 
-import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.NormalUIScoped;
-import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.ConventionsAccess;
 import com.vaadin.cdi.internal.Preferred;
 import com.vaadin.cdi.internal.ProducedBean;
 import com.vaadin.server.BrowserWindowOpener;
@@ -54,7 +53,7 @@ public class ProducerUI extends UI {
         // Note: cannot use new BWO(Class) because it would use
         // BrowserWindowOpenerUIProvider, not CDIUIProvider
         new BrowserWindowOpener(request.getContextPath() + "/"
-                + Conventions.deriveMappingForUI(ProducerUI.class))
+                + ConventionsAccess.deriveMappingForUI(ProducerUI.class))
                 .extend(windowOpenButton);
         
         layout.addComponent(label);

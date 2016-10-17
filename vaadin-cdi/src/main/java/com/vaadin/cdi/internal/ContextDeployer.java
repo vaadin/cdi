@@ -125,18 +125,17 @@ public class ContextDeployer implements ServletContextListener {
             Class<? extends UI> uiBeanClass = uiBean.getBeanClass().asSubclass(
                     UI.class);
 
-            String uiMapping = Conventions.deriveMappingForUI(uiBeanClass);
+            String uiMapping = ConventionsAccess.deriveMappingForUI(uiBeanClass);
 
             if (configuredUIs.contains(uiMapping)) {
                 if ("".equals(uiMapping)) {
                     throw new InconsistentDeploymentException(
                             InconsistentDeploymentException.ID.MULTIPLE_ROOTS,
-                            "Multiple UIs configured with @CDIUI annotation without context path, "
-                                    + "only one UI can be root");
+                            "Multiple UIs configured as deployment root.");
                 } else {
                     throw new InconsistentDeploymentException(
                             InconsistentDeploymentException.ID.PATH_COLLISION,
-                            "Multiple UIs configured with @CDIUI(" + uiMapping
+                            "Multiple UIs configured with the same mapping (" + uiMapping
                                     + ")");
                 }
             }
@@ -152,8 +151,7 @@ public class ContextDeployer implements ServletContextListener {
             getLogger()
                     .info("Vaadin UI "
                             + getRootClassName()
-                            + " is marked as @CDIUI without context path, "
-                            + "this UI is accessible from context root of deployment");
+                            + " is mapped to the root of the deployment.");
         }
 
         getLogger()
@@ -210,12 +208,11 @@ public class ContextDeployer implements ServletContextListener {
 
         for (Bean<?> bean : uiBeans) {
             Class<?> beanClass = bean.getBeanClass();
-
-            if (beanClass.isAnnotationPresent(CDIUI.class)) {
+            if(ConventionsAccess.uiClassIsValid((Class<? extends UI>)beanClass)) {
                 result.add(bean);
             } else {
                 getLogger().warning(
-                        "UI without CDIUI annotation found: "
+                        "An invalid UI found: "
                                 + beanClass.getName()
                                 + ", it is not available in CDI deployment");
             }
@@ -240,10 +237,10 @@ public class ContextDeployer implements ServletContextListener {
             Class enclosingClass = vaadinServletClass.getEnclosingClass();
             if (!VaadinCDIServlet.class.isAssignableFrom(vaadinServletClass)
                     && enclosingClass != null
-                    && enclosingClass.isAnnotationPresent(CDIUI.class)) {
+                    && ConventionsAccess.uiClassIsRoot(enclosingClass)) {
                 throw new InconsistentDeploymentException(
                         ID.EMBEDDED_SERVLET,
-                        "A Vaadin @CDIUI class should not contain a nested servlet class ("
+                        "A Vaadin CDI UI class should not contain a nested servlet class ("
                                 + vaadinServletClass.getCanonicalName()
                                 + ") other than a VaadinCDIServlet. In most cases, an appropriate servlet is auto-deployed.");
             }
@@ -253,7 +250,7 @@ public class ContextDeployer implements ServletContextListener {
         if (configuredUIs.isEmpty()) {
             getLogger()
                     .warning(
-                            "No Vaadin UI classes with @CDIUI annotation found. "
+                            "No Vaadin CDI UI classes found. "
                                     + "Skipping automated deployment of VaadinCDIServlet.");
             return;
         }

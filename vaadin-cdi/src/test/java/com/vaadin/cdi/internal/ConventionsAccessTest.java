@@ -16,23 +16,26 @@
 
 package com.vaadin.cdi.internal;
 
-import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
-import static com.vaadin.cdi.internal.Conventions.deriveMappingForView;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-
-import org.junit.Test;
-
 import com.vaadin.cdi.uis.ConventionalUI;
 import com.vaadin.cdi.uis.PlainColidingAlternativeUI;
+import com.vaadin.cdi.uis.UnannotatedUI;
 import com.vaadin.cdi.views.OneAndOnlyViewWithPath;
 import com.vaadin.cdi.views.OneAndOnlyViewWithoutPath;
 import com.vaadin.cdi.views.OneAndOnlyViewWithoutPathAndAnnotation;
 
+import org.junit.Test;
+
+import static com.vaadin.cdi.internal.ConventionsAccess.deriveMappingForUI;
+import static com.vaadin.cdi.internal.ConventionsAccess.deriveMappingForView;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+
 /**
  */
-public class ConventionsTest {
+public class ConventionsAccessTest {
+
+    private final DefaultConventions conventions = new DefaultConventions();
 
     @Test
     public void extractViewNameUsingPath() {
@@ -71,7 +74,7 @@ public class ConventionsTest {
 
     @Test
     public void uiAnnotationNotPresent() {
-        final String uiPath = deriveMappingForUI(String.class);
+        final String uiPath = deriveMappingForUI(UnannotatedUI.class);
         assertNull(uiPath);
     }
     
@@ -79,55 +82,55 @@ public class ConventionsTest {
     public void upperCamelCaseToLowerHyphenatedTest() {
         String original = "AlphaBetaGamma";
         String expected = "alpha-beta-gamma";
-        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+        assertThat(conventions.upperCamelToLowerHyphen(original), is(expected));
 
         original = "alphaBetaGamma";
         expected = "alpha-beta-gamma";
-        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+        assertThat(conventions.upperCamelToLowerHyphen(original), is(expected));
 
         original = "";
         expected = "";
-        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+        assertThat(conventions.upperCamelToLowerHyphen(original), is(expected));
 
         original = "a";
         expected = "a";
-        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+        assertThat(conventions.upperCamelToLowerHyphen(original), is(expected));
 
         original = "A";
         expected = "a";
-        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+        assertThat(conventions.upperCamelToLowerHyphen(original), is(expected));
 
         original = "ABC";
         expected = "abc";
-        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+        assertThat(conventions.upperCamelToLowerHyphen(original), is(expected));
 
         original = "alllowercase";
         expected = "alllowercase";
-        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+        assertThat(conventions.upperCamelToLowerHyphen(original), is(expected));
 
         original = "main/sub";
         expected = "main/sub";
-        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+        assertThat(conventions.upperCamelToLowerHyphen(original), is(expected));
 
         original = "MyCDITest";
         expected = "my-cdi-test";
-        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+        assertThat(conventions.upperCamelToLowerHyphen(original), is(expected));
 
         original = "MyATest";
         expected = "my-a-test";
-        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+        assertThat(conventions.upperCamelToLowerHyphen(original), is(expected));
 
         original = "aB";
         expected = "a-b";
-        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+        assertThat(conventions.upperCamelToLowerHyphen(original), is(expected));
 
         original = "Ab";
         expected = "ab";
-        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+        assertThat(conventions.upperCamelToLowerHyphen(original), is(expected));
 
         original = "MyCDI";
         expected = "my-cdi";
-        assertThat(Conventions.upperCamelToLowerHyphen(original), is(expected));
+        assertThat(conventions.upperCamelToLowerHyphen(original), is(expected));
     }
 
 }

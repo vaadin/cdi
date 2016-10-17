@@ -28,7 +28,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 
 import com.vaadin.cdi.CDIUI;
-import com.vaadin.cdi.CDIView;
 import com.vaadin.cdi.URLMapping;
 import com.vaadin.navigator.View;
 import com.vaadin.ui.UI;
@@ -55,15 +54,12 @@ public class AnnotationUtil {
             Class<?> beanClass = bean.getBeanClass();
             // uiBeans may also contain UIs without the @CDIUI annotation -
             // ignore those
-            CDIUI uiAnnotation = beanClass.getAnnotation(CDIUI.class);
-            if (uiAnnotation == null) {
+            if(!ConventionsAccess.uiClassIsRoot((Class<? extends UI>)beanClass)) {
                 continue;
             }
 
-            String path = Conventions.deriveMappingForUI(beanClass);
-            if (null != path && path.isEmpty()) {
-                rootBeans.add(bean);
-            }
+            rootBeans.add(bean);
+
         }
         return rootBeans;
     }
@@ -90,10 +86,10 @@ public class AnnotationUtil {
         List<String> mappingList = new LinkedList<String>();
         for (Bean<?> viewBean : viewBeans) {
             Class<?> beanClass = viewBean.getBeanClass();
-            if (beanClass.getAnnotation(CDIView.class) == null) {
+            if(!ConventionsAccess.viewClassIsValid((Class<? extends View>)beanClass)) {
                 continue;
             }
-            String mapping = Conventions.deriveMappingForView(viewBean
+            String mapping = ConventionsAccess.deriveMappingForView((Class<? extends View>)viewBean
                     .getBeanClass());
             if (mapping != null) {
                 mappingList.add(mapping);

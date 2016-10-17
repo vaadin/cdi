@@ -16,23 +16,7 @@
 
 package com.vaadin.cdi;
 
-import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.net.MalformedURLException;
-
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Before;
-import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 
 import com.vaadin.cdi.uis.Boundary;
 import com.vaadin.cdi.uis.DanglingView;
@@ -62,6 +46,22 @@ import com.vaadin.cdi.uis.WithAnnotationRegisteredView;
 import com.vaadin.cdi.views.ConventionalView;
 import com.vaadin.cdi.views.MainView;
 import com.vaadin.cdi.views.SubView;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+
+import static com.vaadin.cdi.internal.ConventionsAccess.deriveMappingForUI;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CDIIntegrationWithDefaultDeployment extends
         AbstractManagedCDIIntegrationTest {

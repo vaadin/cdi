@@ -1,10 +1,11 @@
 package com.vaadin.cdi;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
-
 import java.net.MalformedURLException;
+
+import com.vaadin.cdi.internal.ConventionsAccess;
+import com.vaadin.cdi.internal.MyBean;
+import com.vaadin.cdi.uis.InjectionUI;
+import com.vaadin.cdi.views.BeanView;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -14,10 +15,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.vaadin.cdi.internal.Conventions;
-import com.vaadin.cdi.internal.MyBean;
-import com.vaadin.cdi.uis.InjectionUI;
-import com.vaadin.cdi.views.BeanView;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 
 public class InjectionTest extends AbstractManagedCDIIntegrationTest {
 
@@ -30,7 +30,7 @@ public class InjectionTest extends AbstractManagedCDIIntegrationTest {
     @Test
     @OperateOnDeployment("uiInjection")
     public void testUIInjection() throws MalformedURLException {
-        openWindow(Conventions.deriveMappingForUI(InjectionUI.class));
+        openWindow(ConventionsAccess.deriveMappingForUI(InjectionUI.class));
 
         (new WebDriverWait(firstWindow, 15)).until(ExpectedConditions
                 .presenceOfElementLocated(By.id(InjectionUI.beanId1)));

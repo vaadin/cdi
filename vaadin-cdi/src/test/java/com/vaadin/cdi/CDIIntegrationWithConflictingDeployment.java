@@ -16,11 +16,10 @@
 
 package com.vaadin.cdi;
 
-import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import java.net.MalformedURLException;
+
+import com.vaadin.cdi.uis.PlainColidingAlternativeUI;
+import com.vaadin.cdi.uis.PlainUI;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -28,8 +27,9 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.cdi.uis.PlainColidingAlternativeUI;
-import com.vaadin.cdi.uis.PlainUI;
+import static com.vaadin.cdi.internal.ConventionsAccess.deriveMappingForUI;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class CDIIntegrationWithConflictingDeployment extends
         AbstractManagedCDIIntegrationTest {

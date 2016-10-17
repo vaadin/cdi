@@ -1,9 +1,10 @@
 package com.vaadin.cdi;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import java.net.MalformedURLException;
+
+import com.vaadin.cdi.internal.ConventionsAccess;
+import com.vaadin.cdi.internal.MyBean;
+import com.vaadin.cdi.uis.ConsistentInjectionUI;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -11,9 +12,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
-import com.vaadin.cdi.internal.Conventions;
-import com.vaadin.cdi.internal.MyBean;
-import com.vaadin.cdi.uis.ConsistentInjectionUI;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class ConsistentInjectionTest extends AbstractManagedCDIIntegrationTest {
 
@@ -27,7 +27,7 @@ public class ConsistentInjectionTest extends AbstractManagedCDIIntegrationTest {
     @OperateOnDeployment("consistentInjection")
     public void initAndPostConstructInjectionsAreConsistent()
             throws MalformedURLException {
-        openWindow(Conventions.deriveMappingForUI(ConsistentInjectionUI.class));
+        openWindow(ConventionsAccess.deriveMappingForUI(ConsistentInjectionUI.class));
 
         String postConstruct = firstWindow.findElement(
                 By.id(ConsistentInjectionUI.POSTCONSTRUCT_ID)).getText();

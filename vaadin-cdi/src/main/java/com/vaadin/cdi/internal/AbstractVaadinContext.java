@@ -197,25 +197,24 @@ public abstract class AbstractVaadinContext extends AbstractContext {
             synchronized (sessionData) {
                 Map<Integer, UIData> map = sessionData.getUiDataMap();
                 for (UIData uiData : new ArrayList<UIData>(map.values())) {
-                    dropUIData(sessionData, uiData);
+                    dropUIData(sessionData, uiData.getUiId());
                 }
             }
         }
     }
 
-    private synchronized void dropUIData(SessionData sessionData, UIData uiData) {
-        getLogger().fine("Dropping UI data for UI: " + uiData.getUiId());
+    private synchronized void dropUIData(SessionData sessionData, int uiId) {
+        getLogger().fine("Dropping UI data for UI: " + uiId);
 
         for (Entry<Contextual<?>, ContextualStorage> entry : new ArrayList<Entry<Contextual<?>, ContextualStorage>>(
                 sessionData.getStorageMap().entrySet())) {
             Contextual<?> key = entry.getKey();
             if (key instanceof UIContextual
-                    && ((UIContextual) key).getUiId() == uiData.uiId) {
+                    && ((UIContextual) key).getUiId() == uiId) {
                 destroy(entry.getKey());
             }
-            sessionData.uiDataMap.remove(key);
         }
-
+        sessionData.uiDataMap.remove(uiId);
     }
 
     void queueUICloseEvent(VaadinUICloseEvent event) {
@@ -253,14 +252,10 @@ public abstract class AbstractVaadinContext extends AbstractContext {
         if (entries != null && !entries.isEmpty()) {
             for (Entry<Long, VaadinUICloseEvent> entry : entries) {
                 VaadinUICloseEvent event = entry.getValue();
-                int uiId = event.getUiId();
                 SessionData sessionData = getSessionData(event.getSessionId(),
                         false);
                 if (sessionData != null) {
-                    UIData uiData = sessionData.getUIData(uiId);
-                    if (uiData != null) {
-                        dropUIData(sessionData, uiData);
-                    }
+                    dropUIData(sessionData, event.getUiId());
                 }
             }
         }

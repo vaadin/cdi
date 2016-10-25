@@ -1,12 +1,10 @@
 package com.vaadin.cdi;
 
-import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.vaadin.cdi.uis.ConcurrentUI;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -17,7 +15,9 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.vaadin.cdi.uis.ConcurrentUI;
+import static com.vaadin.cdi.internal.ConventionsAccess.deriveMappingForUI;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class MultipleAccessIsolation extends
         AbstractManagedCDIIntegrationTest {

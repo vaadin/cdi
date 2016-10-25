@@ -1,10 +1,10 @@
 package com.vaadin.cdi;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
-
 import java.net.MalformedURLException;
+
+import com.vaadin.cdi.internal.ConventionsAccess;
+import com.vaadin.cdi.internal.MyBean;
+import com.vaadin.cdi.uis.MultipleSessionUI;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -14,9 +14,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.vaadin.cdi.internal.Conventions;
-import com.vaadin.cdi.internal.MyBean;
-import com.vaadin.cdi.uis.MultipleSessionUI;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 
 public class MultipleSessionTest extends AbstractManagedCDIIntegrationTest {
 
@@ -29,7 +29,7 @@ public class MultipleSessionTest extends AbstractManagedCDIIntegrationTest {
     @Test
     @OperateOnDeployment("multipleSessions")
     public void injectedBeanDependsOnSessionTest() throws MalformedURLException {
-        openWindow(Conventions.deriveMappingForUI(MultipleSessionUI.class));
+        openWindow(ConventionsAccess.deriveMappingForUI(MultipleSessionUI.class));
 
         (new WebDriverWait(firstWindow, 15)).until(ExpectedConditions
                 .presenceOfElementLocated(By

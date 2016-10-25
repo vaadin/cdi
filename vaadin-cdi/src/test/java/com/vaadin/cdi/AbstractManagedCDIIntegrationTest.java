@@ -4,15 +4,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
+import com.vaadin.cdi.internal.ConventionsAccess;
+
+import com.google.common.base.Predicate;
 import org.jboss.arquillian.graphene.Graphene;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-import com.google.common.base.Predicate;
-import com.vaadin.cdi.internal.Conventions;
 
 public abstract class AbstractManagedCDIIntegrationTest extends
         AbstractCDIIntegrationTest {
@@ -22,7 +22,7 @@ public abstract class AbstractManagedCDIIntegrationTest extends
 
     public void openWindow(Class uiClass) {
         try {
-            openWindow(Conventions.deriveMappingForUI(uiClass));
+            openWindow(ConventionsAccess.deriveMappingForUI(uiClass));
         } catch (MalformedURLException e) {
             throw new RuntimeException("Unable to open UI " + uiClass.getCanonicalName(), e);
         }

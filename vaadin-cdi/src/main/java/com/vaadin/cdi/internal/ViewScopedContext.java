@@ -26,12 +26,12 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
-import org.apache.deltaspike.core.util.context.ContextualStorage;
-
 import com.vaadin.cdi.ViewScoped;
 import com.vaadin.cdi.internal.AbstractVaadinContext.SessionData.UIData;
 import com.vaadin.navigator.View;
 import com.vaadin.ui.UI;
+
+import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 /**
  * ViewScopedContext is the context for @ViewScoped beans.
@@ -53,7 +53,7 @@ public class ViewScopedContext extends AbstractVaadinContext {
     @Override
     protected <T> Contextual<T> wrapBean(Contextual<T> bean) {
         if(!(bean instanceof UIContextual) && bean instanceof Bean && View.class.isAssignableFrom(((Bean) bean).getBeanClass())) {
-            String mapping = Conventions.deriveMappingForView(((Bean) bean).getBeanClass());
+            String mapping = ConventionsAccess.deriveMappingForView(((Bean)bean).getBeanClass());
             return new ViewBean((Bean) bean, mapping);
         }
         return bean;

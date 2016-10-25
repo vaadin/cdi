@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 
 import com.vaadin.cdi.CDIUI;
-import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.ConventionsAccess;
 import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
@@ -26,7 +26,7 @@ public class ConcurrentUI extends UI {
     public static final String KILL_SESSION = "kill-session";
     public static final String OPEN_WINDOW = "open-window";
 
-    private final static AtomicInteger COUNTER = new AtomicInteger(0);
+    private static final AtomicInteger COUNTER = new AtomicInteger(0);
 
     private int clickCount;
 
@@ -78,7 +78,7 @@ public class ConcurrentUI extends UI {
         // Note: cannot use new BWO(Class) because it would use
         // BrowserWindowOpenerUIProvider, not CDIUIProvider
         new BrowserWindowOpener(request.getContextPath() + "/"
-                + Conventions.deriveMappingForUI(ConcurrentUI.class))
+                + ConventionsAccess.deriveMappingForUI(ConcurrentUI.class))
                 .extend(windowOpenButton);
 
         layout.addComponent(label);

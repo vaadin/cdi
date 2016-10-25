@@ -18,19 +18,14 @@ package com.vaadin.cdi;
 
 import javax.enterprise.inject.spi.Extension;
 
-import org.jboss.shrinkwrap.api.ArchivePaths;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
-
 import com.vaadin.cdi.access.AccessControl;
 import com.vaadin.cdi.access.JaasAccessControl;
 import com.vaadin.cdi.internal.AbstractVaadinContext;
 import com.vaadin.cdi.internal.AnnotationUtil;
+import com.vaadin.cdi.internal.CDIUtil;
 import com.vaadin.cdi.internal.ContextDeployer;
-import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.ConventionsAccess;
+import com.vaadin.cdi.internal.DefaultConventions;
 import com.vaadin.cdi.internal.InconsistentDeploymentException;
 import com.vaadin.cdi.internal.UIBean;
 import com.vaadin.cdi.internal.UIContextual;
@@ -47,11 +42,18 @@ import com.vaadin.cdi.internal.ViewScopedContext;
 import com.vaadin.cdi.server.VaadinCDIServlet;
 import com.vaadin.cdi.server.VaadinCDIServletService;
 
+import org.jboss.shrinkwrap.api.ArchivePaths;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
+
 /**
  */
 public class ArchiveProvider {
 
-    public final static Class FRAMEWORK_CLASSES[] = new Class[] {
+    public static final Class FRAMEWORK_CLASSES[] = new Class[] {
             AccessControl.class, CDIUIProvider.class, CDIViewProvider.class,
             ContextDeployer.class, JaasAccessControl.class, UIContextual.class,
             UIBean.class, UIScopedContext.class, CDIUI.class,
@@ -62,8 +64,10 @@ public class ArchiveProvider {
             VaadinViewChangeCleanupEvent.class, VaadinCDIServlet.class,
             VaadinCDIServletService.class,
             CDIUIProvider.DetachListenerImpl.class,
-            CDIViewProvider.ViewChangeListenerImpl.class, Conventions.class,
+            CDIViewProvider.ViewChangeListenerImpl.class, ConventionsAccess.class,
             InconsistentDeploymentException.class, AnnotationUtil.class,
+            Conventions.class, DefaultConventions.class,
+            CDIUtil.class,
             URLMapping.class };
 
     public static WebArchive createWebArchive(String warName, Class... classes) {

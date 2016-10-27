@@ -13,11 +13,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @CDIUI("")
 public class DestroyUI extends UI {
@@ -29,6 +27,9 @@ public class DestroyUI extends UI {
 
     @Inject
     CDIViewProvider viewProvider;
+
+    @Inject
+    UIScopedBean bean;
 
     @Inject
     Counter counter;
@@ -49,6 +50,7 @@ public class DestroyUI extends UI {
         label.setId(LABEL_ID);
         layout.addComponent(label);
 
+        bean.setUiId(getUIId());
         final Label uiId = new Label(String.valueOf(getUIId()));
         uiId.setId(UIID_ID);
         layout.addComponent(uiId);
@@ -80,6 +82,25 @@ public class DestroyUI extends UI {
         layout.addComponent(viewNavigateBtn);
 
         setContent(layout);
+    }
+
+    @UIScoped
+    public static class UIScopedBean implements Serializable {
+        public static final String DESTROY_COUNT = "uibeandestroycount";
+
+        int uiId;
+
+        @Inject
+        Counter counter;
+
+        @PreDestroy
+        public void destroy() {
+            counter.increment(DESTROY_COUNT + uiId);
+        }
+
+        public void setUiId(int uiId) {
+            this.uiId = uiId;
+        }
     }
 
 }

@@ -18,6 +18,7 @@ package com.vaadin.cdi;
 
 import javax.enterprise.inject.spi.Extension;
 
+import com.vaadin.cdi.internal.*;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -27,23 +28,6 @@ import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 
 import com.vaadin.cdi.access.AccessControl;
 import com.vaadin.cdi.access.JaasAccessControl;
-import com.vaadin.cdi.internal.AbstractVaadinContext;
-import com.vaadin.cdi.internal.AnnotationUtil;
-import com.vaadin.cdi.internal.ContextDeployer;
-import com.vaadin.cdi.internal.Conventions;
-import com.vaadin.cdi.internal.InconsistentDeploymentException;
-import com.vaadin.cdi.internal.UIBean;
-import com.vaadin.cdi.internal.UIContextual;
-import com.vaadin.cdi.internal.UIScopedContext;
-import com.vaadin.cdi.internal.VaadinExtension;
-import com.vaadin.cdi.internal.VaadinSessionDestroyEvent;
-import com.vaadin.cdi.internal.VaadinUICloseEvent;
-import com.vaadin.cdi.internal.VaadinViewChangeCleanupEvent;
-import com.vaadin.cdi.internal.VaadinViewChangeEvent;
-import com.vaadin.cdi.internal.VaadinViewCreationEvent;
-import com.vaadin.cdi.internal.ViewBean;
-import com.vaadin.cdi.internal.ViewContextual;
-import com.vaadin.cdi.internal.ViewScopedContext;
 import com.vaadin.cdi.server.VaadinCDIServlet;
 import com.vaadin.cdi.server.VaadinCDIServletService;
 
@@ -64,8 +48,9 @@ public class ArchiveProvider {
             CDIUIProvider.DetachListenerImpl.class,
             CDIViewProvider.ViewChangeListenerImpl.class, Conventions.class,
             InconsistentDeploymentException.class, AnnotationUtil.class,
-            URLMapping.class };
-
+            VaadinExtension.class, VaadinContextualStorage.class, ContextWrapper.class,
+            CDIUtil.class,
+            UIScoped.class, ViewScoped.class, NormalUIScoped.class, NormalViewScoped.class};
     public static WebArchive createWebArchive(String warName, Class... classes) {
         return createWebArchive(warName, true, classes);
     }
@@ -87,6 +72,9 @@ public class ArchiveProvider {
                 .addClasses(FRAMEWORK_CLASSES)
                 .addAsLibraries(
                         pom.resolve("com.vaadin:vaadin-server")
+                                .withTransitivity().asFile())
+                .addAsLibraries(
+                        pom.resolve("com.vaadin:vaadin-client-compiled")
                                 .withTransitivity().asFile())
                 .addAsLibraries(
                         pom.resolve("com.vaadin:vaadin-themes")

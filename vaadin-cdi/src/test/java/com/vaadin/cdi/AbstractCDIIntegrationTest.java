@@ -9,6 +9,7 @@ import java.net.URL;
 import javax.enterprise.inject.New;
 
 import org.jboss.arquillian.container.test.api.Deployer;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -20,6 +21,7 @@ import org.openqa.selenium.WebElement;
 import com.vaadin.cdi.uis.RootUI;
 
 @RunWith(Arquillian.class)
+@RunAsClient
 abstract public class AbstractCDIIntegrationTest {
 
     @Drone

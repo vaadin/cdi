@@ -64,10 +64,4 @@ abstract public class AbstractCDIIntegrationTest {
         return findElement(By.id(id));
     }
 
-    public void sleep(int millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-        }
-    }
 }

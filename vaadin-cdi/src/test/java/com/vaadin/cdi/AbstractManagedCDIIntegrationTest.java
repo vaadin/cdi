@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.jboss.arquillian.graphene.Graphene;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -61,6 +62,23 @@ public abstract class AbstractManagedCDIIntegrationTest extends
                         return value.equals(driver.findElement(by).getText());
                     }
                 });
+    }
+
+    public void clickAndWait(String id) {
+        findElement(id).click();
+        waitForClient();
+    }
+
+    public void waitForClient() {
+        new WebDriverWait(firstWindow, 10).until(new ClientIsReadyPredicate());
+    }
+
+    private class ClientIsReadyPredicate implements Predicate<WebDriver> {
+        @Override
+        public boolean apply(WebDriver input) {
+            return (Boolean) ((JavascriptExecutor) firstWindow)
+                    .executeScript("return !vaadin.clients[Object.keys(vaadin.clients)[0]].isActive()");
+        }
     }
 
 }

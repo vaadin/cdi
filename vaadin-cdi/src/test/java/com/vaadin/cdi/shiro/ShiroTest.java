@@ -85,9 +85,7 @@ public class ShiroTest extends AbstractManagedCDIIntegrationTest {
     }
 
     private void checkThatViewDisallowed(String viewString) {
-        findElement(viewString).click();
-        // make sure the view does not change
-        sleep(2000);
+        clickAndWait(viewString);
         String viewAfterClick = findElement(AbstractShiroTestView.LABEL_ID)
                 .getText();
         assertThat(viewString, not(viewAfterClick));
@@ -98,7 +96,7 @@ public class ShiroTest extends AbstractManagedCDIIntegrationTest {
         waitForValue(By.id(AbstractShiroTestView.LABEL_ID), "Guest view");
         findElement(LoginPane.USER_ID).sendKeys(user);
         findElement(LoginPane.PASSWORD_ID).sendKeys(password);
-        findElement(LoginPane.LOGIN_ID).click();
+        clickAndWait(LoginPane.LOGIN_ID);
     }
 
 }

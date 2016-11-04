@@ -44,42 +44,12 @@ public class UIScopedContext extends AbstractVaadinContext {
     }
 
     @Override
-    protected synchronized ContextualStorage getContextualStorage(
-            Contextual<?> contextual, boolean createIfNotExist) {
-        SessionData sessionData = getSessionData(createIfNotExist);
-        if (sessionData == null) {
-            if (createIfNotExist) {
-                throw new IllegalStateException(
-                        "Session data not recoverable for " + contextual);
-            } else {
-                // noop
-                return null;
-            }
-        }
-
-        StorageKey key;
+    protected StorageKey getStorageKey(Contextual<?> contextual, SessionData sessionData) {
         if (CurrentInstance.get(StorageKey.class) != null) {
-            key = CurrentInstance.get(StorageKey.class);
+            return CurrentInstance.get(StorageKey.class);
         } else {
-            key = new StorageKey(UI.getCurrent().getUIId());
+            return new StorageKey(UI.getCurrent().getUIId());
         }
-
-        Map<StorageKey, ContextualStorage> map = sessionData.getStorageMap();
-        if (map == null) {
-            return null;
-        }
-
-        if (map.containsKey(key)) {
-            return map.get(key);
-        } else if (createIfNotExist) {
-            ContextualStorage storage = new VaadinContextualStorage(getBeanManager(),
-                    true);
-            map.put(key, storage);
-            return storage;
-        } else {
-            return null;
-        }
-
     }
 
     @Override

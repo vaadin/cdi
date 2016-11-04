@@ -34,9 +34,7 @@ import com.vaadin.ui.UI;
  */
 public class ViewScopedContext extends AbstractVaadinContext {
 
-    private List<String> viewMappings;
-
-    private class ViewStorageKey extends StorageKey {
+    private static class ViewStorageKey extends StorageKey {
         private final String viewName;
 
         public ViewStorageKey(int uiId, String viewName) {
@@ -84,21 +82,7 @@ public class ViewScopedContext extends AbstractVaadinContext {
     }
 
     @Override
-    protected synchronized ContextualStorage getContextualStorage(
-            Contextual<?> contextual, boolean createIfNotExist) {
-        getLogger().fine("Retrieving contextual storage for " + contextual);
-
-        SessionData sessionData = getSessionData(createIfNotExist);
-        if (sessionData == null) {
-            if (createIfNotExist) {
-                throw new IllegalStateException(
-                        "Session data not recoverable for " + contextual);
-            } else {
-                // noop
-                return null;
-            }
-        }
-
+    protected StorageKey getStorageKey(Contextual<?> contextual, SessionData sessionData) {
         UI currentUI = UI.getCurrent();
         if (currentUI == null) {
             throw new IllegalStateException("Unable to resolve " + contextual + ", current UI not set.");
@@ -109,25 +93,7 @@ public class ViewScopedContext extends AbstractVaadinContext {
             getLogger().warning("Could not determine active View");
         }
 
-        ViewStorageKey key = new ViewStorageKey(currentUI.getUIId(), viewName);
-
-        Map<StorageKey, ContextualStorage> map = sessionData.getStorageMap();
-
-        if (map == null) {
-            return null;
-        }
-
-        if (map.containsKey(key)) {
-            return map.get(key);
-        } else if (createIfNotExist) {
-            ContextualStorage storage = new VaadinContextualStorage(getBeanManager(),
-                    true);
-            map.put(key, storage);
-            return storage;
-        } else {
-            return null;
-        }
-
+        return new ViewStorageKey(currentUI.getUIId(), viewName);
     }
 
     synchronized void prepareForViewChange(long sessionId, int uiId,

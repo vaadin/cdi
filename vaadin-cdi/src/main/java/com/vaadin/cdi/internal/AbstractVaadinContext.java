@@ -24,6 +24,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.deltaspike.core.util.context.AbstractContext;
@@ -204,6 +205,42 @@ public abstract class AbstractVaadinContext extends AbstractContext {
             }
         }
     }
+
+    @Override
+    protected synchronized ContextualStorage getContextualStorage(Contextual<?> contextual, boolean createIfNotExist) {
+        getLogger().fine("Retrieving contextual storage for " + contextual);
+
+        SessionData sessionData = getSessionData(createIfNotExist);
+        if (sessionData == null) {
+            if (createIfNotExist) {
+                throw new IllegalStateException(
+                        "Session data not recoverable for " + contextual);
+            } else {
+                // noop
+                return null;
+            }
+        }
+
+        Map<StorageKey, ContextualStorage> map = sessionData.getStorageMap();
+        if (map == null) {
+            return null;
+        }
+
+        StorageKey key = getStorageKey(contextual, sessionData);
+        if (map.containsKey(key)) {
+            return map.get(key);
+        } else if (createIfNotExist) {
+            ContextualStorage storage = new VaadinContextualStorage(getBeanManager(),
+                    true);
+            map.put(key, storage);
+            return storage;
+        } else {
+            return null;
+        }
+
+    }
+
+    protected abstract StorageKey getStorageKey(Contextual<?> contextual, SessionData sessionData);
 
     void dropSessionData(VaadinSessionDestroyEvent event) {
         long sessionId = event.getSessionId();

@@ -42,7 +42,6 @@ import com.vaadin.cdi.internal.Conventions;
 import com.vaadin.cdi.internal.VaadinViewChangeCleanupEvent;
 import com.vaadin.cdi.internal.VaadinViewChangeEvent;
 import com.vaadin.cdi.internal.VaadinViewCreationEvent;
-import com.vaadin.cdi.internal.ViewBean;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -105,7 +104,7 @@ public class CDIViewProvider implements ViewProvider {
                 viewAndParameters);
 
         String name = parseViewName(viewAndParameters);
-        ViewBean viewBean = getViewBean(name);
+        Bean viewBean = getViewBean(name);
 
         if (viewBean == null) {
             return null;
@@ -161,7 +160,7 @@ public class CDIViewProvider implements ViewProvider {
         return true;
     }
 
-    private ViewBean getViewBean(String viewName) {
+    private Bean getViewBean(String viewName) {
         getLogger().log(Level.FINE, "Looking for view with name \"{0}\"",
                 viewName);
 
@@ -210,8 +209,7 @@ public class CDIViewProvider implements ViewProvider {
                     "Multiple views mapped with same name for same UI");
         }
 
-        return new ViewBean(viewBeansForThisProvider.iterator().next(),
-                viewName);
+        return viewBeansForThisProvider.iterator().next();
     }
 
     private Set<Bean<?>> getViewBeansForCurrentUI(Set<Bean<?>> beans) {
@@ -261,7 +259,7 @@ public class CDIViewProvider implements ViewProvider {
                     + " - current UI is not set");
         }
 
-        ViewBean viewBean = getViewBean(viewName);
+        Bean viewBean = getViewBean(viewName);
         if (viewBean != null) {
             if (!isUserHavingAccessToView(viewBean)) {
                 getLogger().log(

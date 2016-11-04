@@ -24,8 +24,6 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.deltaspike.core.util.context.AbstractContext;
@@ -47,6 +45,41 @@ public abstract class AbstractVaadinContext extends AbstractContext {
 
     private BeanManager beanManager;
     private Map<Long, SessionData> storageMap = new ConcurrentHashMap<Long, SessionData>();
+
+    public static class StorageKey {
+        protected final int uiId;
+
+        public StorageKey(int uiId) {
+            this.uiId = uiId;
+        }
+
+        public int getUiId() {
+            return uiId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof StorageKey)) return false;
+
+            StorageKey key = (StorageKey) o;
+
+            return uiId == key.uiId;
+
+        }
+
+        @Override
+        public int hashCode() {
+            return uiId;
+        }
+
+        @Override
+        public String toString() {
+            return "StorageKey{" +
+                    "uiId=" + uiId +
+                    '}';
+        }
+    }
 
     protected static class SessionData {
 
@@ -101,7 +134,7 @@ public abstract class AbstractVaadinContext extends AbstractContext {
 
         }
 
-        private Map<Contextual<?>, ContextualStorage> storageMap = new ConcurrentHashMap<Contextual<?>, ContextualStorage>();
+        private Map<StorageKey, ContextualStorage> storageMap = new ConcurrentHashMap<StorageKey, ContextualStorage>();
 
         private Map<Integer, UIData> uiDataMap = new ConcurrentHashMap<Integer, UIData>();
 
@@ -128,7 +161,7 @@ public abstract class AbstractVaadinContext extends AbstractContext {
             return uiDataMap;
         }
 
-        public Map<Contextual<?>, ContextualStorage> getStorageMap() {
+        public Map<StorageKey, ContextualStorage> getStorageMap() {
             return storageMap;
         }
 
@@ -142,20 +175,6 @@ public abstract class AbstractVaadinContext extends AbstractContext {
     @Override
     public boolean isActive() {
         return true;
-    }
-
-    @Override
-    public <T> T get(Contextual<T> bean) {
-        return super.get(wrapBean(bean));
-    }
-
-    @Override
-    public <T> T get(Contextual<T> bean, CreationalContext<T> creationalContext) {
-        return super.get(wrapBean(bean), creationalContext);
-    }
-
-    protected <T> Contextual<T> wrapBean(Contextual<T> bean) {
-        return bean;
     }
 
     protected synchronized SessionData getSessionData(VaadinSession session,
@@ -204,12 +223,13 @@ public abstract class AbstractVaadinContext extends AbstractContext {
     private synchronized void dropUIData(SessionData sessionData, int uiId) {
         getLogger().fine("Dropping UI data for UI: " + uiId);
 
-        for (Entry<Contextual<?>, ContextualStorage> entry : new ArrayList<Entry<Contextual<?>, ContextualStorage>>(
+        for (Entry<StorageKey, ContextualStorage> entry : new ArrayList<Entry<StorageKey, ContextualStorage>>(
                 sessionData.getStorageMap().entrySet())) {
-            Contextual<?> key = entry.getKey();
-            if (key instanceof UIContextual
-                    && ((UIContextual) key).getUiId() == uiId) {
-                destroy(entry.getKey());
+            StorageKey key = entry.getKey();
+            if (key.getUiId() == uiId) {
+                final ContextualStorage contextualStorage = entry.getValue();
+                destroyAllActive(contextualStorage);
+                sessionData.storageMap.remove(key);
             }
         }
         sessionData.uiDataMap.remove(uiId);

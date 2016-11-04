@@ -16,21 +16,17 @@
 package com.vaadin.cdi.internal;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 import com.vaadin.cdi.ViewScoped;
 import com.vaadin.cdi.internal.AbstractVaadinContext.SessionData.UIData;
-import com.vaadin.navigator.View;
 import com.vaadin.ui.UI;
 
 /**
@@ -39,6 +35,43 @@ import com.vaadin.ui.UI;
 public class ViewScopedContext extends AbstractVaadinContext {
 
     private List<String> viewMappings;
+
+    private class ViewStorageKey extends StorageKey {
+        private final String viewName;
+
+        public ViewStorageKey(int uiId, String viewName) {
+            super(uiId);
+            this.viewName = viewName;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof ViewStorageKey)) return false;
+            if (!super.equals(o)) return false;
+
+            ViewStorageKey that = (ViewStorageKey) o;
+
+            return viewName != null ? viewName.equals(that.viewName) : that.viewName == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = super.hashCode();
+            result = 31 * result + (viewName != null ? viewName.hashCode() : 0);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "ViewStorageKey{" +
+                    "uiId=" + uiId + "," +
+                    "viewName='" + viewName + '\'' +
+                    '}';
+        }
+    }
+
 
     public ViewScopedContext(final BeanManager beanManager) {
         super(beanManager);
@@ -51,26 +84,11 @@ public class ViewScopedContext extends AbstractVaadinContext {
     }
 
     @Override
-    protected <T> Contextual<T> wrapBean(Contextual<T> bean) {
-        if(!(bean instanceof UIContextual) && bean instanceof Bean && View.class.isAssignableFrom(((Bean) bean).getBeanClass())) {
-            String mapping = Conventions.deriveMappingForView(((Bean) bean).getBeanClass());
-            return new ViewBean((Bean) bean, mapping);
-        }
-        return bean;
-    }
-
-    @Override
     protected synchronized ContextualStorage getContextualStorage(
             Contextual<?> contextual, boolean createIfNotExist) {
         getLogger().fine("Retrieving contextual storage for " + contextual);
 
-        SessionData sessionData;
-        if (contextual instanceof UIContextual) {
-            sessionData = getSessionData(((UIContextual) contextual).getSessionId(),
-                    createIfNotExist);
-        } else {
-            sessionData = getSessionData(createIfNotExist);
-        }
+        SessionData sessionData = getSessionData(createIfNotExist);
         if (sessionData == null) {
             if (createIfNotExist) {
                 throw new IllegalStateException(
@@ -81,42 +99,30 @@ public class ViewScopedContext extends AbstractVaadinContext {
             }
         }
 
-        // The contextual is not a ViewContextual if we're injecting something other
-        // than a CDIView with the @ViewScoped annotation. In those cases we'll
-        // look up the currently active view for the current UI. Due to
-        // technical limitations of the core framework this involves some
-        // guesswork during view transition.
-        if (!(contextual instanceof ViewContextual)) {
-            UI currentUI = UI.getCurrent();
-            if(currentUI == null) {
-                throw new IllegalStateException("Unable to resolve " + contextual + ", current UI not set.");
-            }
-            UIData uiData = sessionData.getUIData(
-                    currentUI.getUIId(), true);
-            String viewName = uiData.getProbableInjectionPointView();
-            if (viewName == null) {
-                getLogger().warning("Could not determine active View");
-            }
-            if (contextual instanceof Bean) {
-                contextual = new ViewBean((Bean) contextual, viewName);
-            } else {
-                contextual = new ViewContextual(contextual, viewName);
-            }
-
+        UI currentUI = UI.getCurrent();
+        if (currentUI == null) {
+            throw new IllegalStateException("Unable to resolve " + contextual + ", current UI not set.");
+        }
+        UIData uiData = sessionData.getUIData(currentUI.getUIId(), true);
+        String viewName = uiData.getProbableInjectionPointView();
+        if (viewName == null) {
+            getLogger().warning("Could not determine active View");
         }
 
-        Map<Contextual<?>, ContextualStorage> map = sessionData.getStorageMap();
+        ViewStorageKey key = new ViewStorageKey(currentUI.getUIId(), viewName);
+
+        Map<StorageKey, ContextualStorage> map = sessionData.getStorageMap();
 
         if (map == null) {
             return null;
         }
 
-        if (map.containsKey(contextual)) {
-            return map.get(contextual);
+        if (map.containsKey(key)) {
+            return map.get(key);
         } else if (createIfNotExist) {
             ContextualStorage storage = new VaadinContextualStorage(getBeanManager(),
                     true);
-            map.put(contextual, storage);
+            map.put(key, storage);
             return storage;
         } else {
             return null;
@@ -125,7 +131,7 @@ public class ViewScopedContext extends AbstractVaadinContext {
     }
 
     synchronized void prepareForViewChange(long sessionId, int uiId,
-            String activeViewName) {
+                                           String activeViewName) {
         getLogger().fine("Setting next view to " + activeViewName);
         SessionData sessionData = getSessionData(sessionId, true);
         UIData uiData = sessionData.getUIData(uiId, true);
@@ -142,19 +148,12 @@ public class ViewScopedContext extends AbstractVaadinContext {
 
         uiData.validateTransition();
         String activeViewName = uiData.getActiveView();
-
-        Map<Contextual<?>, ContextualStorage> map = sessionData.getStorageMap();
-        for (Entry<Contextual<?>, ContextualStorage> entry : new ArrayList<Entry<Contextual<?>, ContextualStorage>>(
-                map.entrySet())) {
-            ViewContextual contextual = (ViewContextual) entry.getKey();
-            if (contextual.uiId == uiId
-                    && !contextual.viewIdentifier.equals(activeViewName)) {
-                getLogger().fine(
-                        "dropping " + contextual + " : " + entry.getValue());
-                map.remove(contextual);
-                destroy(contextual);
-            }
-        }
+        ViewStorageKey key = new ViewStorageKey(uiId, activeViewName);
+        Map<StorageKey, ContextualStorage> map = sessionData.getStorageMap();
+        ContextualStorage storage = map.get(key);
+        getLogger().fine("dropping " + key + " : " + storage);
+        map.remove(key);
+        destroyAllActive(storage);
     }
 
     synchronized void clearPendingViewChange(long sessionId, int uiId) {

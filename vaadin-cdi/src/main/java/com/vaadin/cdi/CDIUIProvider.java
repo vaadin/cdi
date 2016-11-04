@@ -27,11 +27,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 
-import com.vaadin.cdi.internal.AnnotationUtil;
-import com.vaadin.cdi.internal.CDIUtil;
-import com.vaadin.cdi.internal.Conventions;
-import com.vaadin.cdi.internal.UIBean;
-import com.vaadin.cdi.internal.VaadinUICloseEvent;
+import com.vaadin.cdi.internal.*;
 import com.vaadin.server.ClientConnector.DetachEvent;
 import com.vaadin.server.ClientConnector.DetachListener;
 import com.vaadin.server.DefaultUIProvider;
@@ -87,17 +83,17 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         int uiId = uiCreateEvent.getUiId();
         VaadinRequest request = uiCreateEvent.getRequest();
         Bean<?> bean = scanForBeans(type, request);
-        UIBean uiBean = new UIBean(bean, uiId);
+        AbstractVaadinContext.StorageKey key = new AbstractVaadinContext.StorageKey(uiId);
         try {
-            // Make the UIBean available to UIScopedContext when creating nested
+            // Make the UI id available to UIScopedContext when creating nested
             // injected objects
-            CurrentInstance.set(UIBean.class, uiBean);
-            UI ui = (UI) getBeanManager().getReference(uiBean, type,
+            CurrentInstance.set(AbstractVaadinContext.StorageKey.class, key);
+            UI ui = (UI) getBeanManager().getReference(bean, type,
                     getBeanManager().createCreationalContext(bean));
             ui.addDetachListener(new DetachListenerImpl(getBeanManager()));
             return ui;
         } finally {
-            CurrentInstance.set(UIBean.class, null);
+            CurrentInstance.set(AbstractVaadinContext.StorageKey.class, null);
         }
     }
 

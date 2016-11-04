@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.deltaspike.core.util.context.ContextualStorage;
@@ -45,24 +44,9 @@ public class UIScopedContext extends AbstractVaadinContext {
     }
 
     @Override
-    protected <T> Contextual<T> wrapBean(Contextual<T> bean) {
-        if(!(bean instanceof UIContextual) && bean instanceof Bean && UI.class.isAssignableFrom(((Bean) bean).getBeanClass())) {
-            return new UIBean((Bean) bean);
-        }
-        return bean;
-    }
-
-    @Override
     protected synchronized ContextualStorage getContextualStorage(
             Contextual<?> contextual, boolean createIfNotExist) {
-        SessionData sessionData;
-        if (contextual instanceof UIContextual) {
-            sessionData = getSessionData(
-                    ((UIContextual) contextual).getSessionId(),
-                    createIfNotExist);
-        } else {
-            sessionData = getSessionData(createIfNotExist);
-        }
+        SessionData sessionData = getSessionData(createIfNotExist);
         if (sessionData == null) {
             if (createIfNotExist) {
                 throw new IllegalStateException(
@@ -73,30 +57,24 @@ public class UIScopedContext extends AbstractVaadinContext {
             }
         }
 
-        // If a non-UI class has the @UIScoped annotation the contextual
-        // parameter is a CDI managed bean. We need to wrap this in a
-        // UIContextual so that we can clean up its storage once the UI has been
-        // closed.
-        if (!(contextual instanceof UIContextual)) {
-            if (CurrentInstance.get(UIBean.class) != null) {
-                contextual = CurrentInstance.get(UIBean.class);
-            } else {
-                contextual = new UIContextual(contextual);
-            }
+        StorageKey key;
+        if (CurrentInstance.get(StorageKey.class) != null) {
+            key = CurrentInstance.get(StorageKey.class);
+        } else {
+            key = new StorageKey(UI.getCurrent().getUIId());
         }
 
-        Map<Contextual<?>, ContextualStorage> map = sessionData.getStorageMap();
+        Map<StorageKey, ContextualStorage> map = sessionData.getStorageMap();
         if (map == null) {
             return null;
         }
 
-        if (map.containsKey(contextual)) {
-            ContextualStorage storage = map.get(contextual);
-            return storage;
+        if (map.containsKey(key)) {
+            return map.get(key);
         } else if (createIfNotExist) {
             ContextualStorage storage = new VaadinContextualStorage(getBeanManager(),
                     true);
-            map.put(contextual, storage);
+            map.put(key, storage);
             return storage;
         } else {
             return null;

@@ -14,9 +14,11 @@ import org.apache.deltaspike.core.util.context.ContextualStorage;
  * @see ContextualStorage
  */
 public class VaadinContextualStorage extends ContextualStorage {
+    private final BeanManager beanManager;
 
     public VaadinContextualStorage(BeanManager beanManager, boolean concurrent) {
         super(beanManager, concurrent, true);
+        this.beanManager = beanManager;
     }
     
     @Override
@@ -28,4 +30,12 @@ public class VaadinContextualStorage extends ContextualStorage {
         }
     }
 
+    @Override
+    public Contextual<?> getBean(Object beanKey) {
+        if (beanKey instanceof String) {
+            return beanManager.getPassivationCapableBean((String) beanKey);
+        } else {
+            return (Contextual<?>) beanKey;
+        }
+    }
 }

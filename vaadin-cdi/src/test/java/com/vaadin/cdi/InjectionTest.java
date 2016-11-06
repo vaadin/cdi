@@ -42,7 +42,7 @@ public class InjectionTest extends AbstractManagedCDIIntegrationTest {
 
         assertThat(bean11, is(bean21));
 
-        firstWindow.navigate().refresh();
+        refreshWindow();
 
         (new WebDriverWait(firstWindow, 15)).until(ExpectedConditions
                 .presenceOfElementLocated(By.id(InjectionUI.beanId1)));

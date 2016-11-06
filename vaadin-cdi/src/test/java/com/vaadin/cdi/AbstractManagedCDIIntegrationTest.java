@@ -44,6 +44,16 @@ public abstract class AbstractManagedCDIIntegrationTest extends
         openWindowNoWait(firstWindow, uri, contextPath);
     }
 
+    public void refreshWindow() {
+        refreshWindow(firstWindow);
+    }
+
+    public void refreshWindow(WebDriver window) {
+        window.navigate().refresh();
+        (new WebDriverWait(window, 15)).until(ExpectedConditions
+                .presenceOfElementLocated(LABEL));
+    }
+
     public void waitForValue(final By by, final int value) {
         Graphene.waitModel(firstWindow).withTimeout(10, TimeUnit.SECONDS)
                 .until(new Predicate<WebDriver>() {

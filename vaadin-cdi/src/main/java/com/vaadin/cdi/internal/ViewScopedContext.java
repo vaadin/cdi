@@ -42,6 +42,10 @@ public class ViewScopedContext extends AbstractVaadinContext {
             this.viewName = viewName;
         }
 
+        public String getViewName() {
+            return viewName;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -50,7 +54,7 @@ public class ViewScopedContext extends AbstractVaadinContext {
 
             ViewStorageKey that = (ViewStorageKey) o;
 
-            return viewName != null ? viewName.equals(that.viewName) : that.viewName == null;
+            return viewName.equals(that.viewName);
 
         }
 
@@ -90,7 +94,7 @@ public class ViewScopedContext extends AbstractVaadinContext {
         UIData uiData = sessionData.getUIData(currentUI.getUIId(), true);
         String viewName = uiData.getProbableInjectionPointView();
         if (viewName == null) {
-            getLogger().warning("Could not determine active View");
+            throw new IllegalStateException("Could not determine active View for " + contextual);
         }
 
         return new ViewStorageKey(currentUI.getUIId(), viewName);
@@ -108,18 +112,19 @@ public class ViewScopedContext extends AbstractVaadinContext {
         getLogger().fine("ViewChangeCleanup for " + sessionId + " " + uiId);
         SessionData sessionData = getSessionData(sessionId, true);
         UIData uiData = sessionData.getUIData(uiId, true);
-        if (uiData == null) {
-            return;
-        }
-
         uiData.validateTransition();
         String activeViewName = uiData.getActiveView();
-        ViewStorageKey key = new ViewStorageKey(uiId, activeViewName);
         Map<StorageKey, ContextualStorage> map = sessionData.getStorageMap();
-        ContextualStorage storage = map.get(key);
-        getLogger().fine("dropping " + key + " : " + storage);
-        map.remove(key);
-        destroyAllActive(storage);
+
+        for (Map.Entry<StorageKey, ContextualStorage> entry : map.entrySet()) {
+            ViewStorageKey key = (ViewStorageKey) entry.getKey();
+            if (key.getUiId() == uiId && !key.getViewName().equals(activeViewName)) {
+                ContextualStorage storage = entry.getValue();
+                getLogger().fine("dropping " + key + " : " + storage);
+                map.remove(key);
+                destroyAllActive(storage);
+            }
+        }
     }
 
     synchronized void clearPendingViewChange(long sessionId, int uiId) {

@@ -49,8 +49,9 @@ public class ArchiveProvider {
             CDIViewProvider.ViewChangeListenerImpl.class, Conventions.class,
             InconsistentDeploymentException.class, AnnotationUtil.class,
             VaadinExtension.class, VaadinContextualStorage.class, ContextWrapper.class,
-            CDIUtil.class,
-            UIScoped.class, ViewScoped.class, NormalUIScoped.class, NormalViewScoped.class};
+            CDIUtil.class, URLMapping.class,
+            UIScoped.class, ViewScoped.class, NormalUIScoped.class, NormalViewScoped.class,
+            CounterFilter.class, Counter.class};
     public static WebArchive createWebArchive(String warName, Class... classes) {
         return createWebArchive(warName, true, classes);
     }

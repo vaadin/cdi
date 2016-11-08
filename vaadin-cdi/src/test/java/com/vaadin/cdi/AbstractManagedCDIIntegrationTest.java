@@ -1,5 +1,9 @@
 package com.vaadin.cdi;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
@@ -72,6 +76,24 @@ public abstract class AbstractManagedCDIIntegrationTest extends
                         return value.equals(driver.findElement(by).getText());
                     }
                 });
+    }
+
+    public void resetCounts() throws IOException {
+        slurp("?resetCounts");
+    }
+
+    public int getCount(String id) throws IOException {
+        String line = slurp("?getCount=" + id);
+        return Integer.parseInt(line);
+    }
+
+    private String slurp(String uri) throws IOException {
+        URL url = new URL(contextPath.toString()+uri);
+        InputStream is = url.openConnection().getInputStream();
+        BufferedReader reader = new BufferedReader( new InputStreamReader( is )  );
+        String line = reader.readLine();
+        reader.close();
+        return line;
     }
 
     public void clickAndWait(String id) {

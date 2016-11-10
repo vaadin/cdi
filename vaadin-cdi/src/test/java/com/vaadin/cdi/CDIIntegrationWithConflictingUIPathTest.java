@@ -1,30 +1,20 @@
 package com.vaadin.cdi;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-import java.net.MalformedURLException;
-
+import com.vaadin.cdi.uis.AnotherPathCollisionUI;
+import com.vaadin.cdi.uis.PathCollisionUI;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.cdi.uis.AnotherPathCollisionUI;
-import com.vaadin.cdi.uis.PathCollisionUI;
-import com.vaadin.cdi.uis.RootUI;
+import java.net.MalformedURLException;
+
+import static org.junit.Assert.fail;
 
 public class CDIIntegrationWithConflictingUIPathTest extends
         AbstractCDIIntegrationTest {
 
-    @Before
-    public void resetCounter() {
-        PathCollisionUI.resetCounter();
-        AnotherPathCollisionUI.resetCounter();
-    }
 
     @Deployment(name = "uiPathCollision", managed = false)
     public static WebArchive multipleUIsWithSamePath() {
@@ -39,7 +29,6 @@ public class CDIIntegrationWithConflictingUIPathTest extends
     @Test
     @InSequence(-2)
     public void uiPathCollisionBreaksDeployment() throws MalformedURLException {
-        assertThat(RootUI.getNumberOfInstances(), is(0));
         try {
             System.out.println("DEPLOYING");
             // Deployment doesn't declare that it can throw DeploymentException
@@ -53,4 +42,5 @@ public class CDIIntegrationWithConflictingUIPathTest extends
             System.out.println("Exiting try block");
         }
     }
+
 }

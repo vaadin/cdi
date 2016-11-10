@@ -16,31 +16,23 @@
 
 package com.vaadin.cdi;
 
-import static org.junit.Assert.fail;
-
-import java.net.MalformedURLException;
-
+import com.vaadin.cdi.uis.CustomMappingUI;
+import com.vaadin.cdi.uis.RootUI;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.vaadin.cdi.uis.CustomMappingUI;
-import com.vaadin.cdi.uis.RootUI;
+import java.net.MalformedURLException;
+
+import static org.junit.Assert.fail;
 
 @RunAsClient
 @RunWith(Arquillian.class)
 public class MultipleRootUIsTest extends AbstractCDIIntegrationTest {
-
-    @Before
-    public void resetCounter() {
-        RootUI.resetCounter();
-        CustomMappingUI.resetCounter();
-    }
 
     @Deployment(name = "multipleRoots", managed = false)
     public static WebArchive archiveWithMultipleRoots() {
@@ -62,4 +54,5 @@ public class MultipleRootUIsTest extends AbstractCDIIntegrationTest {
             // Correct response
         }
     }
+
 }

@@ -16,25 +16,24 @@
 
 package com.vaadin.cdi;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.net.MalformedURLException;
-
+import com.vaadin.cdi.uis.CustomMappingUI;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.cdi.uis.CustomMappingUI;
+import java.io.IOException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class CDIIntegrationWithCustomDeploymentTest extends
         AbstractManagedCDIIntegrationTest {
 
     @Before
-    public void resetCounter() {
-        CustomMappingUI.resetCounter();
+    public void resetCounter() throws IOException {
+        resetCounts();
     }
 
     @Deployment(name = "customURIMapping")
@@ -45,9 +44,9 @@ public class CDIIntegrationWithCustomDeploymentTest extends
 
     @Test
     @OperateOnDeployment("customURIMapping")
-    public void customServletMapping() throws MalformedURLException {
-        assertThat(CustomMappingUI.getNumberOfInstances(), is(0));
+    public void customServletMapping() throws IOException {
+        assertThat(getCount(CustomMappingUI.CONSTRUCT_COUNT), is(0));
         openWindow("customURI/");
-        assertThat(CustomMappingUI.getNumberOfInstances(), is(1));
+        assertThat(getCount(CustomMappingUI.CONSTRUCT_COUNT), is(1));
     }
 }

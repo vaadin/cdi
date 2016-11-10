@@ -1,21 +1,17 @@
 package com.vaadin.cdi.uis;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.annotation.PostConstruct;
-
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.Counter;
 import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 @CDIUI
 public class ConcurrentUI extends UI {
@@ -25,26 +21,17 @@ public class ConcurrentUI extends UI {
     public static final String COUNTER_LABEL = "counter-label";
     public static final String KILL_SESSION = "kill-session";
     public static final String OPEN_WINDOW = "open-window";
-
-    private final static AtomicInteger COUNTER = new AtomicInteger(0);
-
+    public static final String CONSTRUCT_COUNT = "ConcurrentUIConstruct";
     private int clickCount;
 
-    private int instanceClicks = 0;
+    @Inject
+    Counter counter;
 
     @PostConstruct
     public void initialize() {
-        COUNTER.incrementAndGet();
+        counter.increment(CONSTRUCT_COUNT);
         clickCount = 0;
 
-    }
-
-    public static int getNumberOfInstances() {
-        return COUNTER.get();
-    }
-
-    public static void resetCounter() {
-        COUNTER.set(0);
     }
 
     @Override

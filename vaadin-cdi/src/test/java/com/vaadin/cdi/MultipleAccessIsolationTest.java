@@ -1,13 +1,6 @@
 package com.vaadin.cdi;
 
-import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.vaadin.cdi.uis.ConcurrentUI;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
@@ -17,14 +10,20 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.vaadin.cdi.uis.ConcurrentUI;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class MultipleAccessIsolationTest extends
         AbstractManagedCDIIntegrationTest {
 
     @Before
-    public void resetCounter() {
-        ConcurrentUI.resetCounter();
+    public void resetCounter() throws IOException {
+        resetCounts();
     }
 
     @Deployment(name = "concurrentAccess")
@@ -34,12 +33,12 @@ public class MultipleAccessIsolationTest extends
     }
 
     @Test
-    public void testConcurrentAccess() throws MalformedURLException,
+    public void testConcurrentAccess() throws IOException,
             InterruptedException {
         String uri = deriveMappingForUI(ConcurrentUI.class);
-        assertThat(ConcurrentUI.getNumberOfInstances(), is(0));
+        assertThat(getCount(ConcurrentUI.CONSTRUCT_COUNT), is(0));
         openWindow(firstWindow, uri);
-        assertThat(ConcurrentUI.getNumberOfInstances(), is(1));
+        assertThat(getCount(ConcurrentUI.CONSTRUCT_COUNT), is(1));
         firstWindow.findElement(By.id(ConcurrentUI.OPEN_WINDOW)).click();
         waitForNumberOfWindowsToEqual(2);
         Thread.sleep(500);
@@ -64,10 +63,10 @@ public class MultipleAccessIsolationTest extends
     }
 
     @Test
-    public void testConsecutiveAccess() throws MalformedURLException,
+    public void testConsecutiveAccess() throws IOException,
             InterruptedException {
         String uri = deriveMappingForUI(ConcurrentUI.class);
-        assertThat(ConcurrentUI.getNumberOfInstances(), is(0));
+        assertThat(getCount(ConcurrentUI.CONSTRUCT_COUNT), is(0));
         openWindow(firstWindow, uri);
         firstWindow.findElement(By.id(ConcurrentUI.COUNTER_BUTTON)).click();
         Thread.sleep(100);

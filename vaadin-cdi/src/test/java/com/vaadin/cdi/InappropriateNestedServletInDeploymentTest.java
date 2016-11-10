@@ -16,17 +16,16 @@
 
 package com.vaadin.cdi;
 
-import static org.junit.Assert.fail;
-
-import java.net.MalformedURLException;
-
+import com.vaadin.cdi.uis.UIWithNestedServlet;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 
-import com.vaadin.cdi.uis.UIWithNestedServlet;
+import java.net.MalformedURLException;
+
+import static org.junit.Assert.fail;
 
 public class InappropriateNestedServletInDeploymentTest extends
         AbstractCDIIntegrationTest {

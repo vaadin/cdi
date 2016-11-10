@@ -15,29 +15,27 @@
  */
 package com.vaadin.cdi.uis;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Alternative;
-
 import com.vaadin.cdi.CDIUI;
+import com.vaadin.cdi.internal.Counter;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Alternative;
+import javax.inject.Inject;
+
 @CDIUI(value = "plainAlternativeUI")
 @Alternative
 public class PlainAlternativeUI extends UI {
-
-    private final static AtomicInteger COUNTER = new AtomicInteger(0);
-    private int clickCount;
+    public static final String CONSTRUCT_COUNT = "PlainAlternativeUIConstruct";
+    @Inject
+    Counter counter;
 
     @PostConstruct
     public void initialize() {
-        COUNTER.incrementAndGet();
-        clickCount = 0;
-
+        counter.increment(CONSTRUCT_COUNT);
     }
 
     @Override
@@ -51,13 +49,5 @@ public class PlainAlternativeUI extends UI {
         label.setId("label");
         layout.addComponent(label);
         setContent(layout);
-    }
-
-    public static int getNumberOfInstances() {
-        return COUNTER.get();
-    }
-
-    public static void resetCounter() {
-        COUNTER.set(0);
     }
 }

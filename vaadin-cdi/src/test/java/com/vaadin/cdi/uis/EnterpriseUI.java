@@ -16,22 +16,21 @@
 
 package com.vaadin.cdi.uis;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import com.vaadin.cdi.CDIUI;
+import com.vaadin.cdi.internal.Counter;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
 @CDIUI(value = "enterpriseUI")
 public class EnterpriseUI extends UI {
 
-    private final static AtomicInteger COUNTER = new AtomicInteger(0);
+    public static final String CONSTRUCT_COUNT = "EnterpriseUIConstruct";
     private int clickCount;
 
     @Inject
@@ -40,11 +39,13 @@ public class EnterpriseUI extends UI {
     @Inject
     private EnterpriseLabel injectedLabel;
 
+    @Inject
+    Counter counter;
+
     @PostConstruct
     public void initialize() {
-        COUNTER.incrementAndGet();
         clickCount = 0;
-
+        counter.increment(CONSTRUCT_COUNT);
     }
 
     @Override
@@ -69,14 +70,6 @@ public class EnterpriseUI extends UI {
         layout.addComponent(button);
         layout.addComponent(injectedLabel);
         setContent(layout);
-    }
-
-    public static int getNumberOfInstances() {
-        return COUNTER.get();
-    }
-
-    public static void resetCounter() {
-        COUNTER.set(0);
     }
 
 }

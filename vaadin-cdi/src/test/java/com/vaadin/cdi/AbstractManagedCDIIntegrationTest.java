@@ -1,13 +1,8 @@
 package com.vaadin.cdi;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.base.Predicate;
+import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.uis.RootUI;
 import org.jboss.arquillian.graphene.Graphene;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.openqa.selenium.By;
@@ -16,8 +11,16 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.google.common.base.Predicate;
-import com.vaadin.cdi.internal.Conventions;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public abstract class AbstractManagedCDIIntegrationTest extends
         AbstractCDIIntegrationTest {
@@ -103,6 +106,10 @@ public abstract class AbstractManagedCDIIntegrationTest extends
 
     public void waitForClient() {
         new WebDriverWait(firstWindow, 10).until(new ClientIsReadyPredicate());
+    }
+
+    public void assertDefaultRootNotInstantiated() throws IOException {
+        assertThat(getCount(RootUI.CONSTRUCT_KEY), is(0));
     }
 
     private class ClientIsReadyPredicate implements Predicate<WebDriver> {

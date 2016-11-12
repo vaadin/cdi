@@ -1,5 +1,6 @@
 package com.vaadin.cdi;
 
+import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -14,6 +15,8 @@ import com.vaadin.cdi.internal.CrossInjectingBean;
 import com.vaadin.cdi.uis.ParameterizedNavigationUI;
 import com.vaadin.cdi.views.CrossInjectingView;
 
+import java.net.MalformedURLException;
+
 public class CrossInjectionTest extends AbstractManagedCDIIntegrationTest {
 
     @Deployment(name = "crossInjection")
@@ -25,9 +28,9 @@ public class CrossInjectionTest extends AbstractManagedCDIIntegrationTest {
 
     @Test
     @OperateOnDeployment("crossInjection")
-    public void crossInjectionWithSetter() {
-        ParameterizedNavigationUI.NAVIGATE_TO = "";
-        openWindow(ParameterizedNavigationUI.class);
+    public void crossInjectionWithSetter() throws MalformedURLException {
+        openWindow(deriveMappingForUI(ParameterizedNavigationUI.class) +
+                ParameterizedNavigationUI.getNavigateToParam(""));
         findElement("navigate").click();
         waitForValue(By.id("view"), "CrossInjectingView");
         String id1 = findElement(CrossInjectingView.TRUE_ID).getText();
@@ -38,9 +41,9 @@ public class CrossInjectionTest extends AbstractManagedCDIIntegrationTest {
 
     @Test
     @OperateOnDeployment("crossInjection")
-    public void crossInjectionWithConstructor() {
-        ParameterizedNavigationUI.NAVIGATE_TO = "";
-        openWindow(ParameterizedNavigationUI.class);
+    public void crossInjectionWithConstructor() throws MalformedURLException {
+        openWindow(deriveMappingForUI(ParameterizedNavigationUI.class) +
+                ParameterizedNavigationUI.getNavigateToParam(""));
         findElement("navigate").click();
         waitForValue(By.id("view"), "CrossInjectingView");
         String id1 = findElement(CrossInjectingView.TRUE_ID).getText();

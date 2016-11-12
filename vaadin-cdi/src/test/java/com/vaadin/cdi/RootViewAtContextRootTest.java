@@ -32,8 +32,8 @@ public class RootViewAtContextRootTest extends AbstractManagedCDIIntegrationTest
     public void testThatRootViewIsReachable() throws IOException {
         assertThat(getCount(ParameterizedNavigationUI.CONSTRUCT_COUNT), is(0));
         assertThat(getCount(RootView.CONSTRUCT_COUNT), is(0));
-        ParameterizedNavigationUI.NAVIGATE_TO = "";
-        openWindow(deriveMappingForUI(ParameterizedNavigationUI.class));
+        openWindow(deriveMappingForUI(ParameterizedNavigationUI.class) +
+                ParameterizedNavigationUI.getNavigateToParam(""));
         firstWindow.findElement(NAVIGATE_BUTTON).click();
         waitForValue(VIEW_LABEL, "default view");
         assertThat(getCount(ParameterizedNavigationUI.CONSTRUCT_COUNT), is(1));

@@ -35,7 +35,6 @@ public class ParameterizedNavigationUI extends UI {
     public static final String CONSTRUCT_COUNT = "ParameterizedNavigationUIConstruct";
     @Inject
     CDIViewProvider viewProvider;
-    public static String NAVIGATE_TO = "";
 
     @Inject
     Counter counter;
@@ -47,6 +46,7 @@ public class ParameterizedNavigationUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
+        final String navigateTo = request.getParameter("navigateTo");
         setSizeFull();
 
         final VerticalLayout layout = new VerticalLayout();
@@ -60,7 +60,7 @@ public class ParameterizedNavigationUI extends UI {
                 Navigator navigator = new Navigator(
                         ParameterizedNavigationUI.this, layout);
                 navigator.addProvider(viewProvider);
-                navigator.navigateTo(NAVIGATE_TO);
+                navigator.navigateTo(navigateTo);
             }
         });
         navigate.setId("navigate");
@@ -68,8 +68,9 @@ public class ParameterizedNavigationUI extends UI {
         layout.addComponent(navigate);
         setContent(layout);
     }
-    public static void reset() {
-        NAVIGATE_TO = null;
+
+    public static String getNavigateToParam(String navigateTo) {
+        return "?navigateTo="+navigateTo;
     }
 
 }

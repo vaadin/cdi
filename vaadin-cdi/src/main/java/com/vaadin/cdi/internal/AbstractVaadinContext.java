@@ -249,9 +249,9 @@ public abstract class AbstractVaadinContext extends AbstractContext {
         SessionData sessionData = storageMap.remove(sessionId);
         if (sessionData != null) {
             synchronized (sessionData) {
-                Map<Integer, UIData> map = sessionData.getUiDataMap();
-                for (UIData uiData : new ArrayList<UIData>(map.values())) {
-                    dropUIData(sessionData, uiData.getUiId());
+                Collection<ContextualStorage> storages = sessionData.storageMap.values();
+                for (ContextualStorage storage : storages) {
+                    destroyAllActive(storage);
                 }
             }
         }

@@ -40,7 +40,7 @@ public class CDIIntegrationWithDefaultDeploymentTest extends
         resetCounts();
     }
 
-    @Deployment
+    @Deployment(testable = false)
     public static WebArchive archiveWithDefaultRootUI() {
         return ArchiveProvider.createWebArchive("default",
                 InstrumentedUI.class, InstrumentedView.class,

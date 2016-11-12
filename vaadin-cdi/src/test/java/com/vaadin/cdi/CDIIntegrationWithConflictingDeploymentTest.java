@@ -38,7 +38,7 @@ public class CDIIntegrationWithConflictingDeploymentTest extends
         resetCounts();
     }
 
-    @Deployment(name = "alternativeUiPathCollision")
+    @Deployment(name = "alternativeUiPathCollision", testable = false)
     public static WebArchive alternativeAndActiveWithSamePath() {
         return ArchiveProvider.createWebArchive("alternativeUiPathCollision",
                 PlainUI.class, PlainColidingAlternativeUI.class);

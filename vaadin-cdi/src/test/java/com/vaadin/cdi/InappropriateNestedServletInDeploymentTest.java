@@ -30,7 +30,7 @@ import static org.junit.Assert.fail;
 public class InappropriateNestedServletInDeploymentTest extends
         AbstractCDIIntegrationTest {
 
-    @Deployment(name = "nestedServlet", managed = false)
+    @Deployment(name = "nestedServlet", managed = false, testable = false)
     public static WebArchive alternativeAndActiveWithSamePath() {
         return ArchiveProvider.createWebArchive("nestedServlet",
                 UIWithNestedServlet.class);

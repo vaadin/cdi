@@ -1,8 +1,9 @@
 package com.vaadin.cdi.shiro;
 
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
-
+import com.vaadin.cdi.AbstractManagedCDIIntegrationTest;
+import com.vaadin.cdi.ArchiveProvider;
+import com.vaadin.cdi.uis.NavigatableUI;
+import com.vaadin.cdi.views.AbstractNavigatableView;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.shrinkwrap.api.ArchivePaths;
@@ -14,10 +15,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
-import com.vaadin.cdi.AbstractManagedCDIIntegrationTest;
-import com.vaadin.cdi.ArchiveProvider;
-import com.vaadin.cdi.uis.NavigatableUI;
-import com.vaadin.cdi.views.AbstractNavigatableView;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 
 /**
  * Simple test of Shiro access control.
@@ -25,7 +24,7 @@ import com.vaadin.cdi.views.AbstractNavigatableView;
 @Ignore("See issue #186")
 public class ShiroTest extends AbstractManagedCDIIntegrationTest {
 
-    @Deployment(name = "shiro")
+    @Deployment(name = "shiro", testable = false)
     public static WebArchive initAndPostConstructAreConsistent() {
         PomEquippedResolveStage pom = Maven.resolver()
                 .loadPomFromFile("pom.xml");

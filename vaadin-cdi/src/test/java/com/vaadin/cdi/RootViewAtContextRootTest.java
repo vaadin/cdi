@@ -21,7 +21,7 @@ public class RootViewAtContextRootTest extends AbstractManagedCDIIntegrationTest
         resetCounts();
     }
 
-    @Deployment(name = "rootView")
+    @Deployment(name = "rootView", testable = false)
     public static WebArchive alternativeAndActiveWithSamePath() {
         return ArchiveProvider.createWebArchive("rootView", RootView.class,
                 ParameterizedNavigationUI.class);

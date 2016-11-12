@@ -1,11 +1,9 @@
 package com.vaadin.cdi;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
-
-import java.net.MalformedURLException;
-
+import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.MyBean;
+import com.vaadin.cdi.uis.InjectionUI;
+import com.vaadin.cdi.views.BeanView;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -14,14 +12,15 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.vaadin.cdi.internal.Conventions;
-import com.vaadin.cdi.internal.MyBean;
-import com.vaadin.cdi.uis.InjectionUI;
-import com.vaadin.cdi.views.BeanView;
+import java.net.MalformedURLException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 
 public class InjectionTest extends AbstractManagedCDIIntegrationTest {
 
-    @Deployment(name = "uiInjection")
+    @Deployment(name = "uiInjection", testable = false)
     public static WebArchive alternativeAndActiveWithSamePath() {
         return ArchiveProvider.createWebArchive("uiInjection",
                 InjectionUI.class, MyBean.class, BeanView.class);

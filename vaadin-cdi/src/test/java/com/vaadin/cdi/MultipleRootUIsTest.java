@@ -34,7 +34,7 @@ import static org.junit.Assert.fail;
 @RunWith(Arquillian.class)
 public class MultipleRootUIsTest extends AbstractCDIIntegrationTest {
 
-    @Deployment(name = "multipleRoots", managed = false)
+    @Deployment(name = "multipleRoots", managed = false, testable = false)
     public static WebArchive archiveWithMultipleRoots() {
         return ArchiveProvider.createWebArchive("multipleRoots", RootUI.class,
                 CustomMappingUI.class);

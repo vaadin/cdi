@@ -14,7 +14,7 @@ import static org.junit.Assert.fail;
 public class InappropriateCDIViewInDeploymentTest extends
         AbstractCDIIntegrationTest {
 
-    @Deployment(name = "cdiViewWithoutView", managed = false)
+    @Deployment(name = "cdiViewWithoutView", managed = false, testable = false)
     public static WebArchive multipleUIsWithSamePath() {
         return ArchiveProvider.createWebArchive("cdiViewWithoutView",
                 CDIViewNotImplementingView.class);

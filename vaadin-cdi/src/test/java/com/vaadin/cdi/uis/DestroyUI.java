@@ -8,6 +8,7 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -20,6 +21,7 @@ import java.io.Serializable;
 @CDIUI("")
 public class DestroyUI extends UI {
     public static final String CLOSE_BTN_ID = "close";
+    public static final String CLOSE_SESSION_BTN_ID = "close session";
     public static final String NAVIGATE_BTN_ID = "navigate";
     public static final String LABEL_ID = "label";
     public static final String UIID_ID = "UIID";
@@ -64,6 +66,16 @@ public class DestroyUI extends UI {
             }
         });
         layout.addComponent(closeBtn);
+
+        Button closeSessionBtn = new Button("close Session");
+        closeSessionBtn.setId(CLOSE_SESSION_BTN_ID);
+        closeSessionBtn.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                VaadinSession.getCurrent().close();
+            }
+        });
+        layout.addComponent(closeSessionBtn);
 
         Button viewNavigateBtn = new Button("navigate");
         viewNavigateBtn.setId(NAVIGATE_BTN_ID);

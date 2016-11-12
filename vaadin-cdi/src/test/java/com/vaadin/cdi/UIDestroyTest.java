@@ -5,6 +5,7 @@ import com.vaadin.cdi.uis.DestroyUI;
 import com.vaadin.cdi.views.TestView;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -24,13 +25,17 @@ public class UIDestroyTest extends AbstractManagedCDIIntegrationTest {
                 TestView.class);
     }
 
-    @Test
-    public void testViewChangeTriggersClosedUIDestroy() throws Exception {
+    @Before
+    public void setUp() throws IOException {
         resetCounts();
         uri = Conventions.deriveMappingForUI(DestroyUI.class);
         openWindow(uri);
         uiId = findElement(DestroyUI.UIID_ID).getText();
         assertDestroyCount(0);
+    }
+
+    @Test
+    public void testViewChangeTriggersClosedUIDestroy() throws Exception {
         //close first UI
         clickAndWait(DestroyUI.CLOSE_BTN_ID);
 
@@ -44,6 +49,12 @@ public class UIDestroyTest extends AbstractManagedCDIIntegrationTest {
         clickAndWait(DestroyUI.NAVIGATE_BTN_ID);
 
         //first UI cleaned up
+        assertDestroyCount(1);
+    }
+
+    @Test
+    public void testSessionCloseDestroysUIContext() throws Exception {
+        clickAndWait(DestroyUI.CLOSE_SESSION_BTN_ID);
         assertDestroyCount(1);
     }
 

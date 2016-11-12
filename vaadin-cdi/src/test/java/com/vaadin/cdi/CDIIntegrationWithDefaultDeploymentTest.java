@@ -40,7 +40,6 @@ public class CDIIntegrationWithDefaultDeploymentTest extends
     @Before
     public void resetCounter() throws IOException {
         resetCounts();
-        ParameterizedNavigationUI.reset();
     }
 
     @Deployment
@@ -241,8 +240,8 @@ public class CDIIntegrationWithDefaultDeploymentTest extends
     public void navigationToRestrictedViewFails() throws IOException {
         assertThat(getCount(ParameterizedNavigationUI.CONSTRUCT_COUNT), is(0));
         assertThat(getCount(RestrictedView.CONSTRUCT_COUNT), is(0));
-        ParameterizedNavigationUI.NAVIGATE_TO = "restrictedView";
-        openWindow(deriveMappingForUI(ParameterizedNavigationUI.class));
+        openWindow(deriveMappingForUI(ParameterizedNavigationUI.class) +
+                ParameterizedNavigationUI.getNavigateToParam("restrictedView"));
         firstWindow.findElement(NAVIGATE_BUTTON).click();
         assertThat(getCount(ParameterizedNavigationUI.CONSTRUCT_COUNT), is(1));
         assertThat(getCount(RestrictedView.CONSTRUCT_COUNT), is(0));
@@ -299,8 +298,8 @@ public class CDIIntegrationWithDefaultDeploymentTest extends
     public void viewConventions() throws IOException {
         assertThat(getCount(ParameterizedNavigationUI.CONSTRUCT_COUNT), is(0));
         assertThat(getCount(ConventionalView.CONSTRUCT_COUNT), is(0));
-        ParameterizedNavigationUI.NAVIGATE_TO = "conventional";
-        openWindow(deriveMappingForUI(ParameterizedNavigationUI.class));
+        openWindow(deriveMappingForUI(ParameterizedNavigationUI.class) +
+                ParameterizedNavigationUI.getNavigateToParam("conventional"));
         firstWindow.findElement(NAVIGATE_BUTTON).click();
         waitForValue(VIEW_LABEL, "conventional");
         assertThat(getCount(ParameterizedNavigationUI.CONSTRUCT_COUNT), is(1));

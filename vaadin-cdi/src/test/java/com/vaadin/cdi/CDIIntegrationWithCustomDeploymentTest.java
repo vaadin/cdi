@@ -36,7 +36,7 @@ public class CDIIntegrationWithCustomDeploymentTest extends
         resetCounts();
     }
 
-    @Deployment(name = "customURIMapping")
+    @Deployment(name = "customURIMapping", testable = false)
     public static WebArchive archiveWithCustomURIMapping() {
         return ArchiveProvider
                 .createWebArchive("custom", CustomMappingUI.class);

@@ -26,7 +26,7 @@ public class MultipleAccessIsolationTest extends
         resetCounts();
     }
 
-    @Deployment(name = "concurrentAccess")
+    @Deployment(name = "concurrentAccess", testable = false)
     public static WebArchive alternativeAndActiveWithSamePath() {
         return ArchiveProvider.createWebArchive("concurrentAccess",
                 ConcurrentUI.class);

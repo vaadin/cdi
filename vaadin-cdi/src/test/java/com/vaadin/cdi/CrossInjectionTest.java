@@ -19,7 +19,7 @@ import java.net.MalformedURLException;
 
 public class CrossInjectionTest extends AbstractManagedCDIIntegrationTest {
 
-    @Deployment(name = "crossInjection")
+    @Deployment(name = "crossInjection", testable = false)
     public static WebArchive crossInjectionArchive() {
         return ArchiveProvider.createWebArchive("crossInjection",
                 ParameterizedNavigationUI.class, CrossInjectingView.class,

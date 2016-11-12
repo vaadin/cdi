@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import com.vaadin.cdi.internal.Conventions;
 import com.vaadin.cdi.internal.NonPassivatingBean;
+import com.vaadin.cdi.internal.ViewScopedContext;
 import com.vaadin.cdi.uis.NonPassivatingUI;
 import com.vaadin.cdi.views.NonPassivatingContentView;
 
@@ -20,7 +21,7 @@ public class NonPassivatingBeanTest extends AbstractManagedCDIIntegrationTest {
 
     
     
-    @Deployment(name = "nonPassivatingBean")
+    @Deployment(name = "nonPassivatingBean", testable = false)
     public static WebArchive nonPassivatingBeanArchive() {
         return ArchiveProvider.createWebArchive("nonPassivatingBean",
                 NonPassivatingBean.class, NonPassivatingUI.class, NonPassivatingContentView.class);

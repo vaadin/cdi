@@ -1,7 +1,6 @@
 package com.vaadin.cdi.internal;
 
 import com.vaadin.cdi.NormalUIScoped;
-import com.vaadin.ui.UI;
 
 @NormalUIScoped
 public class MyBean {
@@ -10,7 +9,6 @@ public class MyBean {
     private final int id = counter++;
 
     public MyBean() {
-        System.out.println(UI.getCurrent());
         System.out.println("Created MyBean with id " + id);
     }
 

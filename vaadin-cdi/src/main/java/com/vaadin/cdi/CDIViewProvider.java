@@ -16,6 +16,25 @@
 
 package com.vaadin.cdi;
 
+import com.vaadin.cdi.access.AccessControl;
+import com.vaadin.cdi.internal.*;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.navigator.ViewProvider;
+import com.vaadin.ui.UI;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.annotation.security.DenyAll;
+import javax.annotation.security.RolesAllowed;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.util.AnnotationLiteral;
+import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -23,30 +42,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.RolesAllowed;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.util.AnnotationLiteral;
-import javax.inject.Inject;
-
-import com.vaadin.cdi.access.AccessControl;
-import com.vaadin.cdi.internal.AnnotationUtil;
-import com.vaadin.cdi.internal.CDIUtil;
-import com.vaadin.cdi.internal.Conventions;
-import com.vaadin.cdi.internal.VaadinViewChangeCleanupEvent;
-import com.vaadin.cdi.internal.VaadinViewChangeEvent;
-import com.vaadin.cdi.internal.VaadinViewCreationEvent;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.navigator.ViewProvider;
-import com.vaadin.ui.UI;
 
 public class CDIViewProvider implements ViewProvider {
 
@@ -60,7 +55,7 @@ public class CDIViewProvider implements ViewProvider {
 
     @Inject
     private AccessControl accessControl;
-    private transient CreationalContext<?> currentViewCreationalContext;
+    private transient CreationalContext<?> dependentViewCreationalContext;
 
     public final static class ViewChangeListenerImpl implements
             ViewChangeListener {
@@ -270,18 +265,19 @@ public class CDIViewProvider implements ViewProvider {
                 return null;
             }
 
-            if (currentViewCreationalContext != null) {
+            if (dependentViewCreationalContext != null) {
                 getLogger().log(Level.FINER,
-                        "Releasing creational context for current view {0}",
-                        currentViewCreationalContext);
-                currentViewCreationalContext.release();
+                        "Releasing creational context for current dependent view {0}",
+                        dependentViewCreationalContext);
+                dependentViewCreationalContext.release();
+                dependentViewCreationalContext = null;
             }
 
-            currentViewCreationalContext = beanManager
+            CreationalContext creationalContext = beanManager
                     .createCreationalContext(viewBean);
             getLogger().log(Level.FINER,
                     "Created new creational context for current view {0}",
-                    currentViewCreationalContext);
+                    creationalContext);
 
             beanManager.fireEvent(new VaadinViewCreationEvent(sessionId,
                     currentUI.getUIId(), viewName));
@@ -289,8 +285,12 @@ public class CDIViewProvider implements ViewProvider {
                     .getUIId()));
 
             View view = (View) beanManager.getReference(viewBean,
-                    viewBean.getBeanClass(), currentViewCreationalContext);
+                    viewBean.getBeanClass(), creationalContext);
             getLogger().log(Level.FINE, "Returning view instance {0}", view.toString());
+
+            if (Dependent.class.isAssignableFrom(viewBean.getScope())) {
+                dependentViewCreationalContext = creationalContext;
+            }
 
             Navigator navigator = currentUI.getNavigator();
             if (navigator != null) {
@@ -308,11 +308,11 @@ public class CDIViewProvider implements ViewProvider {
 
     @PreDestroy
     protected void destroy() {
-        if (currentViewCreationalContext != null) {
+        if (dependentViewCreationalContext != null) {
             getLogger()
                     .log(Level.FINE,
-                            "CDIViewProvider is being destroyed, releasing creational context for current view");
-            currentViewCreationalContext.release();
+                            "CDIViewProvider is being destroyed, releasing creational context for current dependent view");
+            dependentViewCreationalContext.release();
         }
     }
 

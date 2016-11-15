@@ -1,9 +1,8 @@
 package com.vaadin.cdi.views;
 
-import javax.inject.Inject;
-
 import com.vaadin.cdi.CDIView;
 import com.vaadin.cdi.UIScoped;
+import com.vaadin.cdi.internal.Counter;
 import com.vaadin.cdi.internal.UIScopedBean;
 import com.vaadin.cdi.internal.ViewScopedBean;
 import com.vaadin.navigator.View;
@@ -13,6 +12,10 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+
+import javax.annotation.PreDestroy;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 @UIScoped
 @CDIView(value = AbstractScopedInstancesView.UISCOPED_VIEW)
@@ -26,6 +29,9 @@ public class UIScopedView extends AbstractScopedInstancesView implements View {
 
     @Inject
     private ViewScopedBean viewScopedBean;
+
+    @Inject
+    private DependentBean dependentBean;
 
     @Override
     protected Component buildContent() {
@@ -64,6 +70,19 @@ public class UIScopedView extends AbstractScopedInstancesView implements View {
         layout.addComponent(refreshButton);
 
         return layout;
+    }
+
+    @Dependent
+    public static class DependentBean {
+        public static final String DESTROY_COUNT = "UIDependentBeanDestroy";
+        @Inject
+        Counter counter;
+
+        @PreDestroy
+        private void preDestroy() {
+            counter.increment(DESTROY_COUNT);
+        }
+
     }
 
 }

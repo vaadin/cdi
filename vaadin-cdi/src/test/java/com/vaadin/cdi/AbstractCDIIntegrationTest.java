@@ -31,8 +31,6 @@ abstract public class AbstractCDIIntegrationTest {
     protected static final By NAVIGATE_BUTTON = By.id("navigate");
     protected static final String INSTRUMENTED_UI_URI = "instrumentedUI";
     private static final String SECOND_UI_URI = "secondUI";
-    protected static final String INSTRUMENTED_VIEW_URI = INSTRUMENTED_UI_URI
-                + "/#!instrumentedView";
     protected static final String DANGLING_VIEW_URI = SECOND_UI_URI
                 + "/#!danglingView";
 

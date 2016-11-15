@@ -32,8 +32,6 @@ import javax.inject.Inject;
 public class InstrumentedUI extends UI {
 
     public static final String CONSTRUCT_COUNT = "InstrumentedUIConstruct";
-    @Inject
-    InstrumentedView view;
 
     @Inject
     CDINavigator navigator;

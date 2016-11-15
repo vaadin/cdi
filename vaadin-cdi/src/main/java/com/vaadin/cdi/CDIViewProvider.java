@@ -17,12 +17,14 @@
 package com.vaadin.cdi;
 
 import com.vaadin.cdi.access.AccessControl;
-import com.vaadin.cdi.internal.*;
+import com.vaadin.cdi.internal.AnnotationUtil;
+import com.vaadin.cdi.internal.CDIUtil;
+import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.VaadinViewChangeCleanupEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.UI;
 
-import javax.annotation.PreDestroy;
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.spi.CreationalContext;
@@ -51,7 +53,6 @@ public class CDIViewProvider implements ViewProvider {
 
     @Inject
     private AccessControl accessControl;
-    private transient CreationalContext<?> currentViewCreationalContext;
 
     @Override
     public String getViewName(String viewAndParameters) {
@@ -226,40 +227,19 @@ public class CDIViewProvider implements ViewProvider {
                 return null;
             }
 
-            if (currentViewCreationalContext != null) {
-                getLogger().log(Level.FINER,
-                        "Releasing creational context for current view {0}",
-                        currentViewCreationalContext);
-                currentViewCreationalContext.release();
-            }
-
-            currentViewCreationalContext = beanManager
-                    .createCreationalContext(viewBean);
-            getLogger().log(Level.FINER,
-                    "Created new creational context for current view {0}",
-                    currentViewCreationalContext);
-
             cleanupEvent.set(new VaadinViewChangeCleanupEvent(sessionId, currentUI
                     .getUIId()));
-
+            CreationalContext creationalContext = beanManager
+                    .createCreationalContext(viewBean);
             View view = (View) beanManager.getReference(viewBean,
-                    viewBean.getBeanClass(), currentViewCreationalContext);
+                    viewBean.getBeanClass(), creationalContext);
+
             getLogger().log(Level.FINE, "Returning view instance {0}", view.toString());
 
             return view;
         }
 
         throw new RuntimeException("Unable to instantiate view");
-    }
-
-    @PreDestroy
-    protected void destroy() {
-        if (currentViewCreationalContext != null) {
-            getLogger()
-                    .log(Level.FINE,
-                            "CDIViewProvider is being destroyed, releasing creational context for current view");
-            currentViewCreationalContext.release();
-        }
     }
 
     private String parseViewName(String viewAndParameters) {

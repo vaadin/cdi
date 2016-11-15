@@ -111,6 +111,27 @@ public class ScopedInstancesTest extends AbstractManagedCDIIntegrationTest {
 
     }
 
+    @Test
+    public void testCreationalContext() throws Exception {
+        resetCounts();
+        // ViewScoped view instance opens initially
+        openWindow(deriveMappingForUI(NavigatableUI.class));
+        assertThat(getCount(ViewScopedView.DependentBean.DESTROY_COUNT), is(0));
+        assertThat(getCount(UIScopedView.DependentBean.DESTROY_COUNT), is(0));
+
+        // Open UIScoped view instance
+        navigateToUIScoped();
+        // bean dependent to viewsoped view should be destroyed
+        assertThat(getCount(ViewScopedView.DependentBean.DESTROY_COUNT), is(1));
+        assertThat(getCount(UIScopedView.DependentBean.DESTROY_COUNT), is(0));
+
+        // Navigate back to the ViewScoped view
+        navigateToViewScoped();
+        // bean dependent to uiscoped view should not be destroyed
+        assertThat(getCount(ViewScopedView.DependentBean.DESTROY_COUNT), is(1));
+        assertThat(getCount(UIScopedView.DependentBean.DESTROY_COUNT), is(0));
+    }
+
     private String getTextById(String id) {
         return firstWindow.findElement(By.id(id)).getText();
     }

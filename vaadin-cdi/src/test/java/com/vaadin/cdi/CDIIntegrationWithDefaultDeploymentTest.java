@@ -53,7 +53,7 @@ public class CDIIntegrationWithDefaultDeploymentTest extends
                 RestrictedView.class, PlainUI.class,
                 ParameterizedNavigationUI.class, EnterpriseUI.class,
                 Boundary.class, EnterpriseLabel.class, SubUI.class,
-                PlainAlternativeUI.class, NoViewProviderNavigationUI.class,
+                PlainAlternativeUI.class,
                 ConventionalView.class, MainView.class, SubView.class,
                 AbstractScopedInstancesView.class, AbstractNavigatableView.class,
                 NavigatableUI.class);
@@ -104,36 +104,6 @@ public class CDIIntegrationWithDefaultDeploymentTest extends
         waitForValue(LABEL, 2);
         assertThat(getCount(InstrumentedUI.CONSTRUCT_COUNT), is(2));
         assertDefaultRootNotInstantiated();
-    }
-
-    @Test
-    public void dependentScopedViewIsInstantiatedTwiceWithViewProvider()
-            throws IOException {
-        openWindow(firstWindow, INSTRUMENTED_VIEW_URI);
-        firstWindow.findElement(NAVIGATE_BUTTON).click();
-        waitForValue(VIEW_LABEL, "ViewLabel");
-        assertThat(getCount(InstrumentedView.CONSTRUCT_COUNT), is(2));
-    }
-
-    @Test
-    public void dependentScopedViewIsInstantiatedOnce()
-            throws IOException {
-        String uri = deriveMappingForUI(NoViewProviderNavigationUI.class);
-        openWindow(uri);
-        assertThat(getCount(InstrumentedView.CONSTRUCT_COUNT), is(1));
-        firstWindow.findElement(NAVIGATE_BUTTON).click();
-
-        waitForValue(VIEW_LABEL, "ViewLabel");
-        assertThat(getCount(InstrumentedView.CONSTRUCT_COUNT), is(1));
-        assertThat(getCount(NoViewProviderNavigationUI.CONSTRUCT_COUNT), is(1));
-        assertThat(getCount(NoViewProviderNavigationUI.NAVIGATION_COUNT), is(1));
-
-        firstWindow.findElement(NAVIGATE_BUTTON).click();
-        waitForValue(VIEW_LABEL, "ViewLabel");
-        assertThat(getCount(InstrumentedView.CONSTRUCT_COUNT), is(1));
-        assertThat(getCount(NoViewProviderNavigationUI.CONSTRUCT_COUNT), is(1));
-        assertThat(getCount(NoViewProviderNavigationUI.NAVIGATION_COUNT), is(2));
-
     }
 
     @Test

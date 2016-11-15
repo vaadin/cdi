@@ -25,13 +25,11 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
  */
 @CDIView(value = "instrumentedView")
-@Dependent
 public class InstrumentedView extends CustomComponent implements View {
 
     public static final String CONSTRUCT_COUNT = "InstrumentedViewConstruct";

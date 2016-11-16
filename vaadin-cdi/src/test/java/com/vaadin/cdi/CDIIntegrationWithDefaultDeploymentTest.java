@@ -63,7 +63,7 @@ import com.vaadin.cdi.views.ConventionalView;
 import com.vaadin.cdi.views.MainView;
 import com.vaadin.cdi.views.SubView;
 
-public class CDIIntegrationWithDefaultDeployment extends
+public class CDIIntegrationWithDefaultDeploymentTest extends
         AbstractManagedCDIIntegrationTest {
 
     @Before

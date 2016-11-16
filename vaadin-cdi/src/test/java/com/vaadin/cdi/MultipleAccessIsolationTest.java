@@ -19,7 +19,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.vaadin.cdi.uis.ConcurrentUI;
 
-public class MultipleAccessIsolation extends
+public class MultipleAccessIsolationTest extends
         AbstractManagedCDIIntegrationTest {
 
     @Before

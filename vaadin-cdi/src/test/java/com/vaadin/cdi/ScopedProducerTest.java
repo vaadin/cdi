@@ -18,7 +18,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import com.vaadin.cdi.internal.ProducedBean;
 import com.vaadin.cdi.uis.ProducerUI;
 
-public class ScopedProducer extends AbstractManagedCDIIntegrationTest {
+public class ScopedProducerTest extends AbstractManagedCDIIntegrationTest {
 
     @Deployment(name = "scopedProducer")
     public static WebArchive scopedProducerArchive() {

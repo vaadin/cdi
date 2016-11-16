@@ -14,7 +14,7 @@ import com.vaadin.cdi.internal.CrossInjectingBean;
 import com.vaadin.cdi.uis.ParameterizedNavigationUI;
 import com.vaadin.cdi.views.CrossInjectingView;
 
-public class CrossInjection extends AbstractManagedCDIIntegrationTest {
+public class CrossInjectionTest extends AbstractManagedCDIIntegrationTest {
 
     @Deployment(name = "crossInjection")
     public static WebArchive crossInjectionArchive() {

@@ -34,10 +34,10 @@ public class ShiroTest extends AbstractManagedCDIIntegrationTest {
                         AbstractShiroTestView.class, LoginPane.class,
                         GuestView.class, ViewerView.class, AdminView.class)
                 .addAsLibraries(
-                        pom.resolve("org.apache.shiro:shiro-core:1.2.3")
+                        pom.resolve("org.apache.shiro:shiro-core:1.3.2")
                                 .withTransitivity().asFile())
                 .addAsLibraries(
-                        pom.resolve("org.apache.shiro:shiro-web:1.2.3")
+                        pom.resolve("org.apache.shiro:shiro-web:1.3.2")
                                 .withTransitivity().asFile())
                 .addAsWebInfResource(new ClassLoaderAsset("shiro.ini"),
                         ArchivePaths.create("shiro.ini"))

@@ -172,7 +172,7 @@ public class CDIIntegrationWithDefaultDeploymentTest extends
     public void alternativeIsNotAccessible() throws IOException {
         openWindowNoWait(deriveMappingForUI(PlainAlternativeUI.class));
         final String expectedErrorMessage = firstWindow.getPageSource();
-        assertThat(expectedErrorMessage, containsString("404"));
+        assertThat(expectedErrorMessage, containsString("Request was not handled by any registered handler."));
         assertThat(getCount(PlainAlternativeUI.CONSTRUCT_COUNT), is(0));
     }
 

@@ -17,9 +17,7 @@
 package com.vaadin.cdi;
 
 import com.vaadin.cdi.uis.*;
-import com.vaadin.cdi.views.ConventionalView;
-import com.vaadin.cdi.views.MainView;
-import com.vaadin.cdi.views.SubView;
+import com.vaadin.cdi.views.*;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
@@ -57,6 +55,7 @@ public class CDIIntegrationWithDefaultDeploymentTest extends
                 Boundary.class, EnterpriseLabel.class, SubUI.class,
                 PlainAlternativeUI.class, NoViewProviderNavigationUI.class,
                 ConventionalView.class, MainView.class, SubView.class,
+                AbstractScopedInstancesView.class, AbstractNavigatableView.class,
                 NavigatableUI.class);
     }
 

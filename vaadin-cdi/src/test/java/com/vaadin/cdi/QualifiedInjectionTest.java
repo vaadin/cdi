@@ -19,7 +19,7 @@ import com.vaadin.cdi.internal.Conventions;
 import com.vaadin.cdi.internal.MyBean;
 import com.vaadin.cdi.uis.QualifierInjectionUI;
 
-public class QualifiedInjection extends AbstractManagedCDIIntegrationTest {
+public class QualifiedInjectionTest extends AbstractManagedCDIIntegrationTest {
 
     @Deployment(name = "qualifiedInjection")
     public static WebArchive qualifiedInjectionArchive() {

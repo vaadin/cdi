@@ -21,7 +21,7 @@ import com.vaadin.cdi.views.AbstractNavigatableView;
 import com.vaadin.cdi.views.UIScopedView;
 import com.vaadin.cdi.views.ViewScopedView;
 
-public class ScopedInstances extends AbstractManagedCDIIntegrationTest {
+public class ScopedInstancesTest extends AbstractManagedCDIIntegrationTest {
 
     @Deployment(name = "scopedNavigation")
     public static WebArchive alternativeAndActiveWithSamePath() {

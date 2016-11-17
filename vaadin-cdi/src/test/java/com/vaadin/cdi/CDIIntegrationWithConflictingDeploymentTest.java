@@ -16,6 +16,7 @@
 
 package com.vaadin.cdi;
 
+import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -27,27 +28,32 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.cdi.uis.CustomMappingUI;
+import com.vaadin.cdi.uis.PlainColidingAlternativeUI;
+import com.vaadin.cdi.uis.PlainUI;
 
-public class CDIIntegrationWithCustomDeployment extends
+public class CDIIntegrationWithConflictingDeploymentTest extends
         AbstractManagedCDIIntegrationTest {
 
     @Before
     public void resetCounter() {
-        CustomMappingUI.resetCounter();
+        PlainUI.resetCounter();
+        PlainColidingAlternativeUI.resetCounter();
     }
 
-    @Deployment(name = "customURIMapping")
-    public static WebArchive archiveWithCustomURIMapping() {
-        return ArchiveProvider
-                .createWebArchive("custom", CustomMappingUI.class);
+    @Deployment(name = "alternativeUiPathCollision")
+    public static WebArchive alternativeAndActiveWithSamePath() {
+        return ArchiveProvider.createWebArchive("alternativeUiPathCollision",
+                PlainUI.class, PlainColidingAlternativeUI.class);
     }
 
     @Test
-    @OperateOnDeployment("customURIMapping")
-    public void customServletMapping() throws MalformedURLException {
-        assertThat(CustomMappingUI.getNumberOfInstances(), is(0));
-        openWindow("customURI/");
-        assertThat(CustomMappingUI.getNumberOfInstances(), is(1));
+    @OperateOnDeployment("alternativeUiPathCollision")
+    public void alternativeDoesNotColideWithPath() throws MalformedURLException {
+        final String plainUIPath = deriveMappingForUI(PlainUI.class);
+        final String plainAlternativeUI = deriveMappingForUI(PlainColidingAlternativeUI.class);
+        assertThat(plainUIPath, is(plainAlternativeUI));
+        openWindow(plainUIPath);
+        assertThat(PlainUI.getNumberOfInstances(), is(1));
+        assertThat(PlainColidingAlternativeUI.getNumberOfInstances(), is(0));
     }
 }

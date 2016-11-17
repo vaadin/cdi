@@ -18,15 +18,12 @@ package com.vaadin.cdi;
 
 import com.vaadin.cdi.uis.CustomMappingUI;
 import com.vaadin.cdi.uis.RootUI;
-import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.net.MalformedURLException;
 
 import static org.junit.Assert.fail;
 
@@ -44,15 +41,10 @@ public class MultipleRootUIsTest extends AbstractCDIIntegrationTest {
      * Tests invalid deployment of multiple roots within a WAR Should be before
      * the regular tests -- Arquillian deployments are not perfectly isolated.
      */
-    @Test
-    public void multipleRootsBreakDeployment() throws MalformedURLException {
-        try {
-            deployer.deploy("multipleRoots");
-            fail("Multiple roots should not be deployable");
-            throw new DeploymentException(null);
-        } catch (DeploymentException e) {
-            // Correct response
-        }
+    @Test(expected = Exception.class)
+    public void multipleRootsBreakDeployment() throws Exception {
+        deployer.deploy("multipleRoots");
+        fail("Multiple roots should not be deployable");
     }
 
 }

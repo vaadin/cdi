@@ -17,13 +17,10 @@
 package com.vaadin.cdi;
 
 import com.vaadin.cdi.uis.UIWithNestedServlet;
-import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
-
-import java.net.MalformedURLException;
 
 import static org.junit.Assert.fail;
 
@@ -40,21 +37,11 @@ public class InappropriateNestedServletInDeploymentTest extends
      * Tests invalid deployment nested servlet within a UI class. Should be
      * started first -- Arquillian deployments are not perfectly isolated.
      */
-    @Test
+    @Test(expected = Exception.class)
     @InSequence(-2)
-    public void nestedServletBreaksDeployment() throws MalformedURLException {
-        try {
-            System.out.println("DEPLOYING");
-            // Deployment doesn't declare that it can throw DeploymentException
-            // De-facto it can
-            deployer.deploy("nestedServlet");
-            System.out.println("Deployed");
-            fail("Servlet class nested in the UI should not be deployable");
-            throw new DeploymentException(null);
-        } catch (DeploymentException e) {
-            // Correct response
-            System.out.println("Exiting try block");
-        }
+    public void nestedServletBreaksDeployment() throws Exception {
+        deployer.deploy("nestedServlet");
+        fail("Servlet class nested in the UI should not be deployable");
     }
 
 }

@@ -8,6 +8,7 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -101,6 +102,11 @@ public abstract class AbstractManagedCDIIntegrationTest extends
 
     public void clickAndWait(String id) {
         findElement(id).click();
+        waitForClient();
+    }
+
+    public void clickAndWait(By by) {
+        findElement(by).click();
         waitForClient();
     }
 

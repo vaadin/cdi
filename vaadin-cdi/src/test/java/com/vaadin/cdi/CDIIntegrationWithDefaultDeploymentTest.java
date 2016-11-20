@@ -204,14 +204,12 @@ public class CDIIntegrationWithDefaultDeploymentTest extends
         assertThat(getCount(DependentCDIEventListener.CONSTRUCT_COUNT), is(0));
         String uri = deriveMappingForUI(UIWithCDIDependentListener.class);
         openWindow(uri);
-        firstWindow.findElement(BUTTON).click();
-        Thread.sleep(100);
+        clickAndWait(BUTTON);
         assertThat(getCount(UIWithCDIDependentListener.CONSTRUCT_COUNT), is(1));
         assertThat(getCount(DependentCDIEventListener.CONSTRUCT_COUNT), is(1));
         assertThat(getCount(DependentCDIEventListener.EVENT_COUNT),
                 is(1));
-        firstWindow.findElement(BUTTON).click();
-        Thread.sleep(100);
+        clickAndWait(BUTTON);
         assertThat(getCount(UIWithCDIDependentListener.CONSTRUCT_COUNT), is(1));
         assertThat(getCount(DependentCDIEventListener.CONSTRUCT_COUNT), is(2));
         assertThat(getCount(DependentCDIEventListener.EVENT_COUNT),
@@ -229,8 +227,7 @@ public class CDIIntegrationWithDefaultDeploymentTest extends
         firstWindow.findElement(BUTTON).click();
         waitForValue(LABEL, "hello from intercepted bean");
         assertThat(getCount(InstrumentedInterceptor.INTERCEPT_COUNT), is(1));
-        firstWindow.findElement(BUTTON).click();
-        Thread.sleep(100);
+        clickAndWait(BUTTON);
         assertThat(getCount(InstrumentedInterceptor.INTERCEPT_COUNT), is(2));
 
     }

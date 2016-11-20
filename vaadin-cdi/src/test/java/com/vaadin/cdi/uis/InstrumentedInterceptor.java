@@ -16,8 +16,9 @@
 
 package com.vaadin.cdi.uis;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import com.vaadin.cdi.internal.Counter;
 
+import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
@@ -25,23 +26,16 @@ import javax.interceptor.InvocationContext;
  */
 public class InstrumentedInterceptor {
 
-    private final static AtomicInteger INTERCEPTION_COUNTER = new AtomicInteger(
-            0);
+    public static final String INTERCEPT_COUNT = "InstrumentedInterceptor";
+    @Inject
+    Counter counter;
 
     @AroundInvoke
     public Object intercept(InvocationContext invocationContext)
             throws Exception {
         System.out.println("---invoked: " + invocationContext.getMethod());
-        INTERCEPTION_COUNTER.incrementAndGet();
+        counter.increment(INTERCEPT_COUNT);
         return invocationContext.proceed();
 
-    }
-
-    public static int getCounter() {
-        return INTERCEPTION_COUNTER.get();
-    }
-
-    public static void reset() {
-        INTERCEPTION_COUNTER.set(0);
     }
 }

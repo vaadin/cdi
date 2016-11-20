@@ -1,13 +1,7 @@
 package com.vaadin.cdi;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.vaadin.cdi.internal.ProducedBean;
+import com.vaadin.cdi.uis.ProducerUI;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -15,12 +9,15 @@ import org.junit.Test;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.vaadin.cdi.internal.ProducedBean;
-import com.vaadin.cdi.uis.ProducerUI;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ScopedProducer extends AbstractManagedCDIIntegrationTest {
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
-    @Deployment(name = "scopedProducer")
+public class ScopedProducerTest extends AbstractManagedCDIIntegrationTest {
+
+    @Deployment(name = "scopedProducer", testable = false)
     public static WebArchive scopedProducerArchive() {
         return ArchiveProvider.createWebArchive("scopedProducer",
                 ProducerUI.class, ProducedBean.class);

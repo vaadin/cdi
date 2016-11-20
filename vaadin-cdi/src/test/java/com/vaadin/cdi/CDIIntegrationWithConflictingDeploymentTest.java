@@ -16,31 +16,29 @@
 
 package com.vaadin.cdi;
 
-import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.net.MalformedURLException;
-
+import com.vaadin.cdi.uis.PlainColidingAlternativeUI;
+import com.vaadin.cdi.uis.PlainUI;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.cdi.uis.PlainColidingAlternativeUI;
-import com.vaadin.cdi.uis.PlainUI;
+import java.io.IOException;
 
-public class CDIIntegrationWithConflictingDeployment extends
+import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public class CDIIntegrationWithConflictingDeploymentTest extends
         AbstractManagedCDIIntegrationTest {
 
     @Before
-    public void resetCounter() {
-        PlainUI.resetCounter();
-        PlainColidingAlternativeUI.resetCounter();
+    public void resetCounter() throws IOException {
+        resetCounts();
     }
 
-    @Deployment(name = "alternativeUiPathCollision")
+    @Deployment(name = "alternativeUiPathCollision", testable = false)
     public static WebArchive alternativeAndActiveWithSamePath() {
         return ArchiveProvider.createWebArchive("alternativeUiPathCollision",
                 PlainUI.class, PlainColidingAlternativeUI.class);
@@ -48,12 +46,12 @@ public class CDIIntegrationWithConflictingDeployment extends
 
     @Test
     @OperateOnDeployment("alternativeUiPathCollision")
-    public void alternativeDoesNotColideWithPath() throws MalformedURLException {
+    public void alternativeDoesNotColideWithPath() throws IOException {
         final String plainUIPath = deriveMappingForUI(PlainUI.class);
         final String plainAlternativeUI = deriveMappingForUI(PlainColidingAlternativeUI.class);
         assertThat(plainUIPath, is(plainAlternativeUI));
         openWindow(plainUIPath);
-        assertThat(PlainUI.getNumberOfInstances(), is(1));
-        assertThat(PlainColidingAlternativeUI.getNumberOfInstances(), is(0));
+        assertThat(getCount(PlainUI.CONSTRUCT_COUNT), is(1));
+        assertThat(getCount(PlainColidingAlternativeUI.CONSTRUCT_COUNT), is(0));
     }
 }

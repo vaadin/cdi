@@ -41,17 +41,19 @@ public class MultipleAccessIsolationTest extends
         assertThat(getCount(ConcurrentUI.CONSTRUCT_COUNT), is(1));
         firstWindow.findElement(By.id(ConcurrentUI.OPEN_WINDOW)).click();
         waitForNumberOfWindowsToEqual(2);
-        Thread.sleep(500);
         List<String> handles = new ArrayList<String>(
                 firstWindow.getWindowHandles());
+        // wait for second window fully loads
+        firstWindow.switchTo().window(handles.get(1));
+        (new WebDriverWait(firstWindow, 15)).until(ExpectedConditions
+                .presenceOfElementLocated(LABEL));
+
         firstWindow.switchTo().window(handles.get(0));
         firstWindow.findElement(By.id(ConcurrentUI.COUNTER_BUTTON)).click();
         firstWindow.findElement(By.id(ConcurrentUI.COUNTER_BUTTON)).click();
         firstWindow.findElement(By.id(ConcurrentUI.COUNTER_BUTTON)).click();
         waitForValue(By.id(ConcurrentUI.COUNTER_LABEL), 3);
         firstWindow.switchTo().window(handles.get(1));
-        (new WebDriverWait(firstWindow, 15)).until(ExpectedConditions
-                .presenceOfElementLocated(LABEL));
         // the second window was loaded before the clicks on the first one so
         // the counter is always 0
         assertThat(firstWindow.findElement(By.id(ConcurrentUI.COUNTER_LABEL))
@@ -68,8 +70,7 @@ public class MultipleAccessIsolationTest extends
         String uri = deriveMappingForUI(ConcurrentUI.class);
         assertThat(getCount(ConcurrentUI.CONSTRUCT_COUNT), is(0));
         openWindow(firstWindow, uri);
-        firstWindow.findElement(By.id(ConcurrentUI.COUNTER_BUTTON)).click();
-        Thread.sleep(100);
+        clickAndWait(ConcurrentUI.COUNTER_BUTTON);
         assertThat(firstWindow.findElement(By.id(ConcurrentUI.COUNTER_LABEL))
                 .getText(), is("1"));
         firstWindow.navigate().refresh();

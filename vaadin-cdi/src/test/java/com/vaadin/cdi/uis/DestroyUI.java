@@ -2,38 +2,43 @@ package com.vaadin.cdi.uis;
 
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.CDIViewProvider;
+import com.vaadin.cdi.UIScoped;
+import com.vaadin.cdi.internal.Counter;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.io.Serializable;
 
 @CDIUI("")
 public class DestroyUI extends UI {
-    private final static AtomicInteger COUNTER = new AtomicInteger(0);
     public static final String CLOSE_BTN_ID = "close";
+    public static final String CLOSE_SESSION_BTN_ID = "close session";
     public static final String NAVIGATE_BTN_ID = "navigate";
     public static final String LABEL_ID = "label";
+    public static final String UIID_ID = "UIID";
+    public static final String DESTROY_COUNT = "uidestroycount";
 
     @Inject
     CDIViewProvider viewProvider;
 
-    @PostConstruct
-    public void initialize() {
-        COUNTER.incrementAndGet();
-    }
+    @Inject
+    UIScopedBean bean;
+
+    @Inject
+    Counter counter;
 
     @PreDestroy
     public void destroy() {
-        COUNTER.decrementAndGet();
+        counter.increment(DESTROY_COUNT + getUIId());
     }
 
     @Override
@@ -43,9 +48,14 @@ public class DestroyUI extends UI {
         VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
 
-        final Label label = new Label("open");
+        final Label label = new Label("label");
         label.setId(LABEL_ID);
         layout.addComponent(label);
+
+        bean.setUiId(getUIId());
+        final Label uiId = new Label(String.valueOf(getUIId()));
+        uiId.setId(UIID_ID);
+        layout.addComponent(uiId);
 
         Button closeBtn = new Button("close UI");
         closeBtn.setId(CLOSE_BTN_ID);
@@ -53,10 +63,19 @@ public class DestroyUI extends UI {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 close();
-                label.setValue(CLOSE_BTN_ID);
             }
         });
         layout.addComponent(closeBtn);
+
+        Button closeSessionBtn = new Button("close Session");
+        closeSessionBtn.setId(CLOSE_SESSION_BTN_ID);
+        closeSessionBtn.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                VaadinSession.getCurrent().close();
+            }
+        });
+        layout.addComponent(closeSessionBtn);
 
         Button viewNavigateBtn = new Button("navigate");
         viewNavigateBtn.setId(NAVIGATE_BTN_ID);
@@ -66,24 +85,34 @@ public class DestroyUI extends UI {
                 final Navigator navigator = new Navigator(DestroyUI.this, new ViewDisplay() {
                     @Override
                     public void showView(View view) {
-                        label.setValue(NAVIGATE_BTN_ID);
                     }
                 });
                 navigator.addProvider(viewProvider);
-                navigator.navigateTo("scopedInstrumentedView");
+                navigator.navigateTo("test");
             }
         });
         layout.addComponent(viewNavigateBtn);
 
         setContent(layout);
-
     }
 
-    public static int getNumberOfInstances() {
-        return COUNTER.get();
+    @UIScoped
+    public static class UIScopedBean implements Serializable {
+        public static final String DESTROY_COUNT = "uibeandestroycount";
+
+        int uiId;
+
+        @Inject
+        Counter counter;
+
+        @PreDestroy
+        public void destroy() {
+            counter.increment(DESTROY_COUNT + uiId);
+        }
+
+        public void setUiId(int uiId) {
+            this.uiId = uiId;
+        }
     }
 
-    public static void resetCounter() {
-        COUNTER.set(0);
-    }
 }

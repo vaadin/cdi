@@ -2,48 +2,65 @@ package com.vaadin.cdi;
 
 import com.vaadin.cdi.internal.Conventions;
 import com.vaadin.cdi.uis.DestroyUI;
-import com.vaadin.cdi.uis.ScopedInstrumentedView;
+import com.vaadin.cdi.views.TestView;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.By;
+
+import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class UIDestroyTest extends AbstractManagedCDIIntegrationTest {
 
-    @Deployment(name = "uiDestroy")
+    private String uri;
+    private String uiId;
+
+    @Deployment(testable = false)
     public static WebArchive deployment() {
         return ArchiveProvider.createWebArchive("uiDestroy",
                 DestroyUI.class,
-                ScopedInstrumentedView.class);
+                TestView.class);
+    }
+
+    @Before
+    public void setUp() throws IOException {
+        resetCounts();
+        uri = Conventions.deriveMappingForUI(DestroyUI.class);
+        openWindow(uri);
+        uiId = findElement(DestroyUI.UIID_ID).getText();
+        assertDestroyCount(0);
     }
 
     @Test
-    @OperateOnDeployment("uiDestroy")
-    public void testViewChangeTriggersCleanup() throws Exception {
-        DestroyUI.resetCounter();
-        assertThat(DestroyUI.getNumberOfInstances(), is(0));
-        String uri = Conventions.deriveMappingForUI(DestroyUI.class);
+    public void testViewChangeTriggersClosedUIDestroy() throws Exception {
+        //close first UI
+        clickAndWait(DestroyUI.CLOSE_BTN_ID);
 
-        openWindow(uri);
-        //close first UI, wait for response
-        firstWindow.findElement(By.id(DestroyUI.CLOSE_BTN_ID)).click();
-        waitForValue(LABEL, DestroyUI.CLOSE_BTN_ID);
         //open new UI
         openWindow(uri);
+        assertDestroyCount(0);
 
         Thread.sleep(5000); //AbstractVaadinContext.CLEANUP_DELAY
-        //still have 2 UIs
-        assertThat(DestroyUI.getNumberOfInstances(), is(2));
 
         //ViewChange event triggers a cleanup
-        firstWindow.findElement(By.id(DestroyUI.NAVIGATE_BTN_ID)).click();
-        waitForValue(LABEL, DestroyUI.NAVIGATE_BTN_ID);
+        clickAndWait(DestroyUI.NAVIGATE_BTN_ID);
 
-        assertThat(DestroyUI.getNumberOfInstances(), is(1));
+        //first UI cleaned up
+        assertDestroyCount(1);
+    }
+
+    @Test
+    public void testSessionCloseDestroysUIContext() throws Exception {
+        clickAndWait(DestroyUI.CLOSE_SESSION_BTN_ID);
+        assertDestroyCount(1);
+    }
+
+    private void assertDestroyCount(int count) throws IOException {
+        assertThat(getCount(DestroyUI.DESTROY_COUNT + uiId), is(count));
+        assertThat(getCount(DestroyUI.UIScopedBean.DESTROY_COUNT + uiId), is(count));
     }
 
 }

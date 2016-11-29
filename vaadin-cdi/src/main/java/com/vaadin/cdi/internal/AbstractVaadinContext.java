@@ -122,6 +122,10 @@ public abstract class AbstractVaadinContext extends AbstractContext {
                 this.openingView = openingView;
             }
 
+            public void setActiveView(String activeView) {
+                this.activeView = activeView;
+            }
+
             public void validateTransition() {
                 if(openingView != null) {
                     activeView = openingView;

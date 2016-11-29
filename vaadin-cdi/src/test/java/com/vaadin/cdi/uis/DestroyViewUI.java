@@ -30,6 +30,7 @@ public class DestroyViewUI extends UI {
     public static final String UIID_ID = "UIID";
     public static final String DEPENDENT_VIEW = "dependent";
     public static final String VIEWSCOPED_VIEW = "viewscoped";
+    public static final String NAVIGATE_ERROR_BTN_ID = "error";
 
     @Inject
     CDIViewProvider viewProvider;
@@ -67,6 +68,7 @@ public class DestroyViewUI extends UI {
             }
         });
         navigator.addProvider(viewProvider);
+        navigator.setErrorView(ErrorView.class);
 
         Button viewNavigateBtn = new Button("navigate dependent");
         viewNavigateBtn.setId(NAVIGATE_DEPENDENT_BTN_ID);
@@ -87,6 +89,16 @@ public class DestroyViewUI extends UI {
             }
         });
         layout.addComponent(dependentNavigateBtn);
+
+        Button errorNavigateBtn = new Button("navigate error");
+        errorNavigateBtn.setId(NAVIGATE_ERROR_BTN_ID);
+        errorNavigateBtn.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                navigator.navigateTo("nonexsistentview");
+            }
+        });
+        layout.addComponent(errorNavigateBtn);
 
         setContent(layout);
     }
@@ -157,4 +169,10 @@ public class DestroyViewUI extends UI {
     }
 
 
+    public static class ErrorView implements View {
+        @Override
+        public void enter(ViewChangeListener.ViewChangeEvent event) {
+
+        }
+    }
 }

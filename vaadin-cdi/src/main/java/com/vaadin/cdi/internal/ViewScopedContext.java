@@ -16,7 +16,6 @@
 package com.vaadin.cdi.internal;
 
 import java.lang.annotation.Annotation;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -108,12 +107,19 @@ public class ViewScopedContext extends AbstractVaadinContext {
         uiData.setOpeningView(activeViewName);
     }
 
-    synchronized void viewChangeCleanup(long sessionId, int uiId) {
+    synchronized void viewChangeCleanup(long sessionId, int uiId, String viewName) {
         getLogger().fine("ViewChangeCleanup for " + sessionId + " " + uiId);
         SessionData sessionData = getSessionData(sessionId, true);
         UIData uiData = sessionData.getUIData(uiId, true);
-        uiData.validateTransition();
-        String activeViewName = uiData.getActiveView();
+        String activeViewName;
+        if (uiData.getOpeningView() != null) {
+            uiData.validateTransition();
+            activeViewName = uiData.getActiveView();
+            assert activeViewName.equals(viewName);
+        } else {
+            activeViewName = viewName;
+            uiData.setActiveView(activeViewName);
+        }
         Map<StorageKey, ContextualStorage> map = sessionData.getStorageMap();
 
         for (Map.Entry<StorageKey, ContextualStorage> entry : map.entrySet()) {

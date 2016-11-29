@@ -59,6 +59,14 @@ public class ViewDestroyTest extends AbstractManagedCDIIntegrationTest {
         assertThat(getCount(DestroyViewUI.DependentView.DESTROY_COUNT + uiId), is(1));
     }
 
+    @Test
+    public void testChangeToNonCdiViewDestroysViewScope() throws Exception {
+        loadView(DestroyViewUI.VIEWSCOPED_VIEW);
+        assertViewDestroyCounts(0);
+        clickAndWait(DestroyViewUI.NAVIGATE_ERROR_BTN_ID);
+        assertViewDestroyCounts(1);
+    }
+
     private void assertViewDestroyCounts(int count) throws IOException {
         assertThat(getCount(DestroyViewUI.ViewScopedView.DESTROY_COUNT + uiId), is(count));
         assertThat(getCount(DestroyViewUI.ViewScopedBean.DESTROY_COUNT + uiId), is(count));

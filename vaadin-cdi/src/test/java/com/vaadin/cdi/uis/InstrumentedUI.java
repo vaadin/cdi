@@ -16,10 +16,9 @@
 
 package com.vaadin.cdi.uis;
 
+import com.vaadin.cdi.CDINavigator;
 import com.vaadin.cdi.CDIUI;
-import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.cdi.internal.Counter;
-import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -37,12 +36,10 @@ public class InstrumentedUI extends UI {
     InstrumentedView view;
 
     @Inject
-    CDIViewProvider viewProvider;
+    CDINavigator navigator;
 
     @Inject
     Counter counter;
-
-    private Navigator navigator;
 
     private int clickCount;
 
@@ -70,8 +67,7 @@ public class InstrumentedUI extends UI {
         Button navigate = new Button("Navigate", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                navigator = new Navigator(InstrumentedUI.this, layout);
-                navigator.addProvider(viewProvider);
+                navigator.init(InstrumentedUI.this, layout);
                 navigator.navigateTo("instrumentedView");
             }
         });

@@ -1,0 +1,79 @@
+/*
+ * Copyright 2000-2013 Vaadin Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ *
+ */
+
+package com.vaadin.cdi;
+
+import com.vaadin.navigator.NavigationStateManager;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.ViewDisplay;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.SingleComponentContainer;
+import com.vaadin.ui.UI;
+
+import javax.inject.Inject;
+
+/**
+ * Vaadin Navigator as a CDI Bean.
+ *
+ * Have to be initialized once with an "init(...)" method.
+ * During initialization a {@link CDIViewProvider} added automatically.
+ */
+@NormalUIScoped
+public class CDINavigator extends Navigator {
+
+    @Inject
+    private CDIViewProvider cdiViewProvider;
+
+    /**
+     * {@inheritDoc}
+     *
+     * During initialization a {@link CDIViewProvider} added automatically.
+     */
+    @Override
+    public void init(UI ui, NavigationStateManager stateManager, ViewDisplay display) {
+        super.init(ui, stateManager, display);
+        addProvider(cdiViewProvider);
+    }
+
+    /**
+     * Init method like {@link Navigator#Navigator(UI, ViewDisplay)}.
+     *
+     * During initialization a {@link CDIViewProvider} added automatically.
+     */
+    public void init(UI ui, ViewDisplay display) {
+        init(ui, new UriFragmentManager(ui.getPage()), display);
+    }
+
+    /**
+     * Init method like {@link Navigator#Navigator(UI, SingleComponentContainer)}.
+     *
+     * During initialization a {@link CDIViewProvider} added automatically.
+     */
+    public void init(UI ui, SingleComponentContainer container) {
+        init(ui, new SingleComponentContainerViewDisplay(container));
+    }
+
+    /**
+     * Init method like {@link Navigator#Navigator(UI, ComponentContainer)}.
+     *
+     * During initialization a {@link CDIViewProvider} added automatically.
+     */
+    public void init(UI ui, ComponentContainer container) {
+        init(ui, new ComponentContainerViewDisplay(container));
+    }
+
+}

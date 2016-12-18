@@ -1,23 +1,16 @@
 package com.vaadin.cdi.uis;
 
+import com.vaadin.cdi.CDINavigator;
 import com.vaadin.cdi.CDIUI;
-import com.vaadin.cdi.CDIViewProvider;
-import com.vaadin.cdi.UIScoped;
 import com.vaadin.cdi.internal.Counter;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @CDIUI("")
 public class DestroyUI extends UI {
@@ -28,7 +21,7 @@ public class DestroyUI extends UI {
     public static final String DESTROY_COUNT = "uidestroycount";
 
     @Inject
-    CDIViewProvider viewProvider;
+    CDINavigator navigator;
 
     @Inject
     Counter counter;
@@ -68,12 +61,8 @@ public class DestroyUI extends UI {
         viewNavigateBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                final Navigator navigator = new Navigator(DestroyUI.this, new ViewDisplay() {
-                    @Override
-                    public void showView(View view) {
-                    }
+                navigator.init(DestroyUI.this, view -> {
                 });
-                navigator.addProvider(viewProvider);
                 navigator.navigateTo("test");
             }
         });

@@ -16,6 +16,7 @@
 
 package com.vaadin.cdi.uis;
 
+import com.vaadin.cdi.CDINavigator;
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.cdi.internal.Counter;
@@ -33,13 +34,11 @@ import javax.inject.Inject;
 public class SecondUI extends UI {
 
     public static final String CONSTRUCT_COUNT = "SecondUIConstruct";
-    @Inject
-    CDIViewProvider viewProvider;
-
-    private Navigator navigator;
 
     @Inject
     Counter counter;
+    @Inject
+    CDINavigator navigator;
 
     @PostConstruct
     public void initialize() {
@@ -59,8 +58,7 @@ public class SecondUI extends UI {
         Button navigate = new Button("button", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                navigator = new Navigator(SecondUI.this, layout);
-                navigator.addProvider(viewProvider);
+                navigator.init(SecondUI.this, layout);
                 navigator.navigateTo("danglingView");
             }
         });

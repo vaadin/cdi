@@ -38,6 +38,13 @@
         </snapshotRepository>
     </distributionManagement>
 
+    <repositories>
+        <repository>
+            <id>vaadin-snapshots</id>
+            <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots</url>
+        </repository>
+    </repositories>
+
     <name>vaadin-cdi</name>
     <url>http://vaadin.com</url>
     <description>Provides CDI integration for Vaadin projects</description>

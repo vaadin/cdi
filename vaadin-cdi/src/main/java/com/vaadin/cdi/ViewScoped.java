@@ -34,7 +34,7 @@ import javax.inject.Scope;
  * decorators will not work. Circular referencing (that is, injecting A to B and
  * B to A) will not work unless there is at least one proxy in between.
  * <p>
- * The sister annotation to this is the {@link @NormalViewScoped}. Both
+ * The sister annotation to this is the {@link NormalViewScoped}. Both
  * annotations reference the same underlying scope, so it is possible to get
  * both a proxy and a direct reference to the same object by using different
  * annotations.

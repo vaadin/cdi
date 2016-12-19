@@ -22,7 +22,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import javax.enterprise.context.NormalScope;
-import javax.inject.Scope;
 
 /**
  * The lifecycle of a UIScoped component is bound to a browser tab.
@@ -35,14 +34,13 @@ import javax.inject.Scope;
  * imperative to be aware of this when (for example) adding proxies to a
  * Collection.
  * <p>
- * You cannot use this scope with Vaadin Components. Proxy Components do not 
- * work correctly within the Vaadin framework, so as a precaution the Vaadin
- * CDI plugin will not deploy if any such beans are discovered.
+ * You cannot use this scope with Vaadin Components. Proxy Components do not
+ * work correctly within the Vaadin framework, so as a precaution the Vaadin CDI
+ * plugin will not deploy if any such beans are discovered.
  * <p>
- * The sister annotation to this is the {@link @UIScoped}. Both
- * annotations reference the same underlying scope, so it is possible to get
- * both a proxy and a direct reference to the same object by using different 
- * annotations.
+ * The sister annotation to this is the {@link UIScoped}. Both annotations
+ * reference the same underlying scope, so it is possible to get both a proxy
+ * and a direct reference to the same object by using different annotations.
  */
 @NormalScope
 @Inherited

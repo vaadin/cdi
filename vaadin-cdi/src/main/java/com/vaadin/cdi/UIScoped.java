@@ -21,7 +21,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.enterprise.context.NormalScope;
 import javax.inject.Scope;
 
 /**
@@ -34,10 +33,9 @@ import javax.inject.Scope;
  * is, injecting A to B and B to A) will not work. Interceptors and decorators
  * will not work.
  * <p>
- * The sister annotation to this is the {@link @NormalUIScoped}. Both
- * annotations reference the same underlying scope, so it is possible to get
- * both a proxy and a direct reference to the same object by using different
- * annotations.
+ * The sister annotation to this is the {@link NormalUIScoped}. Both annotations
+ * reference the same underlying scope, so it is possible to get both a proxy
+ * and a direct reference to the same object by using different annotations.
  */
 @Scope
 @Inherited

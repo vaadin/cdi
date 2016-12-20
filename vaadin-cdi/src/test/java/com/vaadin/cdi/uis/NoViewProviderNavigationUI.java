@@ -16,31 +16,28 @@
 
 package com.vaadin.cdi.uis;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import com.vaadin.cdi.CDIUI;
+import com.vaadin.cdi.internal.Counter;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.*;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import com.vaadin.cdi.CDIUI;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-
 @CDIUI(value = "noViewProviderNavigationUI")
 public class NoViewProviderNavigationUI extends UI {
 
+    public static final String CONSTRUCT_COUNT = "NoViewProviderNavigationUIConstruct";
+    public static final String NAVIGATION_COUNT = "NoViewProviderNavigationUINavigation";
     @Inject
     InstrumentedView view;
-    private final static AtomicInteger COUNTER = new AtomicInteger(0);
-    private final static AtomicInteger NAVIGATION_COUNTER = new AtomicInteger(0);
+    @Inject
+    Counter counter;
 
     @PostConstruct
     public void initialize() {
-        COUNTER.incrementAndGet();
+        counter.increment(CONSTRUCT_COUNT);
     }
 
     @Override
@@ -58,7 +55,7 @@ public class NoViewProviderNavigationUI extends UI {
         Button navigate = new Button("Navigate", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                NAVIGATION_COUNTER.incrementAndGet();
+                counter.increment(NAVIGATION_COUNT);
                 Navigator navigator = new Navigator(
                         NoViewProviderNavigationUI.this, horizontalLayout);
                 navigator.addView("instrumentedView", view);
@@ -70,19 +67,6 @@ public class NoViewProviderNavigationUI extends UI {
         verticalLayout.addComponent(navigate);
         verticalLayout.addComponent(horizontalLayout);
         setContent(verticalLayout);
-    }
-
-    public static int getNumberOfInstances() {
-        return COUNTER.get();
-    }
-
-    public static int getNumberOfNavigations() {
-        return NAVIGATION_COUNTER.get();
-    }
-
-    public static void resetCounter() {
-        COUNTER.set(0);
-        NAVIGATION_COUNTER.set(0);
     }
 
 }

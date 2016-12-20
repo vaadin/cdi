@@ -1,7 +1,7 @@
 Vaadin CDI
 ======================
 
-Vaadin CDI is the official CDI integration for Vaadin Framework version 7.
+Vaadin CDI is the official CDI integration for Vaadin Framework version 8.
 
 Building the project
 ----

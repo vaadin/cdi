@@ -138,9 +138,9 @@ public class CDIIntegrationWithDefaultDeploymentTest extends
 
     @Test
     public void rootUIDiscovery() throws IOException {
-        assertThat(getCount(RootUI.CONSTRUCT_KEY), is(0));
+        assertThat(getCount(RootUI.CONSTRUCT_COUNT), is(0));
         openWindow("");
-        assertThat(getCount(RootUI.CONSTRUCT_KEY), is(1));
+        assertThat(getCount(RootUI.CONSTRUCT_COUNT), is(1));
     }
 
     @Test

@@ -8,7 +8,6 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -115,7 +114,7 @@ public abstract class AbstractManagedCDIIntegrationTest extends
     }
 
     public void assertDefaultRootNotInstantiated() throws IOException {
-        assertThat(getCount(RootUI.CONSTRUCT_KEY), is(0));
+        assertThat(getCount(RootUI.CONSTRUCT_COUNT), is(0));
     }
 
     private class ClientIsReadyPredicate implements Predicate<WebDriver> {

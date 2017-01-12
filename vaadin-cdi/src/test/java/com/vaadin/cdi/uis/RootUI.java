@@ -30,13 +30,13 @@ import javax.inject.Inject;
  */
 @CDIUI("")
 public class RootUI extends UI {
-    public static final String CONSTRUCT_KEY = "RootUIConstruct";
+    public static final String CONSTRUCT_COUNT = "RootUIConstruct";
     @Inject
     Counter counter;
 
     @PostConstruct
     public void initialize() {
-        counter.increment(CONSTRUCT_KEY);
+        counter.increment(CONSTRUCT_COUNT);
     }
 
     @Override

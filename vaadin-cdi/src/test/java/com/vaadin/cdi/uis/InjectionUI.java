@@ -3,7 +3,6 @@ package com.vaadin.cdi.uis;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import com.vaadin.annotations.Theme;
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.views.BeanView;
 import com.vaadin.server.VaadinRequest;
@@ -11,7 +10,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-@Theme("reindeer")
 @CDIUI("")
 public class InjectionUI extends UI {
 

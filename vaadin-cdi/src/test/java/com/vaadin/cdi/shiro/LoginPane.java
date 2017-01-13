@@ -25,7 +25,7 @@ public class LoginPane extends VerticalLayout {
     private Button loginButton = new Button("Login");
 
     public LoginPane() {
-        setSizeUndefined();
+        setSizeFull();
 
         currentUserLabel.setCaption("Current user:");
         currentUserLabel.setId(CURRENT_USER_ID);

@@ -16,7 +16,7 @@ public class GuestView extends AbstractShiroTestView {
         label.setId(LABEL_ID);
         
         VerticalLayout layout = new VerticalLayout(label, new LoginPane());
-        layout.setSizeUndefined();
+        layout.setSizeFull();
         return layout;
     }
 

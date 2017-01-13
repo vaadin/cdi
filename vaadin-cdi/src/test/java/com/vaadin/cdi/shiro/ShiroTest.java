@@ -22,7 +22,6 @@ import com.vaadin.cdi.views.AbstractNavigatableView;
 /**
  * Simple test of Shiro access control.
  */
-@Ignore("See issue #186")
 public class ShiroTest extends AbstractManagedCDIIntegrationTest {
 
     @Deployment(name = "shiro")

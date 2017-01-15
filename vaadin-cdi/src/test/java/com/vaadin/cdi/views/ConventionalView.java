@@ -1,11 +1,7 @@
 package com.vaadin.cdi.views;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-
 import com.vaadin.cdi.CDIView;
+import com.vaadin.cdi.internal.Counter;
 import com.vaadin.cdi.uis.ParameterizedNavigationUI;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -13,14 +9,21 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
 @CDIView(uis = { ParameterizedNavigationUI.class })
 @Dependent
 public class ConventionalView extends CustomComponent implements View {
-    private final static AtomicInteger COUNTER = new AtomicInteger(0);
+
+    public static final String CONSTRUCT_COUNT = "ConventionalViewConstruct";
+    @Inject
+    Counter counter;
 
     @PostConstruct
     public void initialize() {
-        COUNTER.incrementAndGet();
+        counter.increment(CONSTRUCT_COUNT);
     }
 
     @Override
@@ -31,14 +34,6 @@ public class ConventionalView extends CustomComponent implements View {
         Label label = new Label("conventional");
         label.setId("view");
         layout.addComponent(label);
-    }
-
-    public static int getNumberOfInstances() {
-        return COUNTER.get();
-    }
-
-    public static void reset() {
-        COUNTER.set(0);
     }
 
 }

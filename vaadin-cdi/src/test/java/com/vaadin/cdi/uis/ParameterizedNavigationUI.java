@@ -16,13 +16,9 @@
 
 package com.vaadin.cdi.uis;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.CDIViewProvider;
+import com.vaadin.cdi.internal.Counter;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
@@ -30,25 +26,27 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
 @CDIUI(value = "parameterizedNavigationUI")
 public class ParameterizedNavigationUI extends UI {
 
+    public static final String CONSTRUCT_COUNT = "ParameterizedNavigationUIConstruct";
     @Inject
     CDIViewProvider viewProvider;
 
-    private final static AtomicInteger COUNTER = new AtomicInteger(0);
-    public static String NAVIGATE_TO = "";
-    private int clickCount;
+    @Inject
+    Counter counter;
 
     @PostConstruct
     public void initialize() {
-        COUNTER.incrementAndGet();
-        clickCount = 0;
-
+        counter.increment(CONSTRUCT_COUNT);
     }
 
     @Override
     protected void init(VaadinRequest request) {
+        final String navigateTo = request.getParameter("navigateTo");
         setSizeFull();
 
         final VerticalLayout layout = new VerticalLayout();
@@ -62,7 +60,7 @@ public class ParameterizedNavigationUI extends UI {
                 Navigator navigator = new Navigator(
                         ParameterizedNavigationUI.this, layout);
                 navigator.addProvider(viewProvider);
-                navigator.navigateTo(NAVIGATE_TO);
+                navigator.navigateTo(navigateTo);
             }
         });
         navigate.setId("navigate");
@@ -71,13 +69,8 @@ public class ParameterizedNavigationUI extends UI {
         setContent(layout);
     }
 
-    public static int getNumberOfInstances() {
-        return COUNTER.get();
-    }
-
-    public static void reset() {
-        NAVIGATE_TO = null;
-        COUNTER.set(0);
+    public static String getNavigateToParam(String navigateTo) {
+        return "?navigateTo="+navigateTo;
     }
 
 }

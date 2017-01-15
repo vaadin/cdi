@@ -147,7 +147,8 @@ public class VaadinExtension implements Extension {
         if (viewScopedContext != null) {
             long sessionId = event.getSessionId();
             int uiId = event.getUiId();
-            viewScopedContext.viewChangeCleanup(sessionId, uiId);
+            String viewName = event.getViewName();
+            viewScopedContext.viewChangeCleanup(sessionId, uiId, viewName);
         }
     }
 

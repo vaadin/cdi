@@ -16,10 +16,6 @@
 
 package com.vaadin.cdi.uis;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.annotation.PostConstruct;
-
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -30,16 +26,7 @@ import com.vaadin.ui.VerticalLayout;
 /**
  */
 @CDIView(value = "withAnnotationRegisteredView")
-public class WithAnnotationRegisteredView extends CustomComponent implements
-        View {
-
-    private final static AtomicInteger COUNTER = new AtomicInteger(0);
-
-    @PostConstruct
-    public void initialize() {
-        COUNTER.incrementAndGet();
-
-    }
+public class WithAnnotationRegisteredView extends CustomComponent implements View {
 
     @Override
     public void enter(ViewChangeEvent event) {
@@ -49,14 +36,6 @@ public class WithAnnotationRegisteredView extends CustomComponent implements
         Label label = new Label("ViewLabel");
         label.setId("label");
         layout.addComponent(label);
-    }
-
-    public static int getNumberOfInstances() {
-        return COUNTER.get();
-    }
-
-    public static void resetCounter() {
-        COUNTER.set(0);
     }
 
 }

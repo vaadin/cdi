@@ -51,6 +51,7 @@ public class ArchiveProvider {
             VaadinExtension.class, VaadinContextualStorage.class, ContextWrapper.class,
             CDIUtil.class, URLMapping.class,
             UIScoped.class, ViewScoped.class, NormalUIScoped.class, NormalViewScoped.class,
+            VaadinSessionScoped.class, VaadinSessionScopedContext.class,
             CounterFilter.class, Counter.class};
     public static WebArchive createWebArchive(String warName, Class... classes) {
         return createWebArchive(warName, true, classes);

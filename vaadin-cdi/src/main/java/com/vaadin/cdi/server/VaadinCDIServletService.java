@@ -23,6 +23,7 @@ import com.vaadin.cdi.CDIUIProvider;
 import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.cdi.internal.CDIUtil;
 import com.vaadin.cdi.internal.VaadinSessionDestroyEvent;
+import com.vaadin.cdi.internal.VaadinSessionScopedContext;
 import com.vaadin.cdi.internal.VaadinViewChangeCleanupEvent;
 import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.ServiceException;
@@ -60,8 +61,10 @@ public class VaadinCDIServletService extends VaadinServletService {
             VaadinSessionDestroyEvent sessionDestroyEvent = new VaadinSessionDestroyEvent(
                     CDIUtil.getSessionId(event.getSession()));
             getBeanManager().fireEvent(sessionDestroyEvent);
-        }
 
+            getLogger().fine("VaadinSessionScopedContext destroy");
+            VaadinSessionScopedContext.destroy(event.getSession());
+        }
     }
 
     public VaadinCDIServletService(VaadinServlet servlet,

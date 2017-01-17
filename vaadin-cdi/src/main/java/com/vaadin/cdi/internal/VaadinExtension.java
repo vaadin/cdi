@@ -108,6 +108,10 @@ public class VaadinExtension implements Extension {
         afterBeanDiscovery.addContext(new ContextWrapper(viewScopedContext,
                 NormalViewScoped.class));
         getLogger().info("ViewScopedContext registered for Vaadin CDI");
+
+        VaadinSessionScopedContext vaadinSessionScopedContext = new VaadinSessionScopedContext(beanManager);
+        afterBeanDiscovery.addContext(vaadinSessionScopedContext);
+        getLogger().info("VaadinSessionScopedContext registered for Vaadin CDI");
     }
 
     private static Logger getLogger() {

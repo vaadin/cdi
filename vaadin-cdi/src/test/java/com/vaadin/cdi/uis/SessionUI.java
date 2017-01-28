@@ -21,6 +21,8 @@ public class SessionUI extends UI {
     public static final String VALUELABEL_ID = "label";
     public static final String VALUE = "session";
     public static final String INVALIDATEBTN_ID = "invalidatebtn";
+    public static final String HTTP_INVALIDATEBTN_ID = "httpinvalidatebtn";
+    public static final String EXPIREBTN_ID = "expirebtn";
 
     @Inject
     SessionScopedBean sessionScopedBean;
@@ -42,8 +44,18 @@ public class SessionUI extends UI {
         invalidateBtn.setId(INVALIDATEBTN_ID);
         layout.addComponent(invalidateBtn);
 
+        Button httpInvalidateBtn = new Button("httpinvalidate");
+        httpInvalidateBtn.addClickListener(event -> VaadinSession.getCurrent().getSession().invalidate());
+        httpInvalidateBtn.setId(HTTP_INVALIDATEBTN_ID);
+        layout.addComponent(httpInvalidateBtn);
+
+        Button expireBtn = new Button("httpexpire");
+        expireBtn.addClickListener(event -> VaadinSession.getCurrent().getSession().setMaxInactiveInterval(1));
+        expireBtn.setId(EXPIREBTN_ID);
+        layout.addComponent(expireBtn);
+
         Label label = new Label();
-        label.setValue(sessionScopedBean.getValue());
+        label.setValue(sessionScopedBean.getValue()); // bean instantiated here
         label.setId(VALUELABEL_ID);
         layout.addComponent(label);
     }

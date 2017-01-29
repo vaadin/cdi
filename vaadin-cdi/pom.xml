@@ -10,7 +10,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        
+
         <!-- In addition to POMs, these version numbers are in ArchiveProvider for tests -->
         <vaadin.version>8.0-SNAPSHOT</vaadin.version>
         <deltaspike.version>1.7.2</deltaspike.version>
@@ -199,6 +199,48 @@
                     <scope>provided</scope>
                 </dependency>
             </dependencies>
+        </profile>
+
+        <profile>
+            <id>tomee-cluster</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.tomee</groupId>
+                    <artifactId>arquillian-tomee-remote</artifactId>
+                    <version>7.0.2</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.tomee</groupId>
+                    <artifactId>apache-tomee</artifactId>
+                    <version>7.0.2</version>
+                    <classifier>webprofile</classifier>
+                    <type>zip</type>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>javax</groupId>
+                    <artifactId>javaee-api</artifactId>
+                    <version>7.0</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <forkMode>always</forkMode>
+                            <systemPropertyVariables>
+                                <arquillian.launch>tomee-cluster</arquillian.launch>
+                            </systemPropertyVariables>
+                            <groups>com.vaadin.cdi.ClusterTestCategory</groups>
+                            <excludedGroups>com.vaadin.cdi.NoneTestCategory</excludedGroups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
 
         <profile>
@@ -495,6 +537,7 @@
                        <javax.el.ExpressionFactory>org.apache.el.ExpressionFactoryImpl</javax.el.ExpressionFactory>
                     </systemPropertyVariables>
                     <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                    <excludedGroups>com.vaadin.cdi.ClusterTestCategory</excludedGroups>
                 </configuration>
             </plugin>
             <plugin>

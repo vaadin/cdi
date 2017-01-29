@@ -1,5 +1,5 @@
 <arquillian xmlns="http://jboss.com/arquillian" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+>
  
     <extension qualifier="webdriver">
         <property name="browser">phantomjs</property>
@@ -7,4 +7,28 @@
         <property name="ensureCleanSession">true</property>
     </extension>
 
+    <group qualifier="tomee-cluster">
+        <container qualifier="node-1">
+            <configuration>
+                <property name="serverXml">target/test-classes/tomeecluster/conf/server1.xml</property>
+                <property name="httpPort">-1</property>
+                <property name="stopPort">-1</property>
+                <property name="dir">target/tomee1</property>
+                <property name="appWorkingDir">target/wd1</property>
+                <property name="quickSession">false</property>
+                <property name="cleanOnStartUp">true</property>
+            </configuration>
+        </container>
+        <container qualifier="node-2">
+            <configuration>
+                <property name="serverXml">target/test-classes/tomeecluster/conf/server2.xml</property>
+                <property name="httpPort">-1</property>
+                <property name="stopPort">-1</property>
+                <property name="dir">target/tomee2</property>
+                <property name="appWorkingDir">target/wd2</property>
+                <property name="quickSession">false</property>
+                <property name="cleanOnStartUp">true</property>
+            </configuration>
+        </container>
+    </group>
 </arquillian>

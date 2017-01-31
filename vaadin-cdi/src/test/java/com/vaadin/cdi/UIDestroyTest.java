@@ -1,5 +1,6 @@
 package com.vaadin.cdi;
 
+import com.vaadin.cdi.internal.AbstractVaadinContext;
 import com.vaadin.cdi.internal.Conventions;
 import com.vaadin.cdi.uis.DestroyUI;
 import com.vaadin.cdi.views.TestView;
@@ -38,7 +39,7 @@ public class UIDestroyTest extends AbstractManagedCDIIntegrationTest {
         openWindow(uri);
         assertDestroyCount(0);
 
-        Thread.sleep(5000); //AbstractVaadinContext.CLEANUP_DELAY
+        Thread.sleep(AbstractVaadinContext.CLEANUP_DELAY + 1);
 
         //ViewChange event triggers a cleanup
         clickAndWait(DestroyUI.NAVIGATE_BTN_ID);

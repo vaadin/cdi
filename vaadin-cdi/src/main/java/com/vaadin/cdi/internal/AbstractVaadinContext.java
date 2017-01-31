@@ -42,7 +42,7 @@ public abstract class AbstractVaadinContext extends AbstractContext {
 
     private final Object cleanupLock = new Object();
 
-    private static final int CLEANUP_DELAY = 5000;
+    public static final int CLEANUP_DELAY = 5000;
 
     private BeanManager beanManager;
     private Map<Long, SessionData> storageMap = new ConcurrentHashMap<Long, SessionData>();

@@ -7,4 +7,13 @@
         <property name="ensureCleanSession">true</property>
     </extension>
 
+    <container qualifier="wildfly">
+        <configuration>
+            <!-- Assertions must be disabled when @UIScoped is a @NormalScope
+                otherwise the core framework will fail assertions that compare
+                a direct reference to a proxy, such as in VaadinSession#removeUI
+                and ConnectorTracker#cleanConnectorMap (#14508) -->
+            <property name="enableAssertions">false</property>
+        </configuration>
+    </container>
 </arquillian>

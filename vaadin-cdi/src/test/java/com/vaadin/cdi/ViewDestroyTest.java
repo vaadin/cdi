@@ -1,5 +1,6 @@
 package com.vaadin.cdi;
 
+import com.vaadin.cdi.internal.AbstractVaadinContext;
 import com.vaadin.cdi.internal.Conventions;
 import com.vaadin.cdi.uis.DestroyNormalUI;
 import com.vaadin.cdi.uis.DestroyViewNormalUI;
@@ -45,7 +46,7 @@ public class ViewDestroyTest extends AbstractManagedCDIIntegrationTest {
         openWindow(viewUri);
         assertViewDestroyCounts(0);
         clickAndWait(DestroyViewUI.CLOSE_BTN_ID);
-        Thread.sleep(5000); //AbstractVaadinContext.CLEANUP_DELAY
+        Thread.sleep(AbstractVaadinContext.CLEANUP_DELAY + 1);
 
         //open new UI. Navigating to home view on load triggers cleanup.
         openWindow(viewUri);

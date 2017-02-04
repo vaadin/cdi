@@ -1,6 +1,8 @@
 package com.vaadin.cdi;
 
 import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.uis.DestroyNormalUI;
+import com.vaadin.cdi.uis.DestroyViewNormalUI;
 import com.vaadin.cdi.uis.DestroyViewUI;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -19,15 +21,21 @@ public class ViewDestroyTest extends AbstractManagedCDIIntegrationTest {
 
     @Deployment(name = "viewDestroy", testable = false)
     public static WebArchive deployment() {
-        return ArchiveProvider.createWebArchive("viewDestroy", DestroyViewUI.class);
+        return ArchiveProvider.createWebArchive("viewDestroy",
+                DestroyViewUI.class,
+                DestroyViewNormalUI.class);
     }
 
     @Before
     public void setUp() throws Exception {
         resetCounts();
-        viewUri = Conventions.deriveMappingForUI(DestroyViewUI.class)+ "#!home";
+        viewUri = Conventions.deriveMappingForUI(getUIClass()) + "#!home";
         openWindow(viewUri);
         assertViewDestroyCounts(0);
+    }
+
+    protected Class<? extends DestroyViewUI> getUIClass() {
+        return DestroyViewUI.class;
     }
 
     @Test

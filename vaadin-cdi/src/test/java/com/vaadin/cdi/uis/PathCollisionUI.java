@@ -22,22 +22,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import java.util.concurrent.atomic.AtomicInteger;
-
 @CDIUI("collision")
 public class PathCollisionUI extends UI {
-
-    private final static AtomicInteger COUNTER = new AtomicInteger(0);
-    private int clickCount;
-
-    @PostConstruct
-    public void initialize() {
-        COUNTER.incrementAndGet();
-        this.clickCount = 0;
-
-    }
 
     @Override
     protected void init(VaadinRequest request) {
@@ -50,14 +36,6 @@ public class PathCollisionUI extends UI {
         label.setId("label");
         layout.addComponent(label);
         setContent(layout);
-    }
-
-    public static int getNumberOfInstances() {
-        return COUNTER.get();
-    }
-
-    public static void resetCounter() {
-        COUNTER.set(0);
     }
 
 }

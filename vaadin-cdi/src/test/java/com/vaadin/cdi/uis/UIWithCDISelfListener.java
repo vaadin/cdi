@@ -16,34 +16,35 @@
 
 package com.vaadin.cdi.uis;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
 import com.vaadin.cdi.CDIUI;
+import com.vaadin.cdi.internal.Counter;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
 @CDIUI(value = "uIWithCDISelfListener")
 public class UIWithCDISelfListener extends UI {
 
-    private final static AtomicInteger COUNTER = new AtomicInteger(0);
-    private final static AtomicInteger EVENT_COUNTER = new AtomicInteger(0);
-
+    public static final String CONSTRUCT_COUNT = "UIWithCDISelfListenerConstruct";
+    public static final String EVENT_COUNT = "UIWithCDISelfListenerEvent";
     private Label messageLabel = new Label("No messages.");
     public static final String MESSAGE_ID = "message";
     
     @Inject
     private javax.enterprise.event.Event<String> events;
 
+    @Inject
+    Counter counter;
+
     @PostConstruct
     public void initialize() {
-        COUNTER.incrementAndGet();
+        counter.increment(CONSTRUCT_COUNT);
     }
 
     @Override
@@ -71,23 +72,10 @@ public class UIWithCDISelfListener extends UI {
         setContent(layout);
     }
 
-    public void onEventArrival(@Observes
-    String message) {
-        int count = EVENT_COUNTER.incrementAndGet();
+    public void onEventArrival(@Observes String message) {
+        int count = counter.increment(EVENT_COUNT);
         messageLabel.setValue(count + " message" + (count != 1 ? "s" : ""));
     }
 
-    public static int getNumberOfInstances() {
-        return COUNTER.get();
-    }
-
-    public static int getNumberOfDeliveredEvents() {
-        return EVENT_COUNTER.get();
-    }
-
-    public static void resetCounter() {
-        COUNTER.set(0);
-        EVENT_COUNTER.set(0);
-    }
 
 }

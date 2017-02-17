@@ -1,14 +1,7 @@
 package com.vaadin.cdi;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import javax.enterprise.inject.New;
-
 import org.jboss.arquillian.container.test.api.Deployer;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -17,9 +10,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import com.vaadin.cdi.uis.RootUI;
+import javax.enterprise.inject.New;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 @RunWith(Arquillian.class)
+@RunAsClient
 abstract public class AbstractCDIIntegrationTest {
 
     @Drone
@@ -45,10 +41,6 @@ abstract public class AbstractCDIIntegrationTest {
         URL url = new URL(contextPath.toString() + uri);
         window.navigate().to(url);
     }
-    
-    public void assertDefaultRootNotInstantiated() {
-        assertThat(RootUI.getNumberOfInstances(), is(0));
-    }
 
     public int number(String txt) {
         return Integer.parseInt(txt);
@@ -62,10 +54,4 @@ abstract public class AbstractCDIIntegrationTest {
         return findElement(By.id(id));
     }
 
-    public void sleep(int millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-        }
-    }
 }

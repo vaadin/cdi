@@ -37,9 +37,9 @@ public class ArchiveProvider {
 
     public final static Class FRAMEWORK_CLASSES[] = new Class[] {
             AccessControl.class, CDIUIProvider.class, CDIViewProvider.class,
-            ContextDeployer.class, JaasAccessControl.class, UIContextual.class,
-            UIBean.class, UIScopedContext.class, CDIUI.class,
-            ViewContextual.class, ViewBean.class, ViewScopedContext.class,
+            ContextDeployer.class, JaasAccessControl.class,
+            UIScopedContext.class, CDIUI.class,
+            ViewScopedContext.class,
             CDIView.class, VaadinSessionDestroyEvent.class,
             VaadinUICloseEvent.class, VaadinViewChangeEvent.class,
             VaadinViewCreationEvent.class, AbstractVaadinContext.class,

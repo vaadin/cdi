@@ -1,6 +1,6 @@
 <arquillian xmlns="http://jboss.com/arquillian" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 >
- 
+
     <extension qualifier="webdriver">
         <property name="browser">phantomjs</property>
         <property name="browserSessionReuse">false</property>
@@ -31,4 +31,24 @@
             </configuration>
         </container>
     </group>
+
+    <group qualifier="wildfly-cluster">
+        <container qualifier="node-1">
+            <configuration>
+                <property name="serverConfig">standalone-ha.xml</property>
+                <property name="jbossHome">target/wildfly-node1/wildfly-10.1.0.Final</property>
+                <property name="jbossArguments">-Djboss.socket.binding.port-offset=100</property>
+                <property name="managementPort">10090</property>
+            </configuration>
+        </container>
+        <container qualifier="node-2">
+            <configuration>
+                <property name="serverConfig">standalone-ha.xml</property>
+                <property name="jbossHome">target/wildfly-node2/wildfly-10.1.0.Final</property>
+                <property name="jbossArguments">-Djboss.socket.binding.port-offset=200</property>
+                <property name="managementPort">10190</property>
+            </configuration>
+        </container>
+    </group>
+
 </arquillian>

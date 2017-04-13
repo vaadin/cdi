@@ -166,7 +166,9 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
                 if (beanClass.isAnnotationPresent(CDIUI.class)) {
                     String computedMapping = Conventions
                             .deriveMappingForUI(beanClass);
-                    if (mapping.equals(computedMapping)) {
+                    int wildcardIndex = computedMapping.lastIndexOf("*");
+                    if (mapping.equals(computedMapping) || (wildcardIndex >= 0
+                            && mapping.startsWith(computedMapping.substring(0, wildcardIndex)))) {
                         return bean;
                     }
                 }

@@ -7,6 +7,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.enterprise.context.ContextNotActiveException;
+
 import static org.junit.Assert.assertEquals;
 
 public class ViewNavigationTest extends AbstractManagedCDIIntegrationTest {
@@ -43,6 +45,20 @@ public class ViewNavigationTest extends AbstractManagedCDIIntegrationTest {
 
         clickAndWait(ViewNavigationUI.SUCCESS_NAV_BTN_ID);
         assertBeanValue(ViewNavigationUI.SUCCESSVIEW_VALUE);
+    }
+
+    @Test
+    public void testBeforeViewChangeFiredInOldContext() throws Exception {
+        clickAndWait(ViewNavigationUI.SUCCESS_NAV_BTN_ID);
+        String value = findElement(ViewNavigationUI.BEFORE_VALUE_LABEL_ID).getText();
+        assertEquals(ViewNavigationUI.DEFAULTVIEW_VALUE, value);
+    }
+
+    @Test
+    public void testBeforeViewChangeWithoutOldViewThrowsContextNotActive() throws Exception {
+        // happens on opening root view, so need no navigation
+        String value = findElement(ViewNavigationUI.BEFORE_VALUE_LABEL_ID).getText();
+        assertEquals(ContextNotActiveException.class.getSimpleName(), value);
     }
 
     @Test

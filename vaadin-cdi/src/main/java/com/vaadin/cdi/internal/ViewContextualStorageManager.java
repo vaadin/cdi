@@ -42,6 +42,7 @@ public class ViewContextualStorageManager implements Serializable {
     private Storage currentContext;
     @Inject
     private BeanManager beanManager;
+    private boolean duringBeforeViewChange;
 
     public void applyChange() {
         destroy(currentContext);
@@ -58,9 +59,13 @@ public class ViewContextualStorageManager implements Serializable {
         openingContext = null;
     }
 
+    public void setDuringBeforeViewChange(boolean duringBeforeViewChange) {
+        this.duringBeforeViewChange = duringBeforeViewChange;
+    }
+
     public ContextualStorage getContextualStorage(boolean createIfNotExist) {
         Storage storage;
-        if (openingContext != null) {
+        if (openingContext != null && !duringBeforeViewChange) {
             storage = openingContext;
         } else {
             storage = currentContext;
@@ -69,7 +74,8 @@ public class ViewContextualStorageManager implements Serializable {
     }
 
     public boolean isActive() {
-        return openingContext != null || currentContext != null;
+        return (openingContext != null && !duringBeforeViewChange)
+                || currentContext != null;
     }
 
     @PreDestroy

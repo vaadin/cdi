@@ -20,6 +20,7 @@ import com.vaadin.cdi.*;
 import com.vaadin.cdi.internal.InconsistentDeploymentException.ID;
 import com.vaadin.navigator.View;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
@@ -69,6 +70,16 @@ public class VaadinExtension implements Extension {
             }
         }
 
+        if (beanClass.isAnnotationPresent(CDIUI.class)) {
+            if (!UI.class.isAssignableFrom(beanClass)
+                    && !Modifier.isAbstract(beanClass.getModifiers())) {
+                String message = "The non-abstract class "
+                        + beanClass.getCanonicalName()
+                        + " with @CDIUI should extend "
+                        + UI.class.getCanonicalName();
+                throwInconsistentDeployment(ID.CDIUI_WITHOUT_UI, message);
+            }
+        }
     }
 
     private void throwInconsistentDeployment(ID errorId, String message) {

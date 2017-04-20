@@ -30,7 +30,12 @@ package com.vaadin.cdi.internal;
 public class InconsistentDeploymentException extends RuntimeException {
 
     enum ID {
-        MULTIPLE_ROOTS, PATH_COLLISION, CLASS_NOT_FOUND, EMBEDDED_SERVLET, CDIVIEW_WITHOUT_VIEW
+        MULTIPLE_ROOTS,
+        PATH_COLLISION,
+        CLASS_NOT_FOUND,
+        EMBEDDED_SERVLET,
+        CDIVIEW_WITHOUT_VIEW,
+        CDIVIEW_DEPENDENT
     }
 
     private ID id;

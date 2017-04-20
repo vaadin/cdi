@@ -16,22 +16,18 @@
 
 package com.vaadin.cdi.internal;
 
+import com.vaadin.cdi.*;
+import com.vaadin.cdi.internal.InconsistentDeploymentException.ID;
+import com.vaadin.navigator.View;
+import com.vaadin.ui.Component;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.*;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
-
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.*;
-
-import com.vaadin.cdi.CDIView;
-import com.vaadin.cdi.NormalUIScoped;
-import com.vaadin.cdi.NormalViewScoped;
-import com.vaadin.cdi.UIScoped;
-import com.vaadin.cdi.ViewScoped;
-import com.vaadin.cdi.internal.InconsistentDeploymentException.ID;
-import com.vaadin.navigator.View;
-import com.vaadin.ui.Component;
 
 /**
  * CDI Extension needed to register the @CDIUI scope to the runtime.
@@ -62,17 +58,28 @@ public class VaadinExtension implements Extension {
                     + beanClass.getCanonicalName());
         }
 
-        if (beanClass.isAnnotationPresent(CDIView.class)
-                && !View.class.isAssignableFrom(beanClass)
-                && !Modifier.isAbstract(beanClass.getModifiers())) {
-            String message = "The non-abstract class "
-                    + beanClass.getCanonicalName()
-                    + " with @CDIView should implement "
-                    + View.class.getCanonicalName();
-            getLogger().warning(message);
-            throw new InconsistentDeploymentException(ID.CDIVIEW_WITHOUT_VIEW,
-                    message);
+        if (beanClass.isAnnotationPresent(CDIView.class)) {
+            if (!View.class.isAssignableFrom(beanClass)
+                    && !Modifier.isAbstract(beanClass.getModifiers())) {
+                String message = "The non-abstract class "
+                        + beanClass.getCanonicalName()
+                        + " with @CDIView should implement "
+                        + View.class.getCanonicalName();
+                throwInconsistentDeployment(ID.CDIVIEW_WITHOUT_VIEW, message);
+            }
+            if (Dependent.class.isAssignableFrom(beanScope)) {
+                String message = "The CDI View class "
+                        + beanClass.getCanonicalName()
+                        + " should not be Dependent.";
+                throwInconsistentDeployment(ID.CDIVIEW_DEPENDENT, message);
+            }
         }
+
+    }
+
+    private void throwInconsistentDeployment(ID errorId, String message) {
+        getLogger().warning(message);
+        throw new InconsistentDeploymentException(errorId, message);
     }
 
     void afterBeanDiscovery(

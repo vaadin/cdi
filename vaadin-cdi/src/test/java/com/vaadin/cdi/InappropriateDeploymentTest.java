@@ -1,5 +1,6 @@
 package com.vaadin.cdi;
 
+import com.vaadin.cdi.uis.CDIUINotExtendingUI;
 import com.vaadin.cdi.views.CDIViewDependent;
 import com.vaadin.cdi.views.CDIViewNotImplementingView;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -8,7 +9,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.fail;
 
-public class InappropriateCDIViewInDeploymentTest extends
+public class InappropriateDeploymentTest extends
         AbstractCDIIntegrationTest {
 
     @Deployment(name = "cdiViewWithoutView", managed = false, testable = false)
@@ -33,6 +34,18 @@ public class InappropriateCDIViewInDeploymentTest extends
     public void cdiViewDependentBreaksDeployment() throws Exception {
         deployer.deploy("cdiViewDependent");
         fail("Dependent scoped CDIView should not be deployable");
+    }
+
+    @Deployment(name = "cdiUIWithoutUI", managed = false, testable = false)
+    public static WebArchive cdiUIWithoutUI() {
+        return ArchiveProvider.createWebArchive("cdiUIWithoutUI",
+                CDIUINotExtendingUI.class);
+    }
+
+    @Test(expected = Exception.class)
+    public void cdiUIWithoutUIBreaksDeployment() throws Exception {
+        deployer.deploy("cdiUIWithoutUI");
+        fail("CDIUI that does not extend UI should not be deployable");
     }
 
 }

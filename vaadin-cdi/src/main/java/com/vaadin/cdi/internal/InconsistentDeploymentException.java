@@ -35,7 +35,8 @@ public class InconsistentDeploymentException extends RuntimeException {
         CLASS_NOT_FOUND,
         EMBEDDED_SERVLET,
         CDIVIEW_WITHOUT_VIEW,
-        CDIVIEW_DEPENDENT
+        CDIVIEW_DEPENDENT,
+        CDIUI_WITHOUT_UI
     }
 
     private ID id;

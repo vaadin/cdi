@@ -1,10 +1,9 @@
 package com.vaadin.cdi;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-
 import com.vaadin.cdi.internal.ConventionsTest;
 import com.vaadin.cdi.shiro.ShiroTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ CDIIntegrationWithCustomDeploymentTest.class,
@@ -17,7 +16,7 @@ import com.vaadin.cdi.shiro.ShiroTest;
         QualifiedInjectionTest.class, MultipleSessionTest.class,
         ScopedProducerTest.class, CrossInjectionTest.class, ShiroTest.class,
         InappropriateNestedServletInDeploymentTest.class,
-        InappropriateCDIViewInDeploymentTest.class, NonPassivatingBeanTest.class,
+        InappropriateDeploymentTest.class, NonPassivatingBeanTest.class,
         UIDestroyTest.class})
 public class DeploymentTestSuiteIT {
 

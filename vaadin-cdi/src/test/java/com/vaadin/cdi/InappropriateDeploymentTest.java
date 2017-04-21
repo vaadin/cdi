@@ -1,6 +1,7 @@
 package com.vaadin.cdi;
 
 import com.vaadin.cdi.uis.CDIUINotExtendingUI;
+import com.vaadin.cdi.uis.CDIUIWrongScope;
 import com.vaadin.cdi.views.CDIViewDependent;
 import com.vaadin.cdi.views.CDIViewNotImplementingView;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -46,6 +47,18 @@ public class InappropriateDeploymentTest extends
     public void cdiUIWithoutUIBreaksDeployment() throws Exception {
         deployer.deploy("cdiUIWithoutUI");
         fail("CDIUI that does not extend UI should not be deployable");
+    }
+
+    @Deployment(name = "cdiUIWrongScope", managed = false, testable = false)
+    public static WebArchive cdiUIWrongScope() {
+        return ArchiveProvider.createWebArchive("cdiUIWrongScope",
+                CDIUIWrongScope.class);
+    }
+
+    @Test(expected = Exception.class)
+    public void cdiUIWrongScopeBreaksDeployment() throws Exception {
+        deployer.deploy("cdiUIWrongScope");
+        fail("CDIUI that does not @UIScoped should not be deployable");
     }
 
 }

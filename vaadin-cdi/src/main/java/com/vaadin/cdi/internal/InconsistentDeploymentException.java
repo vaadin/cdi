@@ -36,6 +36,7 @@ public class InconsistentDeploymentException extends RuntimeException {
         EMBEDDED_SERVLET,
         CDIVIEW_WITHOUT_VIEW,
         CDIVIEW_DEPENDENT,
+        CDIUI_SCOPE,
         CDIUI_WITHOUT_UI
     }
 

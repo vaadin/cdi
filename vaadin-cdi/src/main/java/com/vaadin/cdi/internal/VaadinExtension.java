@@ -62,7 +62,7 @@ public class VaadinExtension implements Extension {
                         + View.class.getCanonicalName();
                 throwInconsistentDeployment(ID.CDIVIEW_WITHOUT_VIEW, message);
             }
-            if (Dependent.class.isAssignableFrom(beanScope)) {
+            if (Dependent.class.equals(beanScope)) {
                 String message = "The CDI View class "
                         + beanClass.getCanonicalName()
                         + " should not be Dependent.";
@@ -78,6 +78,12 @@ public class VaadinExtension implements Extension {
                         + " with @CDIUI should extend "
                         + UI.class.getCanonicalName();
                 throwInconsistentDeployment(ID.CDIUI_WITHOUT_UI, message);
+            }
+            if (!UIScoped.class.equals(beanScope)) {
+                String message = "The CDI UI class "
+                        + beanClass.getCanonicalName()
+                        + " should be @UIScoped.";
+                throwInconsistentDeployment(ID.CDIUI_SCOPE, message);
             }
         }
     }

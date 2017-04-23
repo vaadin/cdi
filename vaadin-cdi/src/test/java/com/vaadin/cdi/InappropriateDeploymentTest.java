@@ -1,7 +1,6 @@
 package com.vaadin.cdi;
 
-import com.vaadin.cdi.uis.CDIUINotExtendingUI;
-import com.vaadin.cdi.uis.CDIUIWrongScope;
+import com.vaadin.cdi.uis.*;
 import com.vaadin.cdi.views.CDIViewDependent;
 import com.vaadin.cdi.views.CDIViewNotImplementingView;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -61,4 +60,27 @@ public class InappropriateDeploymentTest extends
         fail("CDIUI that does not @UIScoped should not be deployable");
     }
 
+    @Deployment(name = "uiPathCollision", managed = false, testable = false)
+    public static WebArchive uiPathCollision() {
+        return ArchiveProvider.createWebArchive("uiPathCollision",
+                PathCollisionUI.class, AnotherPathCollisionUI.class);
+    }
+
+    @Test(expected = Exception.class)
+    public void uiPathCollisionBreaksDeployment() throws Exception {
+        deployer.deploy("uiPathCollision");
+        fail("Duplicate deployment paths should not be deployable");
+    }
+
+    @Deployment(name = "nestedServlet", managed = false, testable = false)
+    public static WebArchive nestedServlet() {
+        return ArchiveProvider.createWebArchive("nestedServlet",
+                UIWithNestedServlet.class);
+    }
+
+    @Test(expected = Exception.class)
+    public void nestedServletBreaksDeployment() throws Exception {
+        deployer.deploy("nestedServlet");
+        fail("Servlet class nested in the UI should not be deployable");
+    }
 }

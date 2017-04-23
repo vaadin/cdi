@@ -9,13 +9,11 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({ CDIIntegrationWithCustomDeploymentTest.class,
         CDIUIProviderTest.class, ConventionsTest.class, MultipleRootUIsTest.class,
         CDIIntegrationWithConflictingDeploymentTest.class,
-        CDIIntegrationWithConflictingUIPathTest.class,
         CDIIntegrationWithDefaultDeploymentTest.class, RootViewAtContextRootTest.class,
         MultipleAccessIsolationTest.class, ScopedInstancesTest.class,
         InjectionTest.class, ConsistentInjectionTest.class,
         QualifiedInjectionTest.class, MultipleSessionTest.class,
         ScopedProducerTest.class, CrossInjectionTest.class, ShiroTest.class,
-        InappropriateNestedServletInDeploymentTest.class,
         InappropriateDeploymentTest.class, NonPassivatingBeanTest.class,
         UIDestroyTest.class})
 public class DeploymentTestSuiteIT {

@@ -19,6 +19,7 @@ package com.vaadin.cdi;
 import com.vaadin.cdi.internal.AnnotationUtil;
 import com.vaadin.cdi.internal.Conventions;
 import com.vaadin.cdi.internal.UIContextualStorageManager;
+import com.vaadin.cdi.internal.VaadinSessionScopedContext;
 import com.vaadin.server.ClientConnector.DetachEvent;
 import com.vaadin.server.ClientConnector.DetachListener;
 import com.vaadin.server.DefaultUIProvider;
@@ -36,6 +37,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @ApplicationScoped
@@ -58,7 +60,19 @@ public class CDIUIProvider extends DefaultUIProvider {
         public void detach(DetachEvent event) {
             Object source = event.getSource();
             if (source instanceof UI) {
-                uiContextualStorageManager.destroy(((UI) source).getUIId());
+                int uiId = ((UI) source).getUIId();
+                if (VaadinSessionScopedContext.guessContextIsUndeployed()) {
+                    // Happens on tomcat when it expires sessions upon undeploy.
+                    // We would get ContextNotActiveException on uiContextualStorageManager.destroy
+                    getLogger().log(
+                            Level.WARNING,
+                            "VaadinSessionScoped context does not exist. " +
+                                    "Maybe application is undeployed." +
+                                    " Can''t destroy UI context for UI {0}.",
+                            uiId);
+                    return;
+                }
+                uiContextualStorageManager.destroy(uiId);
             }
         }
     }

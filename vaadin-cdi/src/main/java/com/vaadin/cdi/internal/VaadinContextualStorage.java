@@ -25,8 +25,10 @@ import javax.enterprise.inject.spi.PassivationCapable;
 public class VaadinContextualStorage extends ContextualStorage {
     private final BeanManager beanManager;
 
-    public VaadinContextualStorage(BeanManager beanManager, boolean concurrent) {
-        super(beanManager, concurrent, true);
+    public VaadinContextualStorage(BeanManager beanManager) {
+        // Concurrency handling ignored intentionally.
+        // Locking of VaadinSession is responsibility of the Vaadin Framework.
+        super(beanManager, false, true);
         this.beanManager = beanManager;
     }
     

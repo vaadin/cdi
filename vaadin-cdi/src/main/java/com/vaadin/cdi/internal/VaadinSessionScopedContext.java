@@ -40,7 +40,7 @@ public class VaadinSessionScopedContext extends AbstractContext {
         VaadinSession session = VaadinSession.getCurrent();
         ContextualStorage storage = findContextualStorage(session);
         if (storage == null && createIfNotExist) {
-            storage = new VaadinContextualStorage(beanManager, false);
+            storage = new VaadinContextualStorage(beanManager);
             session.setAttribute(ATTRIBUTE_NAME, storage);
         }
         return storage;

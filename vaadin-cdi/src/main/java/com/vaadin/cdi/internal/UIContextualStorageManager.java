@@ -57,7 +57,7 @@ public class UIContextualStorageManager implements Serializable {
 
         ContextualStorage storage = storageMap.get(uiId);
         if (storage == null && createIfNotExist) {
-            storage = new VaadinContextualStorage(beanManager, false);
+            storage = new VaadinContextualStorage(beanManager);
             storageMap.put(uiId, storage);
         }
 

@@ -91,11 +91,11 @@ public class ViewContextualStorageManager implements Serializable {
     }
 
     private static class Storage implements Serializable {
-        private VaadinContextualStorage contextualStorage;
+        private ContextualStorage contextualStorage;
 
         private ContextualStorage getContextualStorage(BeanManager beanManager, boolean createIfNotExist) {
             if (createIfNotExist && contextualStorage == null) {
-                contextualStorage = new VaadinContextualStorage(beanManager, false);
+                contextualStorage = new VaadinContextualStorage(beanManager);
             }
             return contextualStorage;
         }

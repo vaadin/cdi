@@ -43,7 +43,7 @@ public abstract class AbstractVaadinContext extends AbstractContext {
 
     private final Object cleanupLock = new Object();
 
-    private static final int CLEANUP_DELAY = 5000;
+    public static final int CLEANUP_DELAY = 5000;
 
     private BeanManager beanManager;
     private Map<Long, SessionData> storageMap = new ConcurrentHashMap<Long, SessionData>();
@@ -204,12 +204,12 @@ public abstract class AbstractVaadinContext extends AbstractContext {
     private synchronized void dropUIData(SessionData sessionData, int uiId) {
         getLogger().fine("Dropping UI data for UI: " + uiId);
 
-        for (Entry<Contextual<?>, ContextualStorage> entry : new ArrayList<Entry<Contextual<?>, ContextualStorage>>(
-                sessionData.getStorageMap().entrySet())) {
-            Contextual<?> key = entry.getKey();
-            if (key instanceof UIContextual
-                    && ((UIContextual) key).getUiId() == uiId) {
-                destroy(entry.getKey());
+        Map<Contextual<?>, ContextualStorage> storageMap = sessionData.getStorageMap();
+        for (Contextual<?> contextual : new ArrayList<>(storageMap.keySet())) {
+            if (contextual instanceof UIContextual
+                    && ((UIContextual) contextual).getUiId() == uiId) {
+                final ContextualStorage storage = storageMap.remove(contextual);
+                destroyAllActive(storage);
             }
         }
         sessionData.uiDataMap.remove(uiId);

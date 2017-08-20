@@ -1,12 +1,5 @@
 package com.vaadin.cdi.uis;
 
-import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.internal.MyBean;
 import com.vaadin.server.VaadinRequest;
@@ -17,6 +10,12 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.util.CurrentInstance;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @CDIUI("")
 public class MultipleSessionUI extends UI {
@@ -49,7 +48,8 @@ public class MultipleSessionUI extends UI {
         Map<Class<?>, CurrentInstance> oldCurrentInstance = CurrentInstance
                 .setCurrent(otherSession);
         otherSession.getLockInstance().lock();
-        // proxy looks up actual bean based on session and UI ID
+        UI.setCurrent(this);
+        // proxy looks up actual bean based on current session and UI
         Label otherSessionLabel = new Label("" + bean.getBeanId());
         otherSessionLabel.setId(OTHERSESSION_ID);
         layout.addComponent(otherSessionLabel);

@@ -18,9 +18,7 @@ package com.vaadin.cdi;
 
 import com.vaadin.cdi.access.AccessControl;
 import com.vaadin.cdi.internal.AnnotationUtil;
-import com.vaadin.cdi.internal.CDIUtil;
 import com.vaadin.cdi.internal.Conventions;
-import com.vaadin.cdi.internal.VaadinViewChangeCleanupEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.UI;
@@ -48,8 +46,6 @@ public class CDIViewProvider implements ViewProvider {
 
     @Inject
     private BeanManager beanManager;
-
-    private static ThreadLocal<VaadinViewChangeCleanupEvent> cleanupEvent = new ThreadLocal<VaadinViewChangeCleanupEvent>();
 
     @Inject
     private AccessControl accessControl;
@@ -205,8 +201,6 @@ public class CDIViewProvider implements ViewProvider {
                 "Attempting to retrieve view with name \"{0}\"",
                 viewName);
 
-        // current session and UI
-        long sessionId = CDIUtil.getSessionId();
         UI currentUI = UI.getCurrent();
 
         if (currentUI == null) {
@@ -227,8 +221,6 @@ public class CDIViewProvider implements ViewProvider {
                 return null;
             }
 
-            cleanupEvent.set(new VaadinViewChangeCleanupEvent(sessionId, currentUI
-                    .getUIId()));
             CreationalContext creationalContext = beanManager
                     .createCreationalContext(viewBean);
             View view = (View) beanManager.getReference(viewBean,
@@ -256,14 +248,6 @@ public class CDIViewProvider implements ViewProvider {
         }
 
         return null;
-    }
-
-    public static VaadinViewChangeCleanupEvent getCleanupEvent() {
-        return cleanupEvent.get();
-    }
-
-    public static void removeCleanupEvent() {
-        cleanupEvent.remove();
     }
 
     private static Logger getLogger() {

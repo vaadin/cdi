@@ -16,15 +16,12 @@
 
 package com.vaadin.cdi;
 
-import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.vaadin.cdi.access.AccessControl;
+import com.vaadin.cdi.internal.*;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewProvider;
+import com.vaadin.ui.UI;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.RolesAllowed;
@@ -34,20 +31,13 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
-
-import com.vaadin.cdi.access.AccessControl;
-import com.vaadin.cdi.internal.AnnotationUtil;
-import com.vaadin.cdi.internal.CDIUtil;
-import com.vaadin.cdi.internal.Conventions;
-import com.vaadin.cdi.internal.VaadinViewChangeCleanupEvent;
-import com.vaadin.cdi.internal.VaadinViewChangeEvent;
-import com.vaadin.cdi.internal.VaadinViewCreationEvent;
-import com.vaadin.cdi.internal.ViewBean;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.navigator.ViewProvider;
-import com.vaadin.ui.UI;
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CDIViewProvider implements ViewProvider {
 
@@ -63,41 +53,6 @@ public class CDIViewProvider implements ViewProvider {
     private AccessControl accessControl;
     private transient CreationalContext<?> currentViewCreationalContext;
 
-    public final static class ViewChangeListenerImpl implements
-            ViewChangeListener {
-
-        private BeanManager beanManager;
-
-        public ViewChangeListenerImpl(BeanManager beanManager) {
-            this.beanManager = beanManager;
-        }
-
-        @Override
-        public boolean beforeViewChange(ViewChangeEvent event) {
-            return true;
-        }
-
-        @Override
-        public void afterViewChange(ViewChangeEvent event) {
-            getLogger().fine(
-                    "Changing view from " + event.getOldView() + " to "
-                            + event.getNewView());
-            // current session id
-            long sessionId = CDIUtil.getSessionId();
-            int uiId = event.getNavigator().getUI().getUIId();
-            String viewName = event.getViewName();
-            beanManager.fireEvent(new VaadinViewChangeEvent(sessionId, uiId,
-                    viewName));
-        }
-    }
-
-    private ViewChangeListener viewChangeListener;
-
-    @PostConstruct
-    private void postConstruct() {
-        viewChangeListener = new ViewChangeListenerImpl(beanManager);
-    }
-
     @Override
     public String getViewName(String viewAndParameters) {
         getLogger().log(Level.FINE,
@@ -105,7 +60,7 @@ public class CDIViewProvider implements ViewProvider {
                 viewAndParameters);
 
         String name = parseViewName(viewAndParameters);
-        ViewBean viewBean = getViewBean(name);
+        Bean viewBean = getViewBean(name);
 
         if (viewBean == null) {
             return null;
@@ -161,7 +116,7 @@ public class CDIViewProvider implements ViewProvider {
         return true;
     }
 
-    private ViewBean getViewBean(String viewName) {
+    private Bean getViewBean(String viewName) {
         getLogger().log(Level.FINE, "Looking for view with name \"{0}\"",
                 viewName);
 
@@ -210,8 +165,7 @@ public class CDIViewProvider implements ViewProvider {
                     "Multiple views mapped with same name for same UI");
         }
 
-        return new ViewBean(viewBeansForThisProvider.iterator().next(),
-                viewName);
+        return viewBeansForThisProvider.iterator().next();
     }
 
     private Set<Bean<?>> getViewBeansForCurrentUI(Set<Bean<?>> beans) {
@@ -261,7 +215,7 @@ public class CDIViewProvider implements ViewProvider {
                     + " - current UI is not set");
         }
 
-        ViewBean viewBean = getViewBean(viewName);
+        Bean viewBean = getViewBean(viewName);
         if (viewBean != null) {
             if (!isUserHavingAccessToView(viewBean)) {
                 getLogger().log(
@@ -285,8 +239,6 @@ public class CDIViewProvider implements ViewProvider {
                     "Created new creational context for current view {0}",
                     currentViewCreationalContext);
 
-            beanManager.fireEvent(new VaadinViewCreationEvent(sessionId,
-                    currentUI.getUIId(), viewName));
             cleanupEvent.set(new VaadinViewChangeCleanupEvent(sessionId, currentUI
                     .getUIId()));
 
@@ -294,14 +246,6 @@ public class CDIViewProvider implements ViewProvider {
                     viewBean.getBeanClass(), currentViewCreationalContext);
             getLogger().log(Level.FINE, "Returning view instance {0}", view.toString());
 
-            Navigator navigator = currentUI.getNavigator();
-            if (navigator != null) {
-                // This is a fairly dumb way of making sure that there is
-                // one and only one CDI viewChangeListener for this
-                // Navigator.
-                navigator.removeViewChangeListener(viewChangeListener);
-                navigator.addViewChangeListener(viewChangeListener);
-            }
             return view;
         }
 

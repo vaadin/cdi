@@ -15,28 +15,35 @@
  */
 package com.vaadin.cdi.internal;
 
-import java.lang.annotation.Annotation;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-
+import com.vaadin.cdi.UIScoped;
+import com.vaadin.server.VaadinSession;
+import org.apache.deltaspike.core.api.provider.BeanProvider;
+import org.apache.deltaspike.core.util.context.AbstractContext;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
 
-import com.vaadin.cdi.UIScoped;
-import com.vaadin.ui.UI;
-import com.vaadin.util.CurrentInstance;
+import javax.enterprise.context.spi.Contextual;
+import javax.enterprise.inject.spi.BeanManager;
+import java.lang.annotation.Annotation;
 
 /**
  * UIScopedContext is the context for @UIScoped beans.
  */
-public class UIScopedContext extends AbstractVaadinContext {
+public class UIScopedContext extends AbstractContext {
+
+    private UIContextualStorageManager contextualStorageManager;
 
     public UIScopedContext(final BeanManager beanManager) {
         super(beanManager);
-        getLogger().fine("Instantiating UIScoped context");
+    }
+
+    @Override
+    protected ContextualStorage getContextualStorage(Contextual<?> contextual, boolean createIfNotExist) {
+        return contextualStorageManager.getContextualStorage(createIfNotExist);
+    }
+
+    public void init(BeanManager beanManager) {
+        contextualStorageManager = BeanProvider
+                .getContextualReference(beanManager, UIContextualStorageManager.class, false);
     }
 
     @Override
@@ -45,67 +52,10 @@ public class UIScopedContext extends AbstractVaadinContext {
     }
 
     @Override
-    protected <T> Contextual<T> wrapBean(Contextual<T> bean) {
-        if(!(bean instanceof UIContextual) && bean instanceof Bean && UI.class.isAssignableFrom(((Bean) bean).getBeanClass())) {
-            return new UIBean((Bean) bean);
-        }
-        return bean;
+    public boolean isActive() {
+        return VaadinSession.getCurrent() != null
+                && contextualStorageManager != null
+                && contextualStorageManager.isActive();
     }
 
-    @Override
-    protected synchronized ContextualStorage getContextualStorage(
-            Contextual<?> contextual, boolean createIfNotExist) {
-        SessionData sessionData;
-        if (contextual instanceof UIContextual) {
-            sessionData = getSessionData(
-                    ((UIContextual) contextual).getSessionId(),
-                    createIfNotExist);
-        } else {
-            sessionData = getSessionData(createIfNotExist);
-        }
-        if (sessionData == null) {
-            if (createIfNotExist) {
-                throw new IllegalStateException(
-                        "Session data not recoverable for " + contextual);
-            } else {
-                // noop
-                return null;
-            }
-        }
-
-        // If a non-UI class has the @UIScoped annotation the contextual
-        // parameter is a CDI managed bean. We need to wrap this in a
-        // UIContextual so that we can clean up its storage once the UI has been
-        // closed.
-        if (!(contextual instanceof UIContextual)) {
-            if (CurrentInstance.get(UIBean.class) != null) {
-                contextual = CurrentInstance.get(UIBean.class);
-            } else {
-                contextual = new UIContextual(contextual);
-            }
-        }
-
-        Map<Contextual<?>, ContextualStorage> map = sessionData.getStorageMap();
-        if (map == null) {
-            return null;
-        }
-
-        if (map.containsKey(contextual)) {
-            ContextualStorage storage = map.get(contextual);
-            return storage;
-        } else if (createIfNotExist) {
-            ContextualStorage storage = new VaadinContextualStorage(getBeanManager(),
-                    true);
-            map.put(contextual, storage);
-            return storage;
-        } else {
-            return null;
-        }
-
-    }
-
-    @Override
-    protected Logger getLogger() {
-        return Logger.getLogger(UIScopedContext.class.getCanonicalName());
-    }
 }

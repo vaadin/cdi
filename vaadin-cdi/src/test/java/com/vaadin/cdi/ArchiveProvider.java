@@ -16,9 +16,11 @@
 
 package com.vaadin.cdi;
 
-import javax.enterprise.inject.spi.Extension;
-
+import com.vaadin.cdi.access.AccessControl;
+import com.vaadin.cdi.access.JaasAccessControl;
 import com.vaadin.cdi.internal.*;
+import com.vaadin.cdi.server.VaadinCDIServlet;
+import com.vaadin.cdi.server.VaadinCDIServletService;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -26,10 +28,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 
-import com.vaadin.cdi.access.AccessControl;
-import com.vaadin.cdi.access.JaasAccessControl;
-import com.vaadin.cdi.server.VaadinCDIServlet;
-import com.vaadin.cdi.server.VaadinCDIServletService;
+import javax.enterprise.inject.spi.Extension;
 
 /**
  */
@@ -37,19 +36,17 @@ public class ArchiveProvider {
 
     public final static Class FRAMEWORK_CLASSES[] = new Class[] {
             AccessControl.class, CDIUIProvider.class, CDIViewProvider.class, CDINavigator.class,
-            ContextDeployer.class, JaasAccessControl.class, UIContextual.class,
-            UIBean.class, UIScopedContext.class, CDIUI.class,
+            ContextDeployer.class, JaasAccessControl.class,
+            UIScopedContext.class, UIContextualStorageManager.class,
             ViewScopedContext.class, ViewContextualStorageManager.class,
-            CDIView.class, VaadinSessionDestroyEvent.class,
-            VaadinUICloseEvent.class,
-            AbstractVaadinContext.class,
-            VaadinViewChangeCleanupEvent.class, VaadinCDIServlet.class,
+            CDIView.class, CDIUI.class,
+            VaadinCDIServlet.class,
             VaadinCDIServletService.class,
             CDIUIProvider.DetachListenerImpl.class,
             Conventions.class,
             InconsistentDeploymentException.class, AnnotationUtil.class,
             VaadinExtension.class, VaadinContextualStorage.class, ContextWrapper.class,
-            CDIUtil.class, URLMapping.class,
+            URLMapping.class,
             UIScoped.class, ViewScoped.class, NormalUIScoped.class, NormalViewScoped.class,
             VaadinSessionScoped.class, VaadinSessionScopedContext.class,
             CounterFilter.class, Counter.class};

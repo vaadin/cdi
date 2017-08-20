@@ -34,12 +34,6 @@ import java.util.logging.Logger;
  */
 public class VaadinExtension implements Extension {
 
-    public static final class VaadinComponentProxyException extends Exception {
-        public VaadinComponentProxyException(String message) {
-            super(message);
-        }
-    }
-
     private UIScopedContext uiScopedContext;
     private ViewScopedContext viewScopedContext;
 
@@ -105,6 +99,7 @@ public class VaadinExtension implements Extension {
         afterBeanDiscovery.addContext(new ContextWrapper(uiScopedContext,
                 NormalUIScoped.class));
         getLogger().info("UIScopedContext registered for Vaadin CDI");
+
         viewScopedContext = new ViewScopedContext(beanManager);
         afterBeanDiscovery.addContext(new ContextWrapper(viewScopedContext,
                 ViewScoped.class));
@@ -118,29 +113,12 @@ public class VaadinExtension implements Extension {
     }
 
     public void initializeContexts(@Observes AfterDeploymentValidation adv, BeanManager beanManager) {
+        uiScopedContext.init(beanManager);
         viewScopedContext.init(beanManager);
     }
 
     private static Logger getLogger() {
         return Logger.getLogger(VaadinExtension.class.getCanonicalName());
-    }
-
-    private void sessionClose(@Observes VaadinSessionDestroyEvent event) {
-        if (uiScopedContext != null) {
-            uiScopedContext.dropSessionData(event);
-        }
-    }
-
-    private void uiClose(@Observes VaadinUICloseEvent event) {
-        if (uiScopedContext != null) {
-            uiScopedContext.queueUICloseEvent(event);
-        }
-    }
-
-    private void requestEnd(@Observes VaadinViewChangeCleanupEvent event) {
-        if (uiScopedContext != null) {
-            uiScopedContext.uiCloseCleanup();
-        }
     }
 
 }

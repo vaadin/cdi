@@ -16,22 +16,9 @@
 
 package com.vaadin.cdi;
 
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.enterprise.inject.AmbiguousResolutionException;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.util.AnnotationLiteral;
-
 import com.vaadin.cdi.internal.AnnotationUtil;
-import com.vaadin.cdi.internal.CDIUtil;
 import com.vaadin.cdi.internal.Conventions;
-import com.vaadin.cdi.internal.UIBean;
-import com.vaadin.cdi.internal.VaadinUICloseEvent;
+import com.vaadin.cdi.internal.UIContextualStorageManager;
 import com.vaadin.server.ClientConnector.DetachEvent;
 import com.vaadin.server.ClientConnector.DetachListener;
 import com.vaadin.server.DefaultUIProvider;
@@ -39,45 +26,41 @@ import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
-import com.vaadin.util.CurrentInstance;
 
-public class CDIUIProvider extends DefaultUIProvider implements Serializable {
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.AmbiguousResolutionException;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.util.AnnotationLiteral;
+import javax.inject.Inject;
+import java.lang.annotation.Annotation;
+import java.util.Set;
+import java.util.logging.Logger;
+
+@ApplicationScoped
+public class CDIUIProvider extends DefaultUIProvider {
+
+    @Inject
+    private UIContextualStorageManager uiContextualStorageManager;
+
+    @Inject
+    private BeanManager beanManager;
+
+    private final DetachListener detachListener = new DetachListenerImpl();
 
     private static final Annotation QUALIFIER_ANY = new AnnotationLiteral<Any>() {
     };
     
-    public static final class DetachListenerImpl implements DetachListener {
-        private BeanManager beanManager;
-
-        public DetachListenerImpl(BeanManager beanManager) {
-            this.beanManager = beanManager;
-        }
+    public final class DetachListenerImpl implements DetachListener {
 
         @Override
         public void detach(DetachEvent event) {
             Object source = event.getSource();
             if (source instanceof UI) {
-
-                UI ui = (UI) source;
-                beanManager.fireEvent(new VaadinUICloseEvent(CDIUtil
-                        .getSessionId(ui.getSession()), ui.getUIId()));
+                uiContextualStorageManager.destroy(((UI) source).getUIId());
             }
-
         }
-    }
-
-    // TODO a better way to do this could be custom injection management in the
-    // Extension if feasible
-    private BeanManager beanManager = null;
-
-    public BeanManager getBeanManager() {
-        if (beanManager == null) {
-            getLogger()
-                    .fine("CDIUIProvider is not injected, using JNDI lookup");
-            // as the CDIUIProvider is not injected, need to use JNDI lookup
-            beanManager = CDIUtil.lookupBeanManager();
-        }
-        return beanManager;
     }
 
     @Override
@@ -87,17 +70,16 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         int uiId = uiCreateEvent.getUiId();
         VaadinRequest request = uiCreateEvent.getRequest();
         Bean<?> bean = scanForBeans(type, request);
-        UIBean uiBean = new UIBean(bean, uiId);
         try {
-            // Make the UIBean available to UIScopedContext when creating nested
+            // Make the UI id available to UIScopedContext when creating nested
             // injected objects
-            CurrentInstance.set(UIBean.class, uiBean);
-            UI ui = (UI) getBeanManager().getReference(uiBean, type,
-                    getBeanManager().createCreationalContext(bean));
-            ui.addDetachListener(new DetachListenerImpl(getBeanManager()));
+            uiContextualStorageManager.prepareOpening(uiId);
+            UI ui = (UI) beanManager.getReference(bean, type,
+                    beanManager.createCreationalContext(bean));
+            ui.addDetachListener(detachListener);
             return ui;
         } finally {
-            CurrentInstance.set(UIBean.class, null);
+            uiContextualStorageManager.cleanupOpening();
         }
     }
 
@@ -135,7 +117,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
 
     Class<? extends UI> rootUI() {
         Set<Bean<?>> rootBeans = AnnotationUtil
-                .getRootUiBeans(getBeanManager());
+                .getRootUiBeans(beanManager);
         if (rootBeans.isEmpty()) {
             return null;
         }
@@ -155,7 +137,7 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
     }
 
     private Bean<?> getUIBeanWithMapping(String mapping) {
-        Set<Bean<?>> beans = AnnotationUtil.getUiBeans(getBeanManager());
+        Set<Bean<?>> beans = AnnotationUtil.getUiBeans(beanManager);
 
         for (Bean<?> bean : beans) {
             // We need this check since the returned beans can also be producers
@@ -177,7 +159,6 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
     }
 
     private Bean<?> scanForBeans(Class<? extends UI> type, VaadinRequest request) {
-        BeanManager beanManager = getBeanManager();
         Bean<?> bean = null;
         Set<Bean<?>> beans = beanManager.getBeans(type, QUALIFIER_ANY);
 

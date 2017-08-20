@@ -22,11 +22,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.ProcessManagedBean;
+import javax.enterprise.inject.spi.*;
 
 import com.vaadin.cdi.CDIView;
 import com.vaadin.cdi.NormalUIScoped;
@@ -114,6 +110,10 @@ public class VaadinExtension implements Extension {
         getLogger().info("VaadinSessionScopedContext registered for Vaadin CDI");
     }
 
+    public void initializeContexts(@Observes AfterDeploymentValidation adv, BeanManager beanManager) {
+        viewScopedContext.init(beanManager);
+    }
+
     private static Logger getLogger() {
         return Logger.getLogger(VaadinExtension.class.getCanonicalName());
     }
@@ -122,17 +122,11 @@ public class VaadinExtension implements Extension {
         if (uiScopedContext != null) {
             uiScopedContext.dropSessionData(event);
         }
-        if (viewScopedContext != null) {
-            viewScopedContext.dropSessionData(event);
-        }
     }
 
     private void uiClose(@Observes VaadinUICloseEvent event) {
         if (uiScopedContext != null) {
             uiScopedContext.queueUICloseEvent(event);
-        }
-        if (viewScopedContext != null) {
-            viewScopedContext.queueUICloseEvent(event);
         }
     }
 
@@ -140,25 +134,6 @@ public class VaadinExtension implements Extension {
         if (uiScopedContext != null) {
             uiScopedContext.uiCloseCleanup();
         }
-        if (viewScopedContext != null) {
-            viewScopedContext.uiCloseCleanup();
-            viewScopedContext.clearPendingViewChange(event.getSessionId(),
-                    event.getUiId());
-        }
     }
 
-    private void navigationChanged(@Observes VaadinViewChangeEvent event) {
-        if (viewScopedContext != null) {
-            long sessionId = event.getSessionId();
-            int uiId = event.getUiId();
-            viewScopedContext.viewChangeCleanup(sessionId, uiId);
-        }
-    }
-
-    private void navigationStarting(@Observes VaadinViewCreationEvent event) {
-        if (viewScopedContext != null) {
-            viewScopedContext.prepareForViewChange(event.getSessionId(),
-                    event.getUIId(), event.getViewMapping());
-        }
-    }
 }

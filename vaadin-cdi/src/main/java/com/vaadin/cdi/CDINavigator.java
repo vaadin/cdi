@@ -17,8 +17,10 @@
 
 package com.vaadin.cdi;
 
+import com.vaadin.cdi.internal.ViewContextualStorageManager;
 import com.vaadin.navigator.NavigationStateManager;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.SingleComponentContainer;
@@ -31,9 +33,15 @@ import javax.inject.Inject;
  *
  * Have to be initialized once with an "init(...)" method.
  * During initialization a {@link CDIViewProvider} added automatically.
+ *
+ * This class is responsible for controlling {@see com.vaadin.cdi.ViewScoped} context,
+ * so initialization is mandatory for view scope.
  */
 @NormalUIScoped
 public class CDINavigator extends Navigator {
+
+    @Inject
+    private ViewContextualStorageManager viewContextualStorageManager;
 
     @Inject
     private CDIViewProvider cdiViewProvider;
@@ -74,6 +82,22 @@ public class CDINavigator extends Navigator {
      */
     public void init(UI ui, ComponentContainer container) {
         init(ui, new ComponentContainerViewDisplay(container));
+    }
+
+    @Override
+    public void navigateTo(String navigationState) {
+        try {
+            viewContextualStorageManager.prepareChange();
+            super.navigateTo(navigationState);
+        } finally {
+            viewContextualStorageManager.cleanupChange();
+        }
+    }
+
+    @Override
+    protected void fireAfterViewChange(ViewChangeListener.ViewChangeEvent event) {
+        viewContextualStorageManager.applyChange();
+        super.fireAfterViewChange(event);
     }
 
 }

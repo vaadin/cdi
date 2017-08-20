@@ -1,24 +1,21 @@
 package com.vaadin.cdi.views;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
-
 import com.vaadin.cdi.CDIView;
 import com.vaadin.cdi.ViewScoped;
-import com.vaadin.cdi.internal.CDIUtil;
 import com.vaadin.cdi.internal.NonPassivatingBean;
 import com.vaadin.cdi.internal.ViewScopedContext;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.inject.Inject;
+import java.util.HashSet;
+import java.util.Set;
 
 @CDIView("")
 public class NonPassivatingContentView extends CustomComponent implements View {
@@ -44,8 +41,9 @@ public class NonPassivatingContentView extends CustomComponent implements View {
         
         Label label = new Label(bean.getSomeString());
         label.setId(label_id);
-        
-        ViewScopedContext context = new InitializedViewScopedContext(bm);
+
+        ViewScopedContext context = new ViewScopedContext(bm);
+        context.init(bm);
         
         // A dummy CreationalContext to avoid using CDI implementation specific
         // classes
@@ -77,16 +75,6 @@ public class NonPassivatingContentView extends CustomComponent implements View {
         
         setCompositionRoot(layout);
         
-    }
-    
-    private static class InitializedViewScopedContext extends ViewScopedContext {
-        public InitializedViewScopedContext(BeanManager bm) {
-            super(bm);
-            // a hack to simulate a view change event
-            SessionData sessionData = getSessionData(CDIUtil.getSessionId(), true);
-            SessionData.UIData uiData = sessionData.getUIData(UI.getCurrent().getUIId(), true);
-            uiData.setOpeningView("");
-        }
     }
     
     /**

@@ -28,6 +28,15 @@ public class ViewDestroyTest extends AbstractManagedCDIIntegrationTest {
     }
 
     @Test
+    public void testViewDestroyOnUIDestroy() throws Exception {
+        loadView(DestroyViewUI.VIEWSCOPED_VIEW);
+        assertViewDestroyCounts(0);
+
+        clickAndWait(DestroyViewUI.CLOSE_BTN_ID);
+        assertViewDestroyCounts(1);
+    }
+
+    @Test
     public void testViewChangeDestroysViewScope() throws Exception {
         loadView(DestroyViewUI.VIEWSCOPED_VIEW);
         assertViewDestroyCounts(0);

@@ -25,6 +25,7 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.util.function.Supplier;
 
 /**
  * Manage and store ContextualStorage for view context.
@@ -38,11 +39,10 @@ import java.io.Serializable;
  */
 @NormalUIScoped
 public class ViewContextualStorageManager implements Serializable {
-    private transient Storage openingContext;
+    private Storage openingContext;
     private Storage currentContext;
     @Inject
     private BeanManager beanManager;
-    private boolean duringBeforeViewChange;
 
     public void applyChange() {
         destroy(currentContext);
@@ -50,32 +50,27 @@ public class ViewContextualStorageManager implements Serializable {
         openingContext = null;
     }
 
-    public void prepareChange() {
+    public <T> T prepareChange(Supplier<T> taskInOpeningContext) {
+        destroy(openingContext);
         openingContext = new Storage();
+        final Storage temp = currentContext;
+        currentContext = openingContext;
+        final T result = taskInOpeningContext.get();
+        currentContext = temp;
+        return result;
     }
 
-    public void cleanupChange() {
+    public void revertChange() {
         destroy(openingContext);
         openingContext = null;
     }
 
-    public void setDuringBeforeViewChange(boolean duringBeforeViewChange) {
-        this.duringBeforeViewChange = duringBeforeViewChange;
-    }
-
     public ContextualStorage getContextualStorage(boolean createIfNotExist) {
-        Storage storage;
-        if (openingContext != null && !duringBeforeViewChange) {
-            storage = openingContext;
-        } else {
-            storage = currentContext;
-        }
-        return storage.getContextualStorage(beanManager, createIfNotExist);
+        return currentContext.getContextualStorage(beanManager, createIfNotExist);
     }
 
     public boolean isActive() {
-        return (openingContext != null && !duringBeforeViewChange)
-                || currentContext != null;
+        return currentContext != null;
     }
 
     @PreDestroy

@@ -27,6 +27,14 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
 
+/**
+ * Context for {@link VaadinSessionScoped}.
+ *
+ * Stores contextuals in {@link VaadinSession}.
+ * Other Vaadin CDI contexts are stored in the corresponding VaadinSessionScoped context.
+ *
+ * @since 3.0
+ */
 public class VaadinSessionScopedContext extends AbstractContext {
     private final BeanManager beanManager;
     private static final String ATTRIBUTE_NAME = VaadinSessionScopedContext.class.getName();
@@ -68,6 +76,15 @@ public class VaadinSessionScopedContext extends AbstractContext {
         }
     }
 
+    /**
+     * Guess whether this context is undeployed.
+     *
+     * Tomcat expires sessions after contexts are undeployed.
+     * Need this guess to prevent exceptions when try to
+     * properly destroy contexts on session expiration.
+     *
+     * @return true when context is not active, but sure it should
+     */
     public static boolean guessContextIsUndeployed() {
         // Given there is a current VaadinSession, we should have an active context,
         // except we get here after the application is undeployed.

@@ -43,7 +43,6 @@ public class VaadinCDIServletService extends VaadinServletService {
 
         @Override
         public void sessionDestroy(SessionDestroyEvent event) {
-            getLogger().fine("VaadinSessionScopedContext destroy");
             if (VaadinSessionScopedContext.guessContextIsUndeployed()) {
                 // Happens on tomcat when it expires sessions upon undeploy.
                 // beanManager.getPassivationCapableBean returns null for passivation id,
@@ -53,6 +52,7 @@ public class VaadinCDIServletService extends VaadinServletService {
                                 " Can't destroy VaadinSessionScopedContext.");
                 return;
             }
+            getLogger().fine("VaadinSessionScopedContext destroy");
             VaadinSessionScopedContext.destroy(event.getSession());
         }
 

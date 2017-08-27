@@ -57,7 +57,7 @@ public class InappropriateDeploymentTest extends
     @Test(expected = Exception.class)
     public void cdiUIWrongScopeBreaksDeployment() throws Exception {
         deployer.deploy("cdiUIWrongScope");
-        fail("CDIUI that does not @UIScoped should not be deployable");
+        fail("CDIUI that is not @UIScoped should not be deployable");
     }
 
     @Deployment(name = "uiPathCollision", managed = false, testable = false)

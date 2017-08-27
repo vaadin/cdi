@@ -4,13 +4,12 @@ import com.vaadin.cdi.CDINavigator;
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.cdi.NormalViewScoped;
+import com.vaadin.cdi.internal.Counter;
 import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewBeforeLeaveEvent;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ContextNotActiveException;
@@ -20,21 +19,29 @@ import javax.inject.Inject;
 public class ViewNavigationUI extends UI {
     public static final String REVERTED_NAV_BTN_ID = "revertednavbtn";
     public static final String SUCCESS_NAV_BTN_ID = "successnavbtn";
+    public static final String DELAY_NAV_BTN_ID = "delayednavbtn";
     public static final String VALUE_LABEL_ID = "valuelabel";
     public static final String DEFAULTVIEW_VALUE = "defaultview";
     private static final String LABEL_ID = "label";
     private static final String REVERTME = "revertme";
     private static final String SUCCESS = "success";
+    private static final String DELAY = "delay";
     public static final String CHANGEDSUCCESS_VALUE = "successother";
     public static final String SUCCESSVIEW_VALUE = "successview";
+    public static final String DELAYVIEW_VALUE = "delayview";
     public static final String CHANGE_VALUE_BTN_ID = "othervalue";
     public static final String BEFORE_VALUE_LABEL_ID = "beforevaluelabel";
     public static final String AFTER_VALUE_LABEL_ID = "aftervaluelabel";
+    public static final String BEFORE_LEAVE_VALUE_LABEL_ID = "beforeleavevaluelabel";
+    public static final String SHOW_VIEW_VALUE_LABEL_ID = "viewcomponentvaluelabel";
 
     @Inject
     CDINavigator navigator;
     @Inject
     ViewScopedBean bean;
+    private Label beforeLeaveValue;
+    private Label showViewValue;
+    private Label value;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -47,7 +54,7 @@ public class ViewNavigationUI extends UI {
         label.setId(LABEL_ID);
         layout.addComponent(label);
 
-        final Label value = new Label();
+        value = new Label();
         value.setId(VALUE_LABEL_ID);
         layout.addComponent(value);
 
@@ -55,12 +62,29 @@ public class ViewNavigationUI extends UI {
         beforeValue.setId(BEFORE_VALUE_LABEL_ID);
         layout.addComponent(beforeValue);
 
+        beforeLeaveValue = new Label();
+        beforeLeaveValue.setId(BEFORE_LEAVE_VALUE_LABEL_ID);
+        layout.addComponent(beforeLeaveValue);
+
+        showViewValue = new Label();
+        showViewValue.setId(SHOW_VIEW_VALUE_LABEL_ID);
+        layout.addComponent(showViewValue);
+
         final Label afterValue = new Label();
         afterValue.setId(AFTER_VALUE_LABEL_ID);
         layout.addComponent(afterValue);
 
+        final Panel viewDisplayPanel = new Panel();
+        viewDisplayPanel.setContent(new Label());
+        layout.addComponent(viewDisplayPanel);
+
         navigator.init(this, view -> {
+            showViewValue.setValue(bean.getValue());
+            if (view instanceof Component) {
+                viewDisplayPanel.setContent((Component) view);
+            }
         });
+
         navigator.addViewChangeListener(new ViewChangeListener() {
             @Override
             public boolean beforeViewChange(ViewChangeEvent event) {
@@ -87,21 +111,9 @@ public class ViewNavigationUI extends UI {
             }
         });
 
-        Button navigateRevBtn = new Button("navigateSuccBtn revert");
-        navigateRevBtn.setId(REVERTED_NAV_BTN_ID);
-        navigateRevBtn.addClickListener(event -> {
-            navigator.navigateTo(REVERTME);
-            value.setValue(bean.getValue());
-        });
-        layout.addComponent(navigateRevBtn);
-
-        Button navigateSuccBtn = new Button("navigateSuccBtn success");
-        navigateSuccBtn.setId(SUCCESS_NAV_BTN_ID);
-        navigateSuccBtn.addClickListener(event -> {
-            navigator.navigateTo(SUCCESS);
-            value.setValue(bean.getValue());
-        });
-        layout.addComponent(navigateSuccBtn);
+        createNavBtn(layout, REVERTED_NAV_BTN_ID, REVERTME);
+        createNavBtn(layout, SUCCESS_NAV_BTN_ID, SUCCESS);
+        createNavBtn(layout, DELAY_NAV_BTN_ID, DELAY);
 
         Button changeValueBtn = new Button("changevalue");
         changeValueBtn.setId(CHANGE_VALUE_BTN_ID);
@@ -114,6 +126,16 @@ public class ViewNavigationUI extends UI {
         setContent(layout);
     }
 
+    private void createNavBtn(VerticalLayout layout, String navBtnId, String targetView) {
+        Button navigateDelayedBtn = new Button(navBtnId);
+        navigateDelayedBtn.setId(navBtnId);
+        navigateDelayedBtn.addClickListener(event -> {
+            navigator.navigateTo(targetView);
+            value.setValue(bean.getValue());
+        });
+        layout.addComponent(navigateDelayedBtn);
+    }
+
     @CDIView("")
     public static class DefaultView implements View {
         @Inject
@@ -122,6 +144,12 @@ public class ViewNavigationUI extends UI {
         @Override
         public void enter(ViewChangeListener.ViewChangeEvent event) {
             bean.setValue(DEFAULTVIEW_VALUE);
+        }
+
+        @Override
+        public void beforeLeave(ViewBeforeLeaveEvent event) {
+            ((ViewNavigationUI) UI.getCurrent()).beforeLeaveValue.setValue(bean.getValue());
+            event.navigate();
         }
     }
 
@@ -146,15 +174,42 @@ public class ViewNavigationUI extends UI {
     public static class SuccessView implements View {
         @Inject
         ViewScopedBean bean;
-
+        @Inject
+        Counter counter;
+        public static String CONSTRUCT_COUNT = "successconstructcount";
 
         @PostConstruct
         private void init() {
             bean.setValue(SUCCESSVIEW_VALUE);
+            counter.increment(CONSTRUCT_COUNT);
         }
 
         @Override
         public void enter(ViewChangeListener.ViewChangeEvent event) {
+        }
+    }
+
+    @CDIView(DELAY)
+    public static class DelayNavigationView extends VerticalLayout implements View {
+        @Inject
+        ViewScopedBean bean;
+        Button performDelayedNavBtn;
+        public static final String PREFORM_DELAYED_NAV_BTN_ID = "performDelayedNavBtn";
+
+        @Override
+        public void enter(ViewChangeListener.ViewChangeEvent event) {
+            bean.setValue(DELAYVIEW_VALUE);
+            performDelayedNavBtn = new Button(PREFORM_DELAYED_NAV_BTN_ID);
+            performDelayedNavBtn.setId(PREFORM_DELAYED_NAV_BTN_ID);
+            addComponent(performDelayedNavBtn);
+        }
+
+        @Override
+        public void beforeLeave(ViewBeforeLeaveEvent event) {
+            performDelayedNavBtn.addClickListener(clickEvent -> {
+                event.navigate();
+                ((ViewNavigationUI) UI.getCurrent()).value.setValue(bean.getValue());
+            });
         }
     }
 

@@ -85,29 +85,14 @@ public class CDINavigator extends Navigator {
     }
 
     @Override
-    public void navigateTo(String navigationState) {
-        try {
-            viewContextualStorageManager.prepareChange();
-            super.navigateTo(navigationState);
-        } finally {
-            viewContextualStorageManager.cleanupChange();
-        }
-    }
-
-    @Override
     protected boolean fireBeforeViewChange(ViewChangeListener.ViewChangeEvent event) {
-        try {
-            viewContextualStorageManager.setDuringBeforeViewChange(true);
-            return super.fireBeforeViewChange(event);
-        } finally {
-            viewContextualStorageManager.setDuringBeforeViewChange(false);
+        final boolean navigationAllowed = super.fireBeforeViewChange(event);
+        if (navigationAllowed) {
+            viewContextualStorageManager.applyChange();
+        } else {
+            viewContextualStorageManager.revertChange();
         }
-    }
-
-    @Override
-    protected void fireAfterViewChange(ViewChangeListener.ViewChangeEvent event) {
-        viewContextualStorageManager.applyChange();
-        super.fireAfterViewChange(event);
+        return navigationAllowed;
     }
 
 }

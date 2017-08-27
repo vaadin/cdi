@@ -9,7 +9,9 @@ import org.junit.Test;
 
 import javax.enterprise.context.ContextNotActiveException;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class ViewNavigationTest extends AbstractManagedCDIIntegrationTest {
 
@@ -71,6 +73,40 @@ public class ViewNavigationTest extends AbstractManagedCDIIntegrationTest {
     private void assertBeanValue(String expectedValue) {
         String value = findElement(ViewNavigationUI.VALUE_LABEL_ID).getText();
         assertEquals(expectedValue, value);
+    }
+
+    @Test
+    public void testBeforeLeaveFiredInOldContext() throws Exception {
+        clickAndWait(ViewNavigationUI.SUCCESS_NAV_BTN_ID);
+        String value = findElement(ViewNavigationUI.BEFORE_LEAVE_VALUE_LABEL_ID).getText();
+        assertEquals(ViewNavigationUI.DEFAULTVIEW_VALUE, value);
+    }
+
+    @Test
+    public void testShowViewCalledInNewContext() throws Exception {
+        clickAndWait(ViewNavigationUI.SUCCESS_NAV_BTN_ID);
+        String value = findElement(ViewNavigationUI.SHOW_VIEW_VALUE_LABEL_ID).getText();
+        assertEquals(ViewNavigationUI.SUCCESSVIEW_VALUE, value);
+    }
+
+    @Test
+    public void testDelayedNavigationFindsInactiveOpeningContext() throws Exception {
+        resetCounts();
+        clickAndWait(ViewNavigationUI.DELAY_NAV_BTN_ID);
+        assertBeanValue(ViewNavigationUI.DELAYVIEW_VALUE);
+        assertThat(getCount(ViewNavigationUI.SuccessView.CONSTRUCT_COUNT), is(0));
+
+        // navigation is delayed in DelayNavigationView.beforeLeave()
+        clickAndWait(ViewNavigationUI.SUCCESS_NAV_BTN_ID);
+        // target view is contructed
+        assertThat(getCount(ViewNavigationUI.SuccessView.CONSTRUCT_COUNT), is(1));
+        // actual context remains active
+        assertBeanValue(ViewNavigationUI.DELAYVIEW_VALUE);
+
+        // perfom delayed navigation. The target view now belongs to the inactive opening context.
+        clickAndWait(ViewNavigationUI.DelayNavigationView.PREFORM_DELAYED_NAV_BTN_ID);
+        assertBeanValue(ViewNavigationUI.SUCCESSVIEW_VALUE);
+        assertThat(getCount(ViewNavigationUI.SuccessView.CONSTRUCT_COUNT), is(1));
     }
 
 }

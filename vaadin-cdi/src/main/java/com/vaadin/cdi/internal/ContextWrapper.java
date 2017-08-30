@@ -16,9 +16,11 @@
 
 package com.vaadin.cdi.internal;
 
+import org.apache.deltaspike.core.util.context.AbstractContext;
+
 import java.lang.annotation.Annotation;
 
-import javax.enterprise.context.spi.Context;
+import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 
@@ -28,12 +30,12 @@ import javax.enterprise.context.spi.CreationalContext;
  * getting the scope of the context.
  *
  */
-public class ContextWrapper implements Context {
+public class ContextWrapper implements AlterableContext {
 
-    private final Context context;
+    private final AbstractContext context;
     private final Class<? extends Annotation> scope;
 
-    public ContextWrapper(Context context, Class<? extends Annotation> scope) {
+    public ContextWrapper(AbstractContext context, Class<? extends Annotation> scope) {
         this.context = context;
         this.scope = scope;
     }
@@ -59,4 +61,8 @@ public class ContextWrapper implements Context {
         return context.isActive();
     }
 
+    @Override
+    public void destroy(Contextual<?> contextual) {
+        context.destroy(contextual);
+    }
 }

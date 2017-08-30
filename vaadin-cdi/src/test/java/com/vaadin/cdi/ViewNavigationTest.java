@@ -98,7 +98,7 @@ public class ViewNavigationTest extends AbstractManagedCDIIntegrationTest {
 
         // navigation is delayed in DelayNavigationView.beforeLeave()
         clickAndWait(ViewNavigationUI.SUCCESS_NAV_BTN_ID);
-        // target view is contructed
+        // target view is constructed
         assertThat(getCount(ViewNavigationUI.SuccessView.CONSTRUCT_COUNT), is(1));
         // actual context remains active
         assertBeanValue(ViewNavigationUI.DELAYVIEW_VALUE);

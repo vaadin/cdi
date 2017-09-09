@@ -39,6 +39,7 @@ public class ArchiveProvider {
             ContextDeployer.class, JaasAccessControl.class,
             UIScopedContext.class, UIContextualStorageManager.class,
             ViewScopedContext.class, ViewContextualStorageManager.class,
+            ViewContextStrategy.class,
             CDIView.class, CDIUI.class,
             VaadinCDIServlet.class,
             VaadinCDIServletService.class,

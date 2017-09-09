@@ -26,7 +26,6 @@ import com.vaadin.ui.UI;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.RolesAllowed;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -54,12 +53,15 @@ public class CDIViewProvider implements ViewProvider {
     @Inject
     private ViewContextualStorageManager viewContextualStorageManager;
 
+    private String lastViewAndParameters;
+
     @Override
     public String getViewName(String viewAndParameters) {
         getLogger().log(Level.FINE,
                 "Attempting to retrieve view name from string \"{0}\"",
                 viewAndParameters);
 
+        lastViewAndParameters = viewAndParameters;
         String name = parseViewName(viewAndParameters);
         Bean viewBean = getViewBean(name);
 
@@ -225,12 +227,8 @@ public class CDIViewProvider implements ViewProvider {
                 return null;
             }
 
-            View view = viewContextualStorageManager.prepareChange(() -> {
-                CreationalContext creationalContext = beanManager
-                        .createCreationalContext(viewBean);
-                return (View) beanManager.getReference(viewBean,
-                        viewBean.getBeanClass(), creationalContext);
-            });
+            final String parameters = getParameters(viewName);
+            View view = viewContextualStorageManager.prepareChange(viewBean, viewName, parameters);
 
             getLogger().log(Level.FINE, "Returning view instance {0}", view.toString());
 
@@ -238,6 +236,17 @@ public class CDIViewProvider implements ViewProvider {
         }
 
         throw new RuntimeException("Unable to instantiate view");
+    }
+
+    private String getParameters(String viewName) {
+        if (!lastViewAndParameters.startsWith(viewName)) {
+            throw new IllegalStateException("Last known viewstate should start with view name");
+        }
+        int paramsOffset = viewName.length();
+        if (lastViewAndParameters.length() > paramsOffset) {
+            paramsOffset ++;
+        }
+        return lastViewAndParameters.substring(paramsOffset);
     }
 
     private String parseViewName(String viewAndParameters) {

@@ -73,4 +73,12 @@ public @interface CDIView {
      * @return list of UIs in which the view can be shown.
      */
     public Class<? extends UI>[] uis() default { UI.class };
+
+    /**
+     * The strategy to decide whether to open a new context while the
+     * context opened for this view is active.
+     *
+     * @return a strategy class
+     */
+    public Class<? extends ViewContextStrategy> contextStrategy() default ViewContextStrategy.Always.class;
 }

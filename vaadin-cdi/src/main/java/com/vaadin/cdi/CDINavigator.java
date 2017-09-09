@@ -88,9 +88,9 @@ public class CDINavigator extends Navigator {
     protected boolean fireBeforeViewChange(ViewChangeListener.ViewChangeEvent event) {
         final boolean navigationAllowed = super.fireBeforeViewChange(event);
         if (navigationAllowed) {
-            viewContextualStorageManager.applyChange();
+            viewContextualStorageManager.applyChange(event);
         } else {
-            viewContextualStorageManager.revertChange();
+            viewContextualStorageManager.revertChange(event);
         }
         return navigationAllowed;
     }

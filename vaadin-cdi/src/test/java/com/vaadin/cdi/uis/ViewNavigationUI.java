@@ -24,10 +24,8 @@ public class ViewNavigationUI extends UI {
     private static final String REVERTME = "revertme";
     private static final String SUCCESS = "success";
     private static final String DELAY = "delay";
-    public static final String CHANGEDSUCCESS_VALUE = "successother";
     public static final String SUCCESSVIEW_VALUE = "successview";
     public static final String DELAYVIEW_VALUE = "delayview";
-    public static final String CHANGE_VALUE_BTN_ID = "othervalue";
     public static final String BEFORE_VALUE_LABEL_ID = "beforevaluelabel";
     public static final String AFTER_VALUE_LABEL_ID = "aftervaluelabel";
     public static final String CDIAFTER_VALUE_LABEL_ID = "cdiaftervaluelabel";
@@ -118,14 +116,6 @@ public class ViewNavigationUI extends UI {
         createNavBtn(layout, REVERTED_NAV_BTN_ID, REVERTME);
         createNavBtn(layout, SUCCESS_NAV_BTN_ID, SUCCESS);
         createNavBtn(layout, DELAY_NAV_BTN_ID, DELAY);
-
-        Button changeValueBtn = new Button("changevalue");
-        changeValueBtn.setId(CHANGE_VALUE_BTN_ID);
-        changeValueBtn.addClickListener(event -> {
-            bean.setValue(CHANGEDSUCCESS_VALUE);
-            value.setValue(bean.getValue());
-        });
-        layout.addComponent(changeValueBtn);
 
         setContent(layout);
     }

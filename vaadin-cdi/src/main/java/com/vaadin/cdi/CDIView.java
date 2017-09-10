@@ -32,7 +32,7 @@ import com.vaadin.ui.UI;
  * {@link Navigator}.
  * <p>
  * By default, the view name is derived from the class name of the annotated
- * class, but this can also be overriden by defining a {@link #value()}.
+ * class, but this can also be overridden by defining a {@link #value()}.
  * <p>
  * <code>@CDIView</code> views are by default {@link ViewScoped}.
  * 
@@ -60,15 +60,6 @@ public @interface CDIView {
      * automatic View mapping to occur.
      */
     public static final String USE_CONVENTIONS = "USE CONVENTIONS";
-
-    /**
-     * Specifies whether view parameters can be passed to the view as part of
-     * the name, i.e in the form of {@code viewName/viewParameters}. Make sure
-     * there are no other views that start with the same name, since the
-     * ViewProvider will only check that the given {@code viewAndParameters}
-     * starts with the view name.
-     */
-    public boolean supportsParameters() default false;
 
     /**
      * Specifies which UIs can show the view. {@link CDIViewProvider} only lists

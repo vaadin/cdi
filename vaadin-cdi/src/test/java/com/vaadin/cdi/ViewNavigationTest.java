@@ -70,6 +70,13 @@ public class ViewNavigationTest extends AbstractManagedCDIIntegrationTest {
         assertEquals(ViewNavigationUI.SUCCESSVIEW_VALUE, value);
     }
 
+    @Test
+    public void testAfterViewChangeCDIFiredInNewContext() throws Exception {
+        clickAndWait(ViewNavigationUI.SUCCESS_NAV_BTN_ID);
+        String value = findElement(ViewNavigationUI.CDIAFTER_VALUE_LABEL_ID).getText();
+        assertEquals(ViewNavigationUI.SUCCESSVIEW_VALUE, value);
+    }
+
     private void assertBeanValue(String expectedValue) {
         String value = findElement(ViewNavigationUI.VALUE_LABEL_ID).getText();
         assertEquals(expectedValue, value);

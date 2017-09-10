@@ -32,7 +32,7 @@ import com.vaadin.ui.UI;
  * {@link Navigator}.
  * <p>
  * By default, the view name is derived from the class name of the annotated
- * class, but this can also be overriden by defining a {@link #value()}.
+ * class, but this can also be overridden by defining a {@link #value()}.
  * <p>
  * <code>@CDIView</code> views are by default {@link ViewScoped}.
  * 

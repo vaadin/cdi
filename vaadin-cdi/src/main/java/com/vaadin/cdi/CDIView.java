@@ -62,15 +62,6 @@ public @interface CDIView {
     public static final String USE_CONVENTIONS = "USE CONVENTIONS";
 
     /**
-     * Specifies whether view parameters can be passed to the view as part of
-     * the name, i.e in the form of {@code viewName/viewParameters}. Make sure
-     * there are no other views that start with the same name, since the
-     * ViewProvider will only check that the given {@code viewAndParameters}
-     * starts with the view name.
-     */
-    public boolean supportsParameters() default false;
-
-    /**
      * Specifies which UIs can show the view. {@link CDIViewProvider} only lists
      * the views that have the current UI on this list.
      * <p>

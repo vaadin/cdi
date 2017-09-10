@@ -20,12 +20,13 @@ package com.vaadin.cdi;
 import com.vaadin.cdi.internal.ViewContextualStorageManager;
 import com.vaadin.navigator.NavigationStateManager;
 import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.SingleComponentContainer;
 import com.vaadin.ui.UI;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 /**
@@ -45,6 +46,10 @@ public class CDINavigator extends Navigator {
 
     @Inject
     private CDIViewProvider cdiViewProvider;
+
+    @Inject
+    @AfterViewChange
+    private Event<ViewChangeEvent> afterViewChangeTrigger;
 
     /**
      * {@inheritDoc}
@@ -85,7 +90,7 @@ public class CDINavigator extends Navigator {
     }
 
     @Override
-    protected boolean fireBeforeViewChange(ViewChangeListener.ViewChangeEvent event) {
+    protected boolean fireBeforeViewChange(ViewChangeEvent event) {
         final boolean navigationAllowed = super.fireBeforeViewChange(event);
         if (navigationAllowed) {
             viewContextualStorageManager.applyChange(event);
@@ -95,4 +100,9 @@ public class CDINavigator extends Navigator {
         return navigationAllowed;
     }
 
+    @Override
+    protected void fireAfterViewChange(ViewChangeEvent event) {
+        super.fireAfterViewChange(event);
+        afterViewChangeTrigger.fire(event);
+    }
 }

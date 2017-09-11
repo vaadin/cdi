@@ -96,7 +96,7 @@ abstract class AbstractViewStrategyTest extends AbstractManagedCDIIntegrationTes
         assertBeanValue(beanValue);
     }
 
-    protected void assertToOtherViewContextCreated(String sourceState, String srcBeanValue)
+    protected void assertAfterNavigateToOtherViewContextCreated(String sourceState, String srcBeanValue)
             throws Exception {
         navigateTo(sourceState);
         assertConstructCounts(1);
@@ -112,7 +112,7 @@ abstract class AbstractViewStrategyTest extends AbstractManagedCDIIntegrationTes
         assertBeanValue(",other:");
     }
 
-    protected void assertToTestedViewContextCreated(
+    protected void assertAfterNavigateToTestedViewContextCreated(
             String sourceState, String targetState, String srcBeanValue, String targetBeanValue)
             throws Exception {
         navigateTo(sourceState);

@@ -40,14 +40,14 @@ public class ViewStrategiesUiInitTest extends AbstractManagedCDIIntegrationTest 
     }
 
     @Test
-    public void testViewNameStrategyUpAfterUiInit() throws Exception {
+    public void testViewNameStrategyHasRightStateAfterUiInit() throws Exception {
         clickAndWait(ViewStrategyInitUI.VIEWNAME_BTN_ID);
         final String result = findElement(ViewStrategyInitUI.OUTPUT_ID).getText();
         Assert.assertEquals("true", result);
     }
 
     @Test
-    public void testViewNameAndParametersStrategyUpAfterUiInit() throws Exception {
+    public void testViewNameAndParametersStrategyHasRightStateAfterUiInit() throws Exception {
         clickAndWait(ViewStrategyInitUI.VIEWNAMEPARAMS_BTN_ID);
         final String result = findElement(ViewStrategyInitUI.OUTPUT_ID).getText();
         Assert.assertEquals("true", result);

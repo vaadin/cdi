@@ -60,7 +60,7 @@ public class ViewNavigationTest extends AbstractManagedCDIIntegrationTest {
     }
 
     @Test
-    public void testAfterViewChangeCDIFiredInNewContext() throws Exception {
+    public void testAfterViewChangeCDIEventFiredInNewContext() throws Exception {
         clickAndWait(ViewNavigationUI.SUCCESS_NAV_BTN_ID);
         String value = findElement(ViewNavigationUI.CDIAFTER_VALUE_LABEL_ID).getText();
         assertEquals(ViewNavigationUI.SUCCESSVIEW_VALUE, value);

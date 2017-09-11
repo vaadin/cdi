@@ -31,7 +31,7 @@ public class ViewStrategyAlwaysTest extends AbstractViewStrategyTest {
 
     @Test
     public void testNavigationToSameViewAndParametersCreatesNewContext() throws Exception {
-        assertToTestedViewContextCreated(
+        assertAfterNavigateToTestedViewContextCreated(
                 ViewStrategyUI.BYALWAYS + "/p1",
                 ViewStrategyUI.BYALWAYS + "/p1",
                 ",byalways:p1",
@@ -41,7 +41,7 @@ public class ViewStrategyAlwaysTest extends AbstractViewStrategyTest {
 
     @Test
     public void testNavigationToSameViewNoParametersCreatesNewContext() throws Exception {
-        assertToTestedViewContextCreated(
+        assertAfterNavigateToTestedViewContextCreated(
                 ViewStrategyUI.BYALWAYS,
                 ViewStrategyUI.BYALWAYS,
                 ",byalways:",
@@ -51,7 +51,7 @@ public class ViewStrategyAlwaysTest extends AbstractViewStrategyTest {
 
     @Test
     public void testNavigationToSameViewDifferentParametersCreatesNewContext() throws Exception {
-        assertToTestedViewContextCreated(
+        assertAfterNavigateToTestedViewContextCreated(
                 ViewStrategyUI.BYALWAYS + "/p1",
                 ViewStrategyUI.BYALWAYS + "/p2",
                 ",byalways:p1",
@@ -61,7 +61,7 @@ public class ViewStrategyAlwaysTest extends AbstractViewStrategyTest {
 
     @Test
     public void testNavigationToOtherViewCreatesNewContext() throws Exception {
-        assertToOtherViewContextCreated(
+        assertAfterNavigateToOtherViewContextCreated(
                 ViewStrategyUI.BYALWAYS,
                 ",byalways:"
         );

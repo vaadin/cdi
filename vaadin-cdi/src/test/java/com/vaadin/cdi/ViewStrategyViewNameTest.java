@@ -64,7 +64,7 @@ public class ViewStrategyViewNameTest extends AbstractViewStrategyTest {
 
     @Test
     public void testNavigationToOtherViewCreatesNewContext() throws Exception {
-        assertToOtherViewContextCreated(
+        assertAfterNavigateToOtherViewContextCreated(
                 ViewStrategyUI.BYVIEWNAME,
                 ",byviewname:"
         );

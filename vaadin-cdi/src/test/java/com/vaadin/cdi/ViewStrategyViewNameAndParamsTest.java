@@ -49,7 +49,7 @@ public class ViewStrategyViewNameAndParamsTest extends AbstractViewStrategyTest 
 
     @Test
     public void testNavigationToSameViewDifferentParametersCreatesNewContext() throws Exception {
-        assertToTestedViewContextCreated(
+        assertAfterNavigateToTestedViewContextCreated(
                 ViewStrategyUI.BYVIEWNAMEPARAMS + "/p1",
                 ViewStrategyUI.BYVIEWNAMEPARAMS + "/p2",
                 ",byviewnameparams:p1",
@@ -59,7 +59,7 @@ public class ViewStrategyViewNameAndParamsTest extends AbstractViewStrategyTest 
 
     @Test
     public void testNavigationToOtherViewCreatesNewContext() throws Exception {
-        assertToOtherViewContextCreated(
+        assertAfterNavigateToOtherViewContextCreated(
                 ViewStrategyUI.BYVIEWNAMEPARAMS,
                 ",byviewnameparams:"
         );

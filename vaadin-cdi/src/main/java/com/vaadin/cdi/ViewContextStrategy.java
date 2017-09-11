@@ -20,7 +20,6 @@ package com.vaadin.cdi;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
 import java.io.Serializable;
 import java.util.Objects;
@@ -107,7 +106,7 @@ public interface ViewContextStrategy extends Serializable {
      * In practice it works same as {@link ViewNameAndParameters},
      * even when parameters does not change.
      */
-    @RequestScoped
+    @NormalUIScoped
     class Always implements ViewContextStrategy {
         @Override
         public boolean contains(String viewName, String parameters) {

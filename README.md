@@ -1,27 +1,26 @@
-Vaadin CDI
-======================
+# Vaadin CDI
 
 Vaadin CDI is the official CDI integration for [Vaadin Framework](https://github.com/vaadin/framework).
 
-Download release
-----
+## Download release
 
-Official releases of this add-on are available at Vaadin Directory. For Maven instructions, download and reviews, go to https://vaadin.com/addon/vaadin-cdi.
+Official releases of this add-on are available at Vaadin Directory. For Maven instructions, download and reviews, go to [Vaadin CDI](https://vaadin.com/addon/vaadin-cdi).
 
-Building the project
-----
+## Building the project
+
 Execute `mvn clean install` in the root directory to build vaadin-cdi.
 
-Issue tracking
-----
-If you find an issue, please report it in the GitHub issue tracker: https://github.com/vaadin/cdi/issues
+## Issue tracking
 
-Contributions
-----
+If you find an issue, please report it in the [GitHub issue tracker](https://github.com/vaadin/cdi/issues).
+
+## Contributions
+
 Contributions to the project can be done through pull requests in GitHub.
 
+---
 
-Copyright 2016 Vaadin Ltd.
+Copyright 2012-2017 Vaadin Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this file except in compliance with the License. You may obtain a copy of

@@ -1,10 +1,50 @@
-vaadin-cdi
-==========
+# vaadin-cdi
 
-Vaadin-CDI is the official CDI integration for Vaadin framework version 7.
+Vaadin-CDI is the official CDI integration for Vaadin Framework.
 
-Changes in 1.0.3
------------------------
+## Changes in 3.0
+
+### Breaking changes:
+
+#### @NormalUIScoped UIs are not supported
+
+Every `@CDIUI` has to be `@UIScoped`. The scope can be omitted for UIs.
+
+#### ViewScoped context lifecycle has changed
+
+Creation and destruction of view scopes is better aligned with navigation.
+
+`@Dependent` views are not supported. The behavior of a view scope is the same as you would expect from dependent scope.
+
+#### Introduced CDINavigator API
+
+To make `@ViewScoped` work, the `CDINavigator` should be used instead of standard `Navigator`.
+
+```
+@CDIUI("")
+public class MyUI extends UI {
+    @Inject
+    CDINavigator navigator;
+
+    @Override
+    protected void init(VaadinRequest request) {
+        navigator.init(this, myViewContainer);
+```
+
+Navigation can be done by injecting `CDINavigator` or using `ui.getNavigator()`, and calling `CDINavigator::navigateTo`.
+
+### New Features:
+- Introduced @VaadinSessionScoped
+- Improved clustering support
+
+This release contains a number of bugfixes to view scopes and memory leaks.
+
+## Changes in 2.0
+
+- Support for Vaadin Framework 8
+
+
+## Changes in 1.0.3
 
 - Upgrade DeltaSpike to 1.4.1
 - Update Vaadin dependency
@@ -14,23 +54,19 @@ and Vaadin CDI together with some third party CDI related add-ons.
 If this happens, add an explicit dependency to DeltaSpike version 1.3.0
 in the project POM , overriding any transitive dependencies.
 
-Changes in 1.0.2
------------------------
+## Changes in 1.0.2
 
 - Accept beans that do not implement PassivationCapable (#15243)
 
-Changes in 1.0.1
------------------------
+## Changes in 1.0.1
 
 - Upgrade DeltaSpike to version 1.0.3 for GlassFish 4.1 compatibility
 
-Changes in 1.0.0
------------------------
+## Changes in 1.0.0
 
 No changes since 1.0.0.rc1.
 
-Changes in 1.0.0.rc1
------------------------
+## Changes in 1.0.0.rc1
 
 - moved the classes VaadinCDIServlet and VaadinCDIServletService to the
   package com.vaadin.cdi.servlet
@@ -40,8 +76,7 @@ Changes in 1.0.0.rc1
 - added check at deployment time: if a servlet class is nested in a UI with
   @CDIUI, it must extend VaadinCDIServlet
 
-Changes in 1.0.0.beta4
------------------------
+## Changes in 1.0.0.beta4
 
 - removed the blocking of injecting Vaadin components in normal scopes
   that was introduced in 1.0.0.beta3
@@ -57,8 +92,7 @@ only be used for methods that are not called directly by the framework.
 
 See also the notes for earlier releases below.
 
-Changes in 1.0.0.beta3
------------------------
+## Changes in 1.0.0.beta3
 
 - breaking change: @UIScoped and @ViewScoped are no longer @NormalScope
   - added corresponding @NormalUIScoped and @NormalViewScoped
@@ -70,8 +104,7 @@ Changes in 1.0.0.beta3
 
 See also the notes for earlier releases below.
 
-Changes in 1.0.0.beta2
------------------------
+## Changes in 1.0.0.beta2
 
 - @UIScoped and @ViewScoped can be used on methods
   (producer methods, setter injection, constructor injection)
@@ -84,8 +117,7 @@ Changes in 1.0.0.beta2
 
 See also the notes for earlier releases below.
 
-Changes in 1.0.0.beta1
------------------------
+## Changes in 1.0.0.beta1
 
 Note: Vaadin CDI 1.0.0.beta1 and later requires Vaadin 7.3.1 or later.
 Injection of beans other than components also works with earlier Vaadin
@@ -113,8 +145,7 @@ Overriding createServletService() is possible, in which case the service
 should inherit VaadinCDIServletService if possible or duplicate its
 functionality otherwise.
 
-Changes in 1.0.0.alpha3
------------------------
+## Changes in 1.0.0.alpha3
 
 - Reintroduce conventions for mapping of views and UIs
   - This requires updating @CDIUI and @CDIView parameter values in existing
@@ -129,8 +160,9 @@ Changes in 1.0.0.alpha3
 - See http://dev.vaadin.com/query?&status=released&milestone=Vaadin+CDI+1.0.0.alpha3
   for the complete list of changes.
 
+---
 
-Copyright 2012-2014 Vaadin Ltd.
+Copyright 2012-2017 Vaadin Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this file except in compliance with the License. You may obtain a copy of

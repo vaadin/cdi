@@ -7,7 +7,7 @@ Changes in 1.0.3
 -----------------------
 
 - Upgrade DeltaSpike to 1.4.1
-- Update Vaadin dependendency
+- Update Vaadin dependency
 
 Note: some compatibility issues have been reported when using GlassFish
 and Vaadin CDI together with some third party CDI related add-ons.

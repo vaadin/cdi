@@ -2,9 +2,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-parent</artifactId>
+        <version>1.1.0</version>
+    </parent>
+    <!-- Do not remove explicit groupId even though Maven says this is redundant -->
     <groupId>com.vaadin</groupId>
     <artifactId>vaadin-cdi</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -122,33 +128,58 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>properties-maven-plugin</artifactId>
-                        <version>1.0-alpha-2</version>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>assembly/assembly.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
+                        </configuration>
                         <executions>
                             <execution>
-                                <phase>initialize</phase>
                                 <goals>
-                                    <goal>read-project-properties</goal>
+                                    <goal>single</goal>
                                 </goals>
-                                <configuration>
-                                    <files>
-                                        <file>${gpg.passphrase.file}</file>
-                                    </files>
-                                </configuration>
+                                <phase>install</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>prerelease</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.1.2</version>
+                        <configuration>
+                            <excludeResources>true</excludeResources>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.4</version>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9</version>
                         <executions>
                             <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
+                                <phase>package</phase>
                                 <goals>
-                                    <goal>sign</goal>
+                                    <goal>jar</goal>
                                 </goals>
                             </execution>
                         </executions>

@@ -34,7 +34,7 @@ import javax.inject.Inject;
  * Have to be initialized once with an "init(...)" method.
  * During initialization a {@link CDIViewProvider} added automatically.
  *
- * This class is responsible for controlling {@see com.vaadin.cdi.ViewScoped} context,
+ * This class is responsible for controlling {@link com.vaadin.cdi.ViewScoped} context,
  * so initialization is mandatory for view scope.
  */
 @NormalUIScoped

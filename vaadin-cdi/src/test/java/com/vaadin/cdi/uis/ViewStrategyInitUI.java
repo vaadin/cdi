@@ -20,7 +20,7 @@ package com.vaadin.cdi.uis;
 import com.vaadin.cdi.CDINavigator;
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.CDIView;
-import com.vaadin.cdi.ViewContextStrategy;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;

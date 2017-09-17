@@ -15,7 +15,7 @@
  *
  */
 
-package com.vaadin.cdi;
+package com.vaadin.cdi.viewcontextstrategy;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -23,6 +23,8 @@ import java.util.Objects;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 
+import com.vaadin.cdi.AfterViewChange;
+import com.vaadin.cdi.NormalUIScoped;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
@@ -34,6 +36,38 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
  * By default the views are using the {@link Dependent} scope, which can be used
  * but is not recommended. Any {@link View} with a {@code ViewContextStrategy}
  * should use one of the scopes provided in the Vaadin CDI integration.
+ * <p>
+ * Separate annotations annotated by {@link ViewContextStrategyQualifier}
+ * have to exist for each of the implementations.
+ * <p>
+ * Example of a custom implementation:
+ * <p>
+ * A separate annotation.
+ * <pre>
+ * {@literal @}Retention(RetentionPolicy.RUNTIME)
+ * {@literal @}Target({ ElementType.TYPE })
+ * {@literal @}ViewContextStrategyQualifier
+ *  public {@literal @}interface MyStrategyAnnotation {
+ *  }
+ * </pre>
+ * An implementation class.
+ * <pre>
+ * {@literal @}NormalUIScoped
+ * {@literal @}MyStrategyAnnotation
+ *  public class MyStrategy implements ViewContextStrategy {
+ *    public boolean contains(String viewName, String parameters) {
+ *      ...
+ *    }
+ *  }
+ * </pre>
+ * Use annotation on the view.
+ * <pre>
+ * {@literal @}CDIView("myView")
+ * {@literal @}MyStrategyAnnotation
+ *  public MyView implements View {
+ *  ...
+ *  }
+ * </pre>
  */
 public interface ViewContextStrategy extends Serializable {
 
@@ -51,18 +85,8 @@ public interface ViewContextStrategy extends Serializable {
      */
     boolean contains(String viewName, String parameters);
 
-    /**
-     * Strategy to hold the context open while view name does not change.
-     * <p>
-     * This strategy is not on par with navigator view life cycle. While
-     * navigating to same view, same context remains active.
-     * {@link com.vaadin.navigator.View#enter(ViewChangeEvent)} will be called
-     * again on the same view instance.
-     * <p>
-     * <strong>Note:</strong> Navigator view change events do not mean that the
-     * view context has changed.
-     */
     @NormalUIScoped
+    @ViewNameDriven
     class ViewName implements ViewContextStrategy {
         private String currentViewName;
 
@@ -77,21 +101,8 @@ public interface ViewContextStrategy extends Serializable {
         }
     }
 
-    /**
-     * Strategy to hold the context open while view name and view parameters do
-     * not change.
-     * <p>
-     * This strategy is on par with navigator view life cycle. If navigation is
-     * not reverted in a
-     * {@link ViewChangeEvent#beforeViewChange(ViewChangeEvent)}, a new view
-     * context is activated. After
-     * {@link ViewChangeEvent#afterViewChange(ViewChangeEvent)} is called, old
-     * view context will be closed.
-     * <p>
-     * {@link View#enter(ViewChangeEvent)} will be called for the new
-     * {@link View} instance.
-     */
     @NormalUIScoped
+    @ViewNameAndParametersDriven
     class ViewNameAndParameters implements ViewContextStrategy {
         private String currentViewName;
         private String currentParameters;
@@ -109,17 +120,8 @@ public interface ViewContextStrategy extends Serializable {
         }
     }
 
-    /**
-     * Strategy to release, and create a new context on every navigation
-     * regardless of view name and parameters.
-     * <p>
-     * It is on par with navigator view life cycle, but navigating to same view
-     * with same parameters releases the context and creates a new one.
-     * <p>
-     * In practice it works same as {@link ViewNameAndParameters}, even when
-     * parameters does not change.
-     */
     @NormalUIScoped
+    @EveryNavigationDriven
     class Always implements ViewContextStrategy {
         @Override
         public boolean contains(String viewName, String parameters) {

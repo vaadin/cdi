@@ -325,10 +325,11 @@ public class CDIViewProvider implements ViewProvider {
     }
 
     /**
-     * 
+     * Extract the view name part from the full fragment string.
      * 
      * @param viewAndParameters
-     * @return
+     *            the view name and parameters
+     * @return the view name
      * 
      * @since 1.0.4
      */

@@ -63,8 +63,8 @@ public class CDIViewProvider implements ViewProvider {
     private AccessControl accessControl;
     private transient CreationalContext<?> currentViewCreationalContext;
 
-    public final static class ViewChangeListenerImpl implements
-            ViewChangeListener {
+    public final static class ViewChangeListenerImpl
+            implements ViewChangeListener {
 
         private BeanManager beanManager;
 
@@ -79,15 +79,14 @@ public class CDIViewProvider implements ViewProvider {
 
         @Override
         public void afterViewChange(ViewChangeEvent event) {
-            getLogger().fine(
-                    "Changing view from " + event.getOldView() + " to "
-                            + event.getNewView());
+            getLogger().fine("Changing view from " + event.getOldView() + " to "
+                    + event.getNewView());
             // current session id
             long sessionId = CDIUtil.getSessionId();
             int uiId = event.getNavigator().getUI().getUIId();
             String viewName = event.getViewName();
-            beanManager.fireEvent(new VaadinViewChangeEvent(sessionId, uiId,
-                    viewName));
+            beanManager.fireEvent(
+                    new VaadinViewChangeEvent(sessionId, uiId, viewName));
         }
     }
 
@@ -123,7 +122,8 @@ public class CDIViewProvider implements ViewProvider {
         } else {
             getLogger().log(Level.INFO,
                     "User {0} did not have access to view \"{1}\"",
-                    new Object[] { accessControl.getPrincipalName(), viewBean });
+                    new Object[] { accessControl.getPrincipalName(),
+                            viewBean });
         }
 
         return null;
@@ -132,8 +132,7 @@ public class CDIViewProvider implements ViewProvider {
     protected boolean isUserHavingAccessToView(Bean<?> viewBean) {
 
         if (viewBean.getBeanClass().isAnnotationPresent(CDIView.class)) {
-            if (viewBean.getBeanClass()
-                    .isAnnotationPresent(DenyAll.class)) {
+            if (viewBean.getBeanClass().isAnnotationPresent(DenyAll.class)) {
                 // DenyAll defined, everyone is denied access
                 return false;
             }
@@ -147,8 +146,7 @@ public class CDIViewProvider implements ViewProvider {
                         .getAnnotation(RolesAllowed.class);
                 boolean hasAccess = accessControl
                         .isUserInSomeRole(rolesAnnotation.value());
-                getLogger().log(
-                        Level.FINE,
+                getLogger().log(Level.FINE,
                         "Checking if user {0} is having access to {1}: {2}",
                         new Object[] { accessControl.getPrincipalName(),
                                 viewBean, Boolean.toString(hasAccess) });
@@ -161,7 +159,16 @@ public class CDIViewProvider implements ViewProvider {
         return true;
     }
 
-    private ViewBean getViewBean(String viewName) {
+    /**
+     * Returns a {@code ViewBean} for given view name.
+     *
+     * @param viewName
+     *            the name of the view
+     * @return the view bean
+     *
+     * @since 1.0.4
+     */
+    protected ViewBean getViewBean(String viewName) {
         getLogger().log(Level.FINE, "Looking for view with name \"{0}\"",
                 viewName);
 
@@ -172,8 +179,8 @@ public class CDIViewProvider implements ViewProvider {
         Set<Bean<?>> matching = new HashSet<Bean<?>>();
         Set<Bean<?>> all = beanManager.getBeans(View.class, QUALIFIER_ANY);
         if (all.isEmpty()) {
-            getLogger()
-                    .severe("No Views found! Please add at least one class implementing the View interface.");
+            getLogger().severe(
+                    "No Views found! Please add at least one class implementing the View interface.");
             return null;
         }
         for (Bean<?> bean : all) {
@@ -198,10 +205,11 @@ public class CDIViewProvider implements ViewProvider {
             }
         }
 
-        Set<Bean<?>> viewBeansForThisProvider = getViewBeansForCurrentUI(matching);
+        Set<Bean<?>> viewBeansForThisProvider = getViewBeansForCurrentUI(
+                matching);
         if (viewBeansForThisProvider.isEmpty()) {
-            getLogger()
-                    .log(Level.WARNING, "No view beans found for current UI");
+            getLogger().log(Level.WARNING,
+                    "No view beans found for current UI");
             return null;
         }
 
@@ -218,15 +226,15 @@ public class CDIViewProvider implements ViewProvider {
         Set<Bean<?>> viewBeans = new HashSet<Bean<?>>();
 
         for (Bean<?> bean : beans) {
-            CDIView viewAnnotation = bean.getBeanClass().getAnnotation(
-                    CDIView.class);
+            CDIView viewAnnotation = bean.getBeanClass()
+                    .getAnnotation(CDIView.class);
 
             if (viewAnnotation == null) {
                 continue;
             }
 
-            List<Class<? extends UI>> uiClasses = Arrays.asList(viewAnnotation
-                    .uis());
+            List<Class<? extends UI>> uiClasses = Arrays
+                    .asList(viewAnnotation.uis());
 
             if (uiClasses.contains(UI.class)) {
                 viewBeans.add(bean);
@@ -247,8 +255,7 @@ public class CDIViewProvider implements ViewProvider {
     @Override
     public View getView(String viewName) {
         getLogger().log(Level.FINE,
-                "Attempting to retrieve view with name \"{0}\"",
-                viewName);
+                "Attempting to retrieve view with name \"{0}\"", viewName);
 
         // current session and UI
         long sessionId = CDIUtil.getSessionId();
@@ -264,8 +271,7 @@ public class CDIViewProvider implements ViewProvider {
         ViewBean viewBean = getViewBean(viewName);
         if (viewBean != null) {
             if (!isUserHavingAccessToView(viewBean)) {
-                getLogger().log(
-                        Level.INFO,
+                getLogger().log(Level.INFO,
                         "User {0} did not have access to view {1}",
                         new Object[] { accessControl.getPrincipalName(),
                                 viewBean });
@@ -287,12 +293,13 @@ public class CDIViewProvider implements ViewProvider {
 
             beanManager.fireEvent(new VaadinViewCreationEvent(sessionId,
                     currentUI.getUIId(), viewName));
-            cleanupEvent.set(new VaadinViewChangeCleanupEvent(sessionId, currentUI
-                    .getUIId()));
+            cleanupEvent.set(new VaadinViewChangeCleanupEvent(sessionId,
+                    currentUI.getUIId()));
 
             View view = (View) beanManager.getReference(viewBean,
                     viewBean.getBeanClass(), currentViewCreationalContext);
-            getLogger().log(Level.FINE, "Returning view instance {0}", view.toString());
+            getLogger().log(Level.FINE, "Returning view instance {0}",
+                    view.toString());
 
             Navigator navigator = currentUI.getNavigator();
             if (navigator != null) {
@@ -311,14 +318,21 @@ public class CDIViewProvider implements ViewProvider {
     @PreDestroy
     protected void destroy() {
         if (currentViewCreationalContext != null) {
-            getLogger()
-                    .log(Level.FINE,
-                            "CDIViewProvider is being destroyed, releasing creational context for current view");
+            getLogger().log(Level.FINE,
+                    "CDIViewProvider is being destroyed, releasing creational context for current view");
             currentViewCreationalContext.release();
         }
     }
 
-    private String parseViewName(String viewAndParameters) {
+    /**
+     * 
+     * 
+     * @param viewAndParameters
+     * @return
+     * 
+     * @since 1.0.4
+     */
+    protected String parseViewName(String viewAndParameters) {
 
         String viewName = viewAndParameters;
         if (viewName.startsWith("!")) {

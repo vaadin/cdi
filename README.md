@@ -21,7 +21,7 @@ Contributions
 Contributions to the project can be done through pull requests in GitHub.
 
 
-Copyright 2016 Vaadin Ltd.
+Copyright 2012-2017 Vaadin Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this file except in compliance with the License. You may obtain a copy of

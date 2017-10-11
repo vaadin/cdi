@@ -3,6 +3,13 @@ vaadin-cdi
 
 Vaadin-CDI is the official CDI integration for Vaadin framework version 7.
 
+Changes in 1.0.4
+-----------------------
+
+- Fix closed UI cleanup
+- Open CDIViewProvider methods getViewBean() and parseViewName() for extension
+
+
 Changes in 1.0.3
 -----------------------
 
@@ -12,7 +19,7 @@ Changes in 1.0.3
 Note: some compatibility issues have been reported when using GlassFish
 and Vaadin CDI together with some third party CDI related add-ons.
 If this happens, add an explicit dependency to DeltaSpike version 1.3.0
-in the project POM , overriding any transitive dependencies.
+in the project POM, overriding any transitive dependencies.
 
 Changes in 1.0.2
 -----------------------
@@ -130,7 +137,7 @@ Changes in 1.0.0.alpha3
   for the complete list of changes.
 
 
-Copyright 2012-2014 Vaadin Ltd.
+Copyright 2012-2017 Vaadin Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this file except in compliance with the License. You may obtain a copy of

@@ -17,31 +17,36 @@
 
 package com.vaadin.cdi;
 
-import com.vaadin.navigator.ViewChangeListener;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
 
-import javax.inject.Qualifier;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static java.lang.annotation.ElementType.*;
+import javax.inject.Qualifier;
+
+import com.vaadin.navigator.ViewChangeListener;
 
 /**
- * {@link ViewChangeListener.ViewChangeEvent} can be observed with this qualifier.
+ * {@code ViewChangeEvent} can be observed with this qualifier.
  * <p>
- * Observers called after all non-cdi
- * {@link com.vaadin.navigator.ViewChangeListener#afterViewChange(ViewChangeListener.ViewChangeEvent)} listeners.
+ * Observers are called after all non-cdi
+ * {@link ViewChangeListener#afterViewChange(ViewChangeListener.ViewChangeEvent)}
+ * listeners.
  * <p>
  * Keep in mind, context of new view is activated before event is fired.
  * Accessing any {@link NormalViewScoped} bean through
- * {@link ViewChangeListener.ViewChangeEvent#getOldView()} might lead to unexpected result,
- * because it is looked up in the new context.
+ * {@link ViewChangeListener.ViewChangeEvent#getOldView()} might lead to
+ * unexpected result, because it is looked up in the new context.
  * <p>
  * Though, context of new view, and context of old view can be the same
  * according to {@link CDIView#contextStrategy()}.
  */
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
-@Target({TYPE, METHOD, PARAMETER, FIELD})
+@Target({ TYPE, METHOD, PARAMETER, FIELD })
 public @interface AfterViewChange {
 }

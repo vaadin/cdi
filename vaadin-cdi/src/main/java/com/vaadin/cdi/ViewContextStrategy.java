@@ -17,46 +17,55 @@
 
 package com.vaadin.cdi;
 
-
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-
-import javax.enterprise.event.Observes;
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.enterprise.event.Observes;
+
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+
 /**
- * Decision strategy whether target navigation state
- * belongs to active view context.
+ * Decision strategy whether target navigation state belongs to active view
+ * context. When the target navigation state does not belong to the active view
+ * context, the current context will be released and a new one created.
  * <p>
- * Implementations instantiated by CDI, so should have a scope.
+ * Implementations of this interface need a scope since they are instantiated by
+ * CDI.
  */
 public interface ViewContextStrategy extends Serializable {
 
     /**
-     * Whether active context contains target navigation state.
+     * Returns whether active context contains target navigation state. This
+     * method should compare the current navigation state and the one given
+     * through the parameters and decide if the current context should be held
+     * open or released.
      *
-     * @param viewName   target navigation view name
-     * @param parameters target navigation parameters
-     * @return true, to hold context open, false to release, and create a new context
+     * @param viewName
+     *            target navigation view name
+     * @param parameters
+     *            target navigation parameters
+     * @return {@code true} to hold context open; {@code false} to release it
      */
     boolean contains(String viewName, String parameters);
 
     /**
-     * Strategy to hold the context open while
-     * view name does not change.
+     * Strategy to hold the context open while view name does not change.
      * <p>
-     * This strategy is not on par with navigator view lifecycle.
-     * While navigating to same view, same context remains active.
-     * It means for example:
-     * - {@link com.vaadin.navigator.View#enter(ViewChangeEvent)} will be called again
-     * on the same view instance.
-     * - Navigator view change events does not mean a view context change.
+     * This strategy is not on par with navigator view life cycle. While
+     * navigating to same view, same context remains active.
+     * {@link com.vaadin.navigator.View#enter(ViewChangeEvent)} will be called
+     * again on the same view instance.
+     * <p>
+     * <strong>Note:</strong> Navigator view change events do not mean a view
+     * context change.
      */
     @NormalUIScoped
     class ViewName implements ViewContextStrategy {
         private String currentViewName;
 
-        private void onViewChange(@Observes @AfterViewChange ViewChangeEvent event) {
+        private void onViewChange(
+                @Observes @AfterViewChange ViewChangeEvent event) {
             currentViewName = event.getViewName();
         }
 
@@ -67,23 +76,26 @@ public interface ViewContextStrategy extends Serializable {
     }
 
     /**
-     * Strategy to hold the context open while
-     * view name and view parameters does not change.
+     * Strategy to hold the context open while view name and view parameters do
+     * not change.
      * <p>
-     * This strategy is on par with navigator view lifecycle.
-     * - After all {@link ViewChangeEvent#beforeViewChange(ViewChangeEvent)}
-     * is called - if navigation is not reverted -, new view context is activated.
-     * - After all {@link ViewChangeEvent#afterViewChange(ViewChangeEvent)}
-     * is called, old view context is closed.
-     * - {@link com.vaadin.navigator.View#enter(ViewChangeEvent)} won't be called
-     * again on the same view instance.
+     * This strategy is on par with navigator view life cycle. If navigation is
+     * not reverted in a
+     * {@link ViewChangeEvent#beforeViewChange(ViewChangeEvent)}, a new view
+     * context is activated. After
+     * {@link ViewChangeEvent#afterViewChange(ViewChangeEvent)} is called, old
+     * view context will be closed.
+     * <p>
+     * {@link View#enter(ViewChangeEvent)} will be called for the new
+     * {@link View} instance.
      */
     @NormalUIScoped
     class ViewNameAndParameters implements ViewContextStrategy {
         private String currentViewName;
         private String currentParameters;
 
-        private void onViewChange(@Observes @AfterViewChange ViewChangeEvent event) {
+        private void onViewChange(
+                @Observes @AfterViewChange ViewChangeEvent event) {
             currentViewName = event.getViewName();
             currentParameters = event.getParameters();
         }
@@ -99,12 +111,11 @@ public interface ViewContextStrategy extends Serializable {
      * Strategy to release, and create a new context on every navigation
      * regardless of view name and parameters.
      * <p>
-     * It is on par with navigator view lifecycle,
-     * but navigating to same view with same parameters
-     * triggers a navigation too.
+     * It is on par with navigator view life cycle, but navigating to same view
+     * with same parameters release the context and create a new one.
      * <p>
-     * In practice it works same as {@link ViewNameAndParameters},
-     * even when parameters does not change.
+     * In practice it works same as {@link ViewNameAndParameters}, even when
+     * parameters does not change.
      */
     @NormalUIScoped
     class Always implements ViewContextStrategy {

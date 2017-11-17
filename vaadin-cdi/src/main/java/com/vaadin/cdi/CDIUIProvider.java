@@ -238,8 +238,12 @@ public class CDIUIProvider extends DefaultUIProvider {
                 return path.substring(path.startsWith("/") ? 1 : 0);
             } else {
                 int lastIndexOfBang = path.lastIndexOf('!');
-                // strip slash with bank => /!
+                // Remove the hashbang #!
                 String pathWithoutView = path.substring(0, lastIndexOfBang - 1);
+                if (pathWithoutView.endsWith("/")) {
+                    pathWithoutView = pathWithoutView.substring(0,
+                            pathWithoutView.length() - 1);
+                }
                 return pathWithoutView
                         .substring(pathWithoutView.startsWith("/") ? 1 : 0);
             }

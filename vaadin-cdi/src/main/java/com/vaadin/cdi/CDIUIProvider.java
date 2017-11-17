@@ -180,17 +180,21 @@ public class CDIUIProvider extends DefaultUIProvider {
 
     private boolean isMatchingPath(String mapping,
             Class<? extends UI> beanClass) {
-        boolean hasWildcard = beanClass.getAnnotation(CDIUI.class).wildcard();
-        boolean hasPushState = beanClass
-                .isAnnotationPresent(PushStateNavigation.class);
+        String path = Conventions.deriveMappingForUI(beanClass);
 
-        String computedMapping = Conventions.deriveMappingForUI(beanClass);
+        boolean pathEndsWithWildcard = path.endsWith("/*");
+        boolean isWildcardPath = pathEndsWithWildcard
+                || beanClass.isAnnotationPresent(PushStateNavigation.class);
 
-        if (hasWildcard || hasPushState) {
-            return mapping.startsWith(computedMapping);
-        } else {
-            return mapping.equals(computedMapping);
+        if (pathEndsWithWildcard) {
+            path = path.substring(0, path.length() - 2);
         }
+
+        boolean exactMatch = mapping.equals(path);
+        if (!exactMatch && isWildcardPath) {
+            return mapping.startsWith(path + "/");
+        }
+        return exactMatch;
     }
 
     private Bean<?> scanForBeans(Class<? extends UI> type,

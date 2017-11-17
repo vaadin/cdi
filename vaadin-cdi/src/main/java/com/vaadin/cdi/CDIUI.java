@@ -56,13 +56,4 @@ public @interface CDIUI {
      * automatic UI mapping to occur.
      */
     public final static String USE_CONVENTIONS = "USE CONVENTIONS";
-
-    /**
-     * Setting {@code wildcard} to {@code true} will register the servlet path
-     * with a {@code *} to allow PushState based navigation. The annotation
-     * {@link PushStateNavigation} will force the wildcard to {@code true}.
-     * 
-     * @return is the servlet path mapped with a wildcard
-     */
-    public boolean wildcard() default false;
 }

@@ -16,17 +16,10 @@
 
 package com.vaadin.cdi;
 
-import com.vaadin.cdi.internal.AnnotationUtil;
-import com.vaadin.cdi.internal.Conventions;
-import com.vaadin.cdi.internal.UIContextualStorageManager;
-import com.vaadin.cdi.internal.VaadinSessionScopedContext;
-import com.vaadin.server.ClientConnector.DetachEvent;
-import com.vaadin.server.ClientConnector.DetachListener;
-import com.vaadin.server.DefaultUIProvider;
-import com.vaadin.server.UIClassSelectionEvent;
-import com.vaadin.server.UICreateEvent;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.UI;
+import java.lang.annotation.Annotation;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.AmbiguousResolutionException;
@@ -35,10 +28,20 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
-import java.lang.annotation.Annotation;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import com.vaadin.cdi.internal.AnnotationUtil;
+import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.UIContextualStorageManager;
+import com.vaadin.cdi.internal.VaadinSessionScopedContext;
+import com.vaadin.navigator.PushStateNavigation;
+import com.vaadin.server.ClientConnector.DetachEvent;
+import com.vaadin.server.ClientConnector.DetachListener;
+import com.vaadin.server.DefaultUIProvider;
+import com.vaadin.server.UIClassSelectionEvent;
+import com.vaadin.server.UICreateEvent;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.shared.ApplicationConstants;
+import com.vaadin.ui.UI;
 
 @ApplicationScoped
 public class CDIUIProvider extends DefaultUIProvider {
@@ -53,7 +56,7 @@ public class CDIUIProvider extends DefaultUIProvider {
 
     private static final Annotation QUALIFIER_ANY = new AnnotationLiteral<Any>() {
     };
-    
+
     public final class DetachListenerImpl implements DetachListener {
 
         @Override
@@ -63,12 +66,12 @@ public class CDIUIProvider extends DefaultUIProvider {
                 int uiId = ((UI) source).getUIId();
                 if (VaadinSessionScopedContext.guessContextIsUndeployed()) {
                     // Happens on tomcat when it expires sessions upon undeploy.
-                    // We would get ContextNotActiveException on uiContextualStorageManager.destroy
-                    getLogger().log(
-                            Level.WARNING,
-                            "VaadinSessionScoped context does not exist. " +
-                                    "Maybe application is undeployed." +
-                                    " Can''t destroy UI context for UI {0}.",
+                    // We would get ContextNotActiveException on
+                    // uiContextualStorageManager.destroy
+                    getLogger().log(Level.WARNING,
+                            "VaadinSessionScoped context does not exist. "
+                                    + "Maybe application is undeployed."
+                                    + " Can''t destroy UI context for UI {0}.",
                             uiId);
                     return;
                 }
@@ -98,7 +101,8 @@ public class CDIUIProvider extends DefaultUIProvider {
     }
 
     @Override
-    public Class<? extends UI> getUIClass(UIClassSelectionEvent selectionEvent) {
+    public Class<? extends UI> getUIClass(
+            UIClassSelectionEvent selectionEvent) {
         VaadinRequest request = selectionEvent.getRequest();
         String uiMapping = parseUIMapping(request);
         if (isRoot(request)) {
@@ -107,7 +111,12 @@ public class CDIUIProvider extends DefaultUIProvider {
         Bean<?> uiBean = getUIBeanWithMapping(uiMapping);
 
         if (uiBean != null) {
-            return uiBean.getBeanClass().asSubclass(UI.class);
+            // Provide correct path info for UI for push state navigation
+            Class<? extends UI> uiClass = uiBean.getBeanClass()
+                    .asSubclass(UI.class);
+            request.setAttribute(ApplicationConstants.UI_ROOT_PATH,
+                    uiClass.getAnnotation(CDIUI.class).value());
+            return uiClass;
         }
 
         if (uiMapping.isEmpty()) {
@@ -130,8 +139,7 @@ public class CDIUIProvider extends DefaultUIProvider {
     }
 
     Class<? extends UI> rootUI() {
-        Set<Bean<?>> rootBeans = AnnotationUtil
-                .getRootUiBeans(beanManager);
+        Set<Bean<?>> rootBeans = AnnotationUtil.getRootUiBeans(beanManager);
         if (rootBeans.isEmpty()) {
             return null;
         }
@@ -156,13 +164,11 @@ public class CDIUIProvider extends DefaultUIProvider {
         for (Bean<?> bean : beans) {
             // We need this check since the returned beans can also be producers
             if (UI.class.isAssignableFrom(bean.getBeanClass())) {
-                Class<? extends UI> beanClass = bean.getBeanClass().asSubclass(
-                        UI.class);
+                Class<? extends UI> beanClass = bean.getBeanClass()
+                        .asSubclass(UI.class);
 
                 if (beanClass.isAnnotationPresent(CDIUI.class)) {
-                    String computedMapping = Conventions
-                            .deriveMappingForUI(beanClass);
-                    if (mapping.equals(computedMapping)) {
+                    if (isMatchingPath(mapping, beanClass)) {
                         return bean;
                     }
                 }
@@ -172,7 +178,23 @@ public class CDIUIProvider extends DefaultUIProvider {
         return null;
     }
 
-    private Bean<?> scanForBeans(Class<? extends UI> type, VaadinRequest request) {
+    private boolean isMatchingPath(String mapping,
+            Class<? extends UI> beanClass) {
+        boolean hasWildcard = beanClass.getAnnotation(CDIUI.class).wildcard();
+        boolean hasPushState = beanClass
+                .isAnnotationPresent(PushStateNavigation.class);
+
+        String computedMapping = Conventions.deriveMappingForUI(beanClass);
+
+        if (hasWildcard || hasPushState) {
+            return mapping.startsWith(computedMapping);
+        } else {
+            return mapping.equals(computedMapping);
+        }
+    }
+
+    private Bean<?> scanForBeans(Class<? extends UI> type,
+            VaadinRequest request) {
         Bean<?> bean = null;
         Set<Bean<?>> beans = beanManager.getBeans(type, QUALIFIER_ANY);
 
@@ -194,9 +216,9 @@ public class CDIUIProvider extends DefaultUIProvider {
                 uiMapping = parseUIMapping(request);
                 bean = getUIBeanWithMapping(uiMapping);
             } else {
-                throw new IllegalStateException("UI class: " + type.getName()
-                        + " with mapping: " + uiMapping
-                        + " is not annotated with CDIUI!");
+                throw new IllegalStateException(
+                        "UI class: " + type.getName() + " with mapping: "
+                                + uiMapping + " is not annotated with CDIUI!");
             }
         }
         return bean;
@@ -213,20 +235,17 @@ public class CDIUIProvider extends DefaultUIProvider {
                 path = requestPath.substring(0, requestPath.length() - 1);
             }
             if (!path.contains("!")) {
-                int lastIndex = path.lastIndexOf('/');
-                return path.substring(lastIndex + 1);
+                return path.substring(path.startsWith("/") ? 1 : 0);
             } else {
                 int lastIndexOfBang = path.lastIndexOf('!');
                 // strip slash with bank => /!
                 String pathWithoutView = path.substring(0, lastIndexOfBang - 1);
-                int lastSlashIndex = pathWithoutView.lastIndexOf('/');
-                return pathWithoutView.substring(lastSlashIndex + 1);
+                return pathWithoutView
+                        .substring(pathWithoutView.startsWith("/") ? 1 : 0);
             }
         }
         return "";
     }
-
-
 
     private static Logger getLogger() {
         return Logger.getLogger(CDIUIProvider.class.getCanonicalName());

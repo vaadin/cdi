@@ -33,7 +33,7 @@ public class CDIUIProviderTest {
 
     @Test
     public void uriWithJustUINoEndingSlash() {
-        String origin = "http://localhost:8080/hello-cdi/uIWithViewUI";
+        String origin = "/uIWithViewUI";
         String expected = "uIWithViewUI";
         String actual = cut.parseUIMapping(origin);
         assertThat(actual, is(expected));
@@ -41,15 +41,17 @@ public class CDIUIProviderTest {
 
     @Test
     public void uriWithJustUIWithEndingSlash() {
-        String origin = "http://localhost:8080/hello-cdi/uIWithViewUI/";
+        String origin = "/uIWithViewUI/";
         String expected = "uIWithViewUI";
         String actual = cut.parseUIMapping(origin);
         assertThat(actual, is(expected));
     }
 
+    /* HashBang -style URI Fragments */
+
     @Test
     public void uriWithUIAndViewWithoutEndingSlash() {
-        String origin = "http://localhost:8080/hello-cdi/uIWithViewUI/!helloView";
+        String origin = "/uIWithViewUI/#!helloView";
         String expected = "uIWithViewUI";
         String actual = cut.parseUIMapping(origin);
         assertThat(actual, is(expected));
@@ -57,10 +59,47 @@ public class CDIUIProviderTest {
 
     @Test
     public void uriWithUIAndViewWithEndingSlash() {
-        String origin = "http://localhost:8080/hello-cdi/uIWithViewUI/!helloView/";
+        String origin = "/uIWithViewUI/#!helloView/";
         String expected = "uIWithViewUI";
         String actual = cut.parseUIMapping(origin);
         assertThat(actual, is(expected));
     }
 
+    @Test
+    public void uriWithUIAndViewWithParameters() {
+        String origin = "/uIWithViewUI/#!helloView/param1=foo&param2=bar";
+        String expected = "uIWithViewUI";
+        String actual = cut.parseUIMapping(origin);
+        assertThat(actual, is(expected));
+    }
+
+    /*
+     * PushState based navigation requires that the full path info is used as-is
+     * without ending slash. CDIUIProvider should match UI with
+     * String::startsWith.
+     */
+
+    @Test
+    public void uriWithUIAndViewWithEndingSlashForPushStateNavigation() {
+        String origin = "/uIWithViewUI/helloView/";
+        String expected = "uIWithViewUI/helloView";
+        String actual = cut.parseUIMapping(origin);
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void uriWithUIAndViewForPushStateNavigation() {
+        String origin = "/uIWithViewUI/helloView";
+        String expected = "uIWithViewUI/helloView";
+        String actual = cut.parseUIMapping(origin);
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void uriWithUIAndViewAndParametersForPushStateNavigation() {
+        String origin = "/uIWithViewUI/helloView/param1=foo/param2=bar";
+        String expected = "uIWithViewUI/helloView/param1=foo/param2=bar";
+        String actual = cut.parseUIMapping(origin);
+        assertThat(actual, is(expected));
+    }
 }

@@ -115,7 +115,7 @@ public class CDIUIProvider extends DefaultUIProvider {
             Class<? extends UI> uiClass = uiBean.getBeanClass()
                     .asSubclass(UI.class);
             request.setAttribute(ApplicationConstants.UI_ROOT_PATH,
-                    uiClass.getAnnotation(CDIUI.class).value());
+                    removeWildcard(uiClass.getAnnotation(CDIUI.class).value()));
             return uiClass;
         }
 
@@ -158,7 +158,7 @@ public class CDIUIProvider extends DefaultUIProvider {
         return rootUI.asSubclass(UI.class);
     }
 
-    private Bean<?> getUIBeanWithMapping(String mapping) {
+    Bean<?> getUIBeanWithMapping(String mapping) {
         Set<Bean<?>> beans = AnnotationUtil.getUiBeans(beanManager);
 
         for (Bean<?> bean : beans) {
@@ -186,15 +186,20 @@ public class CDIUIProvider extends DefaultUIProvider {
         boolean isWildcardPath = pathEndsWithWildcard
                 || beanClass.isAnnotationPresent(PushStateNavigation.class);
 
-        if (pathEndsWithWildcard) {
-            path = path.substring(0, path.length() - 2);
-        }
+        path = removeWildcard(path);
 
         boolean exactMatch = mapping.equals(path);
         if (!exactMatch && isWildcardPath) {
             return mapping.startsWith(path + "/");
         }
         return exactMatch;
+    }
+
+    private String removeWildcard(String path) {
+        if (path.endsWith("/*")) {
+            return path.substring(0, path.length() - 2);
+        }
+        return path;
     }
 
     private Bean<?> scanForBeans(Class<? extends UI> type,

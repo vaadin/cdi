@@ -23,8 +23,6 @@ import java.lang.annotation.Target;
 
 import javax.enterprise.inject.Stereotype;
 
-import com.vaadin.navigator.PushStateNavigation;
-
 /**
  * All UIs need to be declared with this annotation. CDIUI annotation binds the
  * lifecycle of a given UI to Vaadin's view lifecycle. There is one UI instance

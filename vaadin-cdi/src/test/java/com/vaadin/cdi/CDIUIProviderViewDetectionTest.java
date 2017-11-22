@@ -86,7 +86,6 @@ public class CDIUIProviderViewDetectionTest {
     }
 
     @Test
-    @Ignore("Longest UI Path Detection not implemented yet.")
     public void testPushSateSubUI() {
         Assert.assertEquals(PushStateSubUI.class.getCanonicalName(),
                 cut.getUIBeanWithMapping("pushState/sub").getBeanClass()

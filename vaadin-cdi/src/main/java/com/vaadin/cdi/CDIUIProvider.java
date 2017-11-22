@@ -17,6 +17,7 @@
 package com.vaadin.cdi;
 
 import java.lang.annotation.Annotation;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -105,27 +106,31 @@ public class CDIUIProvider extends DefaultUIProvider {
             UIClassSelectionEvent selectionEvent) {
         VaadinRequest request = selectionEvent.getRequest();
         String uiMapping = parseUIMapping(request);
+
+        Class<? extends UI> uiClass = null;
+        String pathInfo = "";
+
         if (isRoot(request)) {
-            return rootUI();
-        }
-        Bean<?> uiBean = getUIBeanWithMapping(uiMapping);
+            uiClass = rootUI();
+        } else {
+            Bean<?> uiBean = getUIBeanWithMapping(uiMapping);
 
-        if (uiBean != null) {
-            // Provide correct path info for UI for push state navigation
-            Class<? extends UI> uiClass = uiBean.getBeanClass()
-                    .asSubclass(UI.class);
-            request.setAttribute(ApplicationConstants.UI_ROOT_PATH,
-                    removeWildcard(uiClass.getAnnotation(CDIUI.class).value()));
-            return uiClass;
+            if (uiBean != null) {
+                // Provide correct path info for UI for push state navigation
+                uiClass = uiBean.getBeanClass().asSubclass(UI.class);
+                pathInfo = removeWildcard(
+                        uiClass.getAnnotation(CDIUI.class).value());
+            }
         }
 
-        if (uiMapping.isEmpty()) {
+        if (uiClass == null && uiMapping.isEmpty()) {
             // See if UI is configured to web.xml with VaadinCDIServlet. This is
             // done only if no specific UI name is given.
-            return super.getUIClass(selectionEvent);
+            uiClass = super.getUIClass(selectionEvent);
         }
 
-        return null;
+        request.setAttribute(ApplicationConstants.UI_ROOT_PATH, pathInfo);
+        return uiClass;
     }
 
     boolean isRoot(VaadinRequest request) {
@@ -161,21 +166,19 @@ public class CDIUIProvider extends DefaultUIProvider {
     Bean<?> getUIBeanWithMapping(String mapping) {
         Set<Bean<?>> beans = AnnotationUtil.getUiBeans(beanManager);
 
-        for (Bean<?> bean : beans) {
-            // We need this check since the returned beans can also be producers
-            if (UI.class.isAssignableFrom(bean.getBeanClass())) {
-                Class<? extends UI> beanClass = bean.getBeanClass()
-                        .asSubclass(UI.class);
-
-                if (beanClass.isAnnotationPresent(CDIUI.class)) {
-                    if (isMatchingPath(mapping, beanClass)) {
-                        return bean;
-                    }
-                }
-            }
-        }
-
-        return null;
+        return beans.stream()
+                .filter(bean -> UI.class.isAssignableFrom(bean.getBeanClass()))
+                .filter(bean -> {
+                    Class<? extends UI> beanClass = bean.getBeanClass()
+                            .asSubclass(UI.class);
+                    return beanClass.isAnnotationPresent(CDIUI.class)
+                            && isMatchingPath(mapping, beanClass);
+                })
+                .sorted(Comparator.comparing(bean -> ((Bean<?>) bean)
+                        .getBeanClass().asSubclass(UI.class)
+                        .getAnnotation(CDIUI.class).value().length())
+                        .reversed())
+                .findFirst().orElse(null);
     }
 
     private boolean isMatchingPath(String mapping,

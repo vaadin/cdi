@@ -72,9 +72,16 @@ public class CDIViewProvider implements ViewProvider {
                 String specifiedViewName = Conventions
                         .deriveMappingForView(viewBean.getBeanClass());
                 if (!specifiedViewName.isEmpty()) {
-                    return specifiedViewName;
+                    name = specifiedViewName;
                 }
             }
+
+            if (name == null) {
+                return null;
+            } else if (viewAndParameters.startsWith("!")) {
+                name = "!".concat(name);
+            }
+
             return name;
         } else {
             getLogger().log(Level.INFO,
@@ -123,6 +130,8 @@ public class CDIViewProvider implements ViewProvider {
 
         if (viewName == null) {
             return null;
+        } else if (viewName.startsWith("!")) {
+            viewName = viewName.substring(1);
         }
 
         Set<Bean<?>> matching = new HashSet<Bean<?>>();

@@ -193,7 +193,7 @@ public class CDIUIProvider extends DefaultUIProvider {
 
         boolean exactMatch = mapping.equals(path);
         if (!exactMatch && isWildcardPath) {
-            return mapping.startsWith(path + "/");
+            return path.isEmpty() || mapping.startsWith(path + "/");
         }
         return exactMatch;
     }

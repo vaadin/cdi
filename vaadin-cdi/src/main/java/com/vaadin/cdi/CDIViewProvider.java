@@ -61,6 +61,18 @@ public class CDIViewProvider implements ViewProvider {
                 viewAndParameters);
 
         String name = parseViewName(viewAndParameters);
+
+        if (name == null) {
+            return null;
+        } else if (viewAndParameters.startsWith("!")) {
+            // when viewAndParameters starts with two or more !
+            // we want to find a view which starts with an !
+            // but parseViewName(String) removed the leading !
+            // so when getViewBean(String) also removes the leading !
+            // it would be looking for the wrong view since its missing a !
+            name = "!".concat(name);
+        }
+
         Bean viewBean = getViewBean(name);
 
         if (viewBean == null) {
@@ -68,18 +80,14 @@ public class CDIViewProvider implements ViewProvider {
         }
 
         if (isUserHavingAccessToView(viewBean)) {
-            if (viewBean.getBeanClass().isAnnotationPresent(CDIView.class)) {
-                String specifiedViewName = Conventions
-                        .deriveMappingForView(viewBean.getBeanClass());
-                if (!specifiedViewName.isEmpty()) {
-                    name = specifiedViewName;
-                }
-            }
+            String specifiedViewName = Conventions.deriveMappingForView(viewBean.getBeanClass());
 
-            if (name == null) {
-                return null;
-            } else if (viewAndParameters.startsWith("!")) {
-                name = "!".concat(name);
+            if (specifiedViewName != null && !specifiedViewName.isEmpty()) {
+                if (viewAndParameters.startsWith("!")) {
+                    specifiedViewName = "!".concat(specifiedViewName);
+                }
+
+                return specifiedViewName;
             }
 
             return name;

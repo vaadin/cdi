@@ -55,41 +55,19 @@ public class CDIViewProvider implements ViewProvider {
     private ViewContextualStorageManager viewContextualStorageManager;
 
     @Override
-    public String getViewName(String viewAndParameters) {
+    public String getViewName(final String viewAndParameters) {
         getLogger().log(Level.FINE,
                 "Attempting to retrieve view name from string \"{0}\"",
                 viewAndParameters);
 
-        String name = parseViewName(viewAndParameters);
-
-        if (name == null) {
-            return null;
-        } else if (viewAndParameters.startsWith("!")) {
-            // when viewAndParameters starts with two or more !
-            // we want to find a view which starts with an !
-            // but parseViewName(String) removed the leading !
-            // so when getViewBean(String) also removes the leading !
-            // it would be looking for the wrong view since its missing a !
-            name = "!".concat(name);
-        }
-
-        Bean viewBean = getViewBean(name);
+        final String name = parseViewName(viewAndParameters);
+        final Bean<?> viewBean = getViewBean(name);
 
         if (viewBean == null) {
             return null;
         }
 
         if (isUserHavingAccessToView(viewBean)) {
-            String specifiedViewName = Conventions.deriveMappingForView(viewBean.getBeanClass());
-
-            if (specifiedViewName != null && !specifiedViewName.isEmpty()) {
-                if (viewAndParameters.startsWith("!")) {
-                    specifiedViewName = "!".concat(specifiedViewName);
-                }
-
-                return specifiedViewName;
-            }
-
             return name;
         } else {
             getLogger().log(Level.INFO,
@@ -100,7 +78,7 @@ public class CDIViewProvider implements ViewProvider {
         return null;
     }
 
-    protected boolean isUserHavingAccessToView(Bean<?> viewBean) {
+    protected boolean isUserHavingAccessToView(final Bean<?> viewBean) {
 
         if (viewBean.getBeanClass().isAnnotationPresent(CDIView.class)) {
             if (viewBean.getBeanClass()
@@ -132,7 +110,7 @@ public class CDIViewProvider implements ViewProvider {
         return true;
     }
 
-    private Bean getViewBean(String viewName) {
+    private Bean<?> getViewBean(String viewName) {
         getLogger().log(Level.FINE, "Looking for view with name \"{0}\"",
                 viewName);
 
@@ -142,7 +120,7 @@ public class CDIViewProvider implements ViewProvider {
             viewName = viewName.substring(1);
         }
 
-        Set<Bean<?>> matching = new HashSet<Bean<?>>();
+        Set<Bean<?>> matching = new HashSet<>();
         Set<Bean<?>> all = beanManager.getBeans(View.class, QUALIFIER_ANY);
         if (all.isEmpty()) {
             getLogger()
@@ -186,8 +164,8 @@ public class CDIViewProvider implements ViewProvider {
         return viewBeansForThisProvider.iterator().next();
     }
 
-    private Set<Bean<?>> getViewBeansForCurrentUI(Set<Bean<?>> beans) {
-        Set<Bean<?>> viewBeans = new HashSet<Bean<?>>();
+    private Set<Bean<?>> getViewBeansForCurrentUI(final Set<Bean<?>> beans) {
+        Set<Bean<?>> viewBeans = new HashSet<>();
 
         for (Bean<?> bean : beans) {
             CDIView viewAnnotation = bean.getBeanClass().getAnnotation(
@@ -217,7 +195,7 @@ public class CDIViewProvider implements ViewProvider {
     }
 
     @Override
-    public View getView(String viewName) {
+    public View getView(final String viewName) {
         getLogger().log(Level.FINE,
                 "Attempting to retrieve view with name \"{0}\"",
                 viewName);
@@ -231,7 +209,7 @@ public class CDIViewProvider implements ViewProvider {
                     + " - current UI is not set");
         }
 
-        Bean viewBean = getViewBean(viewName);
+        Bean<?> viewBean = getViewBean(viewName);
         if (viewBean != null) {
             if (!isUserHavingAccessToView(viewBean)) {
                 getLogger().log(
@@ -257,15 +235,24 @@ public class CDIViewProvider implements ViewProvider {
         throw new RuntimeException("Unable to instantiate view");
     }
 
-    private String parseViewName(String viewAndParameters) {
-
+    private String parseViewName(final String viewAndParameters) {
+        boolean addBangBack = false;
         String viewName = viewAndParameters;
         if (viewName.startsWith("!")) {
             viewName = viewName.substring(1);
+            addBangBack = true;
         }
 
         for (String name : AnnotationUtil.getCDIViewMappings(beanManager)) {
             if (viewName.equals(name) || (viewName.startsWith(name + "/"))) {
+                if (addBangBack) {
+                    // when viewAndParameters starts with two or more !
+                    // we want to find a view which starts with an !
+                    // but parseViewName(String) removed the leading !
+                    // so when getViewBean(String) also removes the leading !
+                    // it would be looking for the wrong view since its missing a !
+                    return "!".concat(name);
+                }
                 return name;
             }
         }

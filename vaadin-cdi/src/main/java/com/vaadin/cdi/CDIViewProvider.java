@@ -236,16 +236,14 @@ public class CDIViewProvider implements ViewProvider {
     }
 
     private String parseViewName(final String viewAndParameters) {
-        boolean addBangBack = false;
         String viewName = viewAndParameters;
-        if (viewName.startsWith("!")) {
+        if (viewAndParameters.startsWith("!")) {
             viewName = viewName.substring(1);
-            addBangBack = true;
         }
 
         for (String name : AnnotationUtil.getCDIViewMappings(beanManager)) {
             if (viewName.equals(name) || (viewName.startsWith(name + "/"))) {
-                if (addBangBack) {
+                if (viewAndParameters.startsWith("!")) {
                     // when viewAndParameters starts with two or more !
                     // we want to find a view which starts with an !
                     // but parseViewName(String) removed the leading !

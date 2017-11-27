@@ -119,7 +119,7 @@ public class CDIUIProvider extends DefaultUIProvider {
                 // Provide correct path info for UI for push state navigation
                 uiClass = uiBean.getBeanClass().asSubclass(UI.class);
                 pathInfo = removeWildcard(
-                        uiClass.getAnnotation(CDIUI.class).value());
+                        Conventions.deriveMappingForUI(uiClass));
             }
         }
 
@@ -129,7 +129,8 @@ public class CDIUIProvider extends DefaultUIProvider {
             uiClass = super.getUIClass(selectionEvent);
         }
 
-        request.setAttribute(ApplicationConstants.UI_ROOT_PATH, pathInfo);
+        request.setAttribute(ApplicationConstants.UI_ROOT_PATH,
+                (pathInfo.startsWith("/") ? "" : "/") + pathInfo);
         return uiClass;
     }
 
@@ -173,12 +174,11 @@ public class CDIUIProvider extends DefaultUIProvider {
                             .asSubclass(UI.class);
                     return beanClass.isAnnotationPresent(CDIUI.class)
                             && isMatchingPath(mapping, beanClass);
-                })
-                .sorted(Comparator.comparing(bean -> ((Bean<?>) bean)
-                        .getBeanClass().asSubclass(UI.class)
-                        .getAnnotation(CDIUI.class).value().length())
-                        .reversed())
-                .findFirst().orElse(null);
+                }).sorted(Comparator.comparing(bean -> {
+                    Class<?> beanClass = ((Bean<?>) bean).getBeanClass();
+                    String path = Conventions.deriveMappingForUI(beanClass);
+                    return removeWildcard(path).length();
+                }).reversed()).findFirst().orElse(null);
     }
 
     private boolean isMatchingPath(String mapping,

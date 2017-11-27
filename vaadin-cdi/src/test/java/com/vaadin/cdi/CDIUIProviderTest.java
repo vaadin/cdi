@@ -47,11 +47,9 @@ public class CDIUIProviderTest {
         assertThat(actual, is(expected));
     }
 
-    /* HashBang -style URI Fragments */
-
     @Test
     public void uriWithUIAndViewWithoutEndingSlash() {
-        String origin = "/uIWithViewUI/#!helloView";
+        String origin = "/uIWithViewUI/!helloView";
         String expected = "uIWithViewUI";
         String actual = cut.parseUIMapping(origin);
         assertThat(actual, is(expected));
@@ -59,7 +57,7 @@ public class CDIUIProviderTest {
 
     @Test
     public void uriWithUIAndViewWithEndingSlash() {
-        String origin = "/uIWithViewUI/#!helloView/";
+        String origin = "/uIWithViewUI/!helloView/";
         String expected = "uIWithViewUI";
         String actual = cut.parseUIMapping(origin);
         assertThat(actual, is(expected));
@@ -67,7 +65,7 @@ public class CDIUIProviderTest {
 
     @Test
     public void uriWithUIAndViewWithParameters() {
-        String origin = "/uIWithViewUI/#!helloView/param1=foo&param2=bar";
+        String origin = "/uIWithViewUI!helloView/param1=foo&param2=bar";
         String expected = "uIWithViewUI";
         String actual = cut.parseUIMapping(origin);
         assertThat(actual, is(expected));

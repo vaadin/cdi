@@ -53,54 +53,47 @@ public class CDIUIProviderViewDetectionTest {
         return bean;
     }
 
+    private void assertMapping(Class<? extends UI> uiClass, String mapping) {
+        Assert.assertEquals(uiClass.getCanonicalName(),
+                cut.getUIBeanWithMapping(mapping).getBeanClass().getCanonicalName());
+    }
+
     @Test
     public void testRootUI() {
-        Assert.assertEquals(RootUI.class.getCanonicalName(),
-                cut.getUIBeanWithMapping("").getBeanClass().getCanonicalName());
+        assertMapping(RootUI.class, "");
+        assertMapping(RootUI.class, cut.parseUIMapping("/!"));
+        assertMapping(RootUI.class, cut.parseUIMapping("/!subUI"));
     }
 
     @Test
     public void testSubUI() {
-        Assert.assertEquals(SubUI.class.getCanonicalName(),
-                cut.getUIBeanWithMapping("subUI").getBeanClass()
-                        .getCanonicalName());
+        assertMapping(SubUI.class, "subUI");
     }
 
     @Test
     public void testPushSateUI() {
-        Assert.assertEquals(PushStateUI.class.getCanonicalName(),
-                cut.getUIBeanWithMapping("pushState").getBeanClass()
-                        .getCanonicalName());
-        Assert.assertEquals(PushStateUI.class.getCanonicalName(),
-                cut.getUIBeanWithMapping("pushState/").getBeanClass()
-                        .getCanonicalName());
-        Assert.assertEquals(PushStateUI.class.getCanonicalName(),
-                cut.getUIBeanWithMapping("pushState/view").getBeanClass()
-                        .getCanonicalName());
-        Assert.assertEquals(PushStateUI.class.getCanonicalName(),
-                cut.getUIBeanWithMapping("pushState/view/param").getBeanClass()
-                        .getCanonicalName());
-        Assert.assertEquals(PushStateUI.class.getCanonicalName(),
-                cut.getUIBeanWithMapping("pushState/view/with/multiple/params")
-                        .getBeanClass().getCanonicalName());
+        assertMapping(PushStateUI.class, "pushState");
+        assertMapping(PushStateUI.class, "pushState/");
+        assertMapping(PushStateUI.class, "pushState/view");
+        assertMapping(PushStateUI.class, "pushState/view/param");
+        assertMapping(PushStateUI.class, "pushState/view/with/multiple/params");
     }
 
     @Test
-    public void testPushSateSubUI() {
-        Assert.assertEquals(PushStateSubUI.class.getCanonicalName(),
-                cut.getUIBeanWithMapping("pushState/sub").getBeanClass()
-                        .getCanonicalName());
-        Assert.assertEquals(PushStateSubUI.class.getCanonicalName(),
-                cut.getUIBeanWithMapping("pushState/sub/").getBeanClass()
-                        .getCanonicalName());
-        Assert.assertEquals(PushStateSubUI.class.getCanonicalName(),
-                cut.getUIBeanWithMapping("pushState/sub/view").getBeanClass()
-                        .getCanonicalName());
-        Assert.assertEquals(PushStateSubUI.class.getCanonicalName(),
-                cut.getUIBeanWithMapping("pushState/sub/view/param")
-                        .getBeanClass().getCanonicalName());
-        Assert.assertEquals(PushStateSubUI.class.getCanonicalName(), cut
-                .getUIBeanWithMapping("pushState/sub/view/with/multiple/params")
-                .getBeanClass().getCanonicalName());
+    public void testPushSateSlashSubUI() {
+        assertMapping(PushStateSubUI.class, "pushState/sub");
+        assertMapping(PushStateSubUI.class, "pushState/sub/");
+        assertMapping(PushStateSubUI.class, "pushState/sub/view");
+        assertMapping(PushStateSubUI.class, "pushState/sub/view/param");
+        assertMapping(PushStateSubUI.class, "pushState/sub/view/with/multiple/params");
+    }
+
+    @Test
+    public void testPushSateBangSubUI() {
+        assertMapping(PushStateUI.class, cut.parseUIMapping("pushState!sub"));
+        assertMapping(PushStateUI.class, cut.parseUIMapping("pushState!sub/"));
+        assertMapping(PushStateUI.class, cut.parseUIMapping("pushState!sub/view"));
+        assertMapping(PushStateUI.class, cut.parseUIMapping("pushState!sub/view/param"));
+        assertMapping(PushStateUI.class, cut.parseUIMapping("pushState!sub/view/with/multiple/params"));
     }
 }

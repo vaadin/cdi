@@ -140,7 +140,7 @@ public class CDIUIProvider extends DefaultUIProvider {
             return false;
         }
 
-        return pathInfo.equals("/");
+        return pathInfo.equals("/") || pathInfo.startsWith("/!");
     }
 
     Class<? extends UI> rootUI() {
@@ -193,7 +193,7 @@ public class CDIUIProvider extends DefaultUIProvider {
 
         boolean exactMatch = mapping.equals(path);
         if (!exactMatch && isWildcardPath) {
-            return mapping.startsWith(path + "/");
+            return path.isEmpty() || mapping.startsWith(path + "/");
         }
         return exactMatch;
     }
@@ -250,8 +250,7 @@ public class CDIUIProvider extends DefaultUIProvider {
                 return path.substring(path.startsWith("/") ? 1 : 0);
             } else {
                 int lastIndexOfBang = path.lastIndexOf('!');
-                // Remove the hashbang #!
-                String pathWithoutView = path.substring(0, lastIndexOfBang - 1);
+                String pathWithoutView = path.substring(0, lastIndexOfBang);
                 if (pathWithoutView.endsWith("/")) {
                     pathWithoutView = pathWithoutView.substring(0,
                             pathWithoutView.length() - 1);

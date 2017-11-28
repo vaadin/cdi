@@ -144,17 +144,16 @@ public class ViewScopedContext extends AbstractVaadinContext {
         String activeViewName = uiData.getActiveView();
 
         Map<Contextual<?>, ContextualStorage> map = sessionData.getStorageMap();
-        for (Entry<Contextual<?>, ContextualStorage> entry : new ArrayList<Entry<Contextual<?>, ContextualStorage>>(
-                map.entrySet())) {
-            ViewContextual contextual = (ViewContextual) entry.getKey();
-            if (contextual.uiId == uiId
-                    && !contextual.viewIdentifier.equals(activeViewName)) {
-                getLogger().fine(
-                        "dropping " + contextual + " : " + entry.getValue());
-                map.remove(contextual);
-                destroy(contextual);
-            }
-        }
+        for (Contextual<?> key : new ArrayList<Contextual<?>>(map.keySet())) {
+        	if (key instanceof ViewContextual) {
+        		ViewContextual contextual = (ViewContextual) key;
+        	    if (contextual.uiId == uiId
+     	        	&& !contextual.viewIdentifier.equals(activeViewName)) {
+        	        ContextualStorage storage = map.remove(contextual);
+                    destroyAllActive(storage);
+        	    }
+        	}
+       	 }
     }
 
     synchronized void clearPendingViewChange(long sessionId, int uiId) {

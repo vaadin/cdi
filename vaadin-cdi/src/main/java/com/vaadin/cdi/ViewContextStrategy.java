@@ -20,23 +20,25 @@ package com.vaadin.cdi;
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 /**
- * Decision strategy whether target navigation state belongs to active view
+ * Decision strategy on whether target navigation state belongs to active view
  * context. When the target navigation state does not belong to the active view
- * context, the current context will be released and a new one created.
+ * context, the current context will be released and a new one is created.
  * <p>
- * Implementations of this interface need a scope since they are instantiated by
- * CDI.
+ * By default the views are using the {@link Dependent} scope, which can be used
+ * but is not recommended. Any {@link View} with a {@code ViewContextStrategy}
+ * should use one of the scopes provided in the Vaadin CDI integration.
  */
 public interface ViewContextStrategy extends Serializable {
 
     /**
-     * Returns whether active context contains target navigation state. This
+     * Returns whether the active context contains target navigation state. This
      * method should compare the current navigation state and the one given
      * through the parameters and decide if the current context should be held
      * open or released.
@@ -57,8 +59,8 @@ public interface ViewContextStrategy extends Serializable {
      * {@link com.vaadin.navigator.View#enter(ViewChangeEvent)} will be called
      * again on the same view instance.
      * <p>
-     * <strong>Note:</strong> Navigator view change events do not mean a view
-     * context change.
+     * <strong>Note:</strong> Navigator view change events do not mean that the
+     * view context has changed.
      */
     @NormalUIScoped
     class ViewName implements ViewContextStrategy {
@@ -112,7 +114,7 @@ public interface ViewContextStrategy extends Serializable {
      * regardless of view name and parameters.
      * <p>
      * It is on par with navigator view life cycle, but navigating to same view
-     * with same parameters release the context and create a new one.
+     * with same parameters releases the context and creates a new one.
      * <p>
      * In practice it works same as {@link ViewNameAndParameters}, even when
      * parameters does not change.

@@ -2,6 +2,7 @@ package com.vaadin.cdi;
 
 import com.vaadin.cdi.internal.AbstractVaadinContext;
 import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.uis.DestroyNormalUI;
 import com.vaadin.cdi.uis.DestroyUI;
 import com.vaadin.cdi.views.TestView;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -22,6 +23,7 @@ public class UIDestroyTest extends AbstractManagedCDIIntegrationTest {
     public static WebArchive deployment() {
         return ArchiveProvider.createWebArchive("uiDestroy",
                 DestroyUI.class,
+                DestroyNormalUI.class,
                 TestView.class);
     }
     

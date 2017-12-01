@@ -45,14 +45,6 @@ public class ViewDestroyTest extends AbstractManagedCDIIntegrationTest {
     }
 
     @Test
-    public void testNaviagteToSameViewDestroysViewScope() throws Exception {
-        loadView(DestroyViewUI.VIEWSCOPED_VIEW);
-        assertViewDestroyCounts(0);
-        clickAndWait(DestroyViewUI.NAVIGATE_VIEW_BTN_ID);
-        assertViewDestroyCounts(1);
-    }
-
-    @Test
     public void testChangeToNonCdiViewDestroysViewScope() throws Exception {
         loadView(DestroyViewUI.VIEWSCOPED_VIEW);
         assertViewDestroyCounts(0);

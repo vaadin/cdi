@@ -61,7 +61,7 @@ public class AnnotationUtil {
             }
 
             String path = Conventions.deriveMappingForUI(beanClass);
-            if (null != path && path.isEmpty()) {
+            if (null != path && (path.isEmpty() || path.equals("*"))) {
                 rootBeans.add(bean);
             }
         }

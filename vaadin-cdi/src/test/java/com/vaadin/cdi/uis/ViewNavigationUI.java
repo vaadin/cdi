@@ -1,9 +1,6 @@
 package com.vaadin.cdi.uis;
 
-import com.vaadin.cdi.CDINavigator;
-import com.vaadin.cdi.CDIUI;
-import com.vaadin.cdi.CDIView;
-import com.vaadin.cdi.NormalViewScoped;
+import com.vaadin.cdi.*;
 import com.vaadin.cdi.internal.Counter;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewBeforeLeaveEvent;
@@ -13,6 +10,7 @@ import com.vaadin.ui.*;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ContextNotActiveException;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 @CDIUI("")
@@ -26,12 +24,11 @@ public class ViewNavigationUI extends UI {
     private static final String REVERTME = "revertme";
     private static final String SUCCESS = "success";
     private static final String DELAY = "delay";
-    public static final String CHANGEDSUCCESS_VALUE = "successother";
     public static final String SUCCESSVIEW_VALUE = "successview";
     public static final String DELAYVIEW_VALUE = "delayview";
-    public static final String CHANGE_VALUE_BTN_ID = "othervalue";
     public static final String BEFORE_VALUE_LABEL_ID = "beforevaluelabel";
     public static final String AFTER_VALUE_LABEL_ID = "aftervaluelabel";
+    public static final String CDIAFTER_VALUE_LABEL_ID = "cdiaftervaluelabel";
     public static final String BEFORE_LEAVE_VALUE_LABEL_ID = "beforeleavevaluelabel";
     public static final String SHOW_VIEW_VALUE_LABEL_ID = "viewcomponentvaluelabel";
 
@@ -42,6 +39,7 @@ public class ViewNavigationUI extends UI {
     private Label beforeLeaveValue;
     private Label showViewValue;
     private Label value;
+    private Label cdiAfterValue;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -73,6 +71,10 @@ public class ViewNavigationUI extends UI {
         final Label afterValue = new Label();
         afterValue.setId(AFTER_VALUE_LABEL_ID);
         layout.addComponent(afterValue);
+
+        cdiAfterValue = new Label();
+        cdiAfterValue.setId(CDIAFTER_VALUE_LABEL_ID);
+        layout.addComponent(cdiAfterValue);
 
         final Panel viewDisplayPanel = new Panel();
         viewDisplayPanel.setContent(new Label());
@@ -115,25 +117,17 @@ public class ViewNavigationUI extends UI {
         createNavBtn(layout, SUCCESS_NAV_BTN_ID, SUCCESS);
         createNavBtn(layout, DELAY_NAV_BTN_ID, DELAY);
 
-        Button changeValueBtn = new Button("changevalue");
-        changeValueBtn.setId(CHANGE_VALUE_BTN_ID);
-        changeValueBtn.addClickListener(event -> {
-            bean.setValue(CHANGEDSUCCESS_VALUE);
-            value.setValue(bean.getValue());
-        });
-        layout.addComponent(changeValueBtn);
-
         setContent(layout);
     }
 
     private void createNavBtn(VerticalLayout layout, String navBtnId, String targetView) {
-        Button navigateDelayedBtn = new Button(navBtnId);
-        navigateDelayedBtn.setId(navBtnId);
-        navigateDelayedBtn.addClickListener(event -> {
+        Button navigateBtn = new Button(navBtnId);
+        navigateBtn.setId(navBtnId);
+        navigateBtn.addClickListener(event -> {
             navigator.navigateTo(targetView);
             value.setValue(bean.getValue());
         });
-        layout.addComponent(navigateDelayedBtn);
+        layout.addComponent(navigateBtn);
     }
 
     @CDIView("")
@@ -226,5 +220,8 @@ public class ViewNavigationUI extends UI {
         }
     }
 
+    private void onAfterViewChange(@Observes @AfterViewChange ViewChangeListener.ViewChangeEvent event) {
+        cdiAfterValue.setValue(bean.getValue());
+    }
 
 }

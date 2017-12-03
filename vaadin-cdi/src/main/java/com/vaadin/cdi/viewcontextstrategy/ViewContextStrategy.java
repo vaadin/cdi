@@ -17,16 +17,10 @@
 
 package com.vaadin.cdi.viewcontextstrategy;
 
-import java.io.Serializable;
-import java.util.Objects;
+import com.vaadin.navigator.View;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
-
-import com.vaadin.cdi.AfterViewChange;
-import com.vaadin.cdi.NormalUIScoped;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import java.io.Serializable;
 
 /**
  * Decision strategy on whether target navigation state belongs to active view
@@ -84,49 +78,5 @@ public interface ViewContextStrategy extends Serializable {
      * @return {@code true} to hold context open; {@code false} to release it
      */
     boolean contains(String viewName, String parameters);
-
-    @NormalUIScoped
-    @ViewNameDriven
-    class ViewName implements ViewContextStrategy {
-        private String currentViewName;
-
-        private void onViewChange(
-                @Observes @AfterViewChange ViewChangeEvent event) {
-            currentViewName = event.getViewName();
-        }
-
-        @Override
-        public boolean contains(String viewName, String parameters) {
-            return Objects.equals(viewName, currentViewName);
-        }
-    }
-
-    @NormalUIScoped
-    @ViewNameAndParametersDriven
-    class ViewNameAndParameters implements ViewContextStrategy {
-        private String currentViewName;
-        private String currentParameters;
-
-        private void onViewChange(
-                @Observes @AfterViewChange ViewChangeEvent event) {
-            currentViewName = event.getViewName();
-            currentParameters = event.getParameters();
-        }
-
-        @Override
-        public boolean contains(String viewName, String parameters) {
-            return Objects.equals(viewName, currentViewName)
-                    && Objects.equals(parameters, currentParameters);
-        }
-    }
-
-    @NormalUIScoped
-    @EveryNavigationDriven
-    class Always implements ViewContextStrategy {
-        @Override
-        public boolean contains(String viewName, String parameters) {
-            return false;
-        }
-    }
 
 }

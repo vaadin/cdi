@@ -17,7 +17,7 @@
 
 package com.vaadin.cdi.viewcontextstrategy;
 
-import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy.ViewNameAndParameters;
+import com.vaadin.cdi.internal.ViewContextStrategies.ViewNameAndParameters;
 
 import java.lang.annotation.*;
 

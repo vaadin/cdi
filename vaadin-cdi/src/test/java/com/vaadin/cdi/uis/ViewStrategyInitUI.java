@@ -20,7 +20,7 @@ package com.vaadin.cdi.uis;
 import com.vaadin.cdi.CDINavigator;
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.CDIView;
-import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy;
+import com.vaadin.cdi.internal.ViewContextStrategies;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
@@ -39,10 +39,10 @@ public class ViewStrategyInitUI extends UI {
     public static final String VIEWNAMEPARAMS_BTN_ID = "viewnameparams";
 
     @Inject
-    ViewContextStrategy.ViewName viewName;
+    ViewContextStrategies.ViewName viewName;
 
     @Inject
-    ViewContextStrategy.ViewNameAndParameters viewNameAndParameters;
+    ViewContextStrategies.ViewNameAndParameters viewNameAndParameters;
 
     @Inject
     CDINavigator navigator;

@@ -42,7 +42,7 @@ public class ArchiveProvider {
             ViewScopedContext.class, ViewContextualStorageManager.class,
             ViewContextStrategy.class, AfterViewChange.class, ViewContextStrategyProvider.class,
             ViewContextStrategyQualifier.class, EveryNavigationDriven.class, ViewNameDriven.class,
-            ViewNameAndParametersDriven.class,
+            ViewNameAndParametersDriven.class, ViewContextStrategies.class,
             CDIView.class, CDIUI.class,
             VaadinCDIServlet.class,
             VaadinCDIServletService.class,

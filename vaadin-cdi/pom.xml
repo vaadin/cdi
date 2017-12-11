@@ -18,7 +18,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- In addition to POMs, these version numbers are in ArchiveProvider for tests -->
-        <vaadin.version>8.1.0</vaadin.version>
+        <vaadin.version>8.2.0.beta1</vaadin.version>
         <deltaspike.version>1.7.2</deltaspike.version>
 
         <!-- Testing dependencies -->
@@ -47,6 +47,11 @@
         <repository>
             <id>vaadin-snapshots</id>
             <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots</url>
+        </repository>
+        <!-- TODO: Remove when going final -->
+        <repository>
+            <id>vaadin-prereleases</id>
+            <url>http://maven.vaadin.com/vaadin-prereleases</url>
         </repository>
     </repositories>
 

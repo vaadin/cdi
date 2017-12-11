@@ -68,11 +68,18 @@ public interface ViewContextStrategy extends Serializable {
 
         private void onViewChange(
                 @Observes @AfterViewChange ViewChangeEvent event) {
-            currentViewName = event.getViewName();
+            String viewName = event.getViewName();
+            if (viewName.startsWith("!")) {
+                viewName = viewName.substring(1);
+            }
+            currentViewName = viewName;
         }
 
         @Override
         public boolean contains(String viewName, String parameters) {
+            if (viewName.startsWith("!")) {
+                viewName = viewName.substring(1);
+            }
             return Objects.equals(viewName, currentViewName);
         }
     }
@@ -98,12 +105,19 @@ public interface ViewContextStrategy extends Serializable {
 
         private void onViewChange(
                 @Observes @AfterViewChange ViewChangeEvent event) {
-            currentViewName = event.getViewName();
+            String viewName = event.getViewName();
+            if (viewName.startsWith("!")) {
+                viewName = viewName.substring(1);
+            }
+            currentViewName = viewName;
             currentParameters = event.getParameters();
         }
 
         @Override
         public boolean contains(String viewName, String parameters) {
+            if (viewName.startsWith("!")) {
+                viewName = viewName.substring(1);
+            }
             return Objects.equals(viewName, currentViewName)
                     && Objects.equals(parameters, currentParameters);
         }

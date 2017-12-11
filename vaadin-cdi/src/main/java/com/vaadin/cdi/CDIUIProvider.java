@@ -47,6 +47,8 @@ import com.vaadin.ui.UI;
 @ApplicationScoped
 public class CDIUIProvider extends DefaultUIProvider {
 
+    private static final String PATH_WILDCARD = "/*";
+
     @Inject
     private UIContextualStorageManager uiContextualStorageManager;
 
@@ -185,7 +187,7 @@ public class CDIUIProvider extends DefaultUIProvider {
             Class<? extends UI> beanClass) {
         String path = Conventions.deriveMappingForUI(beanClass);
 
-        boolean pathEndsWithWildcard = path.endsWith("/*");
+        boolean pathEndsWithWildcard = path.endsWith(PATH_WILDCARD);
         boolean isWildcardPath = pathEndsWithWildcard
                 || beanClass.isAnnotationPresent(PushStateNavigation.class);
 
@@ -199,8 +201,8 @@ public class CDIUIProvider extends DefaultUIProvider {
     }
 
     private String removeWildcard(String path) {
-        if (path.endsWith("/*")) {
-            return path.substring(0, path.length() - 2);
+        if (path.endsWith(PATH_WILDCARD)) {
+            return path.substring(0, path.length() - PATH_WILDCARD.length());
         }
         return path;
     }

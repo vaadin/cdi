@@ -42,7 +42,7 @@ public class ViewContextStrategies {
         private CurrentViewState currentViewState;
 
         @Override
-        public boolean contains(String viewName, String parameters) {
+        public boolean inCurrentContext(String viewName, String parameters) {
             return Objects.equals(viewName, currentViewState.getViewName());
         }
     }
@@ -54,7 +54,7 @@ public class ViewContextStrategies {
         private CurrentViewState currentViewState;
 
         @Override
-        public boolean contains(String viewName, String parameters) {
+        public boolean inCurrentContext(String viewName, String parameters) {
             return Objects.equals(viewName, currentViewState.getViewName())
                     && Objects.equals(parameters, currentViewState.getParameters());
         }
@@ -64,7 +64,7 @@ public class ViewContextStrategies {
     @ViewContextByNavigation
     public static class EveryNavigation implements ViewContextStrategy {
         @Override
-        public boolean contains(String viewName, String parameters) {
+        public boolean inCurrentContext(String viewName, String parameters) {
             return false;
         }
     }

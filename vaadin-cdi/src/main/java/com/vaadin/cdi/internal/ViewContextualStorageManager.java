@@ -116,7 +116,7 @@ public class ViewContextualStorageManager implements Serializable {
         }
 
         boolean contains(String viewName, String parameters) {
-            return strategy.contains(viewName, parameters);
+            return strategy.inCurrentContext(viewName, parameters);
         }
 
     }

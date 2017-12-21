@@ -82,6 +82,6 @@ public interface ViewContextStrategy extends Serializable {
      *            target navigation parameters
      * @return {@code true} to hold context open; {@code false} to release it
      */
-    boolean contains(String viewName, String parameters);
+    boolean inCurrentContext(String viewName, String parameters);
 
 }

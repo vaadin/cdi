@@ -63,14 +63,14 @@ public class ViewStrategyInitUI extends UI {
         layout.addComponent(output);
 
         final Button viewNameBtn = new Button("viewname", event -> {
-            final boolean contains = viewName.contains("home", "p2");
+            final boolean contains = viewName.inCurrentContext("home", "p2");
             output.setValue(String.valueOf(contains));
         });
         viewNameBtn.setId(VIEWNAME_BTN_ID);
         layout.addComponent(viewNameBtn);
 
         final Button viewNameParamsBtn = new Button("viewnameparams", event -> {
-            final boolean contains = viewNameAndParameters.contains("home", "p1");
+            final boolean contains = viewNameAndParameters.inCurrentContext("home", "p1");
             output.setValue(String.valueOf(contains));
         });
 

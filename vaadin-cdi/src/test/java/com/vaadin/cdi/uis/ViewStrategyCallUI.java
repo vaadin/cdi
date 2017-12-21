@@ -131,7 +131,7 @@ public class ViewStrategyCallUI extends UI {
     @TestContextStrategy
     public static class TestStrategy implements ViewContextStrategy {
         @Override
-        public boolean contains(String viewName, String parameters) {
+        public boolean inCurrentContext(String viewName, String parameters) {
             final ViewStrategyCallUI ui = (ViewStrategyCallUI) UI.getCurrent();
             ui.viewName.setValue(viewName);
             ui.parameters.setValue(parameters);

@@ -22,24 +22,22 @@ import com.vaadin.cdi.internal.ViewContextStrategies.ViewNameAndParameters;
 import java.lang.annotation.*;
 
 /**
- * Strategy to release, and create a new context on every navigation
- * regardless of view name and parameters.
+ * Strategy to release, and create a new context on every navigation regardless
+ * of view name and parameters.
  * <p>
- * It is on par with navigator view life cycle, but navigating to same view
- * with same parameters releases the context and creates a new one.
+ * It is on par with navigator view life cycle, but navigating to same view with
+ * same parameters releases the context and creates a new one.
  * <p>
  * In practice it works same as {@link ViewNameAndParameters}, even when
  * parameters does not change.
  *
  * @see ViewContextStrategy
- * @see ViewNameDriven
- * @see ViewNameAndParametersDriven
+ * @see ViewContextByName
+ * @see ViewContextByNameAndParameters
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 @Inherited
 @ViewContextStrategyQualifier
-public @interface EveryNavigationDriven {
+public @interface ViewContextByNavigation {
 }
-
-

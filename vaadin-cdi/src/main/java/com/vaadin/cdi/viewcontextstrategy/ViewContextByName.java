@@ -24,23 +24,21 @@ import static com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 /**
  * Strategy to hold the context open while view name does not change.
  * <p>
- * This strategy is not on par with navigator view life cycle. While
- * navigating to same view, same context remains active.
- * {@link com.vaadin.navigator.View#enter(ViewChangeEvent)} will be called
- * again on the same view instance.
+ * This strategy is not on par with navigator view life cycle. While navigating
+ * to same view, same context remains active.
+ * {@link com.vaadin.navigator.View#enter(ViewChangeEvent)} will be called again
+ * on the same view instance.
  * <p>
- * <strong>Note:</strong> Navigator view change events do not mean that the
- * view context has changed.
+ * <strong>Note:</strong> Navigator view change events do not mean that the view
+ * context has changed.
  *
  * @see ViewContextStrategy
- * @see ViewNameAndParametersDriven
- * @see EveryNavigationDriven
+ * @see ViewContextByNameAndParameters
+ * @see ViewContextByNavigation
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 @Inherited
 @ViewContextStrategyQualifier
-public @interface ViewNameDriven {
+public @interface ViewContextByName {
 }
-
-

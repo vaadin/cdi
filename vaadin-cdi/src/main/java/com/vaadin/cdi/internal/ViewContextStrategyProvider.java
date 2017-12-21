@@ -2,7 +2,7 @@ package com.vaadin.cdi.internal;
 
 import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy;
 import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategyQualifier;
-import com.vaadin.cdi.viewcontextstrategy.ViewNameAndParametersDriven;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextByNameAndParameters;
 import com.vaadin.navigator.View;
 import org.apache.deltaspike.core.api.literal.AnyLiteral;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
@@ -26,7 +26,7 @@ public class ViewContextStrategyProvider {
     public ViewContextStrategy lookupStrategy(Class<? extends View> viewClass) {
         Class<? extends Annotation> annotationClass = findStrategyAnnotation(viewClass);
         if (annotationClass == null) {
-            annotationClass = ViewNameAndParametersDriven.class;
+            annotationClass = ViewContextByNameAndParameters.class;
         }
         final Bean strategyBean = findStrategyBean(annotationClass);
         if (strategyBean == null) {

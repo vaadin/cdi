@@ -31,12 +31,13 @@ import java.io.Serializable;
  * but is not recommended. Any {@link View} with a {@code ViewContextStrategy}
  * should use one of the scopes provided in the Vaadin CDI integration.
  * <p>
- * Separate annotations annotated by {@link ViewContextStrategyQualifier}
- * have to exist for each of the implementations.
+ * Separate annotations annotated by {@link ViewContextStrategyQualifier} have
+ * to exist for each of the implementations.
  * <p>
  * Example of a custom implementation:
  * <p>
  * A separate annotation.
+ * 
  * <pre>
  * {@literal @}Retention(RetentionPolicy.RUNTIME)
  * {@literal @}Target({ ElementType.TYPE })
@@ -44,7 +45,9 @@ import java.io.Serializable;
  *  public {@literal @}interface MyStrategyAnnotation {
  *  }
  * </pre>
+ * 
  * An implementation class.
+ * 
  * <pre>
  * {@literal @}NormalUIScoped
  * {@literal @}MyStrategyAnnotation
@@ -54,7 +57,9 @@ import java.io.Serializable;
  *    }
  *  }
  * </pre>
+ * 
  * Use annotation on the view.
+ * 
  * <pre>
  * {@literal @}CDIView("myView")
  * {@literal @}MyStrategyAnnotation

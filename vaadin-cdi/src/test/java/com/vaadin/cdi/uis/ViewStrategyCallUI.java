@@ -49,7 +49,8 @@ public class ViewStrategyCallUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
-        navigator.init(this, view -> { });
+        navigator.init(this, view -> {
+        });
 
         VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
@@ -112,21 +113,22 @@ public class ViewStrategyCallUI extends UI {
     @Target({ ElementType.TYPE })
     @Inherited
     @ViewContextStrategyQualifier
-    public @interface TestDriven {
+    public @interface TestContextStrategy {
     }
 
     @CDIView(value = "")
-    @TestDriven
+    @TestContextStrategy
     public static class RootView implements View {
         @Inject
         ViewScopedBean bean;
+
         @Override
         public void enter(ViewChangeListener.ViewChangeEvent event) {
             bean.setValue(BEANVALUE);
         }
     }
 
-    @TestDriven
+    @TestContextStrategy
     public static class TestStrategy implements ViewContextStrategy {
         @Override
         public boolean contains(String viewName, String parameters) {

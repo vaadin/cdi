@@ -16,7 +16,7 @@
 package com.vaadin.cdi;
 
 import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategyQualifier;
-import com.vaadin.cdi.viewcontextstrategy.ViewNameAndParametersDriven;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextByNameAndParameters;
 import com.vaadin.navigator.View;
 import com.vaadin.ui.UI;
 
@@ -39,7 +39,7 @@ import java.lang.annotation.Target;
  * On a <code>@CDIView</code> view the strategy for the view context
  * can be defined by annotating the view with a
  * {@link ViewContextStrategyQualifier} annotation.
- * By default it is {@link ViewNameAndParametersDriven}.
+ * By default it is {@link ViewContextByNameAndParameters}.
  *
  * @see javax.inject.Named
  */

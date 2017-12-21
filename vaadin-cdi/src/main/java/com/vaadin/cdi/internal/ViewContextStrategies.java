@@ -19,10 +19,10 @@ package com.vaadin.cdi.internal;
 
 import com.vaadin.cdi.AfterViewChange;
 import com.vaadin.cdi.NormalUIScoped;
-import com.vaadin.cdi.viewcontextstrategy.EveryNavigationDriven;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextByNavigation;
 import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy;
-import com.vaadin.cdi.viewcontextstrategy.ViewNameAndParametersDriven;
-import com.vaadin.cdi.viewcontextstrategy.ViewNameDriven;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextByNameAndParameters;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextByName;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 import javax.enterprise.event.Observes;
@@ -36,7 +36,7 @@ import java.util.Objects;
 public class ViewContextStrategies {
 
     @NormalUIScoped
-    @ViewNameDriven
+    @ViewContextByName
     public static class ViewName implements ViewContextStrategy {
         @Inject
         private CurrentViewState currentViewState;
@@ -48,7 +48,7 @@ public class ViewContextStrategies {
     }
 
     @NormalUIScoped
-    @ViewNameAndParametersDriven
+    @ViewContextByNameAndParameters
     public static class ViewNameAndParameters implements ViewContextStrategy {
         @Inject
         private CurrentViewState currentViewState;
@@ -61,7 +61,7 @@ public class ViewContextStrategies {
     }
 
     @NormalUIScoped
-    @EveryNavigationDriven
+    @ViewContextByNavigation
     public static class EveryNavigation implements ViewContextStrategy {
         @Override
         public boolean contains(String viewName, String parameters) {

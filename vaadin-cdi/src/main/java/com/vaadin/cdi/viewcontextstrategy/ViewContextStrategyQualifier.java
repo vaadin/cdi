@@ -27,9 +27,9 @@ import java.lang.annotation.Target;
  * drive the behavior of the view context have to be annotated with this.
  * <p>
  * Annotations for built-in strategies:
- * {@link ViewNameAndParametersDriven},
- * {@link ViewNameDriven},
- * {@link EveryNavigationDriven}
+ * {@link ViewContextByNameAndParameters},
+ * {@link ViewContextByName},
+ * {@link ViewContextByNavigation}
  *
  * @see ViewContextStrategy
  */

@@ -68,7 +68,7 @@ public class CDINavigator extends Navigator {
      * During initialization a {@link CDIViewProvider} added automatically.
      */
     public void init(UI ui, ViewDisplay display) {
-        init(ui, new UriFragmentManager(ui.getPage()), display);
+        init(ui, null, display);
     }
 
     /**

@@ -110,7 +110,23 @@ public class ScopedInstancesTest extends AbstractManagedCDIIntegrationTest {
         assertThat(firstUIScopedInUIScoped, is(secondUIScopedInUIScoped));
 
     }
+   
+	@Test
+    public void testCreationalContext() throws Exception {
+    	resetCounts();
+    	openWindow(deriveMappingForUI(NavigatableUI.class));
+    	// ViewScoped view instance opens initially
 
+        // Open UIScoped view instance
+      	navigateToUIScoped();
+
+    	// Navigate back to the ViewScoped view
+    	navigateToViewScoped();
+
+		assertThat(getCount(ViewScopedView.DependentBean.DESTROY_COUNT), is(1));
+		assertThat(getCount(UIScopedView.DependentBean.DESTROY_COUNT), is(0));
+    }
+    
     private String getTextById(String id) {
         return firstWindow.findElement(By.id(id)).getText();
     }

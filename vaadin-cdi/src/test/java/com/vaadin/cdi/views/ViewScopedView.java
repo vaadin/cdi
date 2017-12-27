@@ -2,9 +2,12 @@ package com.vaadin.cdi.views;
 
 import java.util.logging.Logger;
 
+import javax.annotation.PreDestroy;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.vaadin.cdi.CDIView;
+import com.vaadin.cdi.internal.Counter;
 import com.vaadin.cdi.internal.UIScopedBean;
 import com.vaadin.cdi.internal.ViewScopedBean;
 import com.vaadin.navigator.View;
@@ -27,6 +30,9 @@ public class ViewScopedView extends AbstractScopedInstancesView implements View 
     @Inject
     private ViewScopedBean viewScopedBean;
 
+    @Inject
+    private DependentBean dependentBean;
+    
     @Override
     protected Component buildContent() {
         VerticalLayout layout = new VerticalLayout();
@@ -66,6 +72,20 @@ public class ViewScopedView extends AbstractScopedInstancesView implements View 
         return layout;
     }
 
+    
+    @Dependent
+    public static class DependentBean {
+    	public static final String DESTROY_COUNT = "ViewDependentBeanDestroy";
+    	@Inject
+    	Counter counter;
+
+    	@PreDestroy
+    	private void preDestroy() {
+    		counter.increment(DESTROY_COUNT);
+    	}
+    
+    }
+    
     private Logger getLogger() {
         return Logger.getLogger(this.getClass().getCanonicalName());
     }

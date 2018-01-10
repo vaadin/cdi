@@ -20,7 +20,7 @@ package com.vaadin.cdi.uis;
 import com.vaadin.cdi.CDINavigator;
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.CDIView;
-import com.vaadin.cdi.ViewContextStrategy;
+import com.vaadin.cdi.internal.ViewContextStrategies;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
@@ -39,10 +39,10 @@ public class ViewStrategyInitUI extends UI {
     public static final String VIEWNAMEPARAMS_BTN_ID = "viewnameparams";
 
     @Inject
-    ViewContextStrategy.ViewName viewName;
+    ViewContextStrategies.ViewName viewName;
 
     @Inject
-    ViewContextStrategy.ViewNameAndParameters viewNameAndParameters;
+    ViewContextStrategies.ViewNameAndParameters viewNameAndParameters;
 
     @Inject
     CDINavigator navigator;
@@ -63,14 +63,14 @@ public class ViewStrategyInitUI extends UI {
         layout.addComponent(output);
 
         final Button viewNameBtn = new Button("viewname", event -> {
-            final boolean contains = viewName.contains("home", "p2");
+            final boolean contains = viewName.inCurrentContext("home", "p2");
             output.setValue(String.valueOf(contains));
         });
         viewNameBtn.setId(VIEWNAME_BTN_ID);
         layout.addComponent(viewNameBtn);
 
         final Button viewNameParamsBtn = new Button("viewnameparams", event -> {
-            final boolean contains = viewNameAndParameters.contains("home", "p1");
+            final boolean contains = viewNameAndParameters.inCurrentContext("home", "p1");
             output.setValue(String.valueOf(contains));
         });
 

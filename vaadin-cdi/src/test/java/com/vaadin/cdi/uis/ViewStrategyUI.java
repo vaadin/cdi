@@ -19,6 +19,9 @@ package com.vaadin.cdi.uis;
 
 import com.vaadin.cdi.*;
 import com.vaadin.cdi.internal.Counter;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextByNavigation;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextByNameAndParameters;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextByName;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
@@ -92,7 +95,8 @@ public class ViewStrategyUI extends UI {
         }
     }
 
-    @CDIView(value = BYVIEWNAME, contextStrategy = ViewContextStrategy.ViewName.class)
+    @CDIView(value = BYVIEWNAME)
+    @ViewContextByName
     public static class ByViewNameView implements View {
         @Inject
         ViewScopedBean bean;
@@ -117,7 +121,8 @@ public class ViewStrategyUI extends UI {
         }
     }
 
-    @CDIView(value = BYVIEWNAMEPARAMS, contextStrategy = ViewContextStrategy.ViewNameAndParameters.class)
+    @CDIView(value = BYVIEWNAMEPARAMS)
+    @ViewContextByNameAndParameters
     public static class ByViewNameAndParametersView implements View {
         @Inject
         ViewScopedBean bean;
@@ -142,7 +147,8 @@ public class ViewStrategyUI extends UI {
         }
     }
 
-    @CDIView(value = BYALWAYS, contextStrategy = ViewContextStrategy.Always.class)
+    @CDIView(value = BYALWAYS)
+    @ViewContextByNavigation
     public static class ByAlwaysView implements View {
         @Inject
         ViewScopedBean bean;

@@ -18,12 +18,15 @@
 package com.vaadin.cdi.uis;
 
 import com.vaadin.cdi.*;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategyQualifier;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
 
 import javax.inject.Inject;
+import java.lang.annotation.*;
 import java.util.Objects;
 
 @CDIUI("")
@@ -46,7 +49,8 @@ public class ViewStrategyCallUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
-        navigator.init(this, view -> { });
+        navigator.init(this, view -> {
+        });
 
         VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
@@ -105,7 +109,15 @@ public class ViewStrategyCallUI extends UI {
         }
     }
 
-    @CDIView(value = "", contextStrategy = TestStrategy.class)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ ElementType.TYPE })
+    @Inherited
+    @ViewContextStrategyQualifier
+    public @interface TestContextStrategy {
+    }
+
+    @CDIView(value = "")
+    @TestContextStrategy
     public static class RootView implements View {
         @Inject
         ViewScopedBean bean;
@@ -116,9 +128,10 @@ public class ViewStrategyCallUI extends UI {
         }
     }
 
+    @TestContextStrategy
     public static class TestStrategy implements ViewContextStrategy {
         @Override
-        public boolean contains(String viewName, String parameters) {
+        public boolean inCurrentContext(String viewName, String parameters) {
             final ViewStrategyCallUI ui = (ViewStrategyCallUI) UI.getCurrent();
             ui.viewName.setValue(viewName);
             ui.parameters.setValue(parameters);

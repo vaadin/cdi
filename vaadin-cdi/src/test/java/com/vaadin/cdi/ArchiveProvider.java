@@ -21,6 +21,7 @@ import com.vaadin.cdi.access.JaasAccessControl;
 import com.vaadin.cdi.internal.*;
 import com.vaadin.cdi.server.VaadinCDIServlet;
 import com.vaadin.cdi.server.VaadinCDIServletService;
+import com.vaadin.cdi.viewcontextstrategy.*;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -39,7 +40,9 @@ public class ArchiveProvider {
             ContextDeployer.class, JaasAccessControl.class,
             UIScopedContext.class, UIContextualStorageManager.class,
             ViewScopedContext.class, ViewContextualStorageManager.class,
-            ViewContextStrategy.class, AfterViewChange.class,
+            ViewContextStrategy.class, AfterViewChange.class, ViewContextStrategyProvider.class,
+            ViewContextStrategyQualifier.class, ViewContextByNavigation.class, ViewContextByName.class,
+            ViewContextByNameAndParameters.class, ViewContextStrategies.class,
             CDIView.class, CDIUI.class,
             VaadinCDIServlet.class,
             VaadinCDIServletService.class,

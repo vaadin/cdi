@@ -17,9 +17,8 @@
 
 package com.vaadin.cdi.internal;
 
-import com.vaadin.cdi.CDIView;
 import com.vaadin.cdi.NormalUIScoped;
-import com.vaadin.cdi.ViewContextStrategy;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
@@ -49,6 +48,8 @@ public class ViewContextualStorageManager implements Serializable {
     private Storage currentContext = CLOSED;
     @Inject
     private BeanManager beanManager;
+    @Inject
+    private ViewContextStrategyProvider viewContextStrategyManager;
 
     public void applyChange(ViewChangeListener.ViewChangeEvent event) {
         if (!currentContext.contains(event.getViewName(), event.getParameters())) {
@@ -63,17 +64,13 @@ public class ViewContextualStorageManager implements Serializable {
         final Storage temp = currentContext;
         if (!currentContext.contains(viewName, parameters)) {
             openingContext.destroy();
-            openingContext = new Storage(getViewContextStrategy(beanClass));
+            ViewContextStrategy strategy = viewContextStrategyManager.lookupStrategy(beanClass);
+            openingContext = new Storage(strategy);
             currentContext = openingContext;
         }
         final View view = (View) BeanProvider.getContextualReference(beanClass, viewBean);
         currentContext = temp;
         return view;
-    }
-
-    private ViewContextStrategy getViewContextStrategy(Class<?> beanClass) {
-        final CDIView viewAnnotation = beanClass.getAnnotation(CDIView.class);
-        return BeanProvider.getContextualReference(viewAnnotation.contextStrategy());
     }
 
     public void revertChange(ViewChangeListener.ViewChangeEvent event) {
@@ -119,7 +116,7 @@ public class ViewContextualStorageManager implements Serializable {
         }
 
         boolean contains(String viewName, String parameters) {
-            return strategy.contains(viewName, parameters);
+            return strategy.inCurrentContext(viewName, parameters);
         }
 
     }

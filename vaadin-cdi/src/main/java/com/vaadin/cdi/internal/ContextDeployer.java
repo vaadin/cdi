@@ -82,25 +82,17 @@ public class ContextDeployer implements ServletContextListener {
             // For preliminary registrations / JSP servlets, class name is null.
             // These should not prevent registration of the VaadinCDIServlet.
             if (null != servletClassName) {
+                Class<?> servletClass = null;
                 try {
-                    if (servletClassName.equals("com.ibm.ws.wsoc.WsocServlet")) {
-                        // Websphere servlet which implements websocket
-                        // endpoints, dynamically added
-                        continue;
-                    }
-
-                    Class<?> servletClass = context.getClassLoader().loadClass(
+                    servletClass = context.getClassLoader().loadClass(
                             servletClassName);
-
                     if (VaadinServlet.class.isAssignableFrom(servletClass)) {
                         // return the first Vaadin servlet in the deployment
                         // descriptor
                         return servletClass;
                     }
-
                 } catch (ClassNotFoundException e) {
-                    throw new InconsistentDeploymentException(
-                            InconsistentDeploymentException.ID.CLASS_NOT_FOUND, e);
+                    getLogger().info(String.format("Could not load %s.", servletClassName));
                 }
             }
         }

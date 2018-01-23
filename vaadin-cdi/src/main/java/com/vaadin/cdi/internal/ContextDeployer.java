@@ -81,7 +81,7 @@ public class ContextDeployer implements ServletContextListener {
 
             // For preliminary registrations / JSP servlets, class name is null.
             // These should not prevent registration of the VaadinCDIServlet.
-            if (null != servletClassName) { 
+            if (null != servletClassName) {
                 Class<?> servletClass = null;
                 try {
                     servletClass = context.getClassLoader().loadClass(

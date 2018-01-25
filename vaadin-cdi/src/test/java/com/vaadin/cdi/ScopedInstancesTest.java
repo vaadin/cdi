@@ -26,8 +26,8 @@ public class ScopedInstancesTest extends AbstractManagedCDIIntegrationTest {
     public static WebArchive alternativeAndActiveWithSamePath() {
         return ArchiveProvider.createWebArchive("scopedNavigation",
                 UIScopedView.class, AbstractScopedInstancesView.class,
-                AbstractNavigatableView.class, ViewScopedView.class, NavigatableUI.class,
-                UIScopedBean.class, ViewScopedBean.class);
+                AbstractNavigatableView.class, ViewScopedView.class,
+                NavigatableUI.class, UIScopedBean.class, ViewScopedBean.class);
     }
 
     @Test
@@ -83,7 +83,6 @@ public class ScopedInstancesTest extends AbstractManagedCDIIntegrationTest {
         String secondViewScopedInViewScoped = getTextById(ViewScopedBean.ID);
         String secondUIScopedInViewScoped = getTextById(UIScopedBean.ID);
 
-
         // Navigate back to the UIScoped view
         navigateToUIScoped();
 
@@ -96,8 +95,10 @@ public class ScopedInstancesTest extends AbstractManagedCDIIntegrationTest {
         assertThat(firstViewScopedInViewScoped, not(firstViewScopedInUIScoped));
         assertThat(firstViewScopedInViewScoped,
                 not(secondViewScopedInViewScoped));
-        assertThat(firstViewScopedInViewScoped, not(secondViewScopedInUIScoped));
-        assertThat(secondViewScopedInViewScoped, not(firstViewScopedInUIScoped));
+        assertThat(firstViewScopedInViewScoped,
+                not(secondViewScopedInUIScoped));
+        assertThat(secondViewScopedInViewScoped,
+                not(firstViewScopedInUIScoped));
         assertThat(secondViewScopedInViewScoped,
                 not(secondViewScopedInUIScoped));
         assertThat(firstViewScopedInUIScoped, not(secondViewScopedInUIScoped));
@@ -110,36 +111,40 @@ public class ScopedInstancesTest extends AbstractManagedCDIIntegrationTest {
         assertThat(firstUIScopedInUIScoped, is(secondUIScopedInUIScoped));
 
     }
-   
-	@Test
+
+    @Test
     public void testCreationalContext() throws Exception {
-    	resetCounts();
-    	openWindow(deriveMappingForUI(NavigatableUI.class));
-    	// ViewScoped view instance opens initially
+        resetCounts();
+        openWindow(deriveMappingForUI(NavigatableUI.class));
+        // ViewScoped view instance opens initially
 
         // Open UIScoped view instance
-      	navigateToUIScoped();
+        navigateToUIScoped();
 
-    	// Navigate back to the ViewScoped view
-    	navigateToViewScoped();
+        // Navigate back to the ViewScoped view
+        navigateToViewScoped();
 
-		assertThat(getCount(ViewScopedView.DependentBean.DESTROY_COUNT), is(1));
-		assertThat(getCount(UIScopedView.DependentBean.DESTROY_COUNT), is(0));
+        assertThat(getCount(ViewScopedView.DependentBean.DESTROY_COUNT), is(1));
+        assertThat(getCount(UIScopedView.DependentBean.DESTROY_COUNT), is(0));
     }
-    
+
     private String getTextById(String id) {
         return firstWindow.findElement(By.id(id)).getText();
     }
 
     private void navigateToUIScoped() {
-        firstWindow.findElement(
-                By.id(AbstractScopedInstancesView.NAVIGATE_TO_UISCOPED)).click();
+        firstWindow
+                .findElement(
+                        By.id(AbstractScopedInstancesView.NAVIGATE_TO_UISCOPED))
+                .click();
         waitForValue(By.id(UIScopedView.DESCRIPTION_LABEL), "UIScopedView");
     }
 
     private void navigateToViewScoped() {
-        firstWindow.findElement(
-                By.id(AbstractScopedInstancesView.NAVIGATE_TO_VIEWSCOPED)).click();
+        firstWindow
+                .findElement(By
+                        .id(AbstractScopedInstancesView.NAVIGATE_TO_VIEWSCOPED))
+                .click();
         waitForValue(By.id(ViewScopedView.DESCRIPTION_LABEL), "ViewScopedView");
     }
 

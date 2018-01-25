@@ -15,16 +15,17 @@ import org.apache.deltaspike.core.util.context.ContextualStorage;
  */
 public class VaadinContextualStorage extends ContextualStorage {
 
-    public VaadinContextualStorage(BeanManager beanManager, boolean concurrent) {
+    public VaadinContextualStorage(BeanManager beanManager,
+            boolean concurrent) {
         super(beanManager, concurrent, false);
     }
-    
+
     @Override
     public <T> Object getBeanKey(Contextual<T> bean) {
-        if(bean instanceof UIContextual) {
-            return ((UIContextual) bean).delegate;    
+        if (bean instanceof UIContextual) {
+            return ((UIContextual) bean).delegate;
         } else {
             return super.getBeanKey(bean);
         }
-    }    
+    }
 }

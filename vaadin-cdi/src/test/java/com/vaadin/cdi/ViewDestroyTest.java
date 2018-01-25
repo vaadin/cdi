@@ -22,8 +22,7 @@ public class ViewDestroyTest extends AbstractManagedCDIIntegrationTest {
     @Deployment(name = "viewDestroy", testable = false)
     public static WebArchive deployment() {
         return ArchiveProvider.createWebArchive("viewDestroy",
-                DestroyViewUI.class,
-                DestroyViewNormalUI.class);
+                DestroyViewUI.class, DestroyViewNormalUI.class);
     }
 
     @Before
@@ -47,7 +46,7 @@ public class ViewDestroyTest extends AbstractManagedCDIIntegrationTest {
         clickAndWait(DestroyViewUI.CLOSE_BTN_ID);
         Thread.sleep(AbstractVaadinContext.CLEANUP_DELAY + 1);
 
-        //open new UI. Navigating to home view on load triggers cleanup.
+        // open new UI. Navigating to home view on load triggers cleanup.
         openWindow(viewUri);
 
         assertViewDestroyCounts(2);
@@ -56,7 +55,7 @@ public class ViewDestroyTest extends AbstractManagedCDIIntegrationTest {
     @Test
     @OperateOnDeployment("viewDestroy")
     public void testViewChangeDestroysViewScope() throws Exception {
-        //ViewChange event triggers a cleanup
+        // ViewChange event triggers a cleanup
         clickAndWait(DestroyViewUI.NAVIGATE_BTN_ID);
 
         assertViewDestroyCounts(1);
@@ -64,7 +63,8 @@ public class ViewDestroyTest extends AbstractManagedCDIIntegrationTest {
 
     private void assertViewDestroyCounts(int count) throws IOException {
         assertThat(getCount(DestroyViewUI.VIEW_DESTROY_COUNT_KEY), is(count));
-        assertThat(getCount(DestroyViewUI.VIEWBEAN_DESTROY_COUNT_KEY), is(count));
+        assertThat(getCount(DestroyViewUI.VIEWBEAN_DESTROY_COUNT_KEY),
+                is(count));
     }
 
 }

@@ -93,7 +93,7 @@ public abstract class AbstractVaadinContext extends AbstractContext {
             }
 
             public void validateTransition() {
-                if(openingView != null) {
+                if (openingView != null) {
                     activeView = openingView;
                     openingView = null;
                 }
@@ -154,7 +154,8 @@ public abstract class AbstractVaadinContext extends AbstractContext {
     }
 
     @Override
-    public <T> T get(Contextual<T> bean, CreationalContext<T> creationalContext) {
+    public <T> T get(Contextual<T> bean,
+            CreationalContext<T> creationalContext) {
         return super.get(wrapBean(bean), creationalContext);
     }
 
@@ -171,7 +172,8 @@ public abstract class AbstractVaadinContext extends AbstractContext {
         return getSessionData(sessionId, createIfNotExist);
     }
 
-    protected synchronized SessionData getSessionData(boolean createIfNotExist) {
+    protected synchronized SessionData getSessionData(
+            boolean createIfNotExist) {
         return getSessionData(VaadinSession.getCurrent(), createIfNotExist);
     }
 
@@ -197,10 +199,11 @@ public abstract class AbstractVaadinContext extends AbstractContext {
         SessionData sessionData = storageMap.remove(sessionId);
         if (sessionData != null) {
             synchronized (sessionData) {
-            	Collection<ContextualStorage> storages = sessionData.storageMap.values();
-            	for (ContextualStorage storage : storages) {
-            		destroyAllActive(storage);
-            	}
+                Collection<ContextualStorage> storages = sessionData.storageMap
+                        .values();
+                for (ContextualStorage storage : storages) {
+                    destroyAllActive(storage);
+                }
             }
         }
     }
@@ -208,12 +211,15 @@ public abstract class AbstractVaadinContext extends AbstractContext {
     private synchronized void dropUIData(SessionData sessionData, int uiId) {
         getLogger().fine("Dropping UI data for UI: " + uiId);
 
-        Map<Contextual<?>, ContextualStorage> storageMap = sessionData.getStorageMap();
-        for (Contextual<?> contextual : new ArrayList<Contextual<?>>(storageMap.keySet())) {
-        	if (contextual instanceof UIContextual && ((UIContextual) contextual).getUiId() == uiId) {
-        		final ContextualStorage storage = storageMap.remove(contextual);
-        		destroyAllActive(storage);
-        	}
+        Map<Contextual<?>, ContextualStorage> storageMap = sessionData
+                .getStorageMap();
+        for (Contextual<?> contextual : new ArrayList<Contextual<?>>(
+                storageMap.keySet())) {
+            if (contextual instanceof UIContextual
+                    && ((UIContextual) contextual).getUiId() == uiId) {
+                final ContextualStorage storage = storageMap.remove(contextual);
+                destroyAllActive(storage);
+            }
         }
         sessionData.uiDataMap.remove(uiId);
     }

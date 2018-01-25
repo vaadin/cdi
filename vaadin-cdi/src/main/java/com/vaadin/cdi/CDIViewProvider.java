@@ -304,9 +304,9 @@ public class CDIViewProvider implements ViewProvider {
                     view.toString());
 
             if (Dependent.class.isAssignableFrom(viewBean.getScope())) {
-            	dependentViewCreationalContext = creationalContext;
-            }            
-            
+                dependentViewCreationalContext = creationalContext;
+            }
+
             Navigator navigator = currentUI.getNavigator();
             if (navigator != null) {
                 // This is a fairly dumb way of making sure that there is

@@ -36,7 +36,7 @@ public class DestroyUI extends UI {
 
     @Inject
     UIScopedBean bean;
-    
+
     @PreDestroy
     public void destroy() {
         counter.increment(DESTROY_COUNT + getUIId());
@@ -73,11 +73,12 @@ public class DestroyUI extends UI {
         viewNavigateBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                final Navigator navigator = new Navigator(DestroyUI.this, new ViewDisplay() {
-                    @Override
-                    public void showView(View view) {
-                    }
-                });
+                final Navigator navigator = new Navigator(DestroyUI.this,
+                        new ViewDisplay() {
+                            @Override
+                            public void showView(View view) {
+                            }
+                        });
                 navigator.addProvider(viewProvider);
                 navigator.navigateTo("test");
             }
@@ -86,7 +87,6 @@ public class DestroyUI extends UI {
 
         setContent(layout);
     }
-
 
     @UIScoped
     public static class UIScopedBean implements Serializable {

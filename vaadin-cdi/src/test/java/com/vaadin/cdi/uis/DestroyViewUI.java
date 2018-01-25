@@ -99,7 +99,6 @@ public class DestroyViewUI extends UI {
             counter.increment(VIEWBEAN_DESTROY_COUNT_KEY);
         }
 
-
     }
 
     @CDIView("other")
@@ -110,6 +109,5 @@ public class DestroyViewUI extends UI {
 
         }
     }
-
 
 }

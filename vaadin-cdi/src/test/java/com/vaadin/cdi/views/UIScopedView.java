@@ -32,7 +32,7 @@ public class UIScopedView extends AbstractScopedInstancesView implements View {
 
     @Inject
     private DependentBean dependentBean;
-    
+
     @Override
     protected Component buildContent() {
         VerticalLayout layout = new VerticalLayout();
@@ -46,13 +46,13 @@ public class UIScopedView extends AbstractScopedInstancesView implements View {
         instanceLabel.setId(INSTANCE_LABEL);
         layout.addComponent(instanceLabel);
 
-        final Label viewScopedLabel = new Label(String.valueOf(viewScopedBean
-                .getUnderlyingInstance()));
+        final Label viewScopedLabel = new Label(
+                String.valueOf(viewScopedBean.getUnderlyingInstance()));
         viewScopedLabel.setId(ViewScopedBean.ID);
         layout.addComponent(viewScopedLabel);
 
-        final Label uiScopedLabel = new Label(String.valueOf(uiScopedBean
-                .getUnderlyingInstance()));
+        final Label uiScopedLabel = new Label(
+                String.valueOf(uiScopedBean.getUnderlyingInstance()));
         uiScopedLabel.setId(UIScopedBean.ID);
         layout.addComponent(uiScopedLabel);
 
@@ -61,10 +61,10 @@ public class UIScopedView extends AbstractScopedInstancesView implements View {
 
             @Override
             public void buttonClick(ClickEvent event) {
-                uiScopedLabel.setValue(String.valueOf(uiScopedBean
-                        .getUnderlyingInstance()));
-                viewScopedLabel.setValue(String.valueOf(viewScopedBean
-                        .getUnderlyingInstance()));
+                uiScopedLabel.setValue(
+                        String.valueOf(uiScopedBean.getUnderlyingInstance()));
+                viewScopedLabel.setValue(
+                        String.valueOf(viewScopedBean.getUnderlyingInstance()));
             }
         });
         layout.addComponent(refreshButton);
@@ -74,14 +74,14 @@ public class UIScopedView extends AbstractScopedInstancesView implements View {
 
     @Dependent
     public static class DependentBean {
-    	public static final String DESTROY_COUNT = "UIDependentBeanDestroy";
-    	@Inject
-    	Counter counter;
+        public static final String DESTROY_COUNT = "UIDependentBeanDestroy";
+        @Inject
+        Counter counter;
 
-    	@PreDestroy
-    	private void preDestroy() {
-    		counter.increment(DESTROY_COUNT);
-    	}
-	}
-    
+        @PreDestroy
+        private void preDestroy() {
+            counter.increment(DESTROY_COUNT);
+        }
+    }
+
 }

@@ -245,6 +245,7 @@
                             <systemPropertyVariables>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                                 <jboss.home>${project.build.directory}/wildfly-10.1.0.Final</jboss.home>
+                                <arguillian.launch>wildfly</arguillian.launch>
                             </systemPropertyVariables>
                             <redirectTestOutputToFile>false</redirectTestOutputToFile>
                         </configuration>

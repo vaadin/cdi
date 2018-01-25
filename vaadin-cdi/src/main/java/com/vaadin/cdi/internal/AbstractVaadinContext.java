@@ -32,6 +32,10 @@ import org.apache.deltaspike.core.util.context.AbstractContext;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 import com.vaadin.cdi.internal.AbstractVaadinContext.SessionData.UIData;
+import com.vaadin.cdi.internal.CDIUtil;
+import com.vaadin.cdi.internal.UIContextual;
+import com.vaadin.cdi.internal.VaadinSessionDestroyEvent;
+import com.vaadin.cdi.internal.VaadinUICloseEvent;
 import com.vaadin.server.VaadinSession;
 
 /**
@@ -43,12 +47,12 @@ public abstract class AbstractVaadinContext extends AbstractContext {
 
     private final Object cleanupLock = new Object();
 
-    private static final int CLEANUP_DELAY = 5000;
+    public static final int CLEANUP_DELAY = 5000;
 
     private BeanManager beanManager;
     private Map<Long, SessionData> storageMap = new ConcurrentHashMap<Long, SessionData>();
 
-    protected static class SessionData {
+    public static class SessionData {
 
         public static class UIData {
 
@@ -89,7 +93,7 @@ public abstract class AbstractVaadinContext extends AbstractContext {
             }
 
             public void validateTransition() {
-                if(openingView != null) {
+                if (openingView != null) {
                     activeView = openingView;
                     openingView = null;
                 }
@@ -150,7 +154,8 @@ public abstract class AbstractVaadinContext extends AbstractContext {
     }
 
     @Override
-    public <T> T get(Contextual<T> bean, CreationalContext<T> creationalContext) {
+    public <T> T get(Contextual<T> bean,
+            CreationalContext<T> creationalContext) {
         return super.get(wrapBean(bean), creationalContext);
     }
 
@@ -167,7 +172,8 @@ public abstract class AbstractVaadinContext extends AbstractContext {
         return getSessionData(sessionId, createIfNotExist);
     }
 
-    protected synchronized SessionData getSessionData(boolean createIfNotExist) {
+    protected synchronized SessionData getSessionData(
+            boolean createIfNotExist) {
         return getSessionData(VaadinSession.getCurrent(), createIfNotExist);
     }
 
@@ -193,9 +199,10 @@ public abstract class AbstractVaadinContext extends AbstractContext {
         SessionData sessionData = storageMap.remove(sessionId);
         if (sessionData != null) {
             synchronized (sessionData) {
-                Map<Integer, UIData> map = sessionData.getUiDataMap();
-                for (UIData uiData : new ArrayList<UIData>(map.values())) {
-                    dropUIData(sessionData, uiData.getUiId());
+                Collection<ContextualStorage> storages = sessionData.storageMap
+                        .values();
+                for (ContextualStorage storage : storages) {
+                    destroyAllActive(storage);
                 }
             }
         }
@@ -204,12 +211,14 @@ public abstract class AbstractVaadinContext extends AbstractContext {
     private synchronized void dropUIData(SessionData sessionData, int uiId) {
         getLogger().fine("Dropping UI data for UI: " + uiId);
 
-        for (Entry<Contextual<?>, ContextualStorage> entry : new ArrayList<Entry<Contextual<?>, ContextualStorage>>(
-                sessionData.getStorageMap().entrySet())) {
-            Contextual<?> key = entry.getKey();
-            if (key instanceof UIContextual
-                    && ((UIContextual) key).getUiId() == uiId) {
-                destroy(entry.getKey());
+        Map<Contextual<?>, ContextualStorage> storageMap = sessionData
+                .getStorageMap();
+        for (Contextual<?> contextual : new ArrayList<Contextual<?>>(
+                storageMap.keySet())) {
+            if (contextual instanceof UIContextual
+                    && ((UIContextual) contextual).getUiId() == uiId) {
+                final ContextualStorage storage = storageMap.remove(contextual);
+                destroyAllActive(storage);
             }
         }
         sessionData.uiDataMap.remove(uiId);

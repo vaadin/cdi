@@ -52,8 +52,10 @@ public class ViewScopedContext extends AbstractVaadinContext {
 
     @Override
     protected <T> Contextual<T> wrapBean(Contextual<T> bean) {
-        if(!(bean instanceof UIContextual) && bean instanceof Bean && View.class.isAssignableFrom(((Bean) bean).getBeanClass())) {
-            String mapping = Conventions.deriveMappingForView(((Bean) bean).getBeanClass());
+        if (!(bean instanceof UIContextual) && bean instanceof Bean
+                && View.class.isAssignableFrom(((Bean) bean).getBeanClass())) {
+            String mapping = Conventions
+                    .deriveMappingForView(((Bean) bean).getBeanClass());
             return new ViewBean((Bean) bean, mapping);
         }
         return bean;
@@ -66,7 +68,8 @@ public class ViewScopedContext extends AbstractVaadinContext {
 
         SessionData sessionData;
         if (contextual instanceof UIContextual) {
-            sessionData = getSessionData(((UIContextual) contextual).getSessionId(),
+            sessionData = getSessionData(
+                    ((UIContextual) contextual).getSessionId(),
                     createIfNotExist);
         } else {
             sessionData = getSessionData(createIfNotExist);
@@ -81,18 +84,19 @@ public class ViewScopedContext extends AbstractVaadinContext {
             }
         }
 
-        // The contextual is not a ViewContextual if we're injecting something other
+        // The contextual is not a ViewContextual if we're injecting something
+        // other
         // than a CDIView with the @ViewScoped annotation. In those cases we'll
         // look up the currently active view for the current UI. Due to
         // technical limitations of the core framework this involves some
         // guesswork during view transition.
         if (!(contextual instanceof ViewContextual)) {
             UI currentUI = UI.getCurrent();
-            if(currentUI == null) {
-                throw new IllegalStateException("Unable to resolve " + contextual + ", current UI not set.");
+            if (currentUI == null) {
+                throw new IllegalStateException("Unable to resolve "
+                        + contextual + ", current UI not set.");
             }
-            UIData uiData = sessionData.getUIData(
-                    currentUI.getUIId(), true);
+            UIData uiData = sessionData.getUIData(currentUI.getUIId(), true);
             String viewName = uiData.getProbableInjectionPointView();
             if (viewName == null) {
                 getLogger().warning("Could not determine active View");
@@ -114,8 +118,8 @@ public class ViewScopedContext extends AbstractVaadinContext {
         if (map.containsKey(contextual)) {
             return map.get(contextual);
         } else if (createIfNotExist) {
-            ContextualStorage storage = new VaadinContextualStorage(getBeanManager(),
-                    true);
+            ContextualStorage storage = new VaadinContextualStorage(
+                    getBeanManager(), true);
             map.put(contextual, storage);
             return storage;
         } else {
@@ -144,15 +148,14 @@ public class ViewScopedContext extends AbstractVaadinContext {
         String activeViewName = uiData.getActiveView();
 
         Map<Contextual<?>, ContextualStorage> map = sessionData.getStorageMap();
-        for (Entry<Contextual<?>, ContextualStorage> entry : new ArrayList<Entry<Contextual<?>, ContextualStorage>>(
-                map.entrySet())) {
-            ViewContextual contextual = (ViewContextual) entry.getKey();
-            if (contextual.uiId == uiId
-                    && !contextual.viewIdentifier.equals(activeViewName)) {
-                getLogger().fine(
-                        "dropping " + contextual + " : " + entry.getValue());
-                map.remove(contextual);
-                destroy(contextual);
+        for (Contextual<?> key : new ArrayList<Contextual<?>>(map.keySet())) {
+            if (key instanceof ViewContextual) {
+                ViewContextual contextual = (ViewContextual) key;
+                if (contextual.uiId == uiId
+                        && !contextual.viewIdentifier.equals(activeViewName)) {
+                    ContextualStorage storage = map.remove(contextual);
+                    destroyAllActive(storage);
+                }
             }
         }
     }

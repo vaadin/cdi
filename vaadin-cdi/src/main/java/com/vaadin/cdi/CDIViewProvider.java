@@ -26,7 +26,6 @@ import com.vaadin.ui.UI;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.RolesAllowed;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -54,12 +53,15 @@ public class CDIViewProvider implements ViewProvider {
     @Inject
     private ViewContextualStorageManager viewContextualStorageManager;
 
+    private String lastViewAndParameters;
+
     @Override
-    public String getViewName(String viewAndParameters) {
+    public String getViewName(final String viewAndParameters) {
         getLogger().log(Level.FINE,
                 "Attempting to retrieve view name from string \"{0}\"",
                 viewAndParameters);
 
+        lastViewAndParameters = viewAndParameters;
         String name = parseViewName(viewAndParameters);
         Bean viewBean = getViewBean(name);
 
@@ -68,13 +70,6 @@ public class CDIViewProvider implements ViewProvider {
         }
 
         if (isUserHavingAccessToView(viewBean)) {
-            if (viewBean.getBeanClass().isAnnotationPresent(CDIView.class)) {
-                String specifiedViewName = Conventions
-                        .deriveMappingForView(viewBean.getBeanClass());
-                if (!specifiedViewName.isEmpty()) {
-                    return specifiedViewName;
-                }
-            }
             return name;
         } else {
             getLogger().log(Level.INFO,
@@ -85,7 +80,7 @@ public class CDIViewProvider implements ViewProvider {
         return null;
     }
 
-    protected boolean isUserHavingAccessToView(Bean<?> viewBean) {
+    protected boolean isUserHavingAccessToView(final Bean<?> viewBean) {
 
         if (viewBean.getBeanClass().isAnnotationPresent(CDIView.class)) {
             if (viewBean.getBeanClass()
@@ -117,15 +112,17 @@ public class CDIViewProvider implements ViewProvider {
         return true;
     }
 
-    private Bean getViewBean(String viewName) {
+    private Bean<?> getViewBean(String viewName) {
         getLogger().log(Level.FINE, "Looking for view with name \"{0}\"",
                 viewName);
 
         if (viewName == null) {
             return null;
+        } else if (viewName.startsWith("!")) {
+            viewName = viewName.substring(1);
         }
 
-        Set<Bean<?>> matching = new HashSet<Bean<?>>();
+        Set<Bean<?>> matching = new HashSet<>();
         Set<Bean<?>> all = beanManager.getBeans(View.class, QUALIFIER_ANY);
         if (all.isEmpty()) {
             getLogger()
@@ -169,8 +166,8 @@ public class CDIViewProvider implements ViewProvider {
         return viewBeansForThisProvider.iterator().next();
     }
 
-    private Set<Bean<?>> getViewBeansForCurrentUI(Set<Bean<?>> beans) {
-        Set<Bean<?>> viewBeans = new HashSet<Bean<?>>();
+    private Set<Bean<?>> getViewBeansForCurrentUI(final Set<Bean<?>> beans) {
+        Set<Bean<?>> viewBeans = new HashSet<>();
 
         for (Bean<?> bean : beans) {
             CDIView viewAnnotation = bean.getBeanClass().getAnnotation(
@@ -200,7 +197,7 @@ public class CDIViewProvider implements ViewProvider {
     }
 
     @Override
-    public View getView(String viewName) {
+    public View getView(final String viewName) {
         getLogger().log(Level.FINE,
                 "Attempting to retrieve view with name \"{0}\"",
                 viewName);
@@ -214,7 +211,7 @@ public class CDIViewProvider implements ViewProvider {
                     + " - current UI is not set");
         }
 
-        Bean viewBean = getViewBean(viewName);
+        Bean<?> viewBean = getViewBean(viewName);
         if (viewBean != null) {
             if (!isUserHavingAccessToView(viewBean)) {
                 getLogger().log(
@@ -225,12 +222,8 @@ public class CDIViewProvider implements ViewProvider {
                 return null;
             }
 
-            View view = viewContextualStorageManager.prepareChange(() -> {
-                CreationalContext creationalContext = beanManager
-                        .createCreationalContext(viewBean);
-                return (View) beanManager.getReference(viewBean,
-                        viewBean.getBeanClass(), creationalContext);
-            });
+            final String parameters = getParameters(viewName);
+            View view = viewContextualStorageManager.prepareChange(viewBean, viewName, parameters);
 
             getLogger().log(Level.FINE, "Returning view instance {0}", view.toString());
 
@@ -240,15 +233,33 @@ public class CDIViewProvider implements ViewProvider {
         throw new RuntimeException("Unable to instantiate view");
     }
 
-    private String parseViewName(String viewAndParameters) {
+    private String getParameters(String viewName) {
+        if (!lastViewAndParameters.startsWith(viewName)) {
+            throw new IllegalStateException("Last known viewstate should start with view name");
+        }
+        int paramsOffset = viewName.length();
+        if (lastViewAndParameters.length() > paramsOffset) {
+            paramsOffset ++;
+        }
+        return lastViewAndParameters.substring(paramsOffset);
+    }
 
+    private String parseViewName(String viewAndParameters) {
         String viewName = viewAndParameters;
-        if (viewName.startsWith("!")) {
+        if (viewAndParameters.startsWith("!")) {
             viewName = viewName.substring(1);
         }
 
         for (String name : AnnotationUtil.getCDIViewMappings(beanManager)) {
             if (viewName.equals(name) || (viewName.startsWith(name + "/"))) {
+                if (viewAndParameters.startsWith("!")) {
+                    // when viewAndParameters starts with two or more !
+                    // we want to find a view which starts with an !
+                    // but parseViewName(String) removed the leading !
+                    // so when getViewBean(String) also removes the leading !
+                    // it would be looking for the wrong view since its missing a !
+                    return "!".concat(name);
+                }
                 return name;
             }
         }

@@ -15,27 +15,32 @@
  */
 package com.vaadin.cdi;
 
+import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategyQualifier;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextByNameAndParameters;
+import com.vaadin.navigator.View;
+import com.vaadin.ui.UI;
+
+import javax.enterprise.inject.Stereotype;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.enterprise.inject.Stereotype;
-
-import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.View;
-import com.vaadin.ui.UI;
-
 /**
  * Classes implementing {@link View} and annotated with <code>@CDIView</code>
  * are automatically registered with {@link CDIViewProvider} for use by
- * {@link Navigator}.
+ * {@link CDINavigator}.
  * <p>
  * By default, the view name is derived from the class name of the annotated
  * class, but this can also be overridden by defining a {@link #value()}.
  * <p>
  * <code>@CDIView</code> views are by default {@link ViewScoped}.
- * 
+ * <p>
+ * On a <code>@CDIView</code> view the strategy for the view context
+ * can be defined by annotating the view with a
+ * {@link ViewContextStrategyQualifier} annotation.
+ * By default it is {@link ViewContextByNameAndParameters}.
+ *
  * @see javax.inject.Named
  */
 @Stereotype
@@ -45,7 +50,7 @@ import com.vaadin.ui.UI;
 public @interface CDIView {
 
     /**
-     * 
+     *
      * The name of the CDIView can be derived from the simple class name So it
      * is optional. Also multiple views without a value may exist at the same
      * time.
@@ -69,8 +74,9 @@ public @interface CDIView {
      * <p>
      * This only needs to be specified if the application has multiple UIs that
      * use {@link CDIViewProvider}.
-     * 
+     *
      * @return list of UIs in which the view can be shown.
      */
     public Class<? extends UI>[] uis() default { UI.class };
+
 }

@@ -110,7 +110,7 @@ public class CDIUIProvider extends DefaultUIProvider {
         String uiMapping = parseUIMapping(request);
 
         Class<? extends UI> uiClass = null;
-        String pathInfo = "";
+        String pathInfo = request.getContextPath() + "/";
 
         if (isRoot(request)) {
             uiClass = rootUI();
@@ -120,8 +120,10 @@ public class CDIUIProvider extends DefaultUIProvider {
             if (uiBean != null) {
                 // Provide correct path info for UI for push state navigation
                 uiClass = uiBean.getBeanClass().asSubclass(UI.class);
-                pathInfo = removeWildcard(
+                String subPath = removeWildcard(
                         Conventions.deriveMappingForUI(uiClass));
+                pathInfo = request.getContextPath() + "/" +
+                        (subPath.startsWith("/") ? subPath.substring(1) : subPath);
             }
         }
 

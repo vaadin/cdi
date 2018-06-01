@@ -1,10 +1,15 @@
 # Vaadin CDI
 
-Vaadin CDI is the official CDI integration for [Vaadin Framework](https://github.com/vaadin/framework).
+Vaadin CDI is the official CDI integration for [Vaadin 10](https://github.com/vaadin/flow).
+This branch is Vaadin 10 compatible. See other branches for other framework versions:
+* master for Vaadin 10
+* 3.0 for Vaadin 8.2+
+* 2.0 for Vaadin Framework 8.0...8.1 versions
+* 1.0 for Vaadin Framework 7 versions
 
 ## Download release
 
-Official releases of this add-on are available at Vaadin Directory. For Maven instructions, download and reviews, go to [Vaadin CDI](https://vaadin.com/addon/vaadin-cdi).
+Not released yet.
 
 ## Building the project
 

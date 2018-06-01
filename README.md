@@ -1,3 +1,5 @@
+**NOTE: This branch contains work in progress for Vaadin 10 addon. See other branches for older versions of Vaadin Framework.**
+
 # Vaadin CDI
 
 Vaadin CDI is the official CDI integration for [Vaadin 10](https://github.com/vaadin/flow).

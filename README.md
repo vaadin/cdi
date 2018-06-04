@@ -2,6 +2,11 @@ Vaadin CDI
 ======================
 
 Vaadin CDI is the official CDI integration for [Vaadin Framework](https://github.com/vaadin/framework).
+This branch is compatible with Vaadin Framework versions 8.0...8.1. See other branches for other framework versions:
+* master for Vaadin 10
+* 3.0 for Vaadin 8.2+
+* 2.0 for Vaadin Framework 8.0...8.1 versions
+* 1.0 for Vaadin Framework 7 versions
 
 Download release
 ----

@@ -44,6 +44,7 @@ public class VaadinCDIServlet extends VaadinServlet {
         VaadinCDIServletService service = new VaadinCDIServletService(this,
                 deploymentConfiguration);
         service.init();
+        int i = 0;
         return service;
     }
 

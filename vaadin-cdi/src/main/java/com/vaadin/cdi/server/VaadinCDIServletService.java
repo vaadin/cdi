@@ -16,7 +16,8 @@
 package com.vaadin.cdi.server;
 
 import com.vaadin.cdi.internal.VaadinSessionScopedContext;
-import com.vaadin.server.*;
+import com.vaadin.flow.function.DeploymentConfiguration;
+import com.vaadin.flow.server.*;
 
 import java.util.logging.Logger;
 

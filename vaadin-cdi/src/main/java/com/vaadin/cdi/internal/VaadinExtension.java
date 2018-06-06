@@ -18,14 +18,10 @@ package com.vaadin.cdi.internal;
 
 import com.vaadin.cdi.*;
 import com.vaadin.cdi.internal.InconsistentDeploymentException.ID;
-import com.vaadin.navigator.View;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.UI;
+import com.vaadin.flow.component.Component;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.*;
-import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;

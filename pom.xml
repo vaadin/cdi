@@ -1,38 +1,131 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.vaadin</groupId>
-	<artifactId>vaadin-cdi-main</artifactId>
-	<version>3.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<name>vaadin-cdi-main</name>
-	<modules>
-		<module>vaadin-cdi</module>
-	</modules>
-	<organization>
-		<name>Vaadin Ltd</name>
-		<url>http://vaadin.com</url>
-	</organization>
-	<build>
-		<plugins>
-			<!-- Do not deploy top level pom. The vaadin-cdi module does not depend 
-				on it so no need for it to end up in Maven central -->
-			<plugin>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.5</version>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2.1</version>
-				<configuration>
-					<skipAssembly>true</skipAssembly>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.vaadin</groupId>
+    <artifactId>vaadin-cdi-parent</artifactId>
+    <version>10.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>vaadin-cdi-parent</name>
+    <description>
+        Parent module for CDI integration for Vaadin applications.
+    </description>
+    <url>https://github.com/vaadin/cdi</url>
+
+    <organization>
+        <name>Vaadin Ltd</name>
+        <url>http://vaadin.com</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/vaadin/cdi</url>
+        <connection>git:https://github.com/vaadin/cdi.git</connection>
+        <developerConnection>git:https://github.com/vaadin/cdi.git</developerConnection>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>Peter Lehto</name>
+        </developer>
+        <developer>
+            <name>Adam Bien</name>
+        </developer>
+        <developer>
+            <name>Henri Sara</name>
+        </developer>
+        <developer>
+            <name>Jonatan Kronqvist</name>
+        </developer>
+        <developer>
+            <name>Juuso Valli</name>
+        </developer>
+    </developers>
+
+    <properties>
+        <encoding>UTF-8</encoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+        <vaadin.version>10.0.0.rc1</vaadin.version>
+        <deltaspike.version>1.8.1</deltaspike.version>
+    </properties>
+
+    <modules>
+        <module>vaadin-cdi</module>
+        <module>vaadin-cdi-itest</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-bom</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>${vaadin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.deltaspike.distribution</groupId>
+                <artifactId>distributions-bom</artifactId>
+                <version>${deltaspike.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.1.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.enterprise</groupId>
+                <artifactId>cdi-api</artifactId>
+                <version>1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.12</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>1.10.19</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>vaadin-snapshots</id>
+            <name>Vaadin snapshot repository</name>
+            <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>vaadin-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>vaadin-prereleases</id>
+            <url>http://maven.vaadin.com/vaadin-prereleases</url>
+        </repository>
+    </repositories>
 </project>

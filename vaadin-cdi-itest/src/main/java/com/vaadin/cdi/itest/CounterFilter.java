@@ -1,4 +1,4 @@
-package com.vaadin.cdi.internal;
+package com.vaadin.cdi.itest;
 
 import javax.inject.Inject;
 import javax.servlet.*;

@@ -18,7 +18,7 @@
 package com.vaadin.cdi.internal;
 
 import com.vaadin.cdi.VaadinSessionScoped;
-import com.vaadin.server.VaadinSession;
+import com.vaadin.flow.server.VaadinSession;
 import org.apache.deltaspike.core.util.ContextUtils;
 import org.apache.deltaspike.core.util.context.AbstractContext;
 import org.apache.deltaspike.core.util.context.ContextualStorage;

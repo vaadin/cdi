@@ -1,4 +1,4 @@
-package com.vaadin.cdi.internal;
+package com.vaadin.cdi.itest;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.concurrent.ConcurrentHashMap;

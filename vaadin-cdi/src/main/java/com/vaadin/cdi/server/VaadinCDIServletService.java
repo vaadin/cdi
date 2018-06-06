@@ -15,10 +15,8 @@
  */
 package com.vaadin.cdi.server;
 
-import com.vaadin.cdi.CDIUIProvider;
 import com.vaadin.cdi.internal.VaadinSessionScopedContext;
 import com.vaadin.server.*;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
 
 import java.util.logging.Logger;
 
@@ -31,14 +29,11 @@ import java.util.logging.Logger;
  */
 public class VaadinCDIServletService extends VaadinServletService {
 
-    private final CDIUIProvider cdiuiProvider;
-
     protected final class SessionListenerImpl implements SessionInitListener,
             SessionDestroyListener {
         @Override
         public void sessionInit(SessionInitEvent event) {
             getLogger().fine("Session init");
-            event.getSession().addUIProvider(cdiuiProvider);
         }
 
         @Override
@@ -63,7 +58,6 @@ public class VaadinCDIServletService extends VaadinServletService {
             throws ServiceException {
         super(servlet, deploymentConfiguration);
 
-        cdiuiProvider = BeanProvider.getContextualReference(CDIUIProvider.class, false);
         SessionListenerImpl sessionListener = new SessionListenerImpl();
         addSessionInitListener(sessionListener);
         addSessionDestroyListener(sessionListener);

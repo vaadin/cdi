@@ -36,7 +36,6 @@ import java.util.logging.Logger;
 public class VaadinExtension implements Extension {
 
     private UIScopedContext uiScopedContext;
-    private ViewScopedContext viewScopedContext;
 
     private List<String> normalScopedComponentWarnings = new LinkedList<String>();
 
@@ -53,39 +52,6 @@ public class VaadinExtension implements Extension {
                     + beanClass.getCanonicalName());
         }
 
-        if (beanClass.isAnnotationPresent(CDIView.class)) {
-            if (!View.class.isAssignableFrom(beanClass)
-                    && !Modifier.isAbstract(beanClass.getModifiers())) {
-                String message = "The non-abstract class "
-                        + beanClass.getCanonicalName()
-                        + " with @CDIView should implement "
-                        + View.class.getCanonicalName();
-                throwInconsistentDeployment(ID.CDIVIEW_WITHOUT_VIEW, message);
-            }
-            if (Dependent.class.equals(beanScope)) {
-                String message = "The CDI View class "
-                        + beanClass.getCanonicalName()
-                        + " should not be Dependent.";
-                throwInconsistentDeployment(ID.CDIVIEW_DEPENDENT, message);
-            }
-        }
-
-        if (beanClass.isAnnotationPresent(CDIUI.class)) {
-            if (!UI.class.isAssignableFrom(beanClass)
-                    && !Modifier.isAbstract(beanClass.getModifiers())) {
-                String message = "The non-abstract class "
-                        + beanClass.getCanonicalName()
-                        + " with @CDIUI should extend "
-                        + UI.class.getCanonicalName();
-                throwInconsistentDeployment(ID.CDIUI_WITHOUT_UI, message);
-            }
-            if (!UIScoped.class.equals(beanScope)) {
-                String message = "The CDI UI class "
-                        + beanClass.getCanonicalName()
-                        + " should be @UIScoped.";
-                throwInconsistentDeployment(ID.CDIUI_SCOPE, message);
-            }
-        }
     }
 
     private void throwInconsistentDeployment(ID errorId, String message) {
@@ -117,13 +83,6 @@ public class VaadinExtension implements Extension {
                 NormalUIScoped.class));
         getLogger().info("UIScopedContext registered for Vaadin CDI");
 
-        viewScopedContext = new ViewScopedContext(beanManager);
-        afterBeanDiscovery.addContext(new ContextWrapper(viewScopedContext,
-                ViewScoped.class));
-        afterBeanDiscovery.addContext(new ContextWrapper(viewScopedContext,
-                NormalViewScoped.class));
-        getLogger().info("ViewScopedContext registered for Vaadin CDI");
-
         VaadinSessionScopedContext vaadinSessionScopedContext = new VaadinSessionScopedContext(beanManager);
         afterBeanDiscovery.addContext(new ContextWrapper(vaadinSessionScopedContext, VaadinSessionScoped.class));
         getLogger().info("VaadinSessionScopedContext registered for Vaadin CDI");
@@ -131,7 +90,6 @@ public class VaadinExtension implements Extension {
 
     public void initializeContexts(@Observes AfterDeploymentValidation adv, BeanManager beanManager) {
         uiScopedContext.init(beanManager);
-        viewScopedContext.init(beanManager);
     }
 
     private static Logger getLogger() {

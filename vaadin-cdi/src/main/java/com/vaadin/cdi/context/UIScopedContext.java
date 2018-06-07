@@ -16,6 +16,9 @@
 package com.vaadin.cdi.context;
 
 import com.vaadin.cdi.annotation.UIScoped;
+import com.vaadin.cdi.annotation.VaadinSessionScoped;
+import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.apache.deltaspike.core.util.context.AbstractContext;
@@ -30,7 +33,7 @@ import java.lang.annotation.Annotation;
  */
 public class UIScopedContext extends AbstractContext {
 
-    private UIContextualStorageManager contextualStorageManager;
+    private ContextualStorageManager contextualStorageManager;
 
     public UIScopedContext(final BeanManager beanManager) {
         super(beanManager);
@@ -43,7 +46,7 @@ public class UIScopedContext extends AbstractContext {
 
     public void init(BeanManager beanManager) {
         contextualStorageManager = BeanProvider
-                .getContextualReference(beanManager, UIContextualStorageManager.class, false);
+                .getContextualReference(beanManager, ContextualStorageManager.class, false);
     }
 
     @Override
@@ -54,8 +57,31 @@ public class UIScopedContext extends AbstractContext {
     @Override
     public boolean isActive() {
         return VaadinSession.getCurrent() != null
-                && contextualStorageManager != null
-                && contextualStorageManager.isActive();
+                && UI.getCurrent() != null
+                && contextualStorageManager != null;
     }
 
+    @VaadinSessionScoped
+    public static class ContextualStorageManager extends AbstractContextualStorageManager<Integer> {
+
+        public ContextualStorageManager() {
+            // Session lock checked in VaadinSessionScopedContext while
+            // getting the session attribute of this beans context.
+            super(false);
+        }
+
+        public ContextualStorage getContextualStorage(boolean createIfNotExist) {
+            final UI ui = UI.getCurrent();
+            final Integer uiId = ui.getUIId();
+            if (createIfNotExist && !isExist(uiId)) {
+                ui.addDetachListener(this::destroy);
+            }
+            return super.getContextualStorage(uiId, createIfNotExist);
+        }
+
+        private void destroy(DetachEvent event) {
+            final int uiId = event.getUI().getUIId();
+            super.destroy(uiId);
+        }
+    }
 }

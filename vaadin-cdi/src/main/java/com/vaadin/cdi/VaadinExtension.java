@@ -16,29 +16,36 @@
 
 package com.vaadin.cdi;
 
-import com.vaadin.cdi.InconsistentDeploymentException.ID;
 import com.vaadin.cdi.annotation.NormalUIScoped;
-import com.vaadin.cdi.annotation.UIScoped;
-import com.vaadin.cdi.annotation.VaadinSessionScoped;
 import com.vaadin.cdi.context.ContextWrapper;
 import com.vaadin.cdi.context.UIScopedContext;
+import com.vaadin.cdi.context.VaadinServiceScopedContext;
 import com.vaadin.cdi.context.VaadinSessionScopedContext;
 import com.vaadin.flow.component.Component;
+import org.apache.deltaspike.core.util.context.AbstractContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.*;
+import java.lang.annotation.Annotation;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * CDI Extension needed to register the @CDIUI scope to the runtime.
  */
 public class VaadinExtension implements Extension {
 
+    private VaadinServiceScopedContext serviceScopedContext;
     private UIScopedContext uiScopedContext;
 
-    private List<String> normalScopedComponentWarnings = new LinkedList<String>();
+    private List<String> normalScopedComponentWarnings = new LinkedList<>();
+
+    public void initializeContexts(@Observes AfterDeploymentValidation adv, BeanManager beanManager) {
+        serviceScopedContext.init(beanManager);
+        uiScopedContext.init(beanManager);
+    }
 
     void processManagedBean(@Observes ProcessManagedBean pmb,
             final BeanManager beanManager) {
@@ -55,46 +62,47 @@ public class VaadinExtension implements Extension {
 
     }
 
-    private void throwInconsistentDeployment(ID errorId, String message) {
-        getLogger().warning(message);
-        throw new InconsistentDeploymentException(errorId, message);
-    }
-
     void afterBeanDiscovery(
             @Observes final AfterBeanDiscovery afterBeanDiscovery,
             final BeanManager beanManager) {
 
         if (normalScopedComponentWarnings.size() > 0) {
             StringBuilder sb = new StringBuilder();
-            sb.append("The following Vaadin components are injected into normal scoped contexts:\n");
+            sb.append("The following Vaadin components are injected into "
+                    + "normal scoped contexts:\n");
             for (String proxiedComponent : normalScopedComponentWarnings) {
                 sb.append("   ");
                 sb.append(proxiedComponent);
                 sb.append("\n");
             }
-            sb.append("This approach uses proxy objects and has not been extensively tested with the framework. Please report any unexpected behavior. Switching to a pseudo-scoped context may also resolve potential issues.");
-            getLogger().info(sb.toString());
-
+            sb.append("This approach uses proxy objects and is "
+                    + "not supported in Vaadin framework.");
+            getLogger().error(sb.toString());
         }
 
+        serviceScopedContext = new VaadinServiceScopedContext(beanManager);
         uiScopedContext = new UIScopedContext(beanManager);
-        afterBeanDiscovery.addContext(new ContextWrapper(uiScopedContext,
-                UIScoped.class));
-        afterBeanDiscovery.addContext(new ContextWrapper(uiScopedContext,
-                NormalUIScoped.class));
-        getLogger().info("UIScopedContext registered for Vaadin CDI");
-
-        VaadinSessionScopedContext vaadinSessionScopedContext = new VaadinSessionScopedContext(beanManager);
-        afterBeanDiscovery.addContext(new ContextWrapper(vaadinSessionScopedContext, VaadinSessionScoped.class));
-        getLogger().info("VaadinSessionScopedContext registered for Vaadin CDI");
+        addContext(afterBeanDiscovery, serviceScopedContext, null);
+        addContext(afterBeanDiscovery,
+                new VaadinSessionScopedContext(beanManager), null);
+        addContext(afterBeanDiscovery, uiScopedContext, NormalUIScoped.class);
     }
 
-    public void initializeContexts(@Observes AfterDeploymentValidation adv, BeanManager beanManager) {
-        uiScopedContext.init(beanManager);
+    private void addContext(AfterBeanDiscovery afterBeanDiscovery,
+                            AbstractContext context,
+                            Class<? extends Annotation> additionalScope) {
+        afterBeanDiscovery.addContext(
+                new ContextWrapper(context, context.getScope()));
+        if (additionalScope != null) {
+            afterBeanDiscovery.addContext(
+                    new ContextWrapper(context, additionalScope));
+        }
+        getLogger().info("{} registered for Vaadin CDI",
+                context.getClass().getSimpleName());
     }
 
     private static Logger getLogger() {
-        return Logger.getLogger(VaadinExtension.class.getCanonicalName());
+        return LoggerFactory.getLogger(VaadinExtension.class.getCanonicalName());
     }
 
 }

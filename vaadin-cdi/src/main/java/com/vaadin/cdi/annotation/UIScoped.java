@@ -15,13 +15,8 @@
  */
 package com.vaadin.cdi.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import javax.inject.Scope;
+import java.lang.annotation.*;
 
 /**
  * The lifecycle of a UIScoped component is bound to a browser tab.
@@ -30,8 +25,11 @@ import javax.inject.Scope;
  * rather than a proxy.
  * <p>
  * There are some limitations when not using proxies. Circular referencing (that
- * is, injecting A to B and B to A) will not work. Interceptors and decorators
- * will not work.
+ * is, injecting A to B and B to A) will not work.
+ * Injecting into a larger scope will bind the instance
+ * from the currently active smaller scope, and will ignore smaller scope change.
+ * For example after injected into session scope it will point to the same
+ * UIScoped bean instance ( even its UI is closed ) regardless of UI change.
  * <p>
  * The sister annotation to this is the {@link NormalUIScoped}. Both annotations
  * reference the same underlying scope, so it is possible to get both a proxy

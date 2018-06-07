@@ -57,6 +57,8 @@
 
         <vaadin.version>10.0.0.rc1</vaadin.version>
         <deltaspike.version>1.8.1</deltaspike.version>
+        <owb.version>1.7.4</owb.version>
+        <weld.version>2.4.6.Final</weld.version>
     </properties>
 
     <modules>
@@ -90,6 +92,27 @@
                 <groupId>javax.enterprise</groupId>
                 <artifactId>cdi-api</artifactId>
                 <version>1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.openwebbeans</groupId>
+                <artifactId>openwebbeans-impl</artifactId>
+                <version>${owb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.openwebbeans</groupId>
+                <artifactId>openwebbeans-spi</artifactId>
+                <version>${owb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.weld.se</groupId>
+                <artifactId>weld-se</artifactId>
+                <version>${weld.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>

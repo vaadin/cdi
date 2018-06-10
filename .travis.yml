@@ -1,5 +1,6 @@
 language: java
 jdk: oraclejdk8
+script: mvn test -B -Ptomee
 after_success: "./.travis.after_success.sh"
 before_install: "./.travis.before_install.sh"
 sudo: required

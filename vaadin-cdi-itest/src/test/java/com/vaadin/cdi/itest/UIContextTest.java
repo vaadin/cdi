@@ -96,7 +96,6 @@ public class UIContextTest extends AbstractCdiTest {
     }
 
     private void assertUIContextDestroyed() throws IOException {
-        waitForVaadin();
         assertCountEquals(1, UIScopedLabel.DESTROY_COUNT + uiId);
     }
 }

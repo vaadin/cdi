@@ -55,7 +55,6 @@ public class SessionContextTest extends AbstractCdiTest {
     public void testVaadinSessionCloseDestroysSessionContext() throws Exception {
         assertDestroyCountEquals(0);
         click(SessionContextView.INVALIDATEBTN_ID);
-        waitForVaadin();
         assertDestroyCountEquals(1);
     }
 
@@ -63,7 +62,6 @@ public class SessionContextTest extends AbstractCdiTest {
     public void testHttpSessionCloseDestroysSessionContext() throws Exception {
         assertDestroyCountEquals(0);
         click(SessionContextView.HTTP_INVALIDATEBTN_ID);
-        waitForVaadin();
         assertDestroyCountEquals(1);
     }
 

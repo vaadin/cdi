@@ -18,11 +18,18 @@ package com.vaadin.cdi.itest;
 
 
 import com.vaadin.flow.testutil.ChromeBrowserTest;
+import com.vaadin.testbench.commands.TestBenchCommandExecutor;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.junit.Assert;
 import org.junit.runner.RunWith;
+import org.openqa.selenium.WebDriver;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 
 @RunWith(Arquillian.class)
@@ -45,5 +52,35 @@ abstract public class AbstractCdiTest extends ChromeBrowserTest {
     @Override
     protected String getTestPath() {
         return "";
+    }
+
+    protected void click(String buttonId) {
+        $("button").id(buttonId).click();
+    }
+
+    protected void waitForVaadin() {
+        getCommandExecutor().waitForVaadin();
+    }
+
+    protected void assertCountEquals(int expectedCount, String counter) throws IOException {
+        Assert.assertEquals(expectedCount, getCount(counter));
+    }
+
+    protected void resetCounts() throws IOException {
+        slurp("?resetCounts");
+    }
+
+    protected int getCount(String id) throws IOException {
+        String line = slurp("?getCount=" + id);
+        return Integer.parseInt(line);
+    }
+
+    private String slurp(String uri) throws IOException {
+        URL url = new URL(getRootURL() + uri);
+        InputStream is = url.openConnection().getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        String line = reader.readLine();
+        reader.close();
+        return line;
     }
 }

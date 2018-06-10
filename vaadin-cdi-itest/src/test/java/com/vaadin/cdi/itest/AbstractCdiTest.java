@@ -50,7 +50,7 @@ abstract public class AbstractCdiTest extends ChromeBrowserTest {
 
     @Override
     protected String getTestPath() {
-        return "";
+        return "/";
     }
 
     protected void click(String buttonId) {

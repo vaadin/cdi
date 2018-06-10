@@ -54,11 +54,16 @@
         <encoding>UTF-8</encoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.surefire.plugin.version>2.20</maven.surefire.plugin.version>
+        <driver.binary.downloader.maven.plugin.version>1.0.14
+        </driver.binary.downloader.maven.plugin.version>
 
-        <vaadin.version>10.0.0.rc1</vaadin.version>
+        <vaadin.flow.version>1.0.0.rc1</vaadin.flow.version>
+        <slf4j.version>1.7.25</slf4j.version>
         <deltaspike.version>1.8.1</deltaspike.version>
         <owb.version>1.7.4</owb.version>
         <weld.version>2.4.6.Final</weld.version>
+        <arquillian.version>1.1.15.Final</arquillian.version>
     </properties>
 
     <modules>
@@ -70,11 +75,25 @@
         <dependencies>
             <dependency>
                 <groupId>com.vaadin</groupId>
-                <artifactId>vaadin-bom</artifactId>
-                <type>pom</type>
-                <scope>import</scope>
-                <version>${vaadin.version}</version>
+                <artifactId>flow</artifactId>
+                <version>${vaadin.flow.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>flow-server</artifactId>
+                <version>${vaadin.flow.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.webjars.bowergithub.polymer</groupId>
+                <artifactId>polymer</artifactId>
+                <version>2.6.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.apache.deltaspike.distribution</groupId>
                 <artifactId>distributions-bom</artifactId>
@@ -123,6 +142,18 @@
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
                 <version>1.10.19</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>${arquillian.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>flow-test-util</artifactId>
+                <version>${vaadin.flow.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

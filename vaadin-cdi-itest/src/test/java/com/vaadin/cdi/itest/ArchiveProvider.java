@@ -49,6 +49,9 @@ public class ArchiveProvider {
                 .addAsLibraries(
                         pom.resolve("com.vaadin:flow")
                                 .withTransitivity().asFile())
+                .addAsLibraries(
+                        pom.resolve("org.webjars.bowergithub.polymer:polymer")
+                                .withTransitivity().asFile())
                 .addAsWebInfResource(EmptyAsset.INSTANCE,
                         ArchivePaths.create("beans.xml"))
                 .addClasses(Counter.class, CounterFilter.class);

@@ -24,6 +24,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 import java.io.BufferedReader;
@@ -60,6 +61,14 @@ abstract public class AbstractCdiTest extends ChromeBrowserTest {
 
     protected void waitForVaadin() {
         getCommandExecutor().waitForVaadin();
+    }
+
+    protected void follow(String linkText) {
+        findElement(By.linkText(linkText)).click();
+    }
+
+    protected String getText(String id) {
+        return findElement(By.id(id)).getText();
     }
 
     protected void assertCountEquals(int expectedCount, String counter) throws IOException {

@@ -20,7 +20,6 @@ import com.vaadin.cdi.itest.service.BootstrapCustomizeView;
 import com.vaadin.cdi.itest.service.BootstrapCustomizer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class ServiceTest extends AbstractCdiTest {
@@ -35,8 +34,8 @@ public class ServiceTest extends AbstractCdiTest {
     @Test
     public void testServiceCustomized() {
         getDriver().get(getTestURL() + "bootstrap");
-        Assert.assertEquals(BootstrapCustomizer.APPENDED_TXT,
-                getText(BootstrapCustomizer.APPENDED_ID));
+        assertTextEquals(BootstrapCustomizer.APPENDED_TXT,
+                BootstrapCustomizer.APPENDED_ID);
     }
 
 }

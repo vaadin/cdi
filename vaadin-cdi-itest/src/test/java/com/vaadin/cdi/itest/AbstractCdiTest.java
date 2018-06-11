@@ -53,8 +53,8 @@ abstract public class AbstractCdiTest extends ChromeBrowserTest {
         return "/";
     }
 
-    protected void click(String buttonId) {
-        $("button").id(buttonId).click();
+    protected void click(String elementId) {
+        findElement(By.id(elementId)).click();
     }
 
     protected void follow(String linkText) {
@@ -67,6 +67,10 @@ abstract public class AbstractCdiTest extends ChromeBrowserTest {
 
     protected void assertCountEquals(int expectedCount, String counter) throws IOException {
         Assert.assertEquals(expectedCount, getCount(counter));
+    }
+
+    protected void assertTextEquals(String expectedText, String elementId) {
+        Assert.assertEquals(expectedText, getText(elementId));
     }
 
     protected void resetCounts() throws IOException {

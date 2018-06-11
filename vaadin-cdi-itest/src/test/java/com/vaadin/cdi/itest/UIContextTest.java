@@ -22,7 +22,6 @@ import com.vaadin.cdi.itest.uicontext.UIScopedLabel;
 import com.vaadin.cdi.itest.uicontext.UIScopedView;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -89,10 +88,6 @@ public class UIContextTest extends AbstractCdiTest {
         uiId = getText(UIContextRootView.UIID_LABEL);
         follow(UIContextRootView.NORMALSCOPED_LINK);
         assertTextEquals(uiId, UINormalScopedBeanView.UIID_LABEL);
-    }
-
-    private void assertTextEquals(String expectedText, String elementId) {
-        Assert.assertEquals(expectedText, getText(elementId));
     }
 
     private void assertUIContextDestroyed() throws IOException {

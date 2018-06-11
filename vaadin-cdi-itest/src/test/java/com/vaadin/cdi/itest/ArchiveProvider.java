@@ -39,7 +39,8 @@ public class ArchiveProvider {
     }
 
     private static WebArchive base(String warName) {
-        PomEquippedResolveStage pom = Maven.resolver()
+        PomEquippedResolveStage pom = Maven.configureResolver()
+                .workOffline()
                 .loadPomFromFile("pom.xml");
         return ShrinkWrap
                 .create(WebArchive.class, warName + ".war")

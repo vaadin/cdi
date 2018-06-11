@@ -46,14 +46,16 @@ public class UIContextTest extends AbstractCdiTest {
 
     @Test
     public void testDestroyOnUIClose() throws IOException {
+        assertDestroyCountEquals(0);
         click(UIContextRootView.CLOSE_UI_BTN);
-        assertUIContextDestroyed();
+        assertDestroyCountEquals(1);
     }
 
     @Test
     public void testDestroyOnSessionClose() throws IOException {
+        assertDestroyCountEquals(0);
         click(UIContextRootView.CLOSE_SESSION_BTN);
-        assertUIContextDestroyed();
+        assertDestroyCountEquals(1);
     }
 
     @Test
@@ -90,7 +92,7 @@ public class UIContextTest extends AbstractCdiTest {
         assertTextEquals(uiId, UINormalScopedBeanView.UIID_LABEL);
     }
 
-    private void assertUIContextDestroyed() throws IOException {
-        assertCountEquals(1, UIScopedLabel.DESTROY_COUNT + uiId);
+    private void assertDestroyCountEquals(int expectedCount) throws IOException {
+        assertCountEquals(expectedCount, UIScopedLabel.DESTROY_COUNT + uiId);
     }
 }

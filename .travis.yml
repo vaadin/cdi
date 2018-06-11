@@ -5,6 +5,8 @@ after_success: "./.travis.after_success.sh"
 before_install: "./.travis.before_install.sh"
 sudo: required
 dist: trusty
+addons:
+  chrome: stable
 branches:
   only:
   - master

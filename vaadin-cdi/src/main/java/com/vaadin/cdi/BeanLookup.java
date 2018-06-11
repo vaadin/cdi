@@ -38,7 +38,7 @@ import java.util.function.Supplier;
  *
  * @param <T> Bean Type
  */
-public class BeanLookup<T> {
+class BeanLookup<T> {
     private final BeanManager beanManager;
     private final Class<T> type;
     private final Annotation[] qualifiers;
@@ -48,7 +48,7 @@ public class BeanLookup<T> {
         throw e;
     };
 
-    public final static Annotation SERVICE = new ServiceLiteral();
+    final static Annotation SERVICE = new ServiceLiteral();
     private final static Annotation[] ANY = new Annotation[]{new AnyLiteral()};
 
     private static class ServiceLiteral
@@ -62,7 +62,7 @@ public class BeanLookup<T> {
         void handle();
     }
 
-    public BeanLookup(BeanManager beanManager, Class<T> type, Annotation... qualifiers) {
+    BeanLookup(BeanManager beanManager, Class<T> type, Annotation... qualifiers) {
         this.beanManager = beanManager;
         this.type = type;
         if (qualifiers.length > 0) {
@@ -72,23 +72,23 @@ public class BeanLookup<T> {
         }
     }
 
-    public BeanLookup<T> ifUnsatisfied(UnsatisfiedHandler unsatisfiedHandler) {
+    BeanLookup<T> ifUnsatisfied(UnsatisfiedHandler unsatisfiedHandler) {
         this.unsatisfiedHandler = unsatisfiedHandler;
         return this;
     }
 
-    public BeanLookup<T> ifAmbiguous(
+    BeanLookup<T> ifAmbiguous(
             Consumer<AmbiguousResolutionException> ambiguousHandler) {
         this.ambiguousHandler = ambiguousHandler;
         return this;
     }
 
-    public BeanLookup<T> fallbackTo(Supplier<T> fallback) {
+    BeanLookup<T> fallbackTo(Supplier<T> fallback) {
         this.fallback = fallback;
         return this;
     }
 
-    public T get() {
+    T get() {
         final Set<Bean<?>> beans = beanManager.getBeans(type, qualifiers);
         if (beans == null || beans.isEmpty()) {
             unsatisfiedHandler.handle();

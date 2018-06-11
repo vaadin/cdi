@@ -102,7 +102,7 @@ public class VaadinExtension implements Extension {
     }
 
     private static Logger getLogger() {
-        return LoggerFactory.getLogger(VaadinExtension.class.getCanonicalName());
+        return LoggerFactory.getLogger(VaadinExtension.class);
     }
 
 }

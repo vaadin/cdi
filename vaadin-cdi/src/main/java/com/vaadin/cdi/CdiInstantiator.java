@@ -105,7 +105,7 @@ public class CdiInstantiator implements Instantiator {
     }
 
     private static Logger getLogger() {
-        return LoggerFactory.getLogger(CdiInstantiator.class.getName());
+        return LoggerFactory.getLogger(CdiInstantiator.class);
     }
 
     @Override

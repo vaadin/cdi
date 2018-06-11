@@ -115,7 +115,7 @@ public class CdiServletDeployer implements ServletContainerInitializer {
     }
 
     private static Logger getLogger() {
-        return LoggerFactory.getLogger(CdiServletDeployer.class.getName());
+        return LoggerFactory.getLogger(CdiServletDeployer.class);
     }
 
 }

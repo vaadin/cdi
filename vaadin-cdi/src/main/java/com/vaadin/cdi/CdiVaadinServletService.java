@@ -15,11 +15,13 @@
  */
 package com.vaadin.cdi;
 
+import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.context.VaadinSessionScopedContext;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.server.*;
 import org.apache.deltaspike.core.util.ProxyUtils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.AmbiguousResolutionException;
@@ -30,10 +32,11 @@ import static com.vaadin.cdi.BeanLookup.SERVICE;
 
 /**
  * Servlet service implementation for Vaadin CDI.
- * 
- * This class automatically initializes CDIUIProvider and provides the CDI
- * add-on events about session and request processing. For overriding this
- * class, see VaadinCDIServlet.
+ * <p>
+ * This class creates and initializes a @{@link VaadinServiceEnabled}
+ * {@link Instantiator}.
+ *
+ * @see CdiVaadinServlet
  */
 public class CdiVaadinServletService extends VaadinServletService {
 
@@ -51,27 +54,10 @@ public class CdiVaadinServletService extends VaadinServletService {
      * Static listener class,
      * to avoid registering the whole service instance.
      */
-    private static class Listener
-            implements SessionInitListener, SessionDestroyListener {
-
-        private final BeanManager beanManager;
-
-        Listener(BeanManager beanManager) {
-            this.beanManager = beanManager;
-        }
-
-        @Override
-        public void sessionInit(SessionInitEvent sessionInitEvent)
-                throws ServiceException {
-            VaadinSession session = sessionInitEvent.getSession();
-            lookup(beanManager, ErrorHandler.class)
-                    .ifPresent(session::setErrorHandler);
-            beanManager.fireEvent(sessionInitEvent);
-        }
+    private static class Listener implements SessionDestroyListener {
 
         @Override
         public void sessionDestroy(SessionDestroyEvent sessionDestroyEvent) {
-            beanManager.fireEvent(sessionDestroyEvent);
             if (VaadinSessionScopedContext.guessContextIsUndeployed()) {
                 // Happens on tomcat when it expires sessions upon undeploy.
                 // beanManager.getPassivationCapableBean returns null for passivation id,
@@ -89,11 +75,9 @@ public class CdiVaadinServletService extends VaadinServletService {
 
     @Override
     public void init() throws ServiceException {
-        lookup(beanManager, SystemMessagesProvider.class)
-                .ifPresent(this::setSystemMessagesProvider);
-        Listener listener = new Listener(beanManager);
-        addSessionInitListener(listener);
+        Listener listener = new Listener();
         addSessionDestroyListener(listener);
+        addServiceDestroyListener(this::fireCdiDestroyEvent);
         super.init();
     }
 
@@ -105,8 +89,7 @@ public class CdiVaadinServletService extends VaadinServletService {
     @Override
     protected Optional<Instantiator> loadInstantiators()
             throws ServiceException {
-        Optional<Instantiator> instantiatorOptional =
-                lookup(beanManager, Instantiator.class);
+        Optional<Instantiator> instantiatorOptional = lookup(Instantiator.class);
         if (instantiatorOptional.isPresent()) {
             Instantiator instantiator = instantiatorOptional.get();
             if (!instantiator.init(this)) {
@@ -126,8 +109,7 @@ public class CdiVaadinServletService extends VaadinServletService {
         return instantiatorOptional;
     }
 
-    protected static <T> Optional<T> lookup(BeanManager beanManager,
-                                            Class<T> type) throws ServiceException {
+    protected <T> Optional<T> lookup(Class<T> type) throws ServiceException {
         try {
             T instance = new BeanLookup<>(beanManager, type, SERVICE).get();
             return Optional.ofNullable(instance);
@@ -138,9 +120,20 @@ public class CdiVaadinServletService extends VaadinServletService {
         }
     }
 
-    private static org.slf4j.Logger getLogger() {
-        return LoggerFactory.getLogger(CdiVaadinServletService.class
-                .getCanonicalName());
+    private void fireCdiDestroyEvent(ServiceDestroyEvent event) {
+        try {
+            beanManager.fireEvent(event);
+        } catch (Exception e) {
+            // During application shutdown on TomEE 7,
+            // beans are lost at this point.
+            // Does not throw an exception, but catch anything just to be sure.
+            getLogger().warn("Error at destroy event distribution with CDI.",
+                    e);
+        }
+    }
+
+    private static Logger getLogger() {
+        return LoggerFactory.getLogger(CdiVaadinServletService.class);
     }
 
 }

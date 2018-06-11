@@ -16,11 +16,9 @@
 
 package com.vaadin.cdi;
 
-import com.vaadin.cdi.annotation.VaadinServiceEnabled;
-import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.context.ServiceUnderTestContext;
 import com.vaadin.flow.di.Instantiator;
-import com.vaadin.flow.server.*;
+import com.vaadin.flow.server.ServiceException;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.After;
 import org.junit.Test;
@@ -56,33 +54,10 @@ public class CdiVaadinServletServiceTest {
         assertThat(instantiator, instanceOf(CdiInstantiator.class));
     }
 
-    @Test
-    public void testSystemMessagesProviderCreated() throws ServiceException {
-        initService(beanManager);
-        SystemMessagesProvider systemMessagesProvider =
-                service.getSystemMessagesProvider();
-        assertThat(systemMessagesProvider,
-                instanceOf(CdiSystemMessagesProvider.class));
-    }
-
-    @Test(expected = ServiceException.class)
-    public void testAmbiguousSystemMessagesProviderThrowsException()
-            throws ServiceException {
-        assertAmbiguousThrowsException(SystemMessagesProvider.class);
-    }
-
     @Test(expected = ServiceException.class)
     public void testAmbiguousInstantiatorThrowsException()
             throws ServiceException {
         assertAmbiguousThrowsException(Instantiator.class);
-    }
-
-    @Test(expected = ServiceException.class)
-    public void testWithoutSystemMessagesProviderDefaultInstantiated()
-            throws ServiceException {
-        initServiceWithoutBeanFor(SystemMessagesProvider.class);
-        assertThat(service.getSystemMessagesProvider(),
-                instanceOf(DefaultSystemMessagesProvider.class));
     }
 
     @Test(expected = ServiceException.class)
@@ -142,18 +117,6 @@ public class CdiVaadinServletServiceTest {
         initService(mockBm);
 
         verify(mockBm, times(1)).resolve(same(beans));
-    }
-
-    @VaadinServiceEnabled
-    @VaadinServiceScoped
-    public static class CdiSystemMessagesProvider
-            implements SystemMessagesProvider {
-
-        @Override
-        public SystemMessages getSystemMessages(
-                SystemMessagesInfo systemMessagesInfo) {
-            return new CustomizedSystemMessages();
-        }
     }
 
 }

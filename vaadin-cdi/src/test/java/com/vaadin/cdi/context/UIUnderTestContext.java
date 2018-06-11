@@ -64,10 +64,6 @@ public class UIUnderTestContext implements UnderTestContext {
         }
     }
 
-    public UI getUi() {
-        return ui;
-    }
-
     @Override
     public void destroy() {
         ComponentUtil.onComponentDetach(ui);

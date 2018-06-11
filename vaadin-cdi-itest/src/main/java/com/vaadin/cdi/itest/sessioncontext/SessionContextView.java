@@ -22,7 +22,6 @@ import com.vaadin.cdi.itest.Counter;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.NativeButton;
-import com.vaadin.flow.component.page.BodySize;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
@@ -31,7 +30,6 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 
-@BodySize(height = "100vh", width = "100vw")
 @Route("")
 public class SessionContextView extends Div {
 

@@ -17,7 +17,6 @@
 package com.vaadin.cdi.itest.uicontext;
 
 import com.vaadin.cdi.annotation.UIScoped;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.NativeButton;
@@ -39,8 +38,6 @@ public class UIScopedView extends Div {
     private void init() {
         final Label state = new Label("");
         state.setId(VIEWSTATE_LABEL);
-
-        final String uiIdStr = UI.getCurrent().getUIId() + "";
 
         final NativeButton button =
                 new NativeButton("set state", event -> state.setText(UISCOPED_STATE));

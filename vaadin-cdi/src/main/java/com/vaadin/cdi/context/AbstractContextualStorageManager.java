@@ -88,7 +88,4 @@ abstract class AbstractContextualStorageManager<K> implements Serializable  {
         }
     }
 
-    protected Map<K, ContextualStorage> getAll() {
-        return storageMap;
-    }
 }

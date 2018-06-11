@@ -28,7 +28,7 @@ public class CounterFilter implements javax.servlet.Filter {
     Counter counter;
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
     }
 
     @Override

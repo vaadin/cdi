@@ -33,7 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * CDI Extension needed to register the @CDIUI scope to the runtime.
+ * CDI Extension needed to register Vaadin scopes to the runtime.
  */
 public class VaadinExtension implements Extension {
 
@@ -49,9 +49,9 @@ public class VaadinExtension implements Extension {
 
     void processManagedBean(@Observes ProcessManagedBean pmb,
             final BeanManager beanManager) {
-        Bean bean = pmb.getBean();
-        Class beanClass = bean.getBeanClass();
-        Class beanScope = bean.getScope();
+        Bean<?> bean = pmb.getBean();
+        Class<?> beanClass = bean.getBeanClass();
+        Class<? extends Annotation> beanScope = bean.getScope();
 
         if (Component.class.isAssignableFrom(beanClass)
                 && beanManager.isNormalScope(beanScope)) {

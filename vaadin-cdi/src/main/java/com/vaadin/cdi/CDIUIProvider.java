@@ -110,7 +110,7 @@ public class CDIUIProvider extends DefaultUIProvider {
         String uiMapping = parseUIMapping(request);
 
         Class<? extends UI> uiClass = null;
-        String pathInfo = request.getContextPath() + "/";
+        String pathInfo = "";
 
         if (isRoot(request)) {
             uiClass = rootUI();
@@ -120,7 +120,7 @@ public class CDIUIProvider extends DefaultUIProvider {
             if (uiBean != null) {
                 // Provide correct path info for UI for push state navigation
                 uiClass = uiBean.getBeanClass().asSubclass(UI.class);
-                pathInfo += removeWildcard(
+                pathInfo = removeWildcard(
                         Conventions.deriveMappingForUI(uiClass));
             }
         }
@@ -131,8 +131,14 @@ public class CDIUIProvider extends DefaultUIProvider {
             uiClass = super.getUIClass(selectionEvent);
         }
 
+        // Sometimes pathInfo does not contain leading slash
+        if (!pathInfo.isEmpty() && !pathInfo.startsWith("/")) {
+            pathInfo = "/" + pathInfo;
+        }
+
         request.setAttribute(ApplicationConstants.UI_ROOT_PATH,
-                (pathInfo.startsWith("/") ? "" : "/") + pathInfo);
+                request.getContextPath() + pathInfo);
+
         return uiClass;
     }
 

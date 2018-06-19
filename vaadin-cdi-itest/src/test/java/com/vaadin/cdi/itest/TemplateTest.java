@@ -17,13 +17,12 @@
 package com.vaadin.cdi.itest;
 
 import com.vaadin.cdi.itest.template.TestTemplate;
+import com.vaadin.testbench.TestBenchElement;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 public class TemplateTest extends AbstractCdiTest {
 
@@ -45,10 +44,10 @@ public class TemplateTest extends AbstractCdiTest {
 
     @Test
     public void testScopedComponentInjectedToTemplate() {
-        WebElement shadowRootOwner = findElement(By.tagName("test-template"));
-        WebElement label = getInShadowRoot(shadowRootOwner, By.id("label"));
+        TestBenchElement template = $("test-template").first();
+        TestBenchElement label = template.$(TestBenchElement.class).id("label");
         Assert.assertEquals("", label.getText());
-        getInShadowRoot(shadowRootOwner, By.id("input")).sendKeys("CDI\t");
+        template.$(TestBenchElement.class).id("input").sendKeys("CDI\t");
         Assert.assertEquals("CDI", label.getText());
     }
 }

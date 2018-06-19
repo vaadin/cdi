@@ -33,7 +33,7 @@ public abstract class InstantiatorDecorator implements Instantiator {
     @Inject
     @Delegate
     @VaadinServiceEnabled
-    Instantiator delegate;
+    private Instantiator delegate;
 
     @Override
     public <T> T getOrCreate(Class<T> type) {

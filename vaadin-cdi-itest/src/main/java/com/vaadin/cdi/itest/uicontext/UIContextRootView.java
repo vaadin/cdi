@@ -41,10 +41,10 @@ public class UIContextRootView extends Div {
     public static final String EVENT_PAYLOAD = "EVENT_PAYLOAD";
 
     @Inject
-    UIScopedLabel label;
+    private UIScopedLabel label;
 
     @Inject
-    Event<SetTextEvent> setTextEventTrigger;
+    private Event<SetTextEvent> setTextEventTrigger;
 
     @PostConstruct
     private void init() {

@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
 public class Counter {
-    ConcurrentHashMap<String, AtomicInteger> map = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, AtomicInteger> map = new ConcurrentHashMap<>();
 
     public int increment(String key) {
         map.putIfAbsent(key, new AtomicInteger(0));

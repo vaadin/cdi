@@ -31,7 +31,7 @@ public class UIScopedLabel extends Label {
     public static final String DESTROY_COUNT = "UIScopedLabelDestroy";
 
     @Inject
-    Counter counter;
+    private Counter counter;
 
     private int uiId;
 

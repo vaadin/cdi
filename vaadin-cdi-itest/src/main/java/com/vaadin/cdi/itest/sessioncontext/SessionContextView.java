@@ -41,7 +41,7 @@ public class SessionContextView extends Div {
     public static final String EXPIREBTN_ID = "expirebtn";
 
     @Inject
-    SessionScopedBean sessionScopedBean;
+    private SessionScopedBean sessionScopedBean;
 
     @PostConstruct
     private void init() {
@@ -80,7 +80,7 @@ public class SessionContextView extends Div {
         public static final String DESTROY_COUNT = "SessionScopedBeanDestroy";
 
         @Inject
-        Counter counter;
+        private Counter counter;
 
         private String value;
 

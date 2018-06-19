@@ -25,7 +25,7 @@ import javax.inject.Inject;
 @Route("injecter")
 public class UIScopeInjecterView extends Div {
     @Inject
-    UIScopedLabel label;
+    private UIScopedLabel label;
 
     @PostConstruct
     private void init() {

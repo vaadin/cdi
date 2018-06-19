@@ -25,7 +25,7 @@ import java.io.IOException;
 public class CounterFilter implements javax.servlet.Filter {
 
     @Inject
-    Counter counter;
+    private Counter counter;
 
     @Override
     public void init(FilterConfig filterConfig) {

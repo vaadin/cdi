@@ -19,7 +19,6 @@ package com.vaadin.cdi.itest;
 import com.vaadin.cdi.itest.sessioncontext.SessionContextView;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -84,7 +83,7 @@ public class SessionContextTest extends AbstractCdiTest {
     }
 
     private void assertLabelEquals(String expected) {
-        Assert.assertEquals(expected, $("label").first().getText());
+        assertTextEquals(expected, SessionContextView.VALUELABEL_ID);
     }
 
     private void assertDestroyCountEquals(int expectedCount) throws IOException {

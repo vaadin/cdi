@@ -30,7 +30,6 @@ public class ArchiveProvider {
     public static WebArchive createWebArchive(String warName, Consumer<WebArchive> customizer) {
         WebArchive archive = base(warName);
         customizer.accept(archive);
-        System.out.println(archive.toString(true));
         return archive;
     }
 

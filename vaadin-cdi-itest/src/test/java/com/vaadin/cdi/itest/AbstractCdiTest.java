@@ -18,6 +18,7 @@ package com.vaadin.cdi.itest;
 
 
 import com.vaadin.flow.testutil.ChromeBrowserTest;
+import com.vaadin.testbench.parallel.Browser;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -51,6 +52,12 @@ abstract public class AbstractCdiTest extends ChromeBrowserTest {
     @Override
     protected String getTestPath() {
         return "/";
+    }
+
+    @Override
+    public void setup() throws Exception {
+        setDesiredCapabilities(Browser.CHROME.getDesiredCapabilities());
+        super.setup();
     }
 
     protected void click(String elementId) {

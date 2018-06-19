@@ -35,7 +35,8 @@ public class UIUnderTestContext implements UnderTestContext {
 
         ui = new UI();
         ui.getInternals().setSession(session);
-        ui.doInit(null, ++uiIdNdx);
+        uiIdNdx++;
+        ui.doInit(null, uiIdNdx);
     }
 
     private void mockSession() {

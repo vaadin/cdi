@@ -28,7 +28,10 @@ import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -69,14 +72,12 @@ public class CdiVaadinServletServiceTest {
     public void testInstantiatorInitReturnsFalseThrowsException()
             throws ServiceException {
         BeanManager mockBm = mock(BeanManager.class);
-        final Bean mockBean = mock(Bean.class);
-        HashSet<Bean<?>> beans = new HashSet<Bean<?>>() {{
-            add(mockBean);
-        }};
+        Bean<?> mockBean = mock(Bean.class);
+        Set<Bean<?>> beans = Collections.singleton(mockBean);
         when(mockBm.getBeans(eq(Instantiator.class), same(BeanLookup.SERVICE)))
                 .thenReturn(beans);
         //noinspection unchecked
-        when(mockBm.resolve(same(beans))).thenReturn(mockBean);
+        when(mockBm.resolve(same(beans))).thenReturn((Bean) mockBean);
         Instantiator mockInstantiator = mock(Instantiator.class);
         when(mockBm.getReference(same(mockBean), eq(Instantiator.class), any()))
                 .thenReturn(mockInstantiator);
@@ -96,19 +97,16 @@ public class CdiVaadinServletServiceTest {
     private void initServiceWithoutBeanFor(Class<?> type)
             throws ServiceException {
         BeanManager mockBm = mock(BeanManager.class);
-        HashSet<Bean<?>> beans = new HashSet<>();
         when(mockBm.getBeans(eq(type), same(BeanLookup.SERVICE)))
-                .thenReturn(beans);
+                .thenReturn(Collections.emptySet());
         initService(mockBm);
     }
 
     private void assertAmbiguousThrowsException(Class<?> type)
             throws ServiceException {
         BeanManager mockBm = mock(BeanManager.class);
-        HashSet<Bean<?>> beans = new HashSet<Bean<?>>() {{
-            add(mock(Bean.class));
-            add(mock(Bean.class));
-        }};
+        Bean<?> mockBean = mock(Bean.class);
+        Set<Bean<?>> beans = new HashSet<>(Arrays.asList(mockBean, mockBean));
         when(mockBm.getBeans(eq(type), same(BeanLookup.SERVICE)))
                 .thenReturn(beans);
         //noinspection unchecked

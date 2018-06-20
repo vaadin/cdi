@@ -40,7 +40,8 @@ public class ServiceUnderTestContext implements UnderTestContext {
 
     @Override
     public void activate() {
-        service = new TestCdiVaadinServletService(beanManager, ++NDX + "");
+        NDX++;
+        service = new TestCdiVaadinServletService(beanManager, NDX + "");
         VaadinService.setCurrent(service);
     }
 

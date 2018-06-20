@@ -33,7 +33,7 @@ public abstract class AbstractContextTest<T extends TestBean> {
 
     @Before
     public void setUp() {
-        T.resetCount();
+        TestBean.resetCount();
         contexts = new ArrayList<>();
     }
 
@@ -57,7 +57,7 @@ public abstract class AbstractContextTest<T extends TestBean> {
         assertEquals("hello", referenceA.getState());
         T referenceB = BeanProvider.getContextualReference(getBeanType());
         assertEquals("hello", referenceB.getState());
-        assertEquals(1, T.getBeanCount());
+        assertEquals(1, TestBean.getBeanCount());
     }
 
     @Test
@@ -75,7 +75,7 @@ public abstract class AbstractContextTest<T extends TestBean> {
         }
         final T referenceB = BeanProvider.getContextualReference(getBeanType());
         assertEquals("", referenceB.getState());
-        assertEquals(2, T.getBeanCount());
+        assertEquals(2, TestBean.getBeanCount());
     }
 
     @Test
@@ -88,11 +88,11 @@ public abstract class AbstractContextTest<T extends TestBean> {
         contextUnderTestB.activate();
         final T referenceB = BeanProvider.getContextualReference(getBeanType());
         referenceB.setState("hello");
-        assertEquals(2, T.getBeanCount());
+        assertEquals(2, TestBean.getBeanCount());
         contextUnderTestA.destroy();
-        assertEquals(1, T.getBeanCount());
+        assertEquals(1, TestBean.getBeanCount());
         contextUnderTestB.destroy();
-        assertEquals(0, T.getBeanCount());
+        assertEquals(0, TestBean.getBeanCount());
     }
 
     protected UnderTestContext createContext() {

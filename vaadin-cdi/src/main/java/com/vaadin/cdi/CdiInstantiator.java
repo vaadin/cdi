@@ -47,7 +47,7 @@ import static com.vaadin.cdi.BeanLookup.SERVICE;
 @VaadinServiceEnabled
 public class CdiInstantiator implements Instantiator {
 
-    private static final String CANNOT_USE_CDI_BEANS_FOR_I18_N
+    private static final String CANNOT_USE_CDI_BEANS_FOR_I18N
             = "Cannot use CDI beans for I18N, falling back to the default behavior.";
     private static final String FALLING_BACK_TO_DEFAULT_INSTANTIATION
             = "Falling back to default instantiation.";
@@ -91,11 +91,11 @@ public class CdiInstantiator implements Instantiator {
             lookup
                     .ifUnsatisfied(() ->
                             getLogger().info("Can't find any bean implementing '{}'. "
-                                            + CANNOT_USE_CDI_BEANS_FOR_I18_N,
+                                            + CANNOT_USE_CDI_BEANS_FOR_I18N,
                                     I18NProvider.class.getSimpleName()))
                     .ifAmbiguous(e ->
                             getLogger().warn("Found more beans for I18N. "
-                                    + CANNOT_USE_CDI_BEANS_FOR_I18_N, e));
+                                    + CANNOT_USE_CDI_BEANS_FOR_I18N, e));
         } else {
             lookup.ifAmbiguous(e -> { });
         }

@@ -53,8 +53,8 @@ import java.util.Set;
 public class CdiServletDeployer implements ServletContainerInitializer {
 
     @Override
-    public void onStartup(Set<Class<?>> c, ServletContext ctx) {
-        if (c == null) {
+    public void onStartup(Set<Class<?>> classSet, ServletContext ctx) {
+        if (classSet == null) {
             // ServletDeployer will log routes are missing.
             return;
         }

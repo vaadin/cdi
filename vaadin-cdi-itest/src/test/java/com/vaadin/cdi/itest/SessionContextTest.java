@@ -22,6 +22,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -71,10 +73,11 @@ public class SessionContextTest extends AbstractCdiTest {
         assertDestroyCountEquals(0);
         click(SessionContextView.EXPIREBTN_ID);
         boolean destroyed = false;
+        getLogger().info("Waiting for session expiration...");
         for (int i=0; i<60; i++) {
             Thread.sleep(1000);
             if (getCount(DESTROY_COUNT) > 0) {
-                System.out.printf("session expired after %d seconds\n", i);
+                getLogger().info("session expired after {} seconds", i);
                 destroyed = true;
                 break;
             }
@@ -88,6 +91,10 @@ public class SessionContextTest extends AbstractCdiTest {
 
     private void assertDestroyCountEquals(int expectedCount) throws IOException {
         assertCountEquals(expectedCount, DESTROY_COUNT);
+    }
+
+    private static Logger getLogger() {
+        return LoggerFactory.getLogger(SessionContextTest.class);
     }
 
 }

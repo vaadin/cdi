@@ -59,9 +59,7 @@ public class CdiInstantiator implements Instantiator {
 
     @Override
     public boolean init(VaadinService service) {
-        if (delegate == null) {
-            delegate = new DefaultInstantiator(service);
-        }
+        delegate = new DefaultInstantiator(service);
         return delegate.init(service)
                 && service instanceof CdiVaadinServletService;
     }

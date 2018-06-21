@@ -116,6 +116,11 @@
                     <version>2.1.0.Final</version>
                     <scope>test</scope>
                 </dependency>
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                    <scope>test</scope>
+                </dependency>
             </dependencies>
             <build>
                 <plugins>
@@ -167,6 +172,11 @@
                     <groupId>fish.payara.arquillian</groupId>
                     <artifactId>arquillian-payara-server-4-managed</artifactId>
                     <version>1.0.Beta2</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
                     <scope>test</scope>
                 </dependency>
             </dependencies>

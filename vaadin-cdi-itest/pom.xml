@@ -159,7 +159,6 @@
                         <configuration>
                             <excludedGroups>${surefire.excludedGroups}</excludedGroups>
                             <groups>${surefire.groups}</groups>
-                            <forkMode>always</forkMode>
                             <systemPropertyVariables>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                                 <jboss.home>${project.build.directory}/wildfly-11.0.0.Final</jboss.home>
@@ -220,7 +219,6 @@
                         <configuration>
                             <excludedGroups>${surefire.excludedGroups}</excludedGroups>
                             <groups>${surefire.groups}</groups>
-                            <forkMode>always</forkMode>
                             <environmentVariables>
                                 <GLASSFISH_HOME>
                                     ${project.build.directory}/payara41

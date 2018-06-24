@@ -13,6 +13,8 @@
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
+        <surefire.groups></surefire.groups>
+        <surefire.excludedGroups>com.vaadin.cdi.itest.SlowTests</surefire.excludedGroups>
     </properties>
 
     <dependencies>
@@ -98,6 +100,8 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>${maven.surefire.plugin.version}</version>
                         <configuration>
+                            <excludedGroups>${surefire.excludedGroups}</excludedGroups>
+                            <groups>${surefire.groups}</groups>
                             <systemPropertyVariables>
                                 <tomee.host>0.0.0.0</tomee.host>
                                 <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
@@ -153,6 +157,8 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>${maven.surefire.plugin.version}</version>
                         <configuration>
+                            <excludedGroups>${surefire.excludedGroups}</excludedGroups>
+                            <groups>${surefire.groups}</groups>
                             <forkMode>always</forkMode>
                             <systemPropertyVariables>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
@@ -212,6 +218,8 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>${maven.surefire.plugin.version}</version>
                         <configuration>
+                            <excludedGroups>${surefire.excludedGroups}</excludedGroups>
+                            <groups>${surefire.groups}</groups>
                             <forkMode>always</forkMode>
                             <environmentVariables>
                                 <GLASSFISH_HOME>
@@ -258,6 +266,13 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>slowtests</id>
+            <properties>
+                <surefire.excludedGroups></surefire.excludedGroups>
+                <surefire.groups>com.vaadin.cdi.itest.SlowTests</surefire.groups>
+            </properties>
         </profile>
     </profiles>
 </project>

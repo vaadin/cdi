@@ -20,8 +20,8 @@ import com.vaadin.cdi.itest.sessioncontext.SessionContextView;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,8 +67,7 @@ public class SessionContextTest extends AbstractCdiTest {
     }
 
     @Test
-    @Ignore
-    //ignored because it's slow, and expiration should be same as session close
+    @Category(SlowTests.class)
     public void testHttpSessionExpirationDestroysSessionContext() throws Exception {
         assertDestroyCountEquals(0);
         click(SessionContextView.EXPIREBTN_ID);

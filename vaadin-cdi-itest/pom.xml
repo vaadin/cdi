@@ -163,6 +163,7 @@
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                                 <jboss.home>${project.build.directory}/wildfly-11.0.0.Final</jboss.home>
                                 <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
+                                <arquillian.launch>wildfly</arquillian.launch>
                             </systemPropertyVariables>
                             <redirectTestOutputToFile>false</redirectTestOutputToFile>
                         </configuration>

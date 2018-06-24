@@ -32,7 +32,13 @@
 
     <container qualifier="wildfly-debug">
         <configuration>
-            <property name="javaVmArguments">-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</property>
+            <property name="javaVmArguments">-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Djboss.bind.address=0.0.0.0</property>
+        </configuration>
+    </container>
+
+    <container qualifier="wildfly">
+        <configuration>
+            <property name="javaVmArguments">-Djboss.bind.address=0.0.0.0</property>
         </configuration>
     </container>
 </arquillian>

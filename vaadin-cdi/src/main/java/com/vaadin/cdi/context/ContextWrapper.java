@@ -18,11 +18,10 @@ package com.vaadin.cdi.context;
 
 import org.apache.deltaspike.core.util.context.AbstractContext;
 
-import java.lang.annotation.Annotation;
-
 import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
+import java.lang.annotation.Annotation;
 
 /**
  * Used to bind multiple scope annotations to a single context. Will delegate

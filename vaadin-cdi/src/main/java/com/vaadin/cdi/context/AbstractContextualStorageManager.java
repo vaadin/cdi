@@ -59,17 +59,13 @@ abstract class AbstractContextualStorageManager<K> implements Serializable  {
         }
     }
 
-    private ContextualStorage newContextualStorage(K key) {
+    protected ContextualStorage newContextualStorage(K key) {
         // Not required by the spec, but in reality beans are PassivationCapable.
         // Even for non serializable bean classes.
         // CDI implementations use PassivationCapable beans,
         // because injecting non serializable proxies might block serialization of
         // bean instances in a passivation capable context.
         return new ContextualStorage(beanManager, concurrent, true);
-    }
-
-    protected boolean isExist(K key) {
-        return storageMap.containsKey(key);
     }
 
     @PreDestroy

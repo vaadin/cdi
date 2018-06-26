@@ -115,7 +115,7 @@ public class CdiVaadinServletService extends VaadinServletService {
 
     protected <T> Optional<T> lookup(Class<T> type) throws ServiceException {
         try {
-            T instance = new BeanLookup<>(beanManager, type, SERVICE).get();
+            T instance = new BeanLookup<>(beanManager, type, SERVICE).lookup();
             return Optional.ofNullable(instance);
         } catch (AmbiguousResolutionException e) {
             throw new ServiceException(

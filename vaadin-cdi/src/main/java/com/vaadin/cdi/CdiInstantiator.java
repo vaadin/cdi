@@ -67,18 +67,17 @@ public class CdiInstantiator implements Instantiator {
     @Override
     public <T> T getOrCreate(Class<T> type) {
         return new BeanLookup<>(beanManager, type)
-                .ifUnsatisfied(() ->
+                .setUnsatisfiedHandler(() ->
                         getLogger().debug("'{}' is not a CDI bean. "
                                 + FALLING_BACK_TO_DEFAULT_INSTANTIATION, type.getName()))
-                .ifAmbiguous(e ->
+                .setAmbiguousHandler(e ->
                         getLogger().debug("Multiple CDI beans found. "
                                 + FALLING_BACK_TO_DEFAULT_INSTANTIATION, e))
-                .fallbackTo(() -> {
+                .lookupOrElseGet(() -> {
                     final T instance = delegate.getOrCreate(type);
                     BeanProvider.injectFields(instance);
                     return instance;
-                })
-                .get();
+                });
     }
 
     @Override
@@ -87,19 +86,17 @@ public class CdiInstantiator implements Instantiator {
                 new BeanLookup<>(beanManager, I18NProvider.class, SERVICE);
         if (i18NLoggingEnabled.compareAndSet(true, false)) {
             lookup
-                    .ifUnsatisfied(() ->
+                    .setUnsatisfiedHandler(() ->
                             getLogger().info("Can't find any bean implementing '{}'. "
                                             + CANNOT_USE_CDI_BEANS_FOR_I18N,
                                     I18NProvider.class.getSimpleName()))
-                    .ifAmbiguous(e ->
+                    .setAmbiguousHandler(e ->
                             getLogger().warn("Found more beans for I18N. "
                                     + CANNOT_USE_CDI_BEANS_FOR_I18N, e));
         } else {
-            lookup.ifAmbiguous(e -> { });
+            lookup.setAmbiguousHandler(e -> { });
         }
-        return lookup
-                .fallbackTo(delegate::getI18NProvider)
-                .get();
+        return lookup.lookupOrElseGet(delegate::getI18NProvider);
     }
 
     private static Logger getLogger() {

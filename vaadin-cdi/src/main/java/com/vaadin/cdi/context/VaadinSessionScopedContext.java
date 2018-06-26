@@ -27,10 +27,10 @@ import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
 
 /**
- * Context for {@link VaadinSessionScoped}.
- *
+ * Context for {@link VaadinSessionScoped @VaadinSessionScoped} beans.
+ * <p>
  * Stores contextuals in {@link VaadinSession}.
- * Other Vaadin CDI contexts are stored in the corresponding VaadinSessionScoped context.
+ * Other Vaadin CDI contexts are stored in the corresponding {@link VaadinSessionScoped} context.
  *
  * @since 3.0
  */

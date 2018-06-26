@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Servlet to create CdiVaadinServletService.
+ * Servlet to create {@link CdiVaadinServletService}.
  * <p>
  * An instance of this servlet is automatically deployed by
  * {@link CdiServletDeployer} if no VaadinServlet is deployed based on web.xml or

@@ -29,7 +29,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
 
 /**
- * UIScopedContext is the context for @UIScoped beans.
+ * UIScopedContext is the context for {@link UIScoped @UIScoped} beans.
  */
 public class UIScopedContext extends AbstractContext {
 

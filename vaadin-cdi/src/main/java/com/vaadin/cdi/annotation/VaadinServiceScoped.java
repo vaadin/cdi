@@ -24,7 +24,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The lifecycle of a VaadinServiceScoped bean is bound to a VaadinService.
+ * The lifecycle of a VaadinServiceScoped bean is bound to a
+ * {@link com.vaadin.flow.server.VaadinService}.
  * <p>
  * Injecting with this annotation will create a proxy for the contextual
  * instance rather than provide the contextual instance itself.

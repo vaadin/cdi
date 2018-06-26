@@ -34,7 +34,7 @@ import java.lang.annotation.Annotation;
 import static javax.enterprise.event.Reception.IF_EXISTS;
 
 /**
- * Context for @VaadinServiceScoped beans.
+ * Context for {@link VaadinServiceScoped @VaadinServiceScoped} beans.
  */
 public class VaadinServiceScopedContext extends AbstractContext {
 

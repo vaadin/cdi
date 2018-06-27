@@ -44,13 +44,13 @@ public abstract class AbstractContextTest<T extends TestBean> {
     }
 
     @Test(expected = ContextNotActiveException.class)
-    public void testNoActiveContextThrowException() {
+    public void get_contextNotActive_ExceptionThrown() {
         final T reference = BeanProvider.getContextualReference(getBeanType());
         reference.getState();
     }
 
     @Test
-    public void testWithContextBeanCreatedOnce() {
+    public void get_sameContextActive_beanCreatedOnce() {
         createContext().activate();
         T referenceA = BeanProvider.getContextualReference(getBeanType());
         referenceA.setState("hello");
@@ -61,7 +61,7 @@ public abstract class AbstractContextTest<T extends TestBean> {
     }
 
     @Test
-    public void testNewContextBeanReCreated() {
+    public void get_newContextActive_newBeanCreated() {
         createContext().activate();
         final T referenceA = BeanProvider.getContextualReference(getBeanType());
         referenceA.setState("hello");
@@ -79,7 +79,7 @@ public abstract class AbstractContextTest<T extends TestBean> {
     }
 
     @Test
-    public void testContextDestroy() {
+    public void destroy_beanExistsInContext_beanDestroyed() {
         final UnderTestContext contextUnderTestA = createContext();
         contextUnderTestA.activate();
         final T referenceA = BeanProvider.getContextualReference(getBeanType());

@@ -57,25 +57,26 @@ public class CdiVaadinServletServiceTest {
     }
 
     @Test
-    public void testInstantiatorCreated() throws ServiceException {
+    public void getInstantiator_serviceInitialized_cdiInstantiatorReturned()
+            throws ServiceException {
         initService(beanManager);
         final Instantiator instantiator = service.getInstantiator();
         assertThat(instantiator, instanceOf(CdiInstantiator.class));
     }
 
     @Test(expected = ServiceException.class)
-    public void testAmbiguousInstantiatorThrowsException()
+    public void init_instantiatorAmbiguous_ExceptionThrown()
             throws ServiceException {
         assertAmbiguousThrowsException(Instantiator.class);
     }
 
     @Test(expected = ServiceException.class)
-    public void testNoInstantiatorThrowsException() throws ServiceException {
+    public void init_instantiatorUnsatisfied_ExceptionThrown() throws ServiceException {
         initServiceWithoutBeanFor(Instantiator.class);
     }
 
     @Test(expected = ServiceException.class)
-    public void testInstantiatorInitReturnsFalseThrowsException()
+    public void init_instantiatorInitReturnsFalse_ExceptionThrown()
             throws ServiceException {
         BeanManager mockBm = mock(BeanManager.class);
         Bean<?> mockBean = mock(Bean.class);

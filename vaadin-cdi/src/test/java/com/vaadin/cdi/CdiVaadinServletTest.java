@@ -68,7 +68,7 @@ public class CdiVaadinServletTest {
     }
 
     @Test
-    public void testCdiServletServiceCreated() {
+    public void getService_servletInitialized_cdiVaadinServletServiceReturned() {
         final VaadinServletService service = servlet.getService();
         assertThat(service, instanceOf(CdiVaadinServletService.class));
     }

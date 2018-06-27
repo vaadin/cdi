@@ -45,21 +45,21 @@ public class UIContextTest extends AbstractCdiTest {
     }
 
     @Test
-    public void testDestroyOnUIClose() throws IOException {
+    public void beanDestroyedOnUIClose() throws IOException {
         assertDestroyCountEquals(0);
         click(UIContextRootView.CLOSE_UI_BTN);
         assertDestroyCountEquals(1);
     }
 
     @Test
-    public void testDestroyOnSessionClose() throws IOException {
+    public void beanDestroyedOnSessionClose() throws IOException {
         assertDestroyCountEquals(0);
         click(UIContextRootView.CLOSE_SESSION_BTN);
         assertDestroyCountEquals(1);
     }
 
     @Test
-    public void testUIScopedViewSurviveNavigation() {
+    public void viewSurvivesNavigation() {
         follow(UIContextRootView.UISCOPED_LINK);
         assertTextEquals("", UIScopedView.VIEWSTATE_LABEL);
         click(UIScopedView.SETSTATE_BTN);
@@ -70,20 +70,20 @@ public class UIContextTest extends AbstractCdiTest {
     }
 
     @Test
-    public void testInjectComponent() {
+    public void sameScopedComponentInjectedInOtherView() {
         assertTextEquals(uiId, UIScopedLabel.ID);
         follow(UIContextRootView.INJECTER_LINK);
         assertTextEquals(uiId, UIScopedLabel.ID);
     }
 
     @Test
-    public void testObserver() {
+    public void observerCalledOnInstanceAttachedToUI() {
         click(UIContextRootView.TRIGGER_EVENT_BTN);
         assertTextEquals(UIContextRootView.EVENT_PAYLOAD, UIScopedLabel.ID);
     }
 
     @Test
-    public void testNormalScopedBean() {
+    public void normalScopedBeanInjectedToLargerScopeChangesWithActiveUI() {
         follow(UIContextRootView.NORMALSCOPED_LINK);
         assertTextEquals(uiId, UINormalScopedBeanView.UIID_LABEL);
         open();

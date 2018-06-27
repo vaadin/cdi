@@ -49,13 +49,13 @@ public class SmokeTest extends AbstractCdiTest {
 
     @Test
     @OperateOnDeployment("noncdi")
-    public void testCdiDisabled() {
+    public void injectionDoesNotHappenWithDisabledCdiServlet() {
         assertLabelEquals("no CDI");
     }
 
     @Test
     @OperateOnDeployment("cdi")
-    public void testCdiEnabled() {
+    public void injectionHappensWithEnabledCdiServlet() {
         assertLabelEquals("hello CDI");
     }
 

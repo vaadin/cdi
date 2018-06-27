@@ -32,7 +32,7 @@ public class ServiceTest extends AbstractCdiTest {
     }
 
     @Test
-    public void testServiceCustomized() {
+    public void bootstrapCustomizedByServiceInitEventObserver() {
         getDriver().get(getTestURL() + "bootstrap");
         assertTextEquals(BootstrapCustomizer.APPENDED_TXT,
                 BootstrapCustomizer.APPENDED_ID);

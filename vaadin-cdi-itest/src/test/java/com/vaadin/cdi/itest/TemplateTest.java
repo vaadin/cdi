@@ -43,7 +43,7 @@ public class TemplateTest extends AbstractCdiTest {
     }
 
     @Test
-    public void testScopedComponentInjectedToTemplate() {
+    public void scopedComponentInjectedToTemplate() {
         TestBenchElement template = $("test-template").first();
         TestBenchElement label = template.$(TestBenchElement.class).id("label");
         Assert.assertEquals("", label.getText());

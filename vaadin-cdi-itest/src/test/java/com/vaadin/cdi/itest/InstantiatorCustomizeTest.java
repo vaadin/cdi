@@ -54,13 +54,13 @@ public class InstantiatorCustomizeTest extends AbstractCdiTest {
 
     @Test
     @OperateOnDeployment("decorator")
-    public void testInstantiatorDecorated() {
+    public void instantiatorCustomizedByDecorator() {
         assertInstantiatorCustomized();
     }
 
     @Test
     @OperateOnDeployment("alternative")
-    public void testInstantiatorAlternative() {
+    public void instantiatorCustomizedByAlternative() {
         assertInstantiatorCustomized();
     }
 

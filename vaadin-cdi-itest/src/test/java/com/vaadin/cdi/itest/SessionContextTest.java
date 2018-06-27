@@ -45,7 +45,7 @@ public class SessionContextTest extends AbstractCdiTest {
     }
 
     @Test
-    public void testUIsAccessSameSession() {
+    public void sameSessionIsAccessibleFromUIs() {
         assertLabelEquals("");
         click(SessionContextView.SETVALUEBTN_ID);
         getDriver().navigate().refresh();//creates new UI
@@ -53,14 +53,14 @@ public class SessionContextTest extends AbstractCdiTest {
     }
 
     @Test
-    public void testVaadinSessionCloseDestroysSessionContext() throws Exception {
+    public void vaadinSessionCloseDestroysSessionContext() throws Exception {
         assertDestroyCountEquals(0);
         click(SessionContextView.INVALIDATEBTN_ID);
         assertDestroyCountEquals(1);
     }
 
     @Test
-    public void testHttpSessionCloseDestroysSessionContext() throws Exception {
+    public void httpSessionCloseDestroysSessionContext() throws Exception {
         assertDestroyCountEquals(0);
         click(SessionContextView.HTTP_INVALIDATEBTN_ID);
         assertDestroyCountEquals(1);
@@ -68,7 +68,7 @@ public class SessionContextTest extends AbstractCdiTest {
 
     @Test
     @Category(SlowTests.class)
-    public void testHttpSessionExpirationDestroysSessionContext() throws Exception {
+    public void httpSessionExpirationDestroysSessionContext() throws Exception {
         assertDestroyCountEquals(0);
         click(SessionContextView.EXPIREBTN_ID);
         boolean destroyed = false;

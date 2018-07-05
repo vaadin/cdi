@@ -89,6 +89,11 @@
                 <version>${vaadin.flow.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>flow-html-components</artifactId>
+                <version>${vaadin.flow.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.webjars.bowergithub.polymer</groupId>
                 <artifactId>polymer</artifactId>
                 <version>2.6.0</version>

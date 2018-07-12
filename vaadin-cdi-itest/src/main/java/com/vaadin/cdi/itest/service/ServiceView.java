@@ -27,6 +27,8 @@ import javax.annotation.PostConstruct;
 public class ServiceView extends Div {
 
     public static final String EXPIRE = "EXPIRE";
+    public static final String ACTION = "ACTION";
+    public static final String FAIL = "FAIL";
 
     @PostConstruct
     private void init() {
@@ -34,6 +36,17 @@ public class ServiceView extends Div {
                 VaadinSession.getCurrent().getSession().invalidate());
         expireBtn.setId(EXPIRE);
 
-        add(expireBtn);
+        NativeButton actionButton = new NativeButton("an action", event -> {
+        });
+        actionButton.setId(ACTION);
+
+        NativeButton failBtn = new NativeButton("fail", event -> {
+            if (true) {
+                throw new NullPointerException();
+            }
+        });
+        failBtn.setId(FAIL);
+
+        add(expireBtn, actionButton, failBtn);
     }
 }

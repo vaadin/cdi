@@ -19,11 +19,19 @@ import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.context.VaadinSessionScopedContext;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.function.DeploymentConfiguration;
+import com.vaadin.flow.server.ErrorHandler;
 import com.vaadin.flow.server.ServiceDestroyEvent;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.SessionDestroyEvent;
+import com.vaadin.flow.server.SessionDestroyListener;
 import com.vaadin.flow.server.SessionInitEvent;
+import com.vaadin.flow.server.SessionInitListener;
+import com.vaadin.flow.server.SystemMessagesProvider;
+import com.vaadin.flow.server.UIInitEvent;
+import com.vaadin.flow.server.UIInitListener;
+import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletService;
+import com.vaadin.flow.server.VaadinSession;
 import org.apache.deltaspike.core.util.ProxyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +47,15 @@ import static com.vaadin.cdi.BeanLookup.SERVICE;
  * <p>
  * This class creates and initializes a @{@link VaadinServiceEnabled}
  * {@link Instantiator}.
+ * <p>
+ * Some @{@link VaadinServiceEnabled} beans can be used to customize Vaadin,
+ * they are also created, and bound if found.
+ * <ul>
+ * <li>{@link SystemMessagesProvider} is bound to service by
+ * {@link VaadinService#setSystemMessagesProvider(SystemMessagesProvider)}.
+ * <li>{@link ErrorHandler} is bound to created sessions by
+ * {@link VaadinSession#setErrorHandler(ErrorHandler)}.
+ * </ul>
  *
  * @see CdiVaadinServlet
  */
@@ -55,6 +72,8 @@ public class CdiVaadinServletService extends VaadinServletService {
 
     @Override
     public void init() throws ServiceException {
+        lookup(SystemMessagesProvider.class)
+                .ifPresent(this::setSystemMessagesProvider);
         addUIInitListener(beanManager::fireEvent);
         addSessionInitListener(this::sessionInit);
         addSessionDestroyListener(this::sessionDestroy);
@@ -101,7 +120,10 @@ public class CdiVaadinServletService extends VaadinServletService {
         }
     }
 
-    private void sessionInit(SessionInitEvent sessionInitEvent) {
+    private void sessionInit(SessionInitEvent sessionInitEvent)
+            throws ServiceException {
+        VaadinSession session = sessionInitEvent.getSession();
+        lookup(ErrorHandler.class).ifPresent(session::setErrorHandler);
         beanManager.fireEvent(sessionInitEvent);
     }
 

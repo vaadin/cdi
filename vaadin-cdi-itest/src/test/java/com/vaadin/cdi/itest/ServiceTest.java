@@ -20,17 +20,24 @@ import com.vaadin.cdi.itest.service.BootstrapCustomizeView;
 import com.vaadin.cdi.itest.service.BootstrapCustomizer;
 import com.vaadin.cdi.itest.service.EventObserver;
 import com.vaadin.cdi.itest.service.ServiceView;
+import com.vaadin.cdi.itest.service.TestErrorHandler;
+import com.vaadin.cdi.itest.service.TestSystemMessagesProvider;
 import com.vaadin.flow.server.SessionDestroyEvent;
 import com.vaadin.flow.server.SessionInitEvent;
 import com.vaadin.flow.server.UIInitEvent;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 import java.io.IOException;
 
+import static com.vaadin.cdi.itest.service.ServiceView.ACTION;
 import static com.vaadin.cdi.itest.service.ServiceView.EXPIRE;
+import static com.vaadin.cdi.itest.service.ServiceView.FAIL;
 
 public class ServiceTest extends AbstractCdiTest {
 
@@ -40,7 +47,9 @@ public class ServiceTest extends AbstractCdiTest {
                 BootstrapCustomizer.class,
                 BootstrapCustomizeView.class,
                 ServiceView.class,
-                EventObserver.class);
+                EventObserver.class,
+                TestErrorHandler.class,
+                TestSystemMessagesProvider.class);
     }
 
     @Before
@@ -53,6 +62,30 @@ public class ServiceTest extends AbstractCdiTest {
         getDriver().get(getTestURL() + "bootstrap");
         assertTextEquals(BootstrapCustomizer.APPENDED_TXT,
                 BootstrapCustomizer.APPENDED_ID);
+    }
+
+    @Test
+    public void sessionExpiredMessageCustomized() {
+        open();
+        click(EXPIRE);
+        click(ACTION);
+        assertSystemMessageEquals(TestSystemMessagesProvider.EXPIRED_BY_TEST);
+    }
+
+    @Test
+    public void internalErrorMessageCustomized() {
+        open();
+        click(FAIL);
+        assertSystemMessageEquals(TestSystemMessagesProvider.FAILED_BY_TEST);
+    }
+
+    @Test
+    public void errorHandlerCustomized() throws IOException {
+        String counter = TestErrorHandler.class.getSimpleName();
+        assertCountEquals(0, counter);
+        open();
+        click(FAIL);
+        assertCountEquals(1, counter);
     }
 
     @Test
@@ -82,4 +115,9 @@ public class ServiceTest extends AbstractCdiTest {
         assertCountEquals(1, uiInitCounter);
     }
 
+    private void assertSystemMessageEquals(String expected) {
+        WebElement message = findElement(
+                By.cssSelector("div.v-system-error div.message"));
+        Assert.assertEquals(expected, message.getText());
+    }
 }

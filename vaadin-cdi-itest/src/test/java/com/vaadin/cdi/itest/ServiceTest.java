@@ -18,9 +18,19 @@ package com.vaadin.cdi.itest;
 
 import com.vaadin.cdi.itest.service.BootstrapCustomizeView;
 import com.vaadin.cdi.itest.service.BootstrapCustomizer;
+import com.vaadin.cdi.itest.service.EventObserver;
+import com.vaadin.cdi.itest.service.ServiceView;
+import com.vaadin.flow.server.SessionDestroyEvent;
+import com.vaadin.flow.server.SessionInitEvent;
+import com.vaadin.flow.server.UIInitEvent;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
+
+import static com.vaadin.cdi.itest.service.ServiceView.EXPIRE;
 
 public class ServiceTest extends AbstractCdiTest {
 
@@ -28,7 +38,14 @@ public class ServiceTest extends AbstractCdiTest {
     public static WebArchive deployment() {
         return ArchiveProvider.createWebArchive("services",
                 BootstrapCustomizer.class,
-                BootstrapCustomizeView.class);
+                BootstrapCustomizeView.class,
+                ServiceView.class,
+                EventObserver.class);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        resetCounts();
     }
 
     @Test
@@ -36,6 +53,33 @@ public class ServiceTest extends AbstractCdiTest {
         getDriver().get(getTestURL() + "bootstrap");
         assertTextEquals(BootstrapCustomizer.APPENDED_TXT,
                 BootstrapCustomizer.APPENDED_ID);
+    }
+
+    @Test
+    public void sessionInitEventObserved() throws IOException {
+        String initCounter = SessionInitEvent.class.getSimpleName();
+        assertCountEquals(0, initCounter);
+        getDriver().manage().deleteAllCookies();
+        open();
+        assertCountEquals(1, initCounter);
+    }
+
+    @Test
+    public void sessionDestroyEventObserved() throws IOException {
+        String destroyCounter = SessionDestroyEvent.class.getSimpleName();
+        assertCountEquals(0, destroyCounter);
+        open();
+        assertCountEquals(0, destroyCounter);
+        click(EXPIRE);
+        assertCountEquals(1, destroyCounter);
+    }
+
+    @Test
+    public void uiInitEventObserved() throws IOException {
+        String uiInitCounter = UIInitEvent.class.getSimpleName();
+        assertCountEquals(0, uiInitCounter);
+        open();
+        assertCountEquals(1, uiInitCounter);
     }
 
 }

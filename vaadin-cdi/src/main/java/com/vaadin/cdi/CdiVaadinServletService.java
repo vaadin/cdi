@@ -22,7 +22,7 @@ import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.server.ServiceDestroyEvent;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.SessionDestroyEvent;
-import com.vaadin.flow.server.SessionDestroyListener;
+import com.vaadin.flow.server.SessionInitEvent;
 import com.vaadin.flow.server.VaadinServletService;
 import org.apache.deltaspike.core.util.ProxyUtils;
 import org.slf4j.Logger;
@@ -53,34 +53,11 @@ public class CdiVaadinServletService extends VaadinServletService {
         this.beanManager = beanManager;
     }
 
-
-    /**
-     * Static listener class,
-     * to avoid registering the whole service instance.
-     */
-    private static class Listener implements SessionDestroyListener {
-
-        @Override
-        public void sessionDestroy(SessionDestroyEvent sessionDestroyEvent) {
-            if (VaadinSessionScopedContext.guessContextIsUndeployed()) {
-                // Happens on tomcat when it expires sessions upon undeploy.
-                // beanManager.getPassivationCapableBean returns null for passivation id,
-                // so we would get an NPE from AbstractContext.destroyAllActive
-                getLogger().warn("VaadinSessionScoped context does not exist. " +
-                        "Maybe application is undeployed." +
-                        " Can't destroy VaadinSessionScopedContext.");
-                return;
-            }
-            getLogger().debug("VaadinSessionScopedContext destroy");
-            VaadinSessionScopedContext.destroy(sessionDestroyEvent.getSession());
-        }
-
-    }
-
     @Override
     public void init() throws ServiceException {
-        Listener listener = new Listener();
-        addSessionDestroyListener(listener);
+        addUIInitListener(beanManager::fireEvent);
+        addSessionInitListener(this::sessionInit);
+        addSessionDestroyListener(this::sessionDestroy);
         addServiceDestroyListener(this::fireCdiDestroyEvent);
         super.init();
     }
@@ -122,6 +99,25 @@ public class CdiVaadinServletService extends VaadinServletService {
                     "There are multiple eligible CDI " + type.getSimpleName()
                             + " beans.", e);
         }
+    }
+
+    private void sessionInit(SessionInitEvent sessionInitEvent) {
+        beanManager.fireEvent(sessionInitEvent);
+    }
+
+    private void sessionDestroy(SessionDestroyEvent sessionDestroyEvent) {
+        beanManager.fireEvent(sessionDestroyEvent);
+        if (VaadinSessionScopedContext.guessContextIsUndeployed()) {
+            // Happens on tomcat when it expires sessions upon undeploy.
+            // beanManager.getPassivationCapableBean returns null for passivation id,
+            // so we would get an NPE from AbstractContext.destroyAllActive
+            getLogger().warn("VaadinSessionScoped context does not exist. " +
+                    "Maybe application is undeployed." +
+                    " Can't destroy VaadinSessionScopedContext.");
+            return;
+        }
+        getLogger().debug("VaadinSessionScopedContext destroy");
+        VaadinSessionScopedContext.destroy(sessionDestroyEvent.getSession());
     }
 
     private void fireCdiDestroyEvent(ServiceDestroyEvent event) {

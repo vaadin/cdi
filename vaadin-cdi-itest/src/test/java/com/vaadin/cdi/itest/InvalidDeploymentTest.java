@@ -27,8 +27,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static junit.framework.TestCase.fail;
-
 @RunWith(Arquillian.class)
 @RunAsClient
 public class InvalidDeploymentTest {
@@ -45,7 +43,6 @@ public class InvalidDeploymentTest {
     @Test(expected = Exception.class)
     public void invalidDeploymentShouldBreakDeploy() {
         deployer.deploy("invalid-deployment");
-        fail("An invalid deployment should break deploy!");
     }
 
 }

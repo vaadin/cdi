@@ -28,21 +28,6 @@ import java.util.function.Consumer;
 @Dependent
 class TestDeploymentValidator extends DeploymentValidator {
 
-    @Inject
-    private BeanInfoSetHolder beanInfoSetHolder;
-
-    @Override
-    void validate(Set<BeanInfo> infoSet, Consumer<Throwable> addDeploymentProblem) {
-        // No-op.
-        // We need CDI to startup in Unit tests even with
-        // intentionally misconfigured beans.
-        beanInfoSetHolder.setInfoSet(infoSet);
-    }
-
-    void validateForTest(Set<BeanInfo> infoSet, Consumer<Throwable> addDeploymentProblem) {
-        super.validate(infoSet, addDeploymentProblem);
-    }
-
     @ApplicationScoped
     static class BeanInfoSetHolder {
 
@@ -56,6 +41,21 @@ class TestDeploymentValidator extends DeploymentValidator {
             this.infoSet = infoSet;
         }
 
+    }
+
+    @Inject
+    private BeanInfoSetHolder beanInfoSetHolder;
+
+    @Override
+    void validate(Set<BeanInfo> infoSet, Consumer<Throwable> addDeploymentProblem) {
+        // No-op.
+        // We need CDI to startup in Unit tests even with
+        // intentionally misconfigured beans.
+        beanInfoSetHolder.setInfoSet(infoSet);
+    }
+
+    void validateForTest(Set<BeanInfo> infoSet, Consumer<Throwable> addDeploymentProblem) {
+        super.validate(infoSet, addDeploymentProblem);
     }
 
 }

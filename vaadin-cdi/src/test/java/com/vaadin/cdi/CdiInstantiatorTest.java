@@ -41,6 +41,59 @@ import java.util.Locale;
 @RunWith(CdiTestRunner.class)
 public class CdiInstantiatorTest {
 
+    @Singleton
+    public static class SomeCdiBean {
+    }
+
+    public static class ParentBean {
+
+        @Inject
+        private BeanManager bm;
+
+        public BeanManager getBm() {
+            return bm;
+        }
+
+    }
+
+    @Vetoed
+    public static class NotACdiBean extends ParentBean {
+    }
+
+    public static class Ambiguous extends ParentBean {
+    }
+
+    @VaadinServiceEnabled
+    public static class I18NTestProvider implements I18NProvider {
+
+        @Override
+        public List<Locale> getProvidedLocales() {
+            return null;
+        }
+
+        @Override
+        public String getTranslation(String key, Locale locale,
+                                     Object... params) {
+            return null;
+        }
+
+    }
+
+    @RequestScoped
+    public static class ServiceInitObserver {
+
+        ServiceInitEvent event;
+
+        public void serviceInit(@Observes ServiceInitEvent event) {
+            this.event = event;
+        }
+
+        public ServiceInitEvent getEvent() {
+            return event;
+        }
+
+    }
+
     @Inject
     private BeanManager beanManager;
 
@@ -111,60 +164,6 @@ public class CdiInstantiatorTest {
         ParentBean instance = instantiator.getOrCreate(ParentBean.class);
         Assert.assertNotNull(instance);
         Assert.assertNotNull(instance.getBm());
-    }
-
-    @Singleton
-    public static class SomeCdiBean {
-    }
-
-    public static class ParentBean {
-
-        @Inject
-        private BeanManager bm;
-
-        public BeanManager getBm() {
-            return bm;
-        }
-
-    }
-
-
-    @Vetoed
-    public static class NotACdiBean extends ParentBean {
-    }
-
-    public static class Ambiguous extends ParentBean {
-    }
-
-    @VaadinServiceEnabled
-    public static class I18NTestProvider implements I18NProvider {
-
-        @Override
-        public List<Locale> getProvidedLocales() {
-            return null;
-        }
-
-        @Override
-        public String getTranslation(String key, Locale locale,
-                                     Object... params) {
-            return null;
-        }
-
-    }
-
-    @RequestScoped
-    public static class ServiceInitObserver {
-
-        ServiceInitEvent event;
-
-        public void serviceInit(@Observes ServiceInitEvent event) {
-            this.event = event;
-        }
-
-        public ServiceInitEvent getEvent() {
-            return event;
-        }
-
     }
 
 }

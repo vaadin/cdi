@@ -42,6 +42,22 @@ import static org.junit.Assert.assertTrue;
 @RunWith(CdiTestRunner.class)
 public class DeploymentValidatorTest {
 
+    @NormalUIScoped
+    public static class NormalScopedLabel extends Label {
+    }
+
+    @UIScoped
+    public static class PseudoScopedLabel extends Label {
+    }
+
+    @NormalUIScoped
+    public static class NormalScopedBean {
+    }
+
+    @Vetoed
+    public static class ProducedNormalScopedComponent extends Component {
+    }
+
     @Inject
     private TestDeploymentValidator validator;
 
@@ -85,27 +101,10 @@ public class DeploymentValidatorTest {
                 .collect(Collectors.toMap(DeploymentValidator.BeanInfo::getBaseType, Function.identity()));
     }
 
-
-    @NormalUIScoped
-    public static class NormalScopedLabel extends Label {
-    }
-
-    @UIScoped
-    public static class PseudoScopedLabel extends Label {
-    }
-
-    @NormalUIScoped
-    public static class NormalScopedBean {
-    }
-
     @Produces
     @NormalUIScoped
     private ProducedNormalScopedComponent getProducedComponent() {
         return new ProducedNormalScopedComponent();
-    }
-
-    @Vetoed
-    public static class ProducedNormalScopedComponent extends Component {
     }
 
 }

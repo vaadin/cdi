@@ -24,14 +24,12 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
-import com.vaadin.flow.component.polymertemplate.TemplateParser;
+import com.vaadin.flow.component.polymertemplate.TemplateParser.TemplateData;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,9 +37,6 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -49,6 +44,32 @@ import static org.junit.Assert.assertSame;
 
 @RunWith(CdiTestRunner.class)
 public class PolymerTest {
+
+    @UIScoped
+    @Tag("uiscoped-label")
+    public static class PseudoScopedLabel extends Label {
+    }
+
+    @NormalUIScoped
+    @Tag("normaluiscoped-label")
+    public static class NormalScopedLabel extends Label {
+    }
+
+    @Tag("test-template")
+    public static class TestTemplate extends PolymerTemplate<TemplateModel> {
+
+        @Id("pseudo")
+        private PseudoScopedLabel pseudo;
+
+        @Id("normal")
+        private NormalScopedLabel normal;
+
+        public TestTemplate() {
+            super((clazz, tag, service) -> new TemplateData("",
+                    Jsoup.parse(getTemplateContent())));
+        }
+
+    }
 
     @Inject
     private Provider<PseudoScopedLabel> pseudoScopedLabelProvider;
@@ -109,55 +130,15 @@ public class PolymerTest {
         assertNull(template.normal.getElement().getNode().getParent());
     }
 
-    @UIScoped
-    @Tag("uiscoped-label")
-    public static class PseudoScopedLabel extends Label {
-    }
-
-    @NormalUIScoped
-    @Tag("normaluiscoped-label")
-    public static class NormalScopedLabel extends Label {
-    }
-
-    @Tag("test-template")
-    public static class TestTemplate extends PolymerTemplate<TemplateModel> {
-
-        @Id("pseudo")
-        private PseudoScopedLabel pseudo;
-
-        @Id("normal")
-        private NormalScopedLabel normal;
-
-        public TestTemplate() {
-            super(new TestTemplateParser(
-                    TestTemplate.class
-                            .getResourceAsStream("test-template.html")));
-        }
-
-    }
-
-    private static class TestTemplateParser implements TemplateParser {
-
-        private final InputStream content;
-
-        private TestTemplateParser(InputStream content) {
-            this.content = content;
-        }
-
-        @Override
-        public TemplateData getTemplateContent(Class<? extends PolymerTemplate<?>> clazz,
-                                               String tag,
-                                               VaadinService service) {
-            try {
-                Document document = Jsoup.parse(content,
-                        StandardCharsets.UTF_8.name(), "");
-                Element element = document.getElementsByTag("dom-module").get(0);
-                return new TemplateData("dummy", element);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
+    private static String getTemplateContent() {
+        return "<dom-module id=\"test-template\">\n" +
+                "    <template>\n" +
+                "        <div>\n" +
+                "            <uiscoped-label id=\"pseudo\"/>\n" +
+                "            <normaluiscoped-label id=\"normal\"/>\n" +
+                "        </div>\n" +
+                "    </template>\n" +
+                "</dom-module>\n";
     }
 
 }

@@ -5,4 +5,8 @@
         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
                       http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd"
         bean-discovery-mode="all">
+
+    <alternatives>
+        <class>com.vaadin.cdi.TestDeploymentValidator</class>
+    </alternatives>
 </beans>

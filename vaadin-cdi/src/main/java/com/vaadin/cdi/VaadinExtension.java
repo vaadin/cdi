@@ -16,11 +16,14 @@
 
 package com.vaadin.cdi;
 
+import com.vaadin.cdi.DeploymentValidator.BeanInfo;
 import com.vaadin.cdi.annotation.NormalUIScoped;
 import com.vaadin.cdi.context.ContextWrapper;
 import com.vaadin.cdi.context.UIScopedContext;
 import com.vaadin.cdi.context.VaadinServiceScopedContext;
 import com.vaadin.cdi.context.VaadinSessionScopedContext;
+import org.apache.deltaspike.core.api.provider.BeanProvider;
+import org.apache.deltaspike.core.api.provider.DependentProvider;
 import org.apache.deltaspike.core.util.context.AbstractContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +33,10 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.ProcessBean;
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * CDI Extension needed to register Vaadin scopes to the runtime.
@@ -39,21 +45,37 @@ public class VaadinExtension implements Extension {
 
     private VaadinServiceScopedContext serviceScopedContext;
     private UIScopedContext uiScopedContext;
+    private Set<BeanInfo> beanInfoSet = new HashSet<>();
 
-    public void initializeContexts(@Observes AfterDeploymentValidation adv, BeanManager beanManager) {
-        serviceScopedContext.init(beanManager);
-        uiScopedContext.init(beanManager);
+    private void storeBeanValidationInfo(@Observes ProcessBean processBean) {
+        beanInfoSet.add(
+                new BeanInfo(processBean.getBean(), processBean.getAnnotated()));
     }
 
-    void afterBeanDiscovery(
-            @Observes final AfterBeanDiscovery afterBeanDiscovery,
-            final BeanManager beanManager) {
+    private void addContexts(@Observes AfterBeanDiscovery afterBeanDiscovery,
+                             BeanManager beanManager) {
         serviceScopedContext = new VaadinServiceScopedContext(beanManager);
         uiScopedContext = new UIScopedContext(beanManager);
         addContext(afterBeanDiscovery, serviceScopedContext, null);
         addContext(afterBeanDiscovery,
                 new VaadinSessionScopedContext(beanManager), null);
         addContext(afterBeanDiscovery, uiScopedContext, NormalUIScoped.class);
+    }
+
+    private void initializeContexts(@Observes AfterDeploymentValidation adv,
+                                    BeanManager beanManager) {
+        serviceScopedContext.init(beanManager);
+        uiScopedContext.init(beanManager);
+    }
+
+    private void validateDeployment(@Observes AfterDeploymentValidation adv,
+                                    BeanManager beanManager) {
+        DependentProvider<DeploymentValidator> validatorProvider
+                = BeanProvider.getDependent(beanManager, DeploymentValidator.class);
+        DeploymentValidator validator = validatorProvider.get();
+        validator.validate(beanInfoSet, adv::addDeploymentProblem);
+        validatorProvider.destroy();
+        beanInfoSet = null;
     }
 
     private void addContext(AfterBeanDiscovery afterBeanDiscovery,

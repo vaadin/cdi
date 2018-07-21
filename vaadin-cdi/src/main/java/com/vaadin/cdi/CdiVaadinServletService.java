@@ -17,18 +17,24 @@ package com.vaadin.cdi;
 
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.context.VaadinSessionScopedContext;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.PollEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.function.DeploymentConfiguration;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationListener;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterListener;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveListener;
+import com.vaadin.flow.router.ListenerPriority;
 import com.vaadin.flow.server.ErrorHandler;
 import com.vaadin.flow.server.ServiceDestroyEvent;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.SessionDestroyEvent;
-import com.vaadin.flow.server.SessionDestroyListener;
 import com.vaadin.flow.server.SessionInitEvent;
-import com.vaadin.flow.server.SessionInitListener;
 import com.vaadin.flow.server.SystemMessagesProvider;
-import com.vaadin.flow.server.UIInitEvent;
-import com.vaadin.flow.server.UIInitListener;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
@@ -61,13 +67,54 @@ import static com.vaadin.cdi.BeanLookup.SERVICE;
  */
 public class CdiVaadinServletService extends VaadinServletService {
 
+    /**
+     * Static listener class,
+     * to avoid registering the whole service instance.
+     */
+    @ListenerPriority(-100) // navigation event listeners are last by default
+    private static class UIEventListener implements
+            AfterNavigationListener,
+            BeforeEnterListener,
+            BeforeLeaveListener,
+            ComponentEventListener<PollEvent> {
+
+        private final BeanManager beanManager;
+
+        private UIEventListener(BeanManager beanManager) {
+            this.beanManager = beanManager;
+        }
+
+        @Override
+        public void afterNavigation(AfterNavigationEvent event) {
+            beanManager.fireEvent(event);
+        }
+
+        @Override
+        public void beforeEnter(BeforeEnterEvent event) {
+            beanManager.fireEvent(event);
+        }
+
+        @Override
+        public void beforeLeave(BeforeLeaveEvent event) {
+            beanManager.fireEvent(event);
+        }
+
+        @Override
+        public void onComponentEvent(PollEvent event) {
+            beanManager.fireEvent(event);
+        }
+
+    }
+
     private final BeanManager beanManager;
+    private final UIEventListener uiEventListener;
 
     public CdiVaadinServletService(CdiVaadinServlet servlet,
                                    DeploymentConfiguration configuration,
                                    BeanManager beanManager) {
         super(servlet, configuration);
         this.beanManager = beanManager;
+        uiEventListener = new UIEventListener(beanManager);
     }
 
     @Override
@@ -82,6 +129,14 @@ public class CdiVaadinServletService extends VaadinServletService {
     }
 
     @Override
+    public void fireUIInitListeners(UI ui) {
+        ui.addAfterNavigationListener(uiEventListener);
+        ui.addBeforeLeaveListener(uiEventListener);
+        ui.addBeforeEnterListener(uiEventListener);
+        ui.addPollListener(uiEventListener);
+        super.fireUIInitListeners(ui);
+    }
+
     public CdiVaadinServlet getServlet() {
         return (CdiVaadinServlet) super.getServlet();
     }

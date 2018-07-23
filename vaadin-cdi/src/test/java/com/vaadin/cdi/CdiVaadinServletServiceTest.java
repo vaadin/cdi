@@ -16,9 +16,16 @@
 
 package com.vaadin.cdi;
 
+import com.vaadin.cdi.annotation.VaadinServiceEnabled;
+import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.context.ServiceUnderTestContext;
 import com.vaadin.flow.di.Instantiator;
+import com.vaadin.flow.server.CustomizedSystemMessages;
+import com.vaadin.flow.server.DefaultSystemMessagesProvider;
 import com.vaadin.flow.server.ServiceException;
+import com.vaadin.flow.server.SystemMessages;
+import com.vaadin.flow.server.SystemMessagesInfo;
+import com.vaadin.flow.server.SystemMessagesProvider;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.After;
 import org.junit.Test;
@@ -45,6 +52,19 @@ import static org.mockito.Mockito.when;
 
 @RunWith(CdiTestRunner.class)
 public class CdiVaadinServletServiceTest {
+
+    @VaadinServiceEnabled
+    @VaadinServiceScoped
+    public static class CdiSystemMessagesProvider
+            implements SystemMessagesProvider {
+
+        @Override
+        public SystemMessages getSystemMessages(
+                SystemMessagesInfo systemMessagesInfo) {
+            return new CustomizedSystemMessages();
+        }
+
+    }
 
     @Inject
     private BeanManager beanManager;
@@ -92,6 +112,29 @@ public class CdiVaadinServletServiceTest {
         initService(mockBm);
 
         verify(mockInstantiator, times(1)).init(same(service));
+    }
+
+    @Test
+    public void init_SystemMessagesProviderExists_configured() throws ServiceException {
+        initService(beanManager);
+        SystemMessagesProvider systemMessagesProvider =
+                service.getSystemMessagesProvider();
+        assertThat(systemMessagesProvider,
+                instanceOf(CdiSystemMessagesProvider.class));
+    }
+
+    @Test(expected = ServiceException.class)
+    public void init_SystemMessagesProviderAmbiguous_ExceptionThrown()
+            throws ServiceException {
+        assertAmbiguousThrowsException(SystemMessagesProvider.class);
+    }
+
+    @Test(expected = ServiceException.class)
+    public void init_SystemMessagesProviderMissing_defaultConfigured()
+            throws ServiceException {
+        initServiceWithoutBeanFor(SystemMessagesProvider.class);
+        assertThat(service.getSystemMessagesProvider(),
+                instanceOf(DefaultSystemMessagesProvider.class));
     }
 
     private void initService(BeanManager beanManager) throws ServiceException {

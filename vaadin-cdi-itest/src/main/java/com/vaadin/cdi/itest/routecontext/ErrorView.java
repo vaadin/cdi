@@ -27,7 +27,9 @@ public class ErrorView extends AbstractCountedView implements BeforeEnterObserve
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        if (true) throw new NullPointerException();
+        if (true) {
+            throw new NullPointerException();
+        }
     }
 
 }

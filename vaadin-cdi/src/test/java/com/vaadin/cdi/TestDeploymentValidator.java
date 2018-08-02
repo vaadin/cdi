@@ -47,15 +47,15 @@ class TestDeploymentValidator extends DeploymentValidator {
     private BeanInfoSetHolder beanInfoSetHolder;
 
     @Override
-    void validate(Set<BeanInfo> infoSet, Consumer<Throwable> addDeploymentProblem) {
+    void validate(Set<BeanInfo> infoSet, Consumer<Throwable> problemConsumer) {
         // No-op.
         // We need CDI to startup in Unit tests even with
         // intentionally misconfigured beans.
         beanInfoSetHolder.setInfoSet(infoSet);
     }
 
-    void validateForTest(Set<BeanInfo> infoSet, Consumer<Throwable> addDeploymentProblem) {
-        super.validate(infoSet, addDeploymentProblem);
+    void validateForTest(Set<BeanInfo> infoSet, Consumer<Throwable> problemConsumer) {
+        super.validate(infoSet, problemConsumer);
     }
 
 }

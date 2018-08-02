@@ -17,8 +17,10 @@
 package com.vaadin.cdi;
 
 import com.vaadin.cdi.DeploymentValidator.BeanInfo;
+import com.vaadin.cdi.annotation.NormalRouteScoped;
 import com.vaadin.cdi.annotation.NormalUIScoped;
 import com.vaadin.cdi.context.ContextWrapper;
+import com.vaadin.cdi.context.RouteScopedContext;
 import com.vaadin.cdi.context.UIScopedContext;
 import com.vaadin.cdi.context.VaadinServiceScopedContext;
 import com.vaadin.cdi.context.VaadinSessionScopedContext;
@@ -45,6 +47,7 @@ public class VaadinExtension implements Extension {
 
     private VaadinServiceScopedContext serviceScopedContext;
     private UIScopedContext uiScopedContext;
+    private RouteScopedContext routeScopedContext;
     private Set<BeanInfo> beanInfoSet = new HashSet<>();
 
     private void storeBeanValidationInfo(@Observes ProcessBean processBean) {
@@ -56,16 +59,19 @@ public class VaadinExtension implements Extension {
                              BeanManager beanManager) {
         serviceScopedContext = new VaadinServiceScopedContext(beanManager);
         uiScopedContext = new UIScopedContext(beanManager);
+        routeScopedContext = new RouteScopedContext(beanManager);
         addContext(afterBeanDiscovery, serviceScopedContext, null);
         addContext(afterBeanDiscovery,
                 new VaadinSessionScopedContext(beanManager), null);
         addContext(afterBeanDiscovery, uiScopedContext, NormalUIScoped.class);
+        addContext(afterBeanDiscovery, routeScopedContext, NormalRouteScoped.class);
     }
 
     private void initializeContexts(@Observes AfterDeploymentValidation adv,
                                     BeanManager beanManager) {
         serviceScopedContext.init(beanManager);
         uiScopedContext.init(beanManager);
+        routeScopedContext.init(beanManager, uiScopedContext::isActive);
     }
 
     private void validateDeployment(@Observes AfterDeploymentValidation adv,

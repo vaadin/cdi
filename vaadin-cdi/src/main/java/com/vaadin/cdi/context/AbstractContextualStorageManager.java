@@ -24,8 +24,10 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -82,6 +84,10 @@ abstract class AbstractContextualStorageManager<K> implements Serializable  {
         if (storage != null) {
             AbstractContext.destroyAllActive(storage);
         }
+    }
+
+    protected Set<K> getKeySet() {
+        return Collections.unmodifiableSet(storageMap.keySet());
     }
 
 }

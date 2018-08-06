@@ -156,8 +156,12 @@ public class DeploymentValidatorTest {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             ProblemId problemId = (ProblemId) o;
             return errorCode == problemId.errorCode &&
                     Objects.equals(baseType, problemId.baseType);

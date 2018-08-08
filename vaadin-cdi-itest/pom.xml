@@ -38,6 +38,11 @@
             <artifactId>javax.annotation-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.enterprise.concurrent</groupId>
+            <artifactId>javax.enterprise.concurrent-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- Vaadin flow -->
         <dependency>

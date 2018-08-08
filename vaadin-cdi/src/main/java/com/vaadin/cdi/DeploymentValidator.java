@@ -16,6 +16,7 @@
 
 package com.vaadin.cdi;
 
+import com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode;
 import com.vaadin.cdi.annotation.NormalRouteScoped;
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.cdi.annotation.RouteScoped;
@@ -31,11 +32,12 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode;
 import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.ABSENT_OWNER_OF_NON_ROUTE_COMPONENT;
 import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.NON_ROUTE_SCOPED_HAVE_OWNER;
 import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.NORMAL_SCOPED_COMPONENT;
@@ -58,8 +60,14 @@ class DeploymentValidator {
             return annotated.getBaseType();
         }
 
-        private Class<? extends Annotation> getScope() {
-            return bean.getScope();
+        private boolean isNormalScoped(BeanManager bm) {
+            return bm.isNormalScope(bean.getScope());
+        }
+
+        private boolean isRouteScoped() {
+            Class<? extends Annotation> scope = bean.getScope();
+            return scope.equals(RouteScoped.class)
+                    || scope.equals(NormalRouteScoped.class);
         }
 
         private boolean isComponent() {
@@ -125,76 +133,114 @@ class DeploymentValidator {
         }
     }
 
-    private class BeanValidator {
+    private interface BeanValidator {
 
-        private final BeanInfo beanInfo;
-        private final Consumer<Throwable> problemConsumer;
+        boolean isInvalid(BeanInfo beanInfo);
 
-        private BeanValidator(BeanInfo beanInfo, Consumer<Throwable> problemConsumer) {
-            this.beanInfo = beanInfo;
-            this.problemConsumer = problemConsumer;
+        ErrorCode getErrorCode();
+
+        String getErrorMessage(BeanInfo beanInfo);
+
+    }
+
+    private class NormalScopedComponentValidator implements BeanValidator {
+
+        @Override
+        public boolean isInvalid(BeanInfo beanInfo) {
+            return beanInfo.isComponent()
+                    && beanInfo.isNormalScoped(beanManager);
         }
 
-        private void validate() {
-            Class<? extends Annotation> scope = beanInfo.getScope();
-            Optional<RouteScopeOwner> owner = beanInfo.getRouteScopeOwner();
-            Type baseType = beanInfo.getBaseType();
-
-            if (beanInfo.isComponent() && beanManager.isNormalScope(scope)) {
-                addProblem(NORMAL_SCOPED_COMPONENT,
-                        "Normal scoped Vaadin components are not supported. " +
-                        "'%s' should not belong to a normal scope.",
-                        baseType.getTypeName()
-                );
-            }
-
-            if (scope.equals(RouteScoped.class) || scope.equals(NormalRouteScoped.class)) {
-                if (owner.isPresent()) {
-                    if (isNonRouteComponent(owner.get().value())) {
-                        addProblem(OWNER_IS_NOT_ROUTE_COMPONENT,
-                                "'@%s' should define a route component on '%s'.",
-                                RouteScopeOwner.class.getSimpleName(),
-                                baseType.getTypeName()
-                        );
-                    }
-                } else {
-                    if (isNonRouteComponent(baseType)) {
-                        addProblem(ABSENT_OWNER_OF_NON_ROUTE_COMPONENT,
-                                "'%s' is not a route component, need a '@%s'.",
-                                baseType.getTypeName(),
-                                RouteScopeOwner.class.getSimpleName()
-                        );
-                    }
-                }
-            } else {
-                if (owner.isPresent()) {
-                    addProblem(NON_ROUTE_SCOPED_HAVE_OWNER,
-                            "'%s' should be '@%s' or '@%s' to have a '@%s'.",
-                            baseType.getTypeName(),
-                            RouteScoped.class.getSimpleName(),
-                            NormalRouteScoped.class.getSimpleName(),
-                            RouteScopeOwner.class.getSimpleName()
-                    );
-                }
-            }
+        @Override
+        public ErrorCode getErrorCode() {
+            return NORMAL_SCOPED_COMPONENT;
         }
 
-        private void addProblem(ErrorCode errorCode, String message, Object... param) {
-            Type baseType = beanInfo.getBaseType();
-            String desc = String.format(message, param);
-            problemConsumer.accept(new DeploymentProblem(desc, baseType, errorCode));
+        @Override
+        public String getErrorMessage(BeanInfo beanInfo) {
+            return String.format(
+                    "Normal scoped Vaadin components are not supported. " +
+                            "'%s' should not belong to a normal scope.",
+                    beanInfo.getBaseType().getTypeName()
+            );
         }
 
-        private boolean isNonRouteComponent(Type type) {
-            if (!(type instanceof Class)) {
-                return true;
-            }
-            Class clazz = (Class) type;
-            // RouteRegistry contains filtered route targets,
-            // but we want to ignore filters here.
-            return !clazz.isAnnotationPresent(Route.class)
-                    && !HasErrorParameter.class.isAssignableFrom(clazz)
-                    && !RouterLayout.class.isAssignableFrom(clazz);
+    }
+
+    private class OwnerIsNotRouteComponentValidator implements BeanValidator {
+
+        @Override
+        public boolean isInvalid(BeanInfo beanInfo) {
+            return beanInfo.isRouteScoped()
+                    && beanInfo.getRouteScopeOwner()
+                    .map(RouteScopeOwner::value)
+                    .filter(DeploymentValidator::isNonRouteComponent)
+                    .isPresent();
+        }
+
+        @Override
+        public ErrorCode getErrorCode() {
+            return OWNER_IS_NOT_ROUTE_COMPONENT;
+        }
+
+        @Override
+        public String getErrorMessage(BeanInfo beanInfo) {
+            return String.format(
+                    "'@%s' should define a route component on '%s'.",
+                    RouteScopeOwner.class.getSimpleName(),
+                    beanInfo.getBaseType().getTypeName()
+            );
+        }
+
+    }
+
+    private class AbsentOwnerOfNonRouteComponentValidator implements BeanValidator {
+
+        @Override
+        public boolean isInvalid(BeanInfo beanInfo) {
+            return beanInfo.isRouteScoped()
+                    && isNonRouteComponent(beanInfo.getBaseType())
+                    && !beanInfo.getRouteScopeOwner().isPresent();
+        }
+
+        @Override
+        public ErrorCode getErrorCode() {
+            return ABSENT_OWNER_OF_NON_ROUTE_COMPONENT;
+        }
+
+        @Override
+        public String getErrorMessage(BeanInfo beanInfo) {
+            return String.format(
+                    "'%s' is not a route component, need a '@%s'.",
+                    beanInfo.getBaseType().getTypeName(),
+                    RouteScopeOwner.class.getSimpleName()
+            );
+        }
+
+    }
+
+    private class NonRouteScopedHaveOwnerValidator implements BeanValidator {
+
+        @Override
+        public boolean isInvalid(BeanInfo beanInfo) {
+            return !beanInfo.isRouteScoped()
+                    && beanInfo.getRouteScopeOwner().isPresent();
+        }
+
+        @Override
+        public ErrorCode getErrorCode() {
+            return NON_ROUTE_SCOPED_HAVE_OWNER;
+        }
+
+        @Override
+        public String getErrorMessage(BeanInfo beanInfo) {
+            return String.format(
+                    "'%s' should be '@%s' or '@%s' to have a '@%s'.",
+                    beanInfo.getBaseType().getTypeName(),
+                    RouteScoped.class.getSimpleName(),
+                    NormalRouteScoped.class.getSimpleName(),
+                    RouteScopeOwner.class.getSimpleName()
+            );
         }
 
     }
@@ -202,8 +248,37 @@ class DeploymentValidator {
     @Inject
     private BeanManager beanManager;
 
+    private final List<BeanValidator> validators = Arrays.asList(
+            new NormalScopedComponentValidator(),
+            new AbsentOwnerOfNonRouteComponentValidator(),
+            new OwnerIsNotRouteComponentValidator(),
+            new NonRouteScopedHaveOwnerValidator()
+    );
+
     void validate(Set<BeanInfo> infoSet, Consumer<Throwable> problemConsumer) {
-        infoSet.forEach(info -> new BeanValidator(info, problemConsumer).validate());
+        infoSet.forEach(info -> validateBean(info, problemConsumer));
+    }
+
+    private void validateBean(BeanInfo beanInfo, Consumer<Throwable> problemConsumer) {
+        validators.stream()
+                .filter(validator -> validator.isInvalid(beanInfo))
+                .map(validator -> new DeploymentProblem(
+                        validator.getErrorMessage(beanInfo),
+                        beanInfo.getBaseType(),
+                        validator.getErrorCode()))
+                .forEach(problemConsumer);
+    }
+
+    private static boolean isNonRouteComponent(Type type) {
+        if (!(type instanceof Class)) {
+            return true;
+        }
+        Class clazz = (Class) type;
+        // RouteRegistry contains filtered route targets,
+        // but we want to ignore filters here.
+        return !clazz.isAnnotationPresent(Route.class)
+                && !HasErrorParameter.class.isAssignableFrom(clazz)
+                && !RouterLayout.class.isAssignableFrom(clazz);
     }
 
 }

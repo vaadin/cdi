@@ -1,10 +1,40 @@
 # Vaadin CDI
 
-Vaadin CDI is the official CDI integration for [Vaadin Framework](https://github.com/vaadin/framework).
+This is the official CDI integration for [Vaadin Flow](https://github.com/vaadin/flow).
 
-## Download release
+This branch is Vaadin 10.0 (Flow 1.0) compatible. See other branches for other Vaadin versions:
 
-Official releases of this add-on are available at Vaadin Directory. For Maven instructions, download and reviews, go to [Vaadin CDI](https://vaadin.com/addon/vaadin-cdi).
+* 3.0 for Vaadin 8.2+
+* 2.0 for Vaadin Framework 8.0...8.1 versions
+* 1.0 for Vaadin Framework 7 versions
+
+## Using with Vaadin 10
+
+To use CDI with Vaadin 10, you need to add the following dependency to your pom.xml:
+```xml
+<dependency>
+  <groupdId>com.vaadin</groupId>
+  <artifactId>vaadin-cdi</artifactId>
+  <version>10.0.0.beta1</version> <!-- Or the LATEST version -->
+</dependency>
+```
+
+Since the current release version is a prerelease, you need to also include the prerelease Maven repository:
+
+```xml
+<repositories>
+  <repository>
+    <id>Vaadin prereleases</id>
+    <url>https://maven.vaadin.com/vaadin-prereleases</url>
+  </repository>
+<repositories>
+```
+
+## Getting started
+
+**NOTE: This is still WIP.** The easiest way for starting a project is to go to [vaadin.com/start](https://vaadin.com/start) and select the _Project Base with CDI_ to get an empty project with everything setup ready for you.
+
+**NOTE: This is still WIP.** There is a tutorial also available in https://github.com/vaadin/flow-cdi-tutorial that helps you get started with Vaadin 10 and CDI.
 
 ## Building the project
 
@@ -20,7 +50,7 @@ Contributions to the project can be done through pull requests in GitHub.
 
 ---
 
-Copyright 2012-2017 Vaadin Ltd.
+Copyright 2012-2018 Vaadin Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this file except in compliance with the License. You may obtain a copy of

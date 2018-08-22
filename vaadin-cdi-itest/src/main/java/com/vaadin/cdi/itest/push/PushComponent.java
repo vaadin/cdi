@@ -33,6 +33,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import java.lang.annotation.Annotation;
+import java.util.concurrent.locks.Lock;
 
 public class PushComponent extends Div {
 
@@ -49,11 +50,12 @@ public class PushComponent extends Div {
 
         @Override
         public void run() {
-            try {
-                // Needed to make sure that this is sent as a push message
-                Thread.sleep(500);
-            } catch (InterruptedException exception) {
-            }
+            // We can acquire the lock after the request started this thread is processed
+            // Needed to make sure that this is sent as a push message
+            Lock lockInstance = ui.getSession().getLockInstance();
+            lockInstance.lock();
+            lockInstance.unlock();
+
             ui.access(PushComponent.this::print);
         }
 

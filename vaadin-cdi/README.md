@@ -12,13 +12,13 @@ If you do not customize Vaadin Servlet in your web.xml,
 a CDI enabled Vaadin servlet is deployed automatically. 
 
 Otherwise you can customize 
-[CdiVaadinServlet](src/main/java/com/vaadin/cdi/CdiVaadinServlet.java) 
+[CdiVaadinServlet](../../master/vaadin-cdi/src/main/java/com/vaadin/cdi/CdiVaadinServlet.java) 
 just like VaadinServlet.
 
 ### Component instantiation and CDI
 
 Vaadin triggered instantiation happens in a 
-[CDI aware Vaadin Instantiator](src/main/java/com/vaadin/cdi/CdiInstantiator.java) 
+[CDI aware Vaadin Instantiator](../../master/vaadin-cdi/src/main/java/com/vaadin/cdi/CdiInstantiator.java) 
 implementation. 
 Components created by this API:
 
@@ -39,12 +39,12 @@ Injects work, but other CDI features not, because instantiated component is not 
 
 #### VaadinServiceScoped
 
-[@VaadinServiceScoped](src/main/java/com/vaadin/cdi/annotation/VaadinServiceScoped.java) 
+[@VaadinServiceScoped](../../master/vaadin-cdi/src/main/java/com/vaadin/cdi/annotation/VaadinServiceScoped.java) 
 is a normal ( proxied ) scope. Its purpose to define a scope for the beans used by VaadinService. Like an Instantiator, or a I18NProvider.   
 
 #### VaadinSessionScoped
 
-[@VaadinSessionScoped](src/main/java/com/vaadin/cdi/annotation/VaadinSessionScoped.java) 
+[@VaadinSessionScoped](../../master/vaadin-cdi/src/main/java/com/vaadin/cdi/annotation/VaadinSessionScoped.java) 
 is a normal ( proxied ) scope. Every VaadinSession have a separate Context. 
 
 #### UIScoped, NormalUIScoped
@@ -52,19 +52,19 @@ is a normal ( proxied ) scope. Every VaadinSession have a separate Context.
 Every UI have a separate Context. 
 Practically it means there is just one instance per UI for the scoped class.
 
-For components, use [@UIScoped](src/main/java/com/vaadin/annotation/cdi/UIScoped.java). 
+For components, use [@UIScoped](../../master/vaadin-cdi/src/main/java/com/vaadin/annotation/cdi/UIScoped.java). 
 It is a pseudo scope, so gives a direct reference. 
 Vaadin component tree does not work properly with CDI client proxies.
 
 For other beans you can use 
-[@NormalUIScoped](src/main/java/com/vaadin/cdi/annotation/NormalUIScoped.java). 
+[@NormalUIScoped](../../master/vaadin-cdi/src/main/java/com/vaadin/cdi/annotation/NormalUIScoped.java). 
 Given it is normal scoped, have some benefit. 
 For example can handle cyclic dependency.
 
 #### RouteScoped, NormalRouteScoped 
 
-[@RouteScoped](src/main/java/com/vaadin/cdi/annotation/RouteScoped.java) context lifecycle on its own is same as UI context's. 
-Together with the concept of [@RouteScopeOwner](src/main/java/com/vaadin/cdi/annotation/RouteScopeOwner.java) it can be used to bind beans to router components (target/layout/exceptionhandlers).
+[@RouteScoped](../../master/vaadin-cdi/src/main/java/com/vaadin/cdi/annotation/RouteScoped.java) context lifecycle on its own is same as UI context's. 
+Together with the concept of [@RouteScopeOwner](../../master/vaadin-cdi/src/main/java/com/vaadin/cdi/annotation/RouteScopeOwner.java) it can be used to bind beans to router components (target/layout/exceptionhandlers).
 Until owner remains in the route, all beans owned by it remain in the scope.
  
 Normal, and non-normal meaning can be found at UI scopes.
@@ -79,7 +79,7 @@ Some Vaadin service interfaces can be implemented as a CDI bean.
 - ErrorHandler
 
 Beans have to be qualifed by 
-[@VaadinServiceEnabled](src/main/java/com/vaadin/cdi/annotation/VaadinServiceEnabled.java) 
+[@VaadinServiceEnabled](../../master/vaadin-cdi/src/main/java/com/vaadin/cdi/annotation/VaadinServiceEnabled.java) 
 to be picked up automatically.
 
 ### Vaadin Events

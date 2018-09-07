@@ -2,167 +2,147 @@
 
 Vaadin-CDI is the official CDI integration for Vaadin Framework.
 
-## Changes in 3.0
+## Version 10.0
 
-### Breaking changes:
+Rebuilt for Vaadin 10 based on the previous addon versions.
 
-#### @NormalUIScoped UIs are not supported
+### Startup
 
-Every `@CDIUI` has to be `@UIScoped`. The scope can be omitted for UIs.
+If you do not customize Vaadin Servlet in your web.xml, 
+a CDI enabled Vaadin servlet is deployed automatically. 
 
-#### ViewScoped context lifecycle has changed
+Otherwise you can customize 
+[CdiVaadinServlet](../../master/vaadin-cdi/src/main/java/com/vaadin/cdi/CdiVaadinServlet.java) 
+just like VaadinServlet.
 
-Creation and destruction of view scopes is better aligned with navigation.
+### Component instantiation and CDI
 
-`@Dependent` views are not supported. The behavior of a view scope is the same as you would expect from dependent scope.
+Vaadin triggered instantiation happens in a 
+[CDI aware Vaadin Instantiator](../../master/vaadin-cdi/src/main/java/com/vaadin/cdi/CdiInstantiator.java) 
+implementation. 
+These components are created by the instantiator:
 
-#### Introduced CDINavigator API
+- `@Route`, RouteLayout, HasErrorParameter components
+- components injected by `@Id` into polymer templates
 
-To make `@ViewScoped` work, the `CDINavigator` should be used instead of standard `Navigator`.
+By default instantiator looks up the CDI bean by type ( component class ), 
+and gets a contextual reference from BeanManager. 
+All the CDI features are usable like observer, interceptor, decorator.
 
-```
-@CDIUI("")
-public class MyUI extends UI {
-    @Inject
-    CDINavigator navigator;
+When type is not found as a CDI bean 
+( for example ambiguous, or does not have a no-arg public constructor ), 
+instantiation falls back to the default Vaadin behavior. 
+After the instantiation, dependency injection is performed. 
+Injects work, but other CDI features are not, because instantiated component is not a contextual instance. 
 
-    @Override
-    protected void init(VaadinRequest request) {
-        navigator.init(this, myViewContainer);
-```
+### Vaadin Contexts
 
-Navigation can be done by injecting `CDINavigator` or using `ui.getNavigator()`, and calling `CDINavigator::navigateTo`.
+#### VaadinServiceScoped
 
-### New Features:
-- Introduced @VaadinSessionScoped
-- Improved clustering support
+[@VaadinServiceScoped](../../master/vaadin-cdi/src/main/java/com/vaadin/cdi/annotation/VaadinServiceScoped.java) 
+is a normal ( proxied ) scope. Its purpose to define a scope for the beans used by VaadinService. Like an Instantiator, or an I18NProvider.   
 
-This release contains a number of bugfixes to view scopes and memory leaks.
+#### VaadinSessionScoped
 
-## Changes in 2.0
+[@VaadinSessionScoped](../../master/vaadin-cdi/src/main/java/com/vaadin/cdi/annotation/VaadinSessionScoped.java) 
+is a normal ( proxied ) scope. Every VaadinSession have a separate Context. 
 
-- Support for Vaadin Framework 8
+#### UIScoped, NormalUIScoped
 
+Every UI has a separate Context. 
+Practically it means there is just one instance per UI for the scoped class.
 
-## Changes in 1.0.3
+For components, use [@UIScoped](../../master/vaadin-cdi/src/main/java/com/vaadin/annotation/cdi/UIScoped.java). 
+It is a pseudo scope, so gives a direct reference. 
+Vaadin component tree does not work properly with CDI client proxies.
 
-- Upgrade DeltaSpike to 1.4.1
-- Update Vaadin dependency
+For other beans you can use 
+[@NormalUIScoped](../../master/vaadin-cdi/src/main/java/com/vaadin/cdi/annotation/NormalUIScoped.java). 
+Given it is normal scoped, have some benefit. 
+For example can handle cyclic dependency.
 
-Note: some compatibility issues have been reported when using GlassFish
-and Vaadin CDI together with some third party CDI related add-ons.
-If this happens, add an explicit dependency to DeltaSpike version 1.3.0
-in the project POM , overriding any transitive dependencies.
+#### RouteScoped, NormalRouteScoped 
 
-## Changes in 1.0.2
+[@RouteScoped](../../master/vaadin-cdi/src/main/java/com/vaadin/cdi/annotation/RouteScoped.java) context lifecycle on its own is same as UI context's. 
+Together with the concept of [@RouteScopeOwner](../../master/vaadin-cdi/src/main/java/com/vaadin/cdi/annotation/RouteScopeOwner.java) it can be used to bind beans to router components (target/layout/exceptionhandler).
+Until owner remains in the route, all beans owned by it remain in the scope.
+ 
+Same as before, for vaadin components use `@RouteScoped`, it is a pseudo scope.
+For other beans you can use `@NormalRouteScoped`, it is a normal scope.
+ 
+### Services
 
-- Accept beans that do not implement PassivationCapable (#15243)
+Some Vaadin service interfaces can be implemented as a CDI bean.
 
-## Changes in 1.0.1
+- I18NProvider
+- Instantiator
+- SystemMessagesProvider
+- ErrorHandler
 
-- Upgrade DeltaSpike to version 1.0.3 for GlassFish 4.1 compatibility
+Beans have to be qualifed by 
+[@VaadinServiceEnabled](../../master/vaadin-cdi/src/main/java/com/vaadin/cdi/annotation/VaadinServiceEnabled.java) 
+to be picked up automatically.
 
-## Changes in 1.0.0
+### Vaadin Events
 
-No changes since 1.0.0.rc1.
+The following events are fired as a CDI event:
 
-## Changes in 1.0.0.rc1
+- ServiceInitEvent
+- PollEvent
+- BeforeEnterEvent
+- BeforeLeaveEvent
+- AfterNavigationEvent
+- UIInitEvent
+- SessionInitEvent
+- SessionDestroyEvent
+- ServiceDestroyEvent
 
-- moved the classes VaadinCDIServlet and VaadinCDIServletService to the
-  package com.vaadin.cdi.servlet
-- do not add hyphens within all caps abbreviations in automatic UI/view names,
-  e.g. MyCDIUI becomes my-cdi and MyCDITestView becomes my-cdi-test
-- added check at deployment time: classes with @CDIView must implement View
-- added check at deployment time: if a servlet class is nested in a UI with
-  @CDIUI, it must extend VaadinCDIServlet
+You just need a CDI observer to handle them.
 
-## Changes in 1.0.0.beta4
+### Known issues and limitations
 
-- removed the blocking of injecting Vaadin components in normal scopes
-  that was introduced in 1.0.0.beta3
+#### Custom UI
 
-While it is now possible to inject Vaadin components in normal scopes
-(including @NormalUIScoped and @NormalViewScoped), it is not recommended
-as the proxies generated by CDI implementations may cause complications e.g.
-with Java collections. Please report any such issues in the Vaadin framework
-as tickets at https://github.com/vaadin/cdi/issues .
+As of V10 no custom UI subclass is needed for the application.
+You can define one by the corresponding servlet parameter, 
+but it is instantiated by the framework as a POJO.
 
-For components injected in normal scopes, interceptors and decorators should
-only be used for methods that are not called directly by the framework.  
+You should not need a custom UI subclass. Though dependency injection can be achieved, just in case.
+Use CDI BeanManager in `UI.init`. Through Deltaspike's `BeanProvider.injectFields(this)` for example.
 
-See also the notes for earlier releases below.
+#### ServiceDestroyEvent
 
-## Changes in 1.0.0.beta3
+During application shutdown it is implementation specific, 
+whether it works with CDI or not. 
+But according to servlet specs, 
+a servlet destroy ( it means a service destroy too ) can happen in 
+other circumstances too.
 
-- breaking change: @UIScoped and @ViewScoped are no longer @NormalScope
-  - added corresponding @NormalUIScoped and @NormalViewScoped
-- breaking change: NormalScopes (including @NormalUIScoped and
-  @NormalViewScoped) are not supported classes implementing
-  com.vaadin.ui.Component
-- See http://dev.vaadin.com/query?status=closed&status=released&milestone=Vaadin+CDI+1.0.0.beta3
-  for the complete list of changes.
+#### Push with CDI
 
-See also the notes for earlier releases below.
+Vaadin contexts are usable inside `UI.access` with any push transport.
 
-## Changes in 1.0.0.beta2
+But an incoming websocket message does not count as a request in CDI. 
+Need a http request to have request, session, and conversation context. 
 
-- @UIScoped and @ViewScoped can be used on methods
-  (producer methods, setter injection, constructor injection)
-- Dependency on Guava eliminated
-- Various fixes including
-  - UI and View are now correctly included in their own scopes
-  - Sub-views with slash in view name are now handled correctly
-- See http://dev.vaadin.com/query?status=closed&status=released&milestone=Vaadin+CDI+1.0.0.beta2
-  for the complete list of changes.
+So you should use WEBSOCKET_XHR (it is the default), or LONG_POLLING 
+transport, otherwise you lost these standard contexts. 
 
-See also the notes for earlier releases below.
+In background threads these contexts are not active regardless of push.
 
-## Changes in 1.0.0.beta1
+#### Router and CDI
 
-Note: Vaadin CDI 1.0.0.beta1 and later requires Vaadin 7.3.1 or later.
-Injection of beans other than components also works with earlier Vaadin
-versions.
+Vaadin scans router classes (targets, layouts) without any clue about CDI beans. 
+Using producers, or excluding the bean class from types with `@Typed` causes issues with these kind of beans.
 
-See also the changes in 1.0.0.alpha3 below for a breaking change (view and UI
-name mappings) when upgrading from earlier versions.
+#### Instantiator and CDI Qualifiers
 
-- @ViewScoped context
-- @UIScoped and @ViewScoped use @NormalScope, supporting interceptors etc.
-- Better support for server push (including WebSockets) and operations in
-  background threads (within UI.access())
-- DeltaSpike library is used internally by the add-on
-- Various fixes and small enhancements
-- See http://dev.vaadin.com/query?status=closed&status=released&milestone=Vaadin+CDI+1.0.0.beta1
-  for the complete list of changes.
-
-If any VaadinServlet is explicitly configured either with @WebServlet or
-with web.xml, automatic deployment of a CDI servlet will not take place.
-In such cases, you should register a VaadinCDIServlet either for "/*" or
-for "/mypath/*" and "/VAADIN/*"
-
-To use a custom servlet class, it is recommended to inherit VaadinCDIServlet.
-Overriding createServletService() is possible, in which case the service
-should inherit VaadinCDIServletService if possible or duplicate its
-functionality otherwise.
-
-## Changes in 1.0.0.alpha3
-
-- Reintroduce conventions for mapping of views and UIs
-  - This requires updating @CDIUI and @CDIView parameter values in existing
-    applications.
-  - see http://dev.vaadin.com/ticket/12385 for details
-- @UIScoped is inherited by subclasses of an annotated UI
-- Support non-JEE containers with Weld (BeanManager look-up)
-- Use BeanManager.resolve() to support @Alternative UIs
-- Partial passivation support
-- Automatically injected servlet has async-supported enabled
-- Reduced unnecessary logging
-- See http://dev.vaadin.com/query?&status=released&milestone=Vaadin+CDI+1.0.0.alpha3
-  for the complete list of changes.
+As you can see at component instantiation, beans looked up by bean type. 
+The API can not provide qualifiers, so lookup is done with `@Any`.
 
 ---
 
-Copyright 2012-2017 Vaadin Ltd.
+Copyright 2012-2018 Vaadin Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this file except in compliance with the License. You may obtain a copy of

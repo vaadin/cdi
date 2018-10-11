@@ -56,7 +56,6 @@
 
     <modules>
         <module>vaadin-cdi</module>
-        <module>vaadin-cdi-itest</module>
     </modules>
 
     <dependencyManagement>
@@ -185,4 +184,18 @@
             <url>http://maven.vaadin.com/vaadin-prereleases</url>
         </repository>
     </repositories>
+
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <property>
+                    <name>!skipTests</name>
+                </property>
+            </activation>
+            <modules>
+                <module>vaadin-cdi-itest</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>

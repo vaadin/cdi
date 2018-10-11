@@ -56,7 +56,6 @@
 
     <modules>
         <module>vaadin-cdi</module>
-        <module>vaadin-cdi-itest</module>
     </modules>
 
     <dependencyManagement>

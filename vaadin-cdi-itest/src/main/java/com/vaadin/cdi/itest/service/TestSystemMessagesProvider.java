@@ -28,14 +28,12 @@ import com.vaadin.flow.server.SystemMessagesProvider;
 public class TestSystemMessagesProvider implements SystemMessagesProvider {
 
     public static final String EXPIRED_BY_TEST = "EXPIRED BY TEST";
-    public static final String FAILED_BY_TEST = "FAILED_BY_TEST";
 
     @Override
     public SystemMessages getSystemMessages(SystemMessagesInfo systemMessagesInfo) {
         CustomizedSystemMessages messages = new CustomizedSystemMessages();
         messages.setSessionExpiredNotificationEnabled(true);
         messages.setSessionExpiredMessage(EXPIRED_BY_TEST);
-        messages.setInternalErrorMessage(FAILED_BY_TEST);
         // On Wildfy this message pops up after session invalidate button.
         messages.setCookiesDisabledMessage(EXPIRED_BY_TEST);
         return messages;

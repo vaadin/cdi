@@ -73,13 +73,6 @@ public class ServiceTest extends AbstractCdiTest {
     }
 
     @Test
-    public void internalErrorMessageCustomized() {
-        open();
-        click(FAIL);
-        assertSystemMessageEquals(TestSystemMessagesProvider.FAILED_BY_TEST);
-    }
-
-    @Test
     public void errorHandlerCustomized() throws IOException {
         String counter = TestErrorHandler.class.getSimpleName();
         assertCountEquals(0, counter);

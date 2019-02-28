@@ -87,7 +87,7 @@ public class CdiInstantiator implements Instantiator {
         if (i18NLoggingEnabled.compareAndSet(true, false)) {
             lookup
                     .setUnsatisfiedHandler(() ->
-                            getLogger().info("Can't find any bean implementing '{}'. "
+                            getLogger().info("Can't find any @VaadinServiceScoped bean implementing '{}'. "
                                             + CANNOT_USE_CDI_BEANS_FOR_I18N,
                                     I18NProvider.class.getSimpleName()))
                     .setAmbiguousHandler(e ->

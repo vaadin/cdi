@@ -16,14 +16,16 @@
 
 package com.vaadin.cdi.context;
 
-import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.server.VaadinSessionState;
-import org.mockito.Mockito;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.when;
 
 import javax.enterprise.inject.spi.CDI;
 
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.when;
+import org.mockito.Mockito;
+
+import com.vaadin.flow.function.DeploymentConfiguration;
+import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.VaadinSessionState;
 
 public class SessionUnderTestContext implements UnderTestContext {
 
@@ -40,12 +42,17 @@ public class SessionUnderTestContext implements UnderTestContext {
                 Mockito.withSettings().useConstructor());
         doCallRealMethod().when(session).setAttribute(Mockito.any(String.class),
                 Mockito.any());
-        doCallRealMethod().when(session).getAttribute(Mockito.any(String.class));
+        doCallRealMethod().when(session)
+                .getAttribute(Mockito.any(String.class));
         doCallRealMethod().when(session).getService();
 
         when(session.getState()).thenReturn(VaadinSessionState.OPEN);
 
         when(session.hasLock()).thenReturn(true);
+        DeploymentConfiguration configuration = Mockito
+                .mock(DeploymentConfiguration.class);
+        when(session.getConfiguration()).thenReturn(configuration);
+        when(configuration.isBowerMode()).thenReturn(true);
     }
 
     @Override

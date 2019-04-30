@@ -16,25 +16,23 @@
 
 package com.vaadin.cdi.itest;
 
-import com.vaadin.cdi.itest.template.TestTemplate;
-import com.vaadin.testbench.TestBenchElement;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.vaadin.cdi.itest.template.TestTemplate;
+import com.vaadin.testbench.TestBenchElement;
+
 public class TemplateTest extends AbstractCdiTest {
 
     @Deployment(testable = false)
     public static WebArchive deployment() {
         return ArchiveProvider.createWebArchive("templates",
-                archive -> archive
-                        .addClasses(TestTemplate.class)
-                        .addAsWebResource(
-                                "frontend/test-template.html",
-                                "frontend/test-template.html")
-        );
+                archive -> archive.addClasses(TestTemplate.class)
+                        .addAsWebResource("frontend/test-template.html",
+                                "frontend/test-template.html"));
     }
 
     @Before

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-cdi-parent</artifactId>
@@ -118,6 +118,7 @@
                             <systemPropertyVariables>
                                 <tomee.host>0.0.0.0</tomee.host>
                                 <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
+                                <vaadin.bowerMode>true</vaadin.bowerMode>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -173,6 +174,7 @@
                             <excludedGroups>${surefire.excludedGroups}</excludedGroups>
                             <groups>${surefire.groups}</groups>
                             <systemPropertyVariables>
+                                <vaadin.bowerMode>true</vaadin.bowerMode>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                                 <jboss.home>${project.build.directory}/wildfly-11.0.0.Final</jboss.home>
                                 <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
@@ -239,6 +241,7 @@
                                 </GLASSFISH_HOME>
                             </environmentVariables>
                             <systemPropertyVariables>
+                                <vaadin.bowerMode>true</vaadin.bowerMode>
                                 <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
                             </systemPropertyVariables>
                             <redirectTestOutputToFile>false

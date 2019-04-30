@@ -16,17 +16,21 @@
 
 package com.vaadin.cdi.itest.instantiatorcustomize;
 
-import com.vaadin.cdi.annotation.VaadinServiceEnabled;
-import com.vaadin.cdi.annotation.VaadinServiceScoped;
-import com.vaadin.flow.di.Instantiator;
-import com.vaadin.flow.server.VaadinService;
-import com.vaadin.flow.server.VaadinServiceInitListener;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
+import java.util.stream.Stream;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
+import javax.enterprise.inject.spi.Unmanaged;
 import javax.interceptor.Interceptor;
-import java.util.stream.Stream;
+
+import org.apache.deltaspike.core.api.provider.BeanProvider;
+
+import com.vaadin.cdi.annotation.VaadinServiceEnabled;
+import com.vaadin.cdi.annotation.VaadinServiceScoped;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.di.Instantiator;
+import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.VaadinServiceInitListener;
 
 @Priority(Interceptor.Priority.APPLICATION)
 @Alternative
@@ -51,5 +55,13 @@ public class InstantiatorAlternative implements Instantiator {
             ((InstantiatorCustomizeView) instance).customize();
         }
         return instance;
+    }
+
+    @Override
+    public <T extends Component> T createComponent(Class<T> componentClass) {
+        Unmanaged<T> unmanagedClass = new Unmanaged<T>(componentClass);
+        Unmanaged.UnmanagedInstance<T> instance = unmanagedClass.newInstance();
+        instance.produce().inject().postConstruct();
+        return instance.get();
     }
 }

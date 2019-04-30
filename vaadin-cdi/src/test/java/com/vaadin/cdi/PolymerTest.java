@@ -16,7 +16,19 @@
 
 package com.vaadin.cdi;
 
-import com.vaadin.cdi.annotation.NormalUIScoped;
+import static org.junit.Assert.assertNotNull;
+
+import javax.inject.Inject;
+import javax.inject.Provider;
+
+import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
+import org.jsoup.Jsoup;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.cdi.context.UIUnderTestContext;
 import com.vaadin.flow.component.Tag;
@@ -26,21 +38,9 @@ import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.polymertemplate.TemplateParser.TemplateData;
 import com.vaadin.flow.di.Instantiator;
+import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.templatemodel.TemplateModel;
-import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
-import org.jsoup.Jsoup;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 
 @RunWith(CdiTestRunner.class)
 public class PolymerTest {
@@ -50,19 +50,11 @@ public class PolymerTest {
     public static class PseudoScopedLabel extends Label {
     }
 
-    @NormalUIScoped
-    @Tag("normaluiscoped-label")
-    public static class NormalScopedLabel extends Label {
-    }
-
     @Tag("test-template")
     public static class TestTemplate extends PolymerTemplate<TemplateModel> {
 
         @Id("pseudo")
         private PseudoScopedLabel pseudo;
-
-        @Id("normal")
-        private NormalScopedLabel normal;
 
         public TestTemplate() {
             super((clazz, tag, service) -> new TemplateData("",
@@ -84,6 +76,7 @@ public class PolymerTest {
         UI ui = uiUnderTestContext.getUi();
         VaadinService service = ui.getSession().getService();
         service.init();
+        VaadinService.setCurrent(service);
         instantiator = service.getInstantiator();
         template = instantiator.getOrCreate(TestTemplate.class);
     }
@@ -91,12 +84,13 @@ public class PolymerTest {
     @After
     public void tearDown() {
         uiUnderTestContext.tearDownAll();
+        CurrentInstance.clearAll();
     }
 
     @Test
-    public void injectField_componentHasScope_scopedInstanceInjected() {
+    public void injectField_componentHasScope_scopeIsIgnored() {
         final PseudoScopedLabel label = pseudoScopedLabelProvider.get();
-        assertSame(label, template.pseudo);
+        Assert.assertNotSame(label, template.pseudo);
     }
 
     @Test
@@ -104,41 +98,12 @@ public class PolymerTest {
         assertNotNull(template.pseudo.getElement().getNode().getParent());
     }
 
-    /**
-     * Test to show element binding with a normal scoped component doesn't work.
-     * It is bound to a new element instead of the one in the template element tree.
-     * <p>
-     * Vaadin Component consumes binding info from thread local
-     * in the no-arg constructor. Proxies don't work.
-     */
-    @Test
-    public void injectField_componentNormalScoped_elementBindingFailure() {
-        assertNull(template.normal.getElement().getNode().getParent());
-    }
-
-    /**
-     * Test to show element binding with an already instantiated
-     * component doesn't work.
-     * <p>
-     * Because of the binding in Component constructor seen before.
-     */
-    @Test
-    public void injectField_instantiatedBeforeInjection_elementBindingFailure() {
-        // Instantiate a new template.
-        // Components are scoped, they won't be instantiated again.
-        template = instantiator.getOrCreate(TestTemplate.class);
-        assertNull(template.normal.getElement().getNode().getParent());
-    }
-
     private static String getTemplateContent() {
-        return "<dom-module id=\"test-template\">\n" +
-                "    <template>\n" +
-                "        <div>\n" +
-                "            <uiscoped-label id=\"pseudo\"/>\n" +
-                "            <normaluiscoped-label id=\"normal\"/>\n" +
-                "        </div>\n" +
-                "    </template>\n" +
-                "</dom-module>\n";
+        return "<dom-module id=\"test-template\">\n" + "    <template>\n"
+                + "        <div>\n"
+                + "            <uiscoped-label id=\"pseudo\"/>\n"
+                + "            <normaluiscoped-label id=\"normal\"/>\n"
+                + "        </div>\n" + "    </template>\n" + "</dom-module>\n";
     }
 
 }

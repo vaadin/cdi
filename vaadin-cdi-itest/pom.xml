@@ -118,7 +118,6 @@
                             <systemPropertyVariables>
                                 <tomee.host>0.0.0.0</tomee.host>
                                 <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
-                                <vaadin.bowerMode>true</vaadin.bowerMode>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -174,7 +173,6 @@
                             <excludedGroups>${surefire.excludedGroups}</excludedGroups>
                             <groups>${surefire.groups}</groups>
                             <systemPropertyVariables>
-                                <vaadin.bowerMode>true</vaadin.bowerMode>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                                 <jboss.home>${project.build.directory}/wildfly-11.0.0.Final</jboss.home>
                                 <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>

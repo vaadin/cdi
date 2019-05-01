@@ -16,6 +16,20 @@
 
 package com.vaadin.cdi.itest;
 
+import static com.vaadin.cdi.itest.service.ServiceView.ACTION;
+import static com.vaadin.cdi.itest.service.ServiceView.EXPIRE;
+import static com.vaadin.cdi.itest.service.ServiceView.FAIL;
+
+import java.io.IOException;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
 import com.vaadin.cdi.itest.service.BootstrapCustomizeView;
 import com.vaadin.cdi.itest.service.BootstrapCustomizer;
 import com.vaadin.cdi.itest.service.EventObserver;
@@ -25,30 +39,15 @@ import com.vaadin.cdi.itest.service.TestSystemMessagesProvider;
 import com.vaadin.flow.server.SessionDestroyEvent;
 import com.vaadin.flow.server.SessionInitEvent;
 import com.vaadin.flow.server.UIInitEvent;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-
-import java.io.IOException;
-
-import static com.vaadin.cdi.itest.service.ServiceView.ACTION;
-import static com.vaadin.cdi.itest.service.ServiceView.EXPIRE;
-import static com.vaadin.cdi.itest.service.ServiceView.FAIL;
 
 public class ServiceTest extends AbstractCdiTest {
 
     @Deployment(testable = false)
     public static WebArchive deployment() {
         return ArchiveProvider.createWebArchive("services",
-                BootstrapCustomizer.class,
-                BootstrapCustomizeView.class,
-                ServiceView.class,
-                EventObserver.class,
-                TestErrorHandler.class,
+                BowerModeServlet.class, BootstrapCustomizer.class,
+                BootstrapCustomizeView.class, ServiceView.class,
+                EventObserver.class, TestErrorHandler.class,
                 TestSystemMessagesProvider.class);
     }
 

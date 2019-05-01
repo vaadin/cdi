@@ -21,6 +21,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.Keys;
 
 import com.vaadin.cdi.itest.template.TestTemplate;
 import com.vaadin.testbench.TestBenchElement;
@@ -31,6 +32,7 @@ public class TemplateTest extends AbstractCdiTest {
     public static WebArchive deployment() {
         return ArchiveProvider.createWebArchive("templates",
                 archive -> archive.addClasses(TestTemplate.class)
+                        .addClasses(BowerModeServlet.class)
                         .addAsWebResource("frontend/test-template.html",
                                 "frontend/test-template.html"));
     }
@@ -45,7 +47,9 @@ public class TemplateTest extends AbstractCdiTest {
         TestBenchElement template = $("test-template").first();
         TestBenchElement label = template.$(TestBenchElement.class).id("label");
         Assert.assertEquals("", label.getText());
-        template.$(TestBenchElement.class).id("input").sendKeys("CDI\t");
+        TestBenchElement input = template.$(TestBenchElement.class).id("input");
+        input.sendKeys("CDI");
+        input.sendKeys(Keys.ENTER);
         Assert.assertEquals("CDI", label.getText());
     }
 }

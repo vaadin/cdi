@@ -20,40 +20,35 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.html.Input;
 import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.polymertemplate.DefaultTemplateParser;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 @Tag("test-template")
 @HtmlImport("frontend://test-template.html")
+@UIScoped
 @Route("")
 public class TestTemplate extends PolymerTemplate<TemplateModel> {
     private @Id("input") Input input;
 
-    private @Id("label") UIScopedTagLabel label;
+    private @Id("label") Label label;
 
     private @Inject Event<InputChangeEvent> setTextEventTrigger;
 
     public TestTemplate() {
-        super(DefaultTemplateParser.getInstance(), VaadinService.getCurrent());
-        input.addValueChangeListener(event -> setTextEventTrigger
-                .fire(new InputChangeEvent(input.getValue())));
+        input.addValueChangeListener(event -> {
+            setTextEventTrigger.fire(new InputChangeEvent(input.getValue()));
+        });
     }
 
-    @Tag("label-ext")
-    public static class UIScopedTagLabel extends Label {
-
-        private void onSetText(@Observes InputChangeEvent event) {
-            setText(event.getText());
-        }
-
+    private void onSetText(@Observes InputChangeEvent event) {
+        label.setText(event.getText());
     }
 
     public static class InputChangeEvent {

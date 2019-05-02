@@ -16,6 +16,8 @@
 
 package com.vaadin.cdi.itest;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -23,7 +25,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
-import java.io.IOException;
 
 @WebFilter(urlPatterns = "/*", asyncSupported = true)
 public class CounterFilter implements javax.servlet.Filter {
@@ -36,7 +37,8 @@ public class CounterFilter implements javax.servlet.Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response,
+            FilterChain chain) throws IOException, ServletException {
         if (request.getParameter("resetCounts") != null) {
             counter.reset();
         } else {

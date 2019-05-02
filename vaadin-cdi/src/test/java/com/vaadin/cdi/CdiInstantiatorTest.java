@@ -16,11 +16,17 @@
 
 package com.vaadin.cdi;
 
-import com.vaadin.cdi.annotation.VaadinServiceEnabled;
-import com.vaadin.cdi.context.ServiceUnderTestContext;
-import com.vaadin.flow.i18n.I18NProvider;
-import com.vaadin.flow.server.ServiceInitEvent;
-import com.vaadin.flow.server.VaadinService;
+import java.util.List;
+import java.util.Locale;
+
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Vetoed;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.servlet.ServletException;
+
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.After;
 import org.junit.Assert;
@@ -29,14 +35,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.List;
-import java.util.Locale;
+import com.vaadin.cdi.annotation.VaadinServiceEnabled;
+import com.vaadin.cdi.context.ServiceUnderTestContext;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.i18n.I18NProvider;
+import com.vaadin.flow.server.ServiceInitEvent;
+import com.vaadin.flow.server.VaadinService;
 
 @RunWith(CdiTestRunner.class)
 public class CdiInstantiatorTest {
@@ -56,6 +60,12 @@ public class CdiInstantiatorTest {
 
     }
 
+    @Singleton
+    public static class SingletonComponent extends Div {
+        @Inject
+        BeanManager beanManager;
+    }
+
     @Vetoed
     public static class NotACdiBean extends ParentBean {
     }
@@ -73,7 +83,7 @@ public class CdiInstantiatorTest {
 
         @Override
         public String getTranslation(String key, Locale locale,
-                                     Object... params) {
+                Object... params) {
             return null;
         }
 
@@ -164,6 +174,26 @@ public class CdiInstantiatorTest {
         ParentBean instance = instantiator.getOrCreate(ParentBean.class);
         Assert.assertNotNull(instance);
         Assert.assertNotNull(instance.getBm());
+    }
+
+    @Test
+    public void createComponent_componentIsCreated() {
+        SingletonComponent component = instantiator
+                .createComponent(SingletonComponent.class);
+        Assert.assertNotNull(component);
+        Assert.assertNotNull(component.beanManager);
+    }
+
+    @Test
+    public void createComponent_componentIsCreatedOnEveryCall()
+            throws ServletException {
+        SingletonComponent component = instantiator
+                .createComponent(SingletonComponent.class);
+        Assert.assertNotNull(component);
+
+        SingletonComponent anotherComponent = instantiator
+                .createComponent(SingletonComponent.class);
+        Assert.assertNotEquals(component, anotherComponent);
     }
 
 }

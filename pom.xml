@@ -9,9 +9,8 @@
         <version>2.0.1</version>
     </parent>
 
-    <groupId>com.vaadin</groupId>
     <artifactId>vaadin-cdi-parent</artifactId>
-    <version>10.2-SNAPSHOT</version>
+    <version>11.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>vaadin-cdi-parent</name>

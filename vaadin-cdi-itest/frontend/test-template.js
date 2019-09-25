@@ -18,4 +18,3 @@ class TestTemplate extends PolymerElement {
 }
 
 window.customElements.define(TestTemplate.is, TestTemplate);
-    

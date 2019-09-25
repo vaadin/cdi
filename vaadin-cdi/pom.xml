@@ -55,11 +55,6 @@
 
         <!-- Test dependencies -->
         <dependency>
-            <groupId>org.webjars.bowergithub.polymer</groupId>
-            <artifactId>polymer</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>flow-html-components</artifactId>
             <scope>test</scope>

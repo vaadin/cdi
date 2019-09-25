@@ -16,6 +16,8 @@
 
 package com.vaadin.cdi.itest;
 
+import java.io.File;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -32,9 +34,7 @@ public class TemplateTest extends AbstractCdiTest {
     public static WebArchive deployment() {
         return ArchiveProvider.createWebArchive("templates",
                 archive -> archive.addClasses(TestTemplate.class)
-                        .addClasses(BowerModeServlet.class)
-                        .addAsWebResource("frontend/test-template.html",
-                                "frontend/test-template.html"));
+                        .addAsResource(new File("target/classes/META-INF")));
     }
 
     @Before
@@ -44,6 +44,7 @@ public class TemplateTest extends AbstractCdiTest {
 
     @Test
     public void scopedComponentInjectedToTemplate() {
+        checkLogsForErrors();
         TestBenchElement template = $("test-template").first();
         TestBenchElement label = template.$(TestBenchElement.class).id("label");
         Assert.assertEquals("", label.getText());

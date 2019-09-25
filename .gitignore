@@ -7,3 +7,9 @@ nbactions.xml
 .iml
 *.iml
 *.log
+*/node_modules
+vaadin-cdi-itest/package.json
+vaadin-cdi-itest/package-lock.json
+vaadin-cdi-itest/webpack.config.js
+vaadin-cdi-itest/webpack.generated.js
+vaadin-cdi-itest/error-screenshots

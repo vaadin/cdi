@@ -16,8 +16,6 @@
 
 package com.vaadin.cdi.itest;
 
-import java.io.File;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -33,8 +31,7 @@ public class TemplateTest extends AbstractCdiTest {
     @Deployment(testable = false)
     public static WebArchive deployment() {
         return ArchiveProvider.createWebArchive("templates",
-                archive -> archive.addClasses(TestTemplate.class)
-                        .addAsResource(new File("target/classes/META-INF")));
+                TestTemplate.class);
     }
 
     @Before

@@ -16,6 +16,7 @@
 
 package com.vaadin.cdi.itest;
 
+import java.io.File;
 import java.util.function.Consumer;
 
 import org.jboss.shrinkwrap.api.ArchivePaths;
@@ -37,7 +38,8 @@ public class ArchiveProvider {
     public static WebArchive createWebArchive(String warName,
             Class... classes) {
         return createWebArchive(warName,
-                archive -> archive.addClasses(classes));
+                archive -> archive.addClasses(classes)
+                        .addAsResource(new File("target/classes/META-INF")));
     }
 
     private static WebArchive base(String warName) {

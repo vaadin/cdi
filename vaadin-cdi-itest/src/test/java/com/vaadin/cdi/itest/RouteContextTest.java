@@ -16,6 +16,15 @@
 
 package com.vaadin.cdi.itest;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.vaadin.cdi.itest.routecontext.ApartBean;
 import com.vaadin.cdi.itest.routecontext.AssignedBean;
 import com.vaadin.cdi.itest.routecontext.DetailApartView;
@@ -28,13 +37,6 @@ import com.vaadin.cdi.itest.routecontext.MasterView;
 import com.vaadin.cdi.itest.routecontext.PostponeView;
 import com.vaadin.cdi.itest.routecontext.RerouteView;
 import com.vaadin.cdi.itest.routecontext.RootView;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.IOException;
 
 public class RouteContextTest extends AbstractCdiTest {
 
@@ -42,8 +44,10 @@ public class RouteContextTest extends AbstractCdiTest {
 
     @Deployment(testable = false)
     public static WebArchive deployment() {
-        return ArchiveProvider.createWebArchive("route-context", webArchive ->
-                webArchive.addPackage(MasterView.class.getPackage()));
+        return ArchiveProvider.createWebArchive("route-context",
+                webArchive -> webArchive
+                        .addPackage(MasterView.class.getPackage())
+                        .addAsResource(new File("target/classes/META-INF")));
     }
 
     @Before

@@ -16,27 +16,30 @@
 
 package com.vaadin.cdi.itest;
 
-import com.vaadin.cdi.annotation.RouteScoped;
-import com.vaadin.cdi.annotation.UIScoped;
-import com.vaadin.cdi.annotation.VaadinServiceScoped;
-import com.vaadin.cdi.annotation.VaadinSessionScoped;
-import com.vaadin.cdi.itest.push.PushComponent;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import java.io.File;
+import java.lang.annotation.Annotation;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
-import java.lang.annotation.Annotation;
+import com.vaadin.cdi.annotation.RouteScoped;
+import com.vaadin.cdi.annotation.UIScoped;
+import com.vaadin.cdi.annotation.VaadinServiceScoped;
+import com.vaadin.cdi.annotation.VaadinSessionScoped;
+import com.vaadin.cdi.itest.push.PushComponent;
 
 public class PushTest extends AbstractCdiTest {
 
     @Deployment(testable = false)
     public static WebArchive deployment() {
-        return ArchiveProvider.createWebArchive("push", webArchive
-                -> webArchive.addPackage(PushComponent.class.getPackage()));
+        return ArchiveProvider.createWebArchive("push", webArchive -> webArchive
+                .addPackage(PushComponent.class.getPackage())
+                .addAsResource(new File("target/classes/META-INF")));
     }
 
     @Test

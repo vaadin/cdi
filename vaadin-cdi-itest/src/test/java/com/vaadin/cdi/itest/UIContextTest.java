@@ -16,16 +16,18 @@
 
 package com.vaadin.cdi.itest;
 
-import com.vaadin.cdi.itest.uicontext.UIContextRootView;
-import com.vaadin.cdi.itest.uicontext.UINormalScopedBeanView;
-import com.vaadin.cdi.itest.uicontext.UIScopedLabel;
-import com.vaadin.cdi.itest.uicontext.UIScopedView;
+import java.io.File;
+import java.io.IOException;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
+import com.vaadin.cdi.itest.uicontext.UIContextRootView;
+import com.vaadin.cdi.itest.uicontext.UINormalScopedBeanView;
+import com.vaadin.cdi.itest.uicontext.UIScopedLabel;
+import com.vaadin.cdi.itest.uicontext.UIScopedView;
 
 public class UIContextTest extends AbstractCdiTest {
 
@@ -33,8 +35,10 @@ public class UIContextTest extends AbstractCdiTest {
 
     @Deployment(testable = false)
     public static WebArchive deployment() {
-        return ArchiveProvider.createWebArchive("ui-context", webArchive ->
-                webArchive.addPackage(UIContextRootView.class.getPackage()));
+        return ArchiveProvider.createWebArchive("ui-context",
+                webArchive -> webArchive
+                        .addPackage(UIContextRootView.class.getPackage())
+                        .addAsResource(new File("target/classes/META-INF")));
     }
 
     @Before

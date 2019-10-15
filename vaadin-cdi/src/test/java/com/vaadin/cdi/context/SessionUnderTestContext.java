@@ -16,16 +16,18 @@
 
 package com.vaadin.cdi.context;
 
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.when;
-
 import javax.enterprise.inject.spi.CDI;
+
+import java.util.Properties;
 
 import org.mockito.Mockito;
 
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.VaadinSessionState;
+
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.when;
 
 public class SessionUnderTestContext implements UnderTestContext {
 
@@ -53,6 +55,8 @@ public class SessionUnderTestContext implements UnderTestContext {
                 .mock(DeploymentConfiguration.class);
         when(session.getConfiguration()).thenReturn(configuration);
         when(configuration.isBowerMode()).thenReturn(true);
+        Properties props = new Properties();
+        when(configuration.getInitParameters()).thenReturn(props);
     }
 
     @Override

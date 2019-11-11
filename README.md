@@ -5,8 +5,10 @@
 
 This is the official CDI integration for [Vaadin Flow](https://github.com/vaadin/flow).
 
-This branch is Vaadin 10.0 (Flow 1.0) compatible. See other branches for other Vaadin versions:
+This branch is compatible with upcoming Vaadin platform versions. See other branches for other Vaadin versions:
 
+* 11.1 for Vaadin 14.1
+* 11.0 for Vaadin 14.0
 * 3.0 for Vaadin 8.2+
 * 2.0 for Vaadin Framework 8.0...8.1 versions
 * 1.0 for Vaadin Framework 7 versions

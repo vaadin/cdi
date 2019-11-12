@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>vaadin-cdi-parent</artifactId>
-    <version>11.1-SNAPSHOT</version>
+    <version>11.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>vaadin-cdi-parent</name>

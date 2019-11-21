@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.vaadin.cdi.context;
+package com.vaadin.cdi.context.internal;
 
 import org.apache.deltaspike.core.util.context.AbstractContext;
 import org.apache.deltaspike.core.util.context.ContextualStorage;

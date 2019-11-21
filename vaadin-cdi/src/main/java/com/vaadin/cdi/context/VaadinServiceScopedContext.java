@@ -18,6 +18,7 @@ package com.vaadin.cdi.context;
 
 import com.vaadin.cdi.CdiVaadinServlet;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
+import com.vaadin.cdi.context.internal.AbstractContextualStorageManager;
 import com.vaadin.flow.server.ServiceDestroyEvent;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.flow.server.VaadinServletService;

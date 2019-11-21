@@ -19,6 +19,7 @@ package com.vaadin.cdi.context;
 import com.vaadin.cdi.annotation.NormalUIScoped;
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.cdi.annotation.RouteScoped;
+import com.vaadin.cdi.context.internal.AbstractContextualStorageManager;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.apache.deltaspike.core.util.context.AbstractContext;

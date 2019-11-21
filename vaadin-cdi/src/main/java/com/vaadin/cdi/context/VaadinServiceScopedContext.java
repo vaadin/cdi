@@ -38,15 +38,15 @@ import static javax.enterprise.event.Reception.IF_EXISTS;
  */
 public class VaadinServiceScopedContext extends AbstractContext {
 
-    private ContextualStorageManager contextManager;
+    private AbstractContextualStorageManager<String> contextManager;
 
     public VaadinServiceScopedContext(BeanManager beanManager) {
         super(beanManager);
     }
 
     public void init(BeanManager beanManager) {
-        contextManager = BeanProvider
-                .getContextualReference(beanManager, ContextualStorageManager.class, false);
+        setContextManager(BeanProvider.getContextualReference(beanManager,
+                ContextualStorageManager.class, false));
     }
 
     @Override
@@ -59,7 +59,7 @@ public class VaadinServiceScopedContext extends AbstractContext {
         } else {
             servletName = CdiVaadinServlet.getCurrentServletName();
         }
-        return contextManager.getContextualStorage(servletName, createIfNotExist);
+        return getContextManager().getContextualStorage(servletName, createIfNotExist);
     }
 
     @Override
@@ -73,6 +73,14 @@ public class VaadinServiceScopedContext extends AbstractContext {
         return servlet instanceof CdiVaadinServlet
                 || (servlet == null
                 && CdiVaadinServlet.getCurrentServletName() != null);
+    }
+
+    protected final void setContextManager(AbstractContextualStorageManager<String> contextManager) {
+        this.contextManager = contextManager;
+    }
+
+    protected final AbstractContextualStorageManager<String> getContextManager() {
+        return contextManager;
     }
 
     @ApplicationScoped

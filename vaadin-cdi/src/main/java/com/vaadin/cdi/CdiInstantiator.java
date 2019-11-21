@@ -62,7 +62,11 @@ public class CdiInstantiator implements Instantiator {
     public boolean init(VaadinService service) {
         delegate = new DefaultInstantiator(service);
         return delegate.init(service)
-                && service instanceof CdiVaadinServletService;
+                && getServiceClass().isAssignableFrom(service.getClass());
+    }
+
+    protected Class<? extends VaadinService> getServiceClass() {
+        return CdiVaadinServletService.class;
     }
 
     @Override

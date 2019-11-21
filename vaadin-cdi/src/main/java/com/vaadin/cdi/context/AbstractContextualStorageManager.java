@@ -38,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * - destroying ContextualStorages
  */
 @SuppressWarnings("CdiManagedBeanInconsistencyInspection")
-abstract class AbstractContextualStorageManager<K> implements Serializable  {
+public abstract class AbstractContextualStorageManager<K> implements Serializable  {
     @Inject
     private BeanManager beanManager;
     private final boolean concurrent;
@@ -53,7 +53,7 @@ abstract class AbstractContextualStorageManager<K> implements Serializable  {
         this.concurrent = concurrent;
     }
 
-    protected ContextualStorage getContextualStorage(K key, boolean createIfNotExist) {
+    public ContextualStorage getContextualStorage(K key, boolean createIfNotExist) {
         if (createIfNotExist) {
             return storageMap.computeIfAbsent(key, this::newContextualStorage);
         } else {

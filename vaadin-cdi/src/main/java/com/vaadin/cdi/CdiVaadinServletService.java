@@ -89,10 +89,25 @@ public class CdiVaadinServletService extends VaadinServletService {
         super.fireUIInitListeners(ui);
     }
 
-    @Override
-    protected Optional<Instantiator> loadInstantiators()
-            throws ServiceException {
-        return delegate.loadInstantiators();
+    public Optional<Instantiator> loadInstantiators() throws ServiceException {
+        Optional<Instantiator> instantiatorOptional = delegate.lookup(Instantiator.class);
+        if (instantiatorOptional.isPresent()) {
+            Instantiator instantiator = instantiatorOptional.get();
+            if (!instantiator.init(this)) {
+                Class unproxiedClass =
+                        ProxyUtils.getUnproxiedClass(instantiator.getClass());
+                throw new ServiceException(
+                        "Cannot init VaadinService because "
+                                + unproxiedClass.getName() + " CDI bean init()"
+                                + " returned false.");
+            }
+        } else {
+            throw new ServiceException(
+                    "Cannot init VaadinService "
+                            + "because no CDI instantiator bean found."
+            );
+        }
+        return instantiatorOptional;
     }
 
     public CdiVaadinServlet getServlet() {
@@ -135,28 +150,7 @@ public class CdiVaadinServletService extends VaadinServletService {
             ui.addPollListener(uiEventListener);
         }
 
-        public Optional<Instantiator> loadInstantiators() throws ServiceException {
-            Optional<Instantiator> instantiatorOptional = lookup(Instantiator.class);
-            if (instantiatorOptional.isPresent()) {
-                Instantiator instantiator = instantiatorOptional.get();
-                if (!instantiator.init(vaadinService)) {
-                    Class unproxiedClass =
-                            ProxyUtils.getUnproxiedClass(instantiator.getClass());
-                    throw new ServiceException(
-                            "Cannot init VaadinService because "
-                                    + unproxiedClass.getName() + " CDI bean init()"
-                                    + " returned false.");
-                }
-            } else {
-                throw new ServiceException(
-                        "Cannot init VaadinService "
-                                + "because no CDI instantiator bean found."
-                );
-            }
-            return instantiatorOptional;
-        }
-
-        private <T> Optional<T> lookup(Class<T> type) throws ServiceException {
+        public <T> Optional<T> lookup(Class<T> type) throws ServiceException {
             try {
                 T instance = new BeanLookup<>(beanManager, type, SERVICE).lookup();
                 return Optional.ofNullable(instance);

@@ -17,7 +17,6 @@ package com.vaadin.cdi.context;
 
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
-import com.vaadin.cdi.context.internal.AbstractContextualStorageManager;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;

@@ -18,7 +18,6 @@ package com.vaadin.cdi.context;
 
 import com.vaadin.cdi.CdiVaadinServlet;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
-import com.vaadin.cdi.context.internal.AbstractContextualStorageManager;
 import com.vaadin.flow.server.ServiceDestroyEvent;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.flow.server.VaadinServletService;
@@ -46,8 +45,8 @@ public class VaadinServiceScopedContext extends AbstractContext {
     }
 
     public void init(BeanManager beanManager) {
-        setContextManager(BeanProvider.getContextualReference(beanManager,
-                ContextualStorageManager.class, false));
+        contextManager = BeanProvider.getContextualReference(beanManager,
+                ContextualStorageManager.class, false);
     }
 
     @Override
@@ -60,7 +59,7 @@ public class VaadinServiceScopedContext extends AbstractContext {
         } else {
             servletName = CdiVaadinServlet.getCurrentServletName();
         }
-        return getContextManager().getContextualStorage(servletName, createIfNotExist);
+        return contextManager.getContextualStorage(servletName, createIfNotExist);
     }
 
     @Override
@@ -74,14 +73,6 @@ public class VaadinServiceScopedContext extends AbstractContext {
         return servlet instanceof CdiVaadinServlet
                 || (servlet == null
                 && CdiVaadinServlet.getCurrentServletName() != null);
-    }
-
-    protected final void setContextManager(AbstractContextualStorageManager<String> contextManager) {
-        this.contextManager = contextManager;
-    }
-
-    protected final AbstractContextualStorageManager<String> getContextManager() {
-        return contextManager;
     }
 
     @ApplicationScoped

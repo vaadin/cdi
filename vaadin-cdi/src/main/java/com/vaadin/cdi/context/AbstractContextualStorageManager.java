@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.vaadin.cdi.context.internal;
+package com.vaadin.cdi.context;
 
 import org.apache.deltaspike.core.util.context.AbstractContext;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
@@ -38,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * - destroying ContextualStorages
  */
 @SuppressWarnings("CdiManagedBeanInconsistencyInspection")
-public abstract class AbstractContextualStorageManager<K> implements Serializable  {
+abstract class AbstractContextualStorageManager<K> implements Serializable  {
     @Inject
     private BeanManager beanManager;
     private final boolean concurrent;
@@ -53,7 +53,7 @@ public abstract class AbstractContextualStorageManager<K> implements Serializabl
         this.concurrent = concurrent;
     }
 
-    public ContextualStorage getContextualStorage(K key, boolean createIfNotExist) {
+    protected ContextualStorage getContextualStorage(K key, boolean createIfNotExist) {
         if (createIfNotExist) {
             return storageMap.computeIfAbsent(key, this::newContextualStorage);
         } else {

@@ -38,15 +38,15 @@ import static javax.enterprise.event.Reception.IF_EXISTS;
  */
 public class VaadinServiceScopedContext extends AbstractContext {
 
-    private AbstractContextualStorageManager<String> contextManager;
+    private ContextualStorageManager contextManager;
 
     public VaadinServiceScopedContext(BeanManager beanManager) {
         super(beanManager);
     }
 
     public void init(BeanManager beanManager) {
-        contextManager = BeanProvider.getContextualReference(beanManager,
-                ContextualStorageManager.class, false);
+        contextManager = BeanProvider
+                .getContextualReference(beanManager, ContextualStorageManager.class, false);
     }
 
     @Override

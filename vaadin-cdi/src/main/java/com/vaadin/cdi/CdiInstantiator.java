@@ -16,7 +16,9 @@
 
 package com.vaadin.cdi;
 
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Unmanaged;
+import javax.inject.Inject;
 
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
@@ -35,6 +37,14 @@ import com.vaadin.flow.server.VaadinService;
 @VaadinServiceScoped
 @VaadinServiceEnabled
 public class CdiInstantiator extends AbstractCdiInstantiator {
+
+    @Inject
+    private BeanManager beanManager;
+
+    @Override
+    public BeanManager getBeanManager() {
+        return beanManager;
+    }
 
     @Override
     public Class<? extends VaadinService> getServiceClass() {

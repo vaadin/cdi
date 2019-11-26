@@ -1,7 +1,6 @@
 package com.vaadin.cdi;
 
 import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
@@ -22,10 +21,10 @@ abstract public class AbstractCdiInstantiator implements Instantiator {
 
     private AtomicBoolean i18NLoggingEnabled = new AtomicBoolean(true);
     private DefaultInstantiator delegate;
-    @Inject
-    private BeanManager beanManager;
 
     public abstract Class<? extends VaadinService> getServiceClass();
+
+    public abstract BeanManager getBeanManager();
 
     @Override
     public boolean init(VaadinService service) {
@@ -36,7 +35,7 @@ abstract public class AbstractCdiInstantiator implements Instantiator {
 
     @Override
     public <T> T getOrCreate(Class<T> type) {
-        return new BeanLookup<>(beanManager, type)
+        return new BeanLookup<>(getBeanManager(), type)
                 .setUnsatisfiedHandler(() -> getLogger().debug(
                         "'{}' is not a CDI bean. "
                                 + FALLING_BACK_TO_DEFAULT_INSTANTIATION,
@@ -55,8 +54,8 @@ abstract public class AbstractCdiInstantiator implements Instantiator {
 
     @Override
     public I18NProvider getI18NProvider() {
-        final BeanLookup<I18NProvider> lookup = new BeanLookup<>(beanManager,
-                I18NProvider.class, BeanLookup.SERVICE);
+        final BeanLookup<I18NProvider> lookup = new BeanLookup<>(
+                getBeanManager(), I18NProvider.class, BeanLookup.SERVICE);
         if (i18NLoggingEnabled.compareAndSet(true, false)) {
             lookup.setUnsatisfiedHandler(() -> getLogger().info(
                     "Can't find any @VaadinServiceScoped bean implementing '{}'. "
@@ -80,6 +79,6 @@ abstract public class AbstractCdiInstantiator implements Instantiator {
     @Override
     public Stream<VaadinServiceInitListener> getServiceInitListeners() {
         return Stream.concat(delegate.getServiceInitListeners(),
-                Stream.of(beanManager::fireEvent));
+                Stream.of(getBeanManager()::fireEvent));
     }
 }

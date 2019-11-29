@@ -29,6 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import org.apache.deltaspike.core.api.provider.BeanManagerProvider;
+
 /**
  * Servlet to create {@link CdiVaadinServletService}.
  * <p>
@@ -86,6 +88,7 @@ public class CdiVaadinServlet extends VaadinServlet {
     @Override
     protected VaadinServletService createServletService(
             DeploymentConfiguration configuration) throws ServiceException {
+
         final CdiVaadinServletService service =
                 new CdiVaadinServletService(this, configuration, beanManager);
         service.init();

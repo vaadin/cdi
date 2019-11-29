@@ -41,8 +41,10 @@ import com.vaadin.flow.server.VaadinSession;
 
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.spi.BeanManager;
+import java.io.Serializable;
 import java.util.Optional;
 
+import org.apache.deltaspike.core.api.provider.BeanManagerProvider;
 import org.apache.deltaspike.core.util.ProxyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,13 +118,13 @@ public class CdiVaadinServletService extends VaadinServletService {
 
     /**
      * This class implements the actual instantiation and event brokering
-     * functionality of {@link CdiVaadinServletService}.s
+     * functionality of {@link CdiVaadinServletService}.
      */
-    public static class CdiVaadinServiceDelegate {
+    public static class CdiVaadinServiceDelegate implements Serializable {
 
         private final VaadinService vaadinService;
 
-        private final BeanManager beanManager;
+        private transient BeanManager beanManager;
 
         private final UIEventListener uiEventListener;
 
@@ -131,13 +133,13 @@ public class CdiVaadinServletService extends VaadinServletService {
             this.beanManager = beanManager;
             this.vaadinService = vaadinService;
 
-            uiEventListener = new UIEventListener(beanManager);
+            uiEventListener = new UIEventListener(this);
         }
 
         public void init() throws ServiceException {
             lookup(SystemMessagesProvider.class)
                     .ifPresent(vaadinService::setSystemMessagesProvider);
-            vaadinService.addUIInitListener(beanManager::fireEvent);
+            vaadinService.addUIInitListener(e -> getBeanManager().fireEvent(e));
             vaadinService.addSessionInitListener(this::sessionInit);
             vaadinService.addSessionDestroyListener(this::sessionDestroy);
             vaadinService.addServiceDestroyListener(this::fireCdiDestroyEvent);
@@ -152,7 +154,7 @@ public class CdiVaadinServletService extends VaadinServletService {
 
         public <T> Optional<T> lookup(Class<T> type) throws ServiceException {
             try {
-                T instance = new BeanLookup<>(beanManager, type, SERVICE).lookup();
+                T instance = new BeanLookup<>(getBeanManager(), type, SERVICE).lookup();
                 return Optional.ofNullable(instance);
             } catch (AmbiguousResolutionException e) {
                 throw new ServiceException("There are multiple eligible CDI "
@@ -160,15 +162,23 @@ public class CdiVaadinServletService extends VaadinServletService {
             }
         }
 
+        public BeanManager getBeanManager() {
+            if (beanManager == null) {
+                beanManager = BeanManagerProvider.getInstance()
+                        .getBeanManager();
+            }
+            return beanManager;
+        }
+
         private void sessionInit(SessionInitEvent sessionInitEvent)
                 throws ServiceException {
             VaadinSession session = sessionInitEvent.getSession();
             lookup(ErrorHandler.class).ifPresent(session::setErrorHandler);
-            beanManager.fireEvent(sessionInitEvent);
+            getBeanManager().fireEvent(sessionInitEvent);
         }
 
         private void sessionDestroy(SessionDestroyEvent sessionDestroyEvent) {
-            beanManager.fireEvent(sessionDestroyEvent);
+            getBeanManager().fireEvent(sessionDestroyEvent);
             if (VaadinSessionScopedContext.guessContextIsUndeployed()) {
                 // Happens on tomcat when it expires sessions upon undeploy.
                 // beanManager.getPassivationCapableBean returns null for
@@ -185,7 +195,7 @@ public class CdiVaadinServletService extends VaadinServletService {
 
         private void fireCdiDestroyEvent(ServiceDestroyEvent event) {
             try {
-                beanManager.fireEvent(event);
+                getBeanManager().fireEvent(event);
             } catch (Exception e) {
                 // During application shutdown on TomEE 7,
                 // beans are lost at this point.
@@ -208,30 +218,30 @@ public class CdiVaadinServletService extends VaadinServletService {
             implements AfterNavigationListener, BeforeEnterListener,
             BeforeLeaveListener, ComponentEventListener<PollEvent> {
 
-        private final BeanManager beanManager;
+        private final CdiVaadinServiceDelegate delegate;
 
-        private UIEventListener(BeanManager beanManager) {
-            this.beanManager = beanManager;
+        private UIEventListener(CdiVaadinServiceDelegate delegate) {
+            this.delegate = delegate;
         }
 
         @Override
         public void afterNavigation(AfterNavigationEvent event) {
-            beanManager.fireEvent(event);
+            delegate.getBeanManager().fireEvent(event);
         }
 
         @Override
         public void beforeEnter(BeforeEnterEvent event) {
-            beanManager.fireEvent(event);
+            delegate.getBeanManager().fireEvent(event);
         }
 
         @Override
         public void beforeLeave(BeforeLeaveEvent event) {
-            beanManager.fireEvent(event);
+            delegate.getBeanManager().fireEvent(event);
         }
 
         @Override
         public void onComponentEvent(PollEvent event) {
-            beanManager.fireEvent(event);
+            delegate.getBeanManager().fireEvent(event);
         }
     }
 }

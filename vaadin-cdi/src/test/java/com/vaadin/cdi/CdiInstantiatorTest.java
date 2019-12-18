@@ -18,6 +18,7 @@ package com.vaadin.cdi;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
@@ -27,6 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
 
+import com.vaadin.flow.internal.UsageStatistics;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.After;
 import org.junit.Assert;
@@ -83,7 +85,7 @@ public class CdiInstantiatorTest {
 
         @Override
         public String getTranslation(String key, Locale locale,
-                Object... params) {
+                                     Object... params) {
             return null;
         }
 
@@ -194,6 +196,17 @@ public class CdiInstantiatorTest {
         SingletonComponent anotherComponent = instantiator
                 .createComponent(SingletonComponent.class);
         Assert.assertNotEquals(component, anotherComponent);
+    }
+
+    @Test
+    public void init_callsUsageStatistics() {
+        // @Before does instantiator.init()
+        // There will be other entries too to filter out
+        List<UsageStatistics.UsageEntry> entries = UsageStatistics.getEntries().filter(entry -> entry.getName().contains("Cdi")).collect(Collectors.toList());
+        Assert.assertEquals(1, entries.size());
+
+        UsageStatistics.UsageEntry entry = entries.get(0);
+        Assert.assertEquals("flow/CdiInstantiator", entry.getName());
     }
 
 }

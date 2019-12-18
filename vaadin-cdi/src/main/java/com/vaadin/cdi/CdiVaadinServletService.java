@@ -22,6 +22,7 @@ import com.vaadin.flow.component.PollEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.function.DeploymentConfiguration;
+import com.vaadin.flow.internal.UsageStatistics;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationListener;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -125,6 +126,7 @@ public class CdiVaadinServletService extends VaadinServletService {
         addSessionInitListener(this::sessionInit);
         addSessionDestroyListener(this::sessionDestroy);
         addServiceDestroyListener(this::fireCdiDestroyEvent);
+        UsageStatistics.markAsUsed("flow/CdiInstantiator", null);
         super.init();
     }
 

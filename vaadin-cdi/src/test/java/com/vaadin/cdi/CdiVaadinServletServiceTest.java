@@ -20,6 +20,7 @@ import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.context.ServiceUnderTestContext;
 import com.vaadin.flow.di.Instantiator;
+import com.vaadin.flow.internal.UsageStatistics;
 import com.vaadin.flow.server.CustomizedSystemMessages;
 import com.vaadin.flow.server.DefaultSystemMessagesProvider;
 import com.vaadin.flow.server.ServiceException;
@@ -28,6 +29,7 @@ import com.vaadin.flow.server.SystemMessagesInfo;
 import com.vaadin.flow.server.SystemMessagesProvider;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -38,7 +40,9 @@ import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -135,6 +139,16 @@ public class CdiVaadinServletServiceTest {
         initServiceWithoutBeanFor(SystemMessagesProvider.class);
         assertThat(service.getSystemMessagesProvider(),
                 instanceOf(DefaultSystemMessagesProvider.class));
+    }
+
+    @Test
+    public void init_callsUsageStatistics() throws ServiceException  {
+        initService(beanManager);
+        List<UsageStatistics.UsageEntry> entries = UsageStatistics.getEntries().filter(entry -> entry.getName().contains("Cdi")).collect(Collectors.toList());
+        Assert.assertEquals(1, entries.size());
+
+        UsageStatistics.UsageEntry entry = entries.get(0);
+        Assert.assertEquals("flow/CdiInstantiator", entry.getName());
     }
 
     private void initService(BeanManager beanManager) throws ServiceException {

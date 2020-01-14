@@ -54,7 +54,6 @@ public class SessionUnderTestContext implements UnderTestContext {
         DeploymentConfiguration configuration = Mockito
                 .mock(DeploymentConfiguration.class);
         when(session.getConfiguration()).thenReturn(configuration);
-        when(configuration.isBowerMode()).thenReturn(true);
         Properties props = new Properties();
         when(configuration.getInitParameters()).thenReturn(props);
     }

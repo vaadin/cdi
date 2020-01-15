@@ -7,6 +7,7 @@ This is the official CDI integration for [Vaadin Flow](https://github.com/vaadin
 
 This branch is compatible with upcoming Vaadin platform versions. See other branches for other Vaadin versions:
 
+* 11.2 for Vaadin 14.2
 * 11.1 for Vaadin 14.1
 * 11.0 for Vaadin 14.0
 * 3.0 for Vaadin 8.2+
@@ -44,6 +45,10 @@ Since the current release version is a prerelease, you need to also include the 
 ## Building the project
 
 Execute `mvn clean install` in the root directory to build vaadin-cdi.
+
+## Run integration tests
+
+Execute `mvn -pl vaadin-cdi-itest -Ptomee verify` in the root directory to run integration tests.
 
 ## Issue tracking
 

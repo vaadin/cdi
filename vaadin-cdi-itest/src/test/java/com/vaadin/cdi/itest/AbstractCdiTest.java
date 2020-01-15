@@ -16,9 +16,12 @@
 
 package com.vaadin.cdi.itest;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 
-import com.vaadin.flow.testutil.ChromeBrowserTest;
-import com.vaadin.testbench.parallel.Browser;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -26,11 +29,8 @@ import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
+import com.vaadin.flow.testutil.ChromeBrowserTest;
+import com.vaadin.testbench.parallel.Browser;
 
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -72,7 +72,8 @@ abstract public class AbstractCdiTest extends ChromeBrowserTest {
         return findElement(By.id(id)).getText();
     }
 
-    protected void assertCountEquals(int expectedCount, String counter) throws IOException {
+    protected void assertCountEquals(int expectedCount, String counter)
+            throws IOException {
         Assert.assertEquals(expectedCount, getCount(counter));
     }
 

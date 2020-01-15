@@ -16,10 +16,10 @@
 
 package com.vaadin.cdi.itest.service;
 
-import com.vaadin.flow.server.BootstrapPageResponse;
-import com.vaadin.flow.server.ServiceInitEvent;
-
 import javax.enterprise.event.Observes;
+
+import com.vaadin.flow.server.ServiceInitEvent;
+import com.vaadin.flow.server.communication.IndexHtmlResponse;
 
 public class BootstrapCustomizer {
 
@@ -27,11 +27,11 @@ public class BootstrapCustomizer {
     public static final String APPENDED_TXT = "By Test";
 
     private void onServiceInit(@Observes ServiceInitEvent serviceInitEvent) {
-        serviceInitEvent.addBootstrapListener(this::modifyBootstrapPage);
+        serviceInitEvent.addIndexHtmlRequestListener(this::modifyBootstrapPage);
     }
 
-    private void modifyBootstrapPage(BootstrapPageResponse response) {
-        response.getDocument().body().append(
-                "<p id='" + APPENDED_ID + "'>" + APPENDED_TXT + "</p>");
+    private void modifyBootstrapPage(IndexHtmlResponse response) {
+        response.getDocument().body()
+                .append("<p id='" + APPENDED_ID + "'>" + APPENDED_TXT + "</p>");
     }
 }

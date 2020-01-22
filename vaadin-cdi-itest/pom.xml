@@ -130,12 +130,23 @@
     <profiles>
         <profile>
             <id>tomee</id>
+            <properties>
+                <apache-tomee.version>7.0.4</apache-tomee.version>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.apache.tomee</groupId>
                     <artifactId>arquillian-tomee-remote</artifactId>
-                    <version>7.0.4</version>
+                    <version>${apache-tomee.version}</version>
                     <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.tomee</groupId>
+                    <artifactId>apache-tomee</artifactId>
+                    <version>${apache-tomee.version}</version>
+                    <scope>test</scope>
+                    <classifier>webprofile</classifier>
+                    <type>zip</type>
                 </dependency>
             </dependencies>
             <build>

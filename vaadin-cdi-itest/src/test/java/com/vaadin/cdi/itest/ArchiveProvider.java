@@ -44,7 +44,7 @@ public class ArchiveProvider {
 
     private static WebArchive base(String warName) {
         PomEquippedResolveStage pom = Maven.configureResolver().workOffline()
-                .loadPomFromFile("pom.xml");
+                .loadPomFromFile("target/effective-pom.xml");
         return ShrinkWrap.create(WebArchive.class, warName + ".war")
                 .addAsLibraries(pom.resolve("com.vaadin:vaadin-cdi")
                         .withTransitivity().asFile())

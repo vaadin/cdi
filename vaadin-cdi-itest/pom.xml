@@ -125,6 +125,26 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <!--
+                JBoss shrinkwrap archive provider builds war based on pom file,
+                so generate effective pom to record any command-line property
+                overrides.
+                -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-help-plugin</artifactId>
+                <configuration>
+                    <output>${project.build.directory}/effective-pom.xml</output>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>effective-pom</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <profiles>

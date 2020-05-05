@@ -85,6 +85,11 @@
                 <artifactId>polymer</artifactId>
                 <version>2.6.0</version>
             </dependency>
+	        <dependency>
+	            <groupId>org.webjars.bowergithub.webcomponents</groupId>
+	            <artifactId>webcomponentsjs</artifactId>
+	            <version>1.2.2</version>
+	        </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>

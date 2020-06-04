@@ -171,6 +171,7 @@
                             <excludedGroups>${surefire.excludedGroups}</excludedGroups>
                             <groups>${surefire.groups}</groups>
                             <systemPropertyVariables>
+                                <vaadin.allow.appshell.annotations>true</vaadin.allow.appshell.annotations>
                                 <tomee.host>0.0.0.0</tomee.host>
                                 <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
                             </systemPropertyVariables>
@@ -228,6 +229,7 @@
                             <excludedGroups>${surefire.excludedGroups}</excludedGroups>
                             <groups>${surefire.groups}</groups>
                             <systemPropertyVariables>
+                                <vaadin.allow.appshell.annotations>true</vaadin.allow.appshell.annotations>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                                 <jboss.home>${project.build.directory}/wildfly-11.0.0.Final</jboss.home>
                                 <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
@@ -294,6 +296,7 @@
                                 </GLASSFISH_HOME>
                             </environmentVariables>
                             <systemPropertyVariables>
+                                <vaadin.allow.appshell.annotations>true</vaadin.allow.appshell.annotations>
                                 <vaadin.bowerMode>true</vaadin.bowerMode>
                                 <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
                             </systemPropertyVariables>

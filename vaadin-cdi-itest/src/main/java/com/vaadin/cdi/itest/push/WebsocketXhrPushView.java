@@ -16,20 +16,28 @@
 
 package com.vaadin.cdi.itest.push;
 
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.page.Push;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.shared.ui.Transport;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.shared.communication.PushMode;
+import com.vaadin.flow.shared.ui.Transport;
+
 @Route("websocket-xhr")
-@Push(transport = Transport.WEBSOCKET_XHR)
 public class WebsocketXhrPushView extends Div {
 
     @Inject
     private PushComponent pushComponent;
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        UI ui = attachEvent.getUI();
+        ui.getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
+        ui.getPushConfiguration().setTransport(Transport.WEBSOCKET_XHR);
+    }
 
     @PostConstruct
     private void init() {

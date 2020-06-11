@@ -98,7 +98,7 @@ abstract class AbstractContextualStorageManager<K> implements Serializable  {
         }
     }
 	
-	protected void decouple( HasElement willBeRemoved) {
+    protected void decouple( HasElement willBeRemoved) {
         if(willBeRemoved instanceof Component ) {
             Component c = (Component)willBeRemoved;
             Optional<RouterLayout> maybeRouterLayout = c.getParent()
@@ -108,8 +108,9 @@ abstract class AbstractContextualStorageManager<K> implements Serializable  {
             if(maybeRouterLayout.isPresent())
                 return;
         }
-        willBeRemoved.getElement().removeFromParent();
-	}
+        if(willBeRemoved.getElement() != null)
+            willBeRemoved.getElement().removeFromParent();
+    }
 
 
     protected Set<K> getKeySet() {

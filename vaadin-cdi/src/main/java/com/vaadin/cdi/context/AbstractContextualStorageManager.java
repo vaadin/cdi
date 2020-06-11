@@ -17,7 +17,12 @@
 package com.vaadin.cdi.context;
 
 import org.apache.deltaspike.core.util.context.AbstractContext;
+import org.apache.deltaspike.core.util.context.ContextualInstanceInfo;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
+
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasElement;
+import com.vaadin.flow.router.RouterLayout;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.inject.spi.BeanManager;
@@ -27,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -81,10 +87,30 @@ abstract class AbstractContextualStorageManager<K> implements Serializable  {
 
     protected void destroy(K key) {
         ContextualStorage storage = storageMap.remove(key);
+        storage.getStorage( ).values( ).stream()
+            .map(ContextualInstanceInfo::getContextualInstance)
+            .filter( HasElement.class::isInstance )
+            .map( HasElement.class::cast)
+            .forEach( this::decouple );
+        
         if (storage != null) {
             AbstractContext.destroyAllActive(storage);
         }
     }
+	
+	protected void decouple( HasElement willBeRemoved) {
+        if(willBeRemoved instanceof Component ) {
+            Component c = (Component)willBeRemoved;
+            Optional<RouterLayout> maybeRouterLayout = c.getParent()
+                .filter(RouterLayout.class::isInstance)
+                .map(RouterLayout.class::cast);
+            maybeRouterLayout.ifPresent(rl -> rl.removeRouterLayoutContent(willBeRemoved));
+            if(maybeRouterLayout.isPresent())
+                return;
+        }
+        willBeRemoved.getElement().removeFromParent();
+	}
+
 
     protected Set<K> getKeySet() {
         return Collections.unmodifiableSet(storageMap.keySet());

@@ -97,21 +97,31 @@ abstract class AbstractContextualStorageManager<K> implements Serializable  {
             AbstractContext.destroyAllActive(storage);
         }
     }
-	
-    protected void decouple( HasElement willBeRemoved) {
-        if(willBeRemoved instanceof Component ) {
-            Component c = (Component)willBeRemoved;
-            Optional<RouterLayout> maybeRouterLayout = c.getParent()
-                .filter(RouterLayout.class::isInstance)
-                .map(RouterLayout.class::cast);
-            maybeRouterLayout.ifPresent(rl -> rl.removeRouterLayoutContent(willBeRemoved));
-            if(maybeRouterLayout.isPresent())
-                return;
-        }
-        if(willBeRemoved.getElement() != null)
-            willBeRemoved.getElement().removeFromParent();
-    }
 
+    protected void decouple(HasElement willBeRemoved)
+    {
+        Element elementToRemove = willBeRemoved.getElement( );
+        if( elementToRemove != null )
+        {
+            Node<?> parent = elementToRemove.getParentNode( );
+            if( parent != null && parent.getChildren( ).anyMatch( n -> n == elementToRemove ) )
+            {
+                if( willBeRemoved instanceof Component )
+                {
+                    Component c = (Component) willBeRemoved;
+                    Optional<RouterLayout> maybeRouterLayout = c.getParent( )
+                            .filter( RouterLayout.class::isInstance )
+                            .map( RouterLayout.class::cast );
+                    maybeRouterLayout
+                            .ifPresent( rl -> rl.removeRouterLayoutContent( willBeRemoved ) );
+                    if( maybeRouterLayout.isPresent( ) )
+                        return;
+                }
+                elementToRemove.removeFromParent( );
+                // NOTE: it seems removeFromParent does not set getParent to null
+            }
+        }
+    }
 
     protected Set<K> getKeySet() {
         return Collections.unmodifiableSet(storageMap.keySet());

@@ -22,6 +22,8 @@ import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasElement;
+import com.vaadin.flow.dom.Node;
+import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.router.RouterLayout;
 
 import javax.annotation.PreDestroy;

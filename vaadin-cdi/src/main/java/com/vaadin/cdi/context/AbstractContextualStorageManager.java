@@ -22,8 +22,6 @@ import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasElement;
-import com.vaadin.flow.dom.Node;
-import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.router.RouterLayout;
 
 import javax.annotation.PreDestroy;
@@ -102,27 +100,18 @@ abstract class AbstractContextualStorageManager<K> implements Serializable  {
 
     protected void decouple(HasElement willBeRemoved)
     {
-        Element elementToRemove = willBeRemoved.getElement( );
-        if( elementToRemove != null )
+        if( willBeRemoved instanceof Component )
         {
-            Node<?> parent = elementToRemove.getParentNode( );
-            if( parent != null && parent.getChildren( ).anyMatch( n -> n == elementToRemove ) )
-            {
-                if( willBeRemoved instanceof Component )
-                {
-                    Component c = (Component) willBeRemoved;
-                    Optional<RouterLayout> maybeRouterLayout = c.getParent( )
-                            .filter( RouterLayout.class::isInstance )
-                            .map( RouterLayout.class::cast );
-                    maybeRouterLayout
-                            .ifPresent( rl -> rl.removeRouterLayoutContent( willBeRemoved ) );
-                    if( maybeRouterLayout.isPresent( ) )
-                        return;
-                }
-                elementToRemove.removeFromParent( );
-                // NOTE: it seems removeFromParent does not set getParent to null
-            }
+            Component c = (Component) willBeRemoved;
+            Optional<RouterLayout> maybeRouterLayout = c.getParent( )
+                    .filter( RouterLayout.class::isInstance )
+                    .map( RouterLayout.class::cast );
+            maybeRouterLayout
+                    .ifPresent( rl -> rl.removeRouterLayoutContent( willBeRemoved ) );
+            if( maybeRouterLayout.isPresent( ) )
+                return;
         }
+        willBeRemoved.getElement( ).removeFromParent( );
     }
 
     protected Set<K> getKeySet() {

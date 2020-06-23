@@ -26,11 +26,14 @@ import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.SystemMessages;
 import com.vaadin.flow.server.SystemMessagesInfo;
 import com.vaadin.flow.server.SystemMessagesProvider;
+
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.enterprise.context.spi.Context;
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -38,10 +41,13 @@ import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -99,16 +105,19 @@ public class CdiVaadinServletServiceTest {
     public void init_instantiatorInitReturnsFalse_ExceptionThrown()
             throws ServiceException {
         BeanManager mockBm = mock(BeanManager.class);
-        Bean<?> mockBean = mock(Bean.class);
+        Bean<Instantiator> mockBean = mock(Bean.class);
         Set<Bean<?>> beans = Collections.singleton(mockBean);
         when(mockBm.getBeans(eq(Instantiator.class), same(BeanLookup.SERVICE)))
                 .thenReturn(beans);
         //noinspection unchecked
         when(mockBm.resolve(same(beans))).thenReturn((Bean) mockBean);
         Instantiator mockInstantiator = mock(Instantiator.class);
-        when(mockBm.getReference(same(mockBean), eq(Instantiator.class), any()))
+        Context mockContext = mock(Context.class);
+        when(mockBm.getContext(VaadinServiceScoped.class))
+                .thenReturn(mockContext);
+        when(mockContext.get(same(mockBean), any()))
                 .thenReturn(mockInstantiator);
-        when(mockInstantiator.init(same(service))).thenReturn(false);
+        when(mockInstantiator.init(any())).thenReturn(false);
         initService(mockBm);
 
         verify(mockInstantiator, times(1)).init(same(service));
@@ -135,6 +144,42 @@ public class CdiVaadinServletServiceTest {
         initServiceWithoutBeanFor(SystemMessagesProvider.class);
         assertThat(service.getSystemMessagesProvider(),
                 instanceOf(DefaultSystemMessagesProvider.class));
+    }
+
+    @Test
+    public void loadInstantiators_serviceInitialized_instantiatorInstanceCreated()
+            throws ServiceException {
+        // #346
+        BeanManager mockBm = mock(BeanManager.class);
+
+        ServiceUnderTestContext serviceUnderTestContext = new ServiceUnderTestContext(
+                mockBm);
+        serviceUnderTestContext.activate();
+        CdiVaadinServletService service = serviceUnderTestContext.getService();
+
+        Bean<Instantiator> mockBean = mock(Bean.class);
+        Set<Bean<?>> beans = Collections.singleton(mockBean);
+        when(mockBm.getBeans(eq(Instantiator.class), same(BeanLookup.SERVICE)))
+                .thenReturn(beans);
+        when(mockBm.resolve(same(beans))).thenReturn((Bean) mockBean);
+
+        CreationalContext<Instantiator> mockCreationalContext = mock(
+                CreationalContext.class);
+        when(mockBm.createCreationalContext(same(mockBean)))
+                .thenReturn(mockCreationalContext);
+
+        Context mockContext = mock(Context.class);
+        when(mockBm.getContext(VaadinServiceScoped.class))
+                .thenReturn(mockContext);
+
+        Instantiator mockInstantiator = mock(Instantiator.class);
+        when(mockContext.get(same(mockBean), same(mockCreationalContext)))
+                .thenReturn(mockInstantiator);
+        when(mockInstantiator.init(same(service))).thenReturn(true);
+
+        Optional<Instantiator> maybeInstantiator = service.loadInstantiators();
+        assertTrue(maybeInstantiator.isPresent());
+        assertEquals(mockInstantiator, maybeInstantiator.get());
     }
 
     private void initService(BeanManager beanManager) throws ServiceException {

@@ -16,6 +16,7 @@
 package com.vaadin.cdi;
 
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
+import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.context.VaadinSessionScopedContext;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.PollEvent;
@@ -39,10 +40,14 @@ import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
 
+import javax.enterprise.context.spi.Context;
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.AmbiguousResolutionException;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import java.io.Serializable;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.deltaspike.core.api.provider.BeanManagerProvider;
 import org.apache.deltaspike.core.util.ProxyUtils;
@@ -92,24 +97,43 @@ public class CdiVaadinServletService extends VaadinServletService {
     }
 
     public Optional<Instantiator> loadInstantiators() throws ServiceException {
-        Optional<Instantiator> instantiatorOptional = delegate.lookup(Instantiator.class);
-        if (instantiatorOptional.isPresent()) {
-            Instantiator instantiator = instantiatorOptional.get();
-            if (!instantiator.init(this)) {
-                Class unproxiedClass =
-                        ProxyUtils.getUnproxiedClass(instantiator.getClass());
-                throw new ServiceException(
-                        "Cannot init VaadinService because "
-                                + unproxiedClass.getName() + " CDI bean init()"
-                                + " returned false.");
-            }
-        } else {
-            throw new ServiceException(
-                    "Cannot init VaadinService "
-                            + "because no CDI instantiator bean found."
-            );
+        BeanManager beanManager = delegate.getBeanManager();
+
+        final Set<Bean<?>> beans = beanManager.getBeans(Instantiator.class,
+                SERVICE);
+        if (beans == null || beans.isEmpty()) {
+            throw new ServiceException("Cannot init VaadinService "
+                    + "because no CDI instantiator bean found.");
         }
-        return instantiatorOptional;
+        final Bean<Instantiator> bean;
+        try {
+            //noinspection unchecked
+            bean = (Bean<Instantiator>) beanManager.resolve(beans);
+        } catch (AmbiguousResolutionException e) {
+            throw new ServiceException(
+                    "There are multiple eligible CDI "
+                            + Instantiator.class.getSimpleName() + " beans.",
+                    e);
+        }
+
+        // Return the contextual instance (rather than CDI proxy) as it will be
+        // stored inside VaadinService. Not relying on the proxy allows
+        // accessing VaadinService::getInstantiator even when
+        // VaadinServiceScopedContext is not active
+        final CreationalContext<Instantiator> creationalContext = beanManager
+                .createCreationalContext(bean);
+        final Context context = beanManager
+                .getContext(VaadinServiceScoped.class);
+        final Instantiator instantiator = context.get(bean, creationalContext);
+
+        if (!instantiator.init(this)) {
+            Class<?> unproxiedClass = ProxyUtils
+                    .getUnproxiedClass(instantiator.getClass());
+            throw new ServiceException("Cannot init VaadinService because "
+                    + unproxiedClass.getName() + " CDI bean init()"
+                    + " returned false.");
+        }
+        return Optional.of(instantiator);
     }
 
     public CdiVaadinServlet getServlet() {

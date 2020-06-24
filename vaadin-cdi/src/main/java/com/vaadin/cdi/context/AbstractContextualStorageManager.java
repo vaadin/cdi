@@ -22,6 +22,7 @@ import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasElement;
+import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.router.RouterLayout;
 
 import javax.annotation.PreDestroy;
@@ -111,7 +112,9 @@ abstract class AbstractContextualStorageManager<K> implements Serializable  {
             if( maybeRouterLayout.isPresent( ) )
                 return;
         }
-        willBeRemoved.getElement( ).removeFromParent( );
+        Element element = willBeRemoved.getElement( );
+        if(element != null)
+            element.removeFromParent( );
     }
 
     protected Set<K> getKeySet() {

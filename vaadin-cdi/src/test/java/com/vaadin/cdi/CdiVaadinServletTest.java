@@ -23,13 +23,18 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import java.util.Collections;
+import java.util.Enumeration;
 
+import com.vaadin.flow.server.startup.ApplicationConfiguration;
+import com.vaadin.flow.server.startup.ApplicationConfigurationFactory;
+import com.vaadin.flow.server.startup.DefaultApplicationConfigurationFactory;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import com.vaadin.cdi.context.ServiceUnderTestContext;
@@ -60,6 +65,14 @@ public class CdiVaadinServletTest {
                 .thenReturn(provider);
         Mockito.when(servletContext.getAttribute(Lookup.class.getName()))
                 .thenReturn(lookup);
+
+        final DefaultApplicationConfigurationFactory applicationConfigurationFactory
+                = Mockito.mock(DefaultApplicationConfigurationFactory.class);
+        final ApplicationConfiguration applicationConfiguration = Mockito.mock(ApplicationConfiguration.class);
+        Mockito.when(applicationConfiguration.getPropertyNames()).thenReturn(Collections.emptyEnumeration());
+
+        Mockito.when(lookup.lookup(ApplicationConfigurationFactory.class)).thenReturn(applicationConfigurationFactory);
+        Mockito.when(applicationConfigurationFactory.create(Mockito.any())).thenReturn(applicationConfiguration);
 
         Mockito.when(servletConfig.getInitParameterNames())
                 .thenReturn(Collections.emptyEnumeration());

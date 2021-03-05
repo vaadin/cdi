@@ -21,10 +21,12 @@ import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-
 import java.util.Collections;
-import java.util.Enumeration;
 
+import com.vaadin.cdi.context.ServiceUnderTestContext;
+import com.vaadin.flow.di.Lookup;
+import com.vaadin.flow.di.ResourceProvider;
+import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.startup.ApplicationConfiguration;
 import com.vaadin.flow.server.startup.ApplicationConfigurationFactory;
 import com.vaadin.flow.server.startup.DefaultApplicationConfigurationFactory;
@@ -34,13 +36,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-
-import com.vaadin.cdi.context.ServiceUnderTestContext;
-import com.vaadin.flow.di.Lookup;
-import com.vaadin.flow.di.ResourceProvider;
-import com.vaadin.flow.server.VaadinServletService;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -94,7 +90,7 @@ public class CdiVaadinServletTest {
 
     @Test
     public void getService_servletInitialized_cdiVaadinServletServiceReturned() {
-        final VaadinServletService service = servlet.getService();
+        final VaadinService service = servlet.getService();
         assertThat(service, instanceOf(CdiVaadinServletService.class));
     }
 }

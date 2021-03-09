@@ -54,6 +54,8 @@ public class ArchiveProvider {
                         .withTransitivity().asFile())
                 .addAsLibraries(pom.resolve("com.vaadin:flow-html-components")
                         .withTransitivity().asFile())
+                .addAsLibraries(pom.resolve("com.vaadin:flow-polymer-template")
+                        .withTransitivity().asFile())
                 .addAsWebInfResource(EmptyAsset.INSTANCE,
                         ArchivePaths.create("beans.xml"))
                 .addClasses(Counter.class, CounterFilter.class);

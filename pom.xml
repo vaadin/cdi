@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>vaadin-cdi-parent</artifactId>
-    <version>12.1-SNAPSHOT</version>
+    <version>14.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>vaadin-cdi-parent</name>
@@ -45,7 +45,7 @@
         <driver.binary.downloader.maven.plugin.version>1.0.14
         </driver.binary.downloader.maven.plugin.version>
 
-        <vaadin.flow.version>3.1-SNAPSHOT</vaadin.flow.version>
+        <vaadin.flow.version>6.0-SNAPSHOT</vaadin.flow.version>
         <slf4j.version>1.7.25</slf4j.version>
         <deltaspike.version>1.8.1</deltaspike.version>
         <owb.version>1.7.5</owb.version>
@@ -128,6 +128,11 @@
                 <version>${vaadin.flow.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>flow-polymer-template</artifactId>
+                <version>${vaadin.flow.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
@@ -180,7 +185,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.12</version>
+                <version>4.13.1</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>

@@ -26,7 +26,10 @@ import java.util.Collections;
 import com.vaadin.cdi.context.ServiceUnderTestContext;
 import com.vaadin.flow.di.Lookup;
 import com.vaadin.flow.di.ResourceProvider;
+import com.vaadin.flow.server.StaticFileHandlerFactory;
+import com.vaadin.flow.server.StaticFileServer;
 import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.startup.ApplicationConfiguration;
 import com.vaadin.flow.server.startup.ApplicationConfigurationFactory;
 import com.vaadin.flow.server.startup.DefaultApplicationConfigurationFactory;
@@ -69,6 +72,12 @@ public class CdiVaadinServletTest {
 
         Mockito.when(lookup.lookup(ApplicationConfigurationFactory.class)).thenReturn(applicationConfigurationFactory);
         Mockito.when(applicationConfigurationFactory.create(Mockito.any())).thenReturn(applicationConfiguration);
+
+        StaticFileHandlerFactory staticFileHandlerFactory =
+                vaadinService -> new StaticFileServer(
+                        (VaadinServletService) vaadinService);
+        Mockito.when(lookup.lookup(StaticFileHandlerFactory.class))
+                .thenReturn(staticFileHandlerFactory);
 
         Mockito.when(servletConfig.getInitParameterNames())
                 .thenReturn(Collections.emptyEnumeration());

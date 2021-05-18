@@ -29,9 +29,14 @@ public class RemoveOldContentTest extends AbstractCdiTest {
                         .addAsResource(new File("target/classes/META-INF")));
     }
 
+    @Override
+    protected String getTestPath() {
+        return "/first-child-route";
+    }
+
     @Test
     public void removeUIScopedRouterLayoutContent_navigateToAnotherRouteInsideMainLayoutAndBack_subLayoutOldContentRemoved() {
-        open("first-child-route");
+        open();
         waitForElementPresent(By.id(NAVIGATE_TO_ANOTHER_ROUTE_INSIDE_MAIN_LAYOUT_BUTTON_ID));
         click(NAVIGATE_TO_ANOTHER_ROUTE_INSIDE_MAIN_LAYOUT_BUTTON_ID);
         waitForElementPresent(By.id(
@@ -45,7 +50,7 @@ public class RemoveOldContentTest extends AbstractCdiTest {
 
     @Test
     public void removeUIScopedRouterLayoutContent_navigateToAnotherRouteOutsideMainLayoutAndBack_mainLayoutOldContentRemoved() {
-        open("first-child-route");
+        open();
         waitForElementPresent(By.id(NAVIGATE_TO_ANOTHER_ROUTE_OUTSIDE_MAIN_LAYOUT_BUTTON_ID));
         click(NAVIGATE_TO_ANOTHER_ROUTE_OUTSIDE_MAIN_LAYOUT_BUTTON_ID);
         waitForElementPresent(By.id(

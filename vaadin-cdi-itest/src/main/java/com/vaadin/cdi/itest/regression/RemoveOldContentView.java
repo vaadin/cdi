@@ -48,7 +48,7 @@ public class RemoveOldContentView extends Div
             NativeButton navigateToAnotherLayoutButton = new NativeButton(
                     "Navigate to another route outside Main Layout",
                     click -> UI.getCurrent().navigate(
-                            CustomUIScopeAnotherLayout.ThirdView.class));
+                            AnotherParentLayout.ThirdView.class));
             navigateToAnotherLayoutButton.setId(
                     NAVIGATE_TO_ANOTHER_ROUTE_OUTSIDE_MAIN_LAYOUT_BUTTON_ID);
             add(navigateToAnotherLayoutButton);
@@ -70,14 +70,14 @@ public class RemoveOldContentView extends Div
     }
 
     @Route("secondary")
-    public static class CustomUIScopeAnotherLayout extends Div
+    public static class AnotherParentLayout extends Div
             implements RouterLayout {
 
-        public CustomUIScopeAnotherLayout() {
+        public AnotherParentLayout() {
             add(new Span("This is an another topmost parent router layout"));
         }
 
-        @Route(value = "third-child-route", layout = CustomUIScopeAnotherLayout.class)
+        @Route(value = "third-child-route", layout = AnotherParentLayout.class)
         public static class ThirdView extends Div {
 
             public ThirdView() {

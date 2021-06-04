@@ -16,10 +16,10 @@
 
 package com.vaadin.cdi.itest.routecontext;
 
-import com.vaadin.flow.component.html.Div;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+
+import com.vaadin.flow.component.html.Div;
 
 public abstract class AbstractCountedView extends Div implements CountedPerUI {
 

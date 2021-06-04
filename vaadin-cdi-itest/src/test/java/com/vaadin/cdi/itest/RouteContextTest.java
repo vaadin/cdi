@@ -23,19 +23,24 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.openqa.selenium.By;
 
 import com.vaadin.cdi.itest.routecontext.ApartBean;
 import com.vaadin.cdi.itest.routecontext.AssignedBean;
+import com.vaadin.cdi.itest.routecontext.BeanNoOwner;
+import com.vaadin.cdi.itest.routecontext.CustomExceptionSubButton;
+import com.vaadin.cdi.itest.routecontext.CustomExceptionSubDiv;
 import com.vaadin.cdi.itest.routecontext.DetailApartView;
 import com.vaadin.cdi.itest.routecontext.DetailAssignedView;
 import com.vaadin.cdi.itest.routecontext.ErrorHandlerView;
 import com.vaadin.cdi.itest.routecontext.ErrorParentView;
 import com.vaadin.cdi.itest.routecontext.ErrorView;
 import com.vaadin.cdi.itest.routecontext.EventView;
+import com.vaadin.cdi.itest.routecontext.MainLayout;
 import com.vaadin.cdi.itest.routecontext.MasterView;
 import com.vaadin.cdi.itest.routecontext.PostponeView;
+import com.vaadin.cdi.itest.routecontext.PreserveOnRefreshBean;
 import com.vaadin.cdi.itest.routecontext.RerouteView;
 import com.vaadin.cdi.itest.routecontext.RootView;
 
@@ -55,7 +60,7 @@ public class RouteContextTest extends AbstractCdiTest {
     public void setUp() throws Exception {
         resetCounts();
         open("");
-        uiId = getText(RootView.UIID);
+        uiId = getText(MainLayout.UIID);
         assertConstructed(RootView.class, 1);
         assertDestroyed(RootView.class, 0);
         assertConstructed(RerouteView.class, 0);
@@ -73,7 +78,6 @@ public class RouteContextTest extends AbstractCdiTest {
             throws IOException {
         follow(RootView.MASTER);
         assertTextEquals("", MasterView.ASSIGNED_BEAN_LABEL);
-        assertTextEquals("", MasterView.APART_BEAN_LABEL);
 
         assertConstructed(RootView.class, 1);
         assertDestroyed(RootView.class, 1);
@@ -81,7 +85,7 @@ public class RouteContextTest extends AbstractCdiTest {
         assertDestroyed(MasterView.class, 0);
         assertConstructed(AssignedBean.class, 1);
         assertDestroyed(AssignedBean.class, 0);
-        assertConstructed(ApartBean.class, 1);
+        assertConstructed(ApartBean.class, 0);
         assertDestroyed(ApartBean.class, 0);
         assertConstructed(DetailApartView.class, 0);
         assertConstructed(DetailAssignedView.class, 0);
@@ -92,7 +96,6 @@ public class RouteContextTest extends AbstractCdiTest {
         follow(RootView.MASTER);
         follow(MasterView.ASSIGNED);
         assertTextEquals("ASSIGNED", DetailAssignedView.BEAN_LABEL);
-        assertTextEquals("", MasterView.APART_BEAN_LABEL);
 
         follow(DetailAssignedView.MASTER);
         assertConstructed(MasterView.class, 1);
@@ -102,7 +105,6 @@ public class RouteContextTest extends AbstractCdiTest {
         assertConstructed(DetailApartView.class, 0);
 
         assertTextEquals("ASSIGNED", MasterView.ASSIGNED_BEAN_LABEL);
-        assertTextEquals("", MasterView.APART_BEAN_LABEL);
     }
 
     @Test
@@ -121,7 +123,6 @@ public class RouteContextTest extends AbstractCdiTest {
         assertDestroyed(DetailApartView.class, 1);
 
         assertTextEquals("", MasterView.ASSIGNED_BEAN_LABEL);
-        assertTextEquals("", MasterView.APART_BEAN_LABEL);
     }
 
     @Test
@@ -158,7 +159,6 @@ public class RouteContextTest extends AbstractCdiTest {
     }
 
     @Test
-    @Ignore("Temprary disabled since it doesn't work with CCDM: https://github.com/vaadin/cdi/issues/314")
     public void errorHandlerIsScoped() throws IOException {
         follow(RootView.ERROR);
         assertConstructed(RootView.class, 1);
@@ -187,8 +187,118 @@ public class RouteContextTest extends AbstractCdiTest {
         assertRootViewIsDisplayed();
     }
 
+    @Test
+    public void routeScopeDoesNotExist_injectionWithOwnerOutOfNavigationThrows_invalidViewIsNotRendered() {
+        follow(MainLayout.INVALID);
+
+        Assert.assertFalse(isElementPresent(By.id("invalid-injection")));
+    }
+
+    @Test
+    public void beansWithNoOwner_preservedWithinTheSameRouteTarget_notPreservedAfterNavigation()
+            throws IOException {
+        follow(MainLayout.PARENT_NO_OWNER);
+
+        assertConstructed(BeanNoOwner.class, 1);
+        assertDestroyed(BeanNoOwner.class, 0);
+
+        follow("child");
+
+        assertDestroyed(BeanNoOwner.class, 0);
+
+        follow("parent");
+
+        assertConstructed(BeanNoOwner.class, 2);
+        assertDestroyed(BeanNoOwner.class, 1);
+    }
+
+    @Test
+    public void beanWithNoOwner_preservedWithinTheSameRoutingChain()
+            throws IOException {
+        follow(MainLayout.CHILD_NO_OWNER);
+
+        assertConstructed(BeanNoOwner.class, 1);
+        assertDestroyed(BeanNoOwner.class, 0);
+
+        findElement(By.id("reset")).click();
+
+        assertDestroyed(BeanNoOwner.class, 0);
+    }
+
+    @Test
+    public void navigateToViewWhichThrows_beansInsideErrorViewArePreservedinScope()
+            throws IOException {
+        follow(RootView.ERROR);
+
+        assertConstructed(CustomExceptionSubButton.class, 1);
+        assertDestroyed(CustomExceptionSubButton.class, 0);
+
+        assertConstructed(CustomExceptionSubDiv.class, 0);
+        assertDestroyed(CustomExceptionSubDiv.class, 0);
+
+        findElement(By.id("switch-content")).click();
+
+        assertDestroyed(CustomExceptionSubButton.class, 0);
+        assertConstructed(CustomExceptionSubDiv.class, 1);
+        assertDestroyed(CustomExceptionSubDiv.class, 0);
+
+        findElement(By.id("switch-content")).click();
+
+        assertConstructed(CustomExceptionSubButton.class, 1);
+        assertConstructed(CustomExceptionSubDiv.class, 1);
+        assertDestroyed(CustomExceptionSubButton.class, 0);
+        assertDestroyed(CustomExceptionSubDiv.class, 0);
+    }
+
+    @Test
+    public void routeScopedBeanIsDestroyedOnNavigationOutOfViewAfterPreserveOnRefresh()
+            throws IOException {
+        follow(MainLayout.PRESERVE);
+
+        assertConstructed(PreserveOnRefreshBean.class, 1);
+        assertDestroyed(PreserveOnRefreshBean.class, 0);
+
+        // refresh
+        getDriver().get(getDriver().getCurrentUrl());
+
+        // UI ID has to be updated: all bean creations/removals will be done
+        // now within the new UI
+        uiId = getText(MainLayout.UIID);
+
+        // navigate out of the preserved view
+        follow(MainLayout.PARENT_NO_OWNER);
+
+        assertDestroyed(PreserveOnRefreshBean.class, 1);
+    }
+
+    @Test
+    public void preserveOnRefresh_beanIsNotDestroyed() throws IOException {
+        follow(MainLayout.PRESERVE);
+
+        assertConstructed(PreserveOnRefreshBean.class, 1);
+        assertDestroyed(PreserveOnRefreshBean.class, 0);
+
+        String beanData = findElement(By.id("preserve-on-refresh")).getText();
+
+        // refresh
+        getDriver().get(getDriver().getCurrentUrl());
+
+        // check that the bean has not been removed in the previous UI
+        assertDestroyed(PreserveOnRefreshBean.class, 0);
+
+        // UI ID has to be updated: all bean creations/removals will be done
+        // now within the new UI
+        uiId = getText(MainLayout.UIID);
+
+        // the bean should not be destroyed with the new UI as well
+        assertDestroyed(PreserveOnRefreshBean.class, 0);
+
+        Assert.assertEquals(beanData,
+                findElement(By.id("preserve-on-refresh")).getText());
+    }
+
     private void assertRootViewIsDisplayed() {
-        assertTextEquals(uiId, RootView.UIID);
+        assertTextEquals(uiId, MainLayout.UIID);
     }
 
     private void assertConstructed(Class beanClass, int count)

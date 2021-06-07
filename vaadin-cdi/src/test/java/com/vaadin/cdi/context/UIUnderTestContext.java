@@ -27,7 +27,7 @@ public class UIUnderTestContext implements UnderTestContext {
     private static int uiIdNdx = 0;
     private static SessionUnderTestContext sessionContextUnderTest;
 
-    protected UIUnderTestContext() {
+    public UIUnderTestContext() {
         this(null);
     }
 

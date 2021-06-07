@@ -16,6 +16,20 @@
 
 package com.vaadin.cdi;
 
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.inject.Inject;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+
 import com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode;
 import com.vaadin.cdi.annotation.NormalRouteScoped;
 import com.vaadin.cdi.annotation.RouteScopeOwner;
@@ -25,20 +39,6 @@ import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLayout;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-
-import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.ABSENT_OWNER_OF_NON_ROUTE_COMPONENT;
 import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.NON_ROUTE_SCOPED_HAVE_OWNER;
 import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.NORMAL_SCOPED_COMPONENT;
 import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.OWNER_IS_NOT_ROUTE_COMPONENT;
@@ -92,23 +92,20 @@ class DeploymentValidator {
     }
 
     /**
-     * Represents a deployment problem to be passed to the container.
-     * Message and stacktrace will appear in server log.
-     * It is not thrown, or caught.
+     * Represents a deployment problem to be passed to the container. Message
+     * and stacktrace will appear in server log. It is not thrown, or caught.
      */
     static class DeploymentProblem extends Throwable {
 
         enum ErrorCode {
-            NORMAL_SCOPED_COMPONENT,
-            NON_ROUTE_SCOPED_HAVE_OWNER,
-            ABSENT_OWNER_OF_NON_ROUTE_COMPONENT,
-            OWNER_IS_NOT_ROUTE_COMPONENT
+            NORMAL_SCOPED_COMPONENT, NON_ROUTE_SCOPED_HAVE_OWNER, OWNER_IS_NOT_ROUTE_COMPONENT
         }
 
         private final Type baseType;
         private final ErrorCode errorCode;
 
-        private DeploymentProblem(String message, Type baseType, ErrorCode errorCode) {
+        private DeploymentProblem(String message, Type baseType,
+                ErrorCode errorCode) {
             super(message);
             this.baseType = baseType;
             this.errorCode = errorCode;
@@ -159,10 +156,9 @@ class DeploymentValidator {
         @Override
         public String getErrorMessage(BeanInfo beanInfo) {
             return String.format(
-                    "Normal scoped Vaadin components are not supported. " +
-                            "'%s' should not belong to a normal scope.",
-                    beanInfo.getBaseType().getTypeName()
-            );
+                    "Normal scoped Vaadin components are not supported. "
+                            + "'%s' should not belong to a normal scope.",
+                    beanInfo.getBaseType().getTypeName());
         }
 
     }
@@ -172,10 +168,9 @@ class DeploymentValidator {
         @Override
         public boolean isInvalid(BeanInfo beanInfo) {
             return beanInfo.isRouteScoped()
-                    && beanInfo.getRouteScopeOwner()
-                    .map(RouteScopeOwner::value)
-                    .filter(DeploymentValidator::isNonRouteComponent)
-                    .isPresent();
+                    && beanInfo.getRouteScopeOwner().map(RouteScopeOwner::value)
+                            .filter(DeploymentValidator::isNonRouteComponent)
+                            .isPresent();
         }
 
         @Override
@@ -188,33 +183,7 @@ class DeploymentValidator {
             return String.format(
                     "'@%s' should define a route component on '%s'.",
                     RouteScopeOwner.class.getSimpleName(),
-                    beanInfo.getBaseType().getTypeName()
-            );
-        }
-
-    }
-
-    private class AbsentOwnerOfNonRouteComponentValidator implements BeanValidator {
-
-        @Override
-        public boolean isInvalid(BeanInfo beanInfo) {
-            return beanInfo.isRouteScoped()
-                    && isNonRouteComponent(beanInfo.getBaseType())
-                    && !beanInfo.getRouteScopeOwner().isPresent();
-        }
-
-        @Override
-        public ErrorCode getErrorCode() {
-            return ABSENT_OWNER_OF_NON_ROUTE_COMPONENT;
-        }
-
-        @Override
-        public String getErrorMessage(BeanInfo beanInfo) {
-            return String.format(
-                    "'%s' is not a route component, need a '@%s'.",
-                    beanInfo.getBaseType().getTypeName(),
-                    RouteScopeOwner.class.getSimpleName()
-            );
+                    beanInfo.getBaseType().getTypeName());
         }
 
     }
@@ -239,8 +208,7 @@ class DeploymentValidator {
                     beanInfo.getBaseType().getTypeName(),
                     RouteScoped.class.getSimpleName(),
                     NormalRouteScoped.class.getSimpleName(),
-                    RouteScopeOwner.class.getSimpleName()
-            );
+                    RouteScopeOwner.class.getSimpleName());
         }
 
     }
@@ -250,22 +218,19 @@ class DeploymentValidator {
 
     private final List<BeanValidator> validators = Arrays.asList(
             new NormalScopedComponentValidator(),
-            new AbsentOwnerOfNonRouteComponentValidator(),
             new OwnerIsNotRouteComponentValidator(),
-            new NonRouteScopedHaveOwnerValidator()
-    );
+            new NonRouteScopedHaveOwnerValidator());
 
     void validate(Set<BeanInfo> infoSet, Consumer<Throwable> problemConsumer) {
         infoSet.forEach(info -> validateBean(info, problemConsumer));
     }
 
-    private void validateBean(BeanInfo beanInfo, Consumer<Throwable> problemConsumer) {
-        validators.stream()
-                .filter(validator -> validator.isInvalid(beanInfo))
+    private void validateBean(BeanInfo beanInfo,
+            Consumer<Throwable> problemConsumer) {
+        validators.stream().filter(validator -> validator.isInvalid(beanInfo))
                 .map(validator -> new DeploymentProblem(
                         validator.getErrorMessage(beanInfo),
-                        beanInfo.getBaseType(),
-                        validator.getErrorCode()))
+                        beanInfo.getBaseType(), validator.getErrorCode()))
                 .forEach(problemConsumer);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2018 Vaadin Ltd.
+ * Copyright 2000-2021 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,28 +13,31 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.routecontext;
 
-import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 
 import com.vaadin.cdi.annotation.RouteScopeOwner;
-import com.vaadin.cdi.annotation.RouteScoped;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouterLayout;
-import com.vaadin.flow.router.RouterLink;
 
-@RouteScoped
-@RouteScopeOwner(ErrorParentView.class)
-@Route("error-layout")
-public class ErrorParentView extends AbstractCountedView
-        implements RouterLayout {
+@PreserveOnRefresh
+@Route(value = "preserve-on-refresh", layout = MainLayout.class)
+public class PreserveOnRefreshView extends Div {
 
-    public static final String ROOT = "root";
+    @Inject
+    @RouteScopeOwner(PreserveOnRefreshView.class)
+    private Instance<PreserveOnRefreshBean> injection;
 
-    @PostConstruct
-    private void init() {
-        add(new RouterLink(ROOT, RootView.class));
+    public PreserveOnRefreshView() {
+        setId("preserve-on-refresh");
     }
 
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        setText(injection.get().getData());
+    }
 }

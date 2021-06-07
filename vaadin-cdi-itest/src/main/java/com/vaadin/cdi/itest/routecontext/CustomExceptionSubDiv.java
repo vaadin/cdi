@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2018 Vaadin Ltd.
+ * Copyright 2000-2021 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,24 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.routecontext;
 
+import java.util.UUID;
+
+import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.cdi.annotation.RouteScoped;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.Route;
 
 @RouteScoped
-@Route("error")
-public class ErrorView extends AbstractCountedView
-        implements BeforeEnterObserver {
+@RouteScopeOwner(ErrorHandlerView.class)
+public class CustomExceptionSubDiv extends AbstractCountedView {
 
-    @Override
-    public void beforeEnter(BeforeEnterEvent event) {
-        if (true) {
-            throw new CustomException();
-        }
+    public CustomExceptionSubDiv() {
+        setId("custom-exception-div");
+        setText(UUID.randomUUID().toString());
     }
-
 }

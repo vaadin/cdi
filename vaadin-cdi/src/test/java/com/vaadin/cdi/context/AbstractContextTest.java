@@ -16,14 +16,15 @@
 
 package com.vaadin.cdi.context;
 
+import javax.enterprise.context.ContextNotActiveException;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.enterprise.context.ContextNotActiveException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -97,12 +98,11 @@ public abstract class AbstractContextTest<T extends TestBean> {
 
     protected UnderTestContext createContext() {
         UnderTestContext underTestContext = newContextUnderTest();
-/*
-        UnderTestContext implementations set fields
-        to Vaadin CurrentInstance.
-        Need to hold a hard reference to prevent possible GC,
-        because CurrentInstance works with weak reference.
-*/
+        /*
+         * UnderTestContext implementations set fields to Vaadin
+         * CurrentInstance. Need to hold a hard reference to prevent possible
+         * GC, because CurrentInstance works with weak reference.
+         */
         contexts.add(underTestContext);
         return underTestContext;
     }

@@ -16,32 +16,10 @@
 
 package com.vaadin.cdi;
 
-import com.vaadin.cdi.DeploymentValidator.BeanInfo;
-import com.vaadin.cdi.DeploymentValidator.DeploymentProblem;
-import com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode;
-import com.vaadin.cdi.annotation.NormalRouteScoped;
-import com.vaadin.cdi.annotation.NormalUIScoped;
-import com.vaadin.cdi.annotation.RouteScopeOwner;
-import com.vaadin.cdi.annotation.RouteScoped;
-import com.vaadin.cdi.annotation.UIScoped;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.ErrorParameter;
-import com.vaadin.flow.router.HasErrorParameter;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouterLayout;
-import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Vetoed;
 import javax.inject.Inject;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,10 +31,30 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.ABSENT_OWNER_OF_NON_ROUTE_COMPONENT;
-import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.NON_ROUTE_SCOPED_HAVE_OWNER;
+import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vaadin.cdi.DeploymentValidator.BeanInfo;
+import com.vaadin.cdi.DeploymentValidator.DeploymentProblem;
+import com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode;
+import com.vaadin.cdi.annotation.NormalUIScoped;
+import com.vaadin.cdi.annotation.RouteScopeOwner;
+import com.vaadin.cdi.annotation.RouteScoped;
+import com.vaadin.cdi.annotation.UIScoped;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.ErrorParameter;
+import com.vaadin.flow.router.HasErrorParameter;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLayout;
+
 import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.NORMAL_SCOPED_COMPONENT;
-import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.OWNER_IS_NOT_ROUTE_COMPONENT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -79,19 +77,6 @@ public class DeploymentValidatorTest {
     public static class ProducedNormalScopedComponent extends Component {
     }
 
-    @RouteScopeOwner(RouteTargetOfSelf.class)
-    public static class NonRouteScopedHaveOwner {
-    }
-
-    @RouteScopeOwner(PseudoScopedLabel.class)
-    @RouteScoped
-    public static class OwnerIsNotRouteComponent {
-    }
-
-    @RouteScoped
-    public static class AbsentOwnerOfNonRouteComponent {
-    }
-
     @Route
     @RouteScoped
     @RouteScopeOwner(RouteTargetOfSelf.class)
@@ -108,9 +93,11 @@ public class DeploymentValidatorTest {
     }
 
     @RouteScoped
-    public static class TestHasErrorParameter extends Label implements HasErrorParameter<NullPointerException> {
+    public static class TestHasErrorParameter extends Label
+            implements HasErrorParameter<NullPointerException> {
         @Override
-        public int setErrorParameter(BeforeEnterEvent event, ErrorParameter<NullPointerException> parameter) {
+        public int setErrorParameter(BeforeEnterEvent event,
+                ErrorParameter<NullPointerException> parameter) {
             return 0;
         }
     }
@@ -136,10 +123,6 @@ public class DeploymentValidatorTest {
     public static class BeanOfHasErrorParameter {
     }
 
-    @Vetoed
-    public static class ProducedRouteScopedBeanWithoutOwner {
-    }
-
     private static class ProblemId {
         private final ErrorCode errorCode;
         private final Type baseType;
@@ -163,8 +146,8 @@ public class DeploymentValidatorTest {
                 return false;
             }
             ProblemId problemId = (ProblemId) o;
-            return errorCode == problemId.errorCode &&
-                    Objects.equals(baseType, problemId.baseType);
+            return errorCode == problemId.errorCode
+                    && Objects.equals(baseType, problemId.baseType);
         }
 
         @Override
@@ -174,10 +157,8 @@ public class DeploymentValidatorTest {
 
         @Override
         public String toString() {
-            return "ProblemId{" +
-                    "errorCode=" + errorCode +
-                    ", baseType=" + baseType +
-                    '}';
+            return "ProblemId{" + "errorCode=" + errorCode + ", baseType="
+                    + baseType + '}';
         }
     }
 
@@ -201,46 +182,29 @@ public class DeploymentValidatorTest {
 
     @Test
     public void validate_normalScopedProblems_collected() {
-        Set<BeanInfo> infoSet = createBeanSet(
-                PseudoScopedLabel.class,
-                NormalScopedBean.class,
-                NormalScopedLabel.class,
+        Set<BeanInfo> infoSet = createBeanSet(PseudoScopedLabel.class,
+                NormalScopedBean.class, NormalScopedLabel.class,
                 ProducedNormalScopedComponent.class);
 
         validator.validateForTest(infoSet, problems::add);
 
         assertEquals(2, problems.size());
         assertProblemExists(NORMAL_SCOPED_COMPONENT, NormalScopedLabel.class);
-        assertProblemExists(NORMAL_SCOPED_COMPONENT, ProducedNormalScopedComponent.class);
+        assertProblemExists(NORMAL_SCOPED_COMPONENT,
+                ProducedNormalScopedComponent.class);
     }
 
     @Test
     public void validate_routeScopedProblems_collected() {
-        Set<BeanInfo> infoSet = createBeanSet(
-                NonRouteScopedHaveOwner.class,
-                OwnerIsNotRouteComponent.class,
-                AbsentOwnerOfNonRouteComponent.class,
-                RouteTargetOfSelf.class,
-                TestRouteScopedTarget.class,
-                TestRouterLayout.class,
-                TestHasErrorParameter.class,
-                BeanOfHasErrorParameter.class,
-                BeanOfRouterLayout.class,
-                BeanOfRouteTarget.class,
-                RouteTargetOfRouterLayout.class,
-                ProducedRouteScopedBeanWithoutOwner.class);
+        Set<BeanInfo> infoSet = createBeanSet(RouteTargetOfSelf.class,
+                TestRouteScopedTarget.class, TestRouterLayout.class,
+                TestHasErrorParameter.class, BeanOfHasErrorParameter.class,
+                BeanOfRouterLayout.class, BeanOfRouteTarget.class,
+                RouteTargetOfRouterLayout.class);
 
         validator.validateForTest(infoSet, problems::add);
 
-        assertEquals(4, problems.size());
-        assertProblemExists(OWNER_IS_NOT_ROUTE_COMPONENT,
-                OwnerIsNotRouteComponent.class);
-        assertProblemExists(NON_ROUTE_SCOPED_HAVE_OWNER,
-                NonRouteScopedHaveOwner.class);
-        assertProblemExists(ABSENT_OWNER_OF_NON_ROUTE_COMPONENT,
-                AbsentOwnerOfNonRouteComponent.class);
-        assertProblemExists(ABSENT_OWNER_OF_NON_ROUTE_COMPONENT,
-                ProducedRouteScopedBeanWithoutOwner.class);
+        assertEquals(0, problems.size());
     }
 
     private void assertProblemExists(ErrorCode errorCode, Type baseType) {
@@ -255,30 +219,24 @@ public class DeploymentValidatorTest {
 
     private Set<BeanInfo> createBeanSet(Type... clazz) {
         Map<Type, BeanInfo> map = getBeanInfoSetAsMap();
-        return Arrays
-                .stream(clazz)
-                .map(map::get)
-                .collect(Collectors.toSet());
+        return Arrays.stream(clazz).map(map::get).collect(Collectors.toSet());
     }
 
     private Map<Type, BeanInfo> getBeanInfoSetAsMap() {
         return beanInfoSetHolder.getInfoSet().stream()
-                // Weld causes duplicate key because of exposing weird things as Object.
+                // Weld causes duplicate key because of exposing weird things as
+                // Object.
                 // Tests are not interested in it.
-                .filter(beanInfo -> !beanInfo.getBaseType().equals(Object.class))
-                .collect(Collectors.toMap(BeanInfo::getBaseType, Function.identity()));
+                .filter(beanInfo -> !beanInfo.getBaseType()
+                        .equals(Object.class))
+                .collect(Collectors.toMap(BeanInfo::getBaseType,
+                        Function.identity()));
     }
 
     @Produces
     @NormalUIScoped
     private ProducedNormalScopedComponent getProducedComponent() {
         return new ProducedNormalScopedComponent();
-    }
-
-    @Produces
-    @NormalRouteScoped
-    private ProducedRouteScopedBeanWithoutOwner getProducedRouteScopedBeanWithoutOwner() {
-        return new ProducedRouteScopedBeanWithoutOwner();
     }
 
     private static Logger getLogger() {

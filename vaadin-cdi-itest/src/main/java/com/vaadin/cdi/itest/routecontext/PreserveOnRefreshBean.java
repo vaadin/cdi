@@ -13,12 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.cdi.context;
+package com.vaadin.cdi.itest.routecontext;
 
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Tag;
+import javax.annotation.PostConstruct;
 
-@Tag(Tag.A)
-class TestNavigationTarget extends Component {
+import java.util.UUID;
+
+import com.vaadin.cdi.annotation.RouteScopeOwner;
+import com.vaadin.cdi.annotation.RouteScoped;
+
+@RouteScoped
+@RouteScopeOwner(PreserveOnRefreshView.class)
+public class PreserveOnRefreshBean extends AbstractCountedBean {
+
+    @PostConstruct
+    private void init() {
+        setData(UUID.randomUUID().toString());
+    }
 
 }

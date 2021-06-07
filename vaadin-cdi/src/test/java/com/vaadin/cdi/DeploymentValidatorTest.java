@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.cdi.DeploymentValidator.BeanInfo;
 import com.vaadin.cdi.DeploymentValidator.DeploymentProblem;
 import com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode;
-import com.vaadin.cdi.annotation.NormalRouteScoped;
 import com.vaadin.cdi.annotation.NormalUIScoped;
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.cdi.annotation.RouteScoped;
@@ -55,10 +54,7 @@ import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLayout;
 
-import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.ABSENT_OWNER_OF_NON_ROUTE_COMPONENT;
-import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.NON_ROUTE_SCOPED_HAVE_OWNER;
 import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.NORMAL_SCOPED_COMPONENT;
-import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.OWNER_IS_NOT_ROUTE_COMPONENT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -79,15 +75,6 @@ public class DeploymentValidatorTest {
 
     @Vetoed
     public static class ProducedNormalScopedComponent extends Component {
-    }
-
-    @RouteScopeOwner(RouteTargetOfSelf.class)
-    public static class NonRouteScopedHaveOwner {
-    }
-
-    @RouteScopeOwner(PseudoScopedLabel.class)
-    @RouteScoped
-    public static class OwnerIsNotRouteComponent {
     }
 
     @Route
@@ -134,10 +121,6 @@ public class DeploymentValidatorTest {
     @RouteScopeOwner(TestHasErrorParameter.class)
     @RouteScoped
     public static class BeanOfHasErrorParameter {
-    }
-
-    @Vetoed
-    public static class ProducedRouteScopedBeanWithoutOwner {
     }
 
     private static class ProblemId {
@@ -213,23 +196,15 @@ public class DeploymentValidatorTest {
 
     @Test
     public void validate_routeScopedProblems_collected() {
-        Set<BeanInfo> infoSet = createBeanSet(NonRouteScopedHaveOwner.class,
-                OwnerIsNotRouteComponent.class, RouteTargetOfSelf.class,
+        Set<BeanInfo> infoSet = createBeanSet(RouteTargetOfSelf.class,
                 TestRouteScopedTarget.class, TestRouterLayout.class,
                 TestHasErrorParameter.class, BeanOfHasErrorParameter.class,
                 BeanOfRouterLayout.class, BeanOfRouteTarget.class,
-                RouteTargetOfRouterLayout.class,
-                ProducedRouteScopedBeanWithoutOwner.class);
+                RouteTargetOfRouterLayout.class);
 
         validator.validateForTest(infoSet, problems::add);
 
-        assertEquals(4, problems.size());
-        assertProblemExists(OWNER_IS_NOT_ROUTE_COMPONENT,
-                OwnerIsNotRouteComponent.class);
-        assertProblemExists(NON_ROUTE_SCOPED_HAVE_OWNER,
-                NonRouteScopedHaveOwner.class);
-        assertProblemExists(ABSENT_OWNER_OF_NON_ROUTE_COMPONENT,
-                ProducedRouteScopedBeanWithoutOwner.class);
+        assertEquals(0, problems.size());
     }
 
     private void assertProblemExists(ErrorCode errorCode, Type baseType) {
@@ -262,12 +237,6 @@ public class DeploymentValidatorTest {
     @NormalUIScoped
     private ProducedNormalScopedComponent getProducedComponent() {
         return new ProducedNormalScopedComponent();
-    }
-
-    @Produces
-    @NormalRouteScoped
-    private ProducedRouteScopedBeanWithoutOwner getProducedRouteScopedBeanWithoutOwner() {
-        return new ProducedRouteScopedBeanWithoutOwner();
     }
 
     private static Logger getLogger() {

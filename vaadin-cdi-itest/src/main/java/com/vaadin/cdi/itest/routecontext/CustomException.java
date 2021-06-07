@@ -13,12 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.cdi.context;
+package com.vaadin.cdi.itest.routecontext;
 
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Tag;
-
-@Tag(Tag.A)
-class TestNavigationTarget extends Component {
+public class CustomException extends RuntimeException {
 
 }

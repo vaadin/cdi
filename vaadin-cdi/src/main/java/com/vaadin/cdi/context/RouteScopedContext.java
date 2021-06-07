@@ -22,13 +22,8 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.PassivationCapable;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -105,18 +100,6 @@ public class RouteScopedContext extends AbstractContext {
                     .filter(key -> key.getUIId().equals(uiStoreId))
                     .filter(key -> !navigationChain.contains(key.getOwner()))
                     .collect(Collectors.toSet());
-
-            File file = new File("/Users/denis/test.log");
-            try {
-                Files.write(file.toPath(),
-                        Arrays.asList("missing keys " + missingKeys,
-                                "keys : " + getKeySet(),
-                                " active chain: " + navigationChain),
-                        StandardOpenOption.APPEND);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
 
             missingKeys.forEach(this::destroy);
         }
@@ -281,7 +264,7 @@ public class RouteScopedContext extends AbstractContext {
             throw new IllegalStateException(String.format(
                     "Route owner '%s' instance is not available in the "
                             + "active navigation components chain: the scope defined by the bean '%s' doesn't exist.",
-                    owner, bean.getBeanClass()));
+                    owner, bean.getBeanClass().getName()));
         }
         return contextManager.getKey(ui, owner);
     }
@@ -301,12 +284,19 @@ public class RouteScopedContext extends AbstractContext {
                 .filter(annotation -> annotation instanceof RouteScopeOwner)
                 .map(annotation -> (Class<?>) (((RouteScopeOwner) annotation)
                         .value()))
-                .findFirst().orElseGet(() -> getCurrentNavigationTarget(ui));
+                .findFirst()
+                .orElseGet(() -> getCurrentNavigationTarget(ui, bean));
     }
 
     @SuppressWarnings("rawtypes")
-    private Class getCurrentNavigationTarget(UI ui) {
+    private Class getCurrentNavigationTarget(UI ui, Bean<?> bean) {
         NavigationData data = ComponentUtil.getData(ui, NavigationData.class);
+        if (data == null) {
+            throw new IllegalStateException(String.format(
+                    "There is no yet any navigation chain available, "
+                            + "so bean '%s' has no scope and may not be injected",
+                    bean.getBeanClass().getName()));
+        }
         return data.getNavigationTarget();
     }
 

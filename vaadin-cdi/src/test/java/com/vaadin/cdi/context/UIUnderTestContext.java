@@ -27,6 +27,13 @@ public class UIUnderTestContext implements UnderTestContext {
     private static int uiIdNdx = 0;
     private static SessionUnderTestContext sessionContextUnderTest;
 
+    protected UIUnderTestContext() {
+        this(null);
+    }
+
+    protected UIUnderTestContext(VaadinSession session) {
+        this.session = session;
+    }
 
     private void mockUI() {
         if (session == null) {

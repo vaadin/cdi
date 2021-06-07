@@ -13,12 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.cdi.context;
+package com.vaadin.cdi.itest.routecontext;
 
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Tag;
+import java.util.UUID;
 
-@Tag(Tag.A)
-class TestNavigationTarget extends Component {
+import com.vaadin.cdi.annotation.RouteScopeOwner;
+import com.vaadin.cdi.annotation.RouteScoped;
+import com.vaadin.flow.component.html.NativeButton;
 
+@RouteScoped
+@RouteScopeOwner(ErrorHandlerView.class)
+public class CustomExceptionSubButton extends AbstractCountedView {
+
+    public CustomExceptionSubButton() {
+        NativeButton button = new NativeButton();
+        button.setId("custom-exception-button");
+        button.setText(UUID.randomUUID().toString());
+        add(button);
+    }
 }

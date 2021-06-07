@@ -56,6 +56,9 @@ public class SessionUnderTestContext implements UnderTestContext {
         when(session.getConfiguration()).thenReturn(configuration);
         Properties props = new Properties();
         when(configuration.getInitParameters()).thenReturn(props);
+
+        doCallRealMethod().when(session).addUI(Mockito.any());
+        doCallRealMethod().when(session).getUIs();
     }
 
     @Override

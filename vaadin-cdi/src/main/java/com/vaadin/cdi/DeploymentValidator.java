@@ -98,7 +98,7 @@ class DeploymentValidator {
     static class DeploymentProblem extends Throwable {
 
         enum ErrorCode {
-            NORMAL_SCOPED_COMPONENT, NON_ROUTE_SCOPED_HAVE_OWNER, ABSENT_OWNER_OF_NON_ROUTE_COMPONENT, OWNER_IS_NOT_ROUTE_COMPONENT
+            NORMAL_SCOPED_COMPONENT, NON_ROUTE_SCOPED_HAVE_OWNER, OWNER_IS_NOT_ROUTE_COMPONENT
         }
 
         private final Type baseType;

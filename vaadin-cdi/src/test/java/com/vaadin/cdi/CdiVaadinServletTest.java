@@ -58,7 +58,7 @@ public class CdiVaadinServletTest {
         final ServletConfig servletConfig = Mockito.mock(ServletConfig.class);
         final ServletContext servletContext = Mockito
                 .mock(ServletContext.class);
-        ClassLoader loader = Mockito.mock(ClassLoader.class);
+        ClassLoader loader = CdiVaadinServletServiceTest.class.getClassLoader();
         Mockito.when(servletContext.getClassLoader()).thenReturn(loader);
 
         Lookup lookup = Mockito.mock(Lookup.class);

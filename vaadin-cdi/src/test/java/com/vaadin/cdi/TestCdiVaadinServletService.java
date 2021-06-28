@@ -54,4 +54,11 @@ public class TestCdiVaadinServletService extends CdiVaadinServletService {
     protected boolean isAtmosphereAvailable() {
         return false;
     }
+
+    @Override
+    public void setClassLoader(ClassLoader classLoader) {
+        if (classLoader != null) {
+            super.setClassLoader(classLoader);
+        }
+    }
 }

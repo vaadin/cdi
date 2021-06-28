@@ -21,18 +21,9 @@ import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+
 import java.util.Collections;
 
-import com.vaadin.cdi.context.ServiceUnderTestContext;
-import com.vaadin.flow.di.Lookup;
-import com.vaadin.flow.di.ResourceProvider;
-import com.vaadin.flow.server.StaticFileHandlerFactory;
-import com.vaadin.flow.server.StaticFileServer;
-import com.vaadin.flow.server.VaadinService;
-import com.vaadin.flow.server.VaadinServletService;
-import com.vaadin.flow.server.startup.ApplicationConfiguration;
-import com.vaadin.flow.server.startup.ApplicationConfigurationFactory;
-import com.vaadin.flow.server.startup.DefaultApplicationConfigurationFactory;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.After;
@@ -40,6 +31,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+
+import com.vaadin.cdi.context.ServiceUnderTestContext;
+import com.vaadin.flow.di.Lookup;
+import com.vaadin.flow.di.ResourceProvider;
+import com.vaadin.flow.server.StaticFileHandlerFactory;
+import com.vaadin.flow.server.StaticFileServer;
+import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.startup.ApplicationConfiguration;
+import com.vaadin.flow.server.startup.ApplicationConfigurationFactory;
+import com.vaadin.flow.server.startup.DefaultApplicationConfigurationFactory;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -57,6 +58,8 @@ public class CdiVaadinServletTest {
         final ServletConfig servletConfig = Mockito.mock(ServletConfig.class);
         final ServletContext servletContext = Mockito
                 .mock(ServletContext.class);
+        ClassLoader loader = Mockito.mock(ClassLoader.class);
+        Mockito.when(servletContext.getClassLoader()).thenReturn(loader);
 
         Lookup lookup = Mockito.mock(Lookup.class);
         ResourceProvider provider = Mockito.mock(ResourceProvider.class);
@@ -65,17 +68,20 @@ public class CdiVaadinServletTest {
         Mockito.when(servletContext.getAttribute(Lookup.class.getName()))
                 .thenReturn(lookup);
 
-        final DefaultApplicationConfigurationFactory applicationConfigurationFactory
-                = Mockito.mock(DefaultApplicationConfigurationFactory.class);
-        final ApplicationConfiguration applicationConfiguration = Mockito.mock(ApplicationConfiguration.class);
-        Mockito.when(applicationConfiguration.getPropertyNames()).thenReturn(Collections.emptyEnumeration());
+        final DefaultApplicationConfigurationFactory applicationConfigurationFactory = Mockito
+                .mock(DefaultApplicationConfigurationFactory.class);
+        final ApplicationConfiguration applicationConfiguration = Mockito
+                .mock(ApplicationConfiguration.class);
+        Mockito.when(applicationConfiguration.getPropertyNames())
+                .thenReturn(Collections.emptyEnumeration());
 
-        Mockito.when(lookup.lookup(ApplicationConfigurationFactory.class)).thenReturn(applicationConfigurationFactory);
-        Mockito.when(applicationConfigurationFactory.create(Mockito.any())).thenReturn(applicationConfiguration);
+        Mockito.when(lookup.lookup(ApplicationConfigurationFactory.class))
+                .thenReturn(applicationConfigurationFactory);
+        Mockito.when(applicationConfigurationFactory.create(Mockito.any()))
+                .thenReturn(applicationConfiguration);
 
-        StaticFileHandlerFactory staticFileHandlerFactory =
-                vaadinService -> new StaticFileServer(
-                        (VaadinServletService) vaadinService);
+        StaticFileHandlerFactory staticFileHandlerFactory = vaadinService -> new StaticFileServer(
+                vaadinService);
         Mockito.when(lookup.lookup(StaticFileHandlerFactory.class))
                 .thenReturn(staticFileHandlerFactory);
 

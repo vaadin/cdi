@@ -16,9 +16,10 @@
 
 package com.vaadin.cdi.itest.routecontext;
 
+import org.apache.deltaspike.core.api.provider.BeanProvider;
+
 import com.vaadin.cdi.itest.Counter;
 import com.vaadin.flow.component.UI;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
 
 public interface CountedPerUI {
 
@@ -35,7 +36,10 @@ public interface CountedPerUI {
     }
 
     default void countDestroy() {
-        getCounter().increment(getClass().getSimpleName() + "D" + getUiId());
+        if (UI.getCurrent() != null) {
+            getCounter()
+                    .increment(getClass().getSimpleName() + "D" + getUiId());
+        }
     }
 
 }

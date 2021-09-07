@@ -18,11 +18,14 @@ package com.vaadin.cdi.context;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
 import java.util.Collections;
+import java.util.List;
 
+import org.apache.deltaspike.core.util.context.ContextualStorage;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.After;
 import org.junit.Assert;
@@ -115,6 +118,9 @@ public class RouteContextualStorageManagerTest {
     private LocationChangeEvent changeEvent;
 
     private NavigationData data = Mockito.mock(NavigationData.class);
+
+    @Inject
+    private BeanManager manager;
 
     @Before
     public void setUp() {
@@ -241,6 +247,38 @@ public class RouteContextualStorageManagerTest {
 
         Assert.assertTrue(bean1.isDestroyed);
         Assert.assertNotEquals(STATE, memberOfGroup1.get().getState());
+    }
+
+    @Test
+    public void getActiveContextualStorages_getAllStoragesForGivenUI() {
+        RouteScopedContext context = new RouteScopedContext(manager);
+        context.init(manager, null);
+
+        UI ui = doSetUp("foo", null);
+
+        Mockito.when(event.getNavigationTarget())
+                .thenReturn((Class) Group1.class);
+        beforeNavigationTrigger.fire(event);
+
+        MemberOfGroup1 bean = memberOfGroup1.get();
+
+        List<ContextualStorage> storages = context
+                .getActiveContextualStorages();
+        Assert.assertEquals(1, storages.size());
+        ContextualStorage storage = storages.get(0);
+
+        doSetUp(null, ui.getSession());
+
+        Mockito.when(event.getNavigationTarget())
+                .thenReturn((Class) Group1.class);
+        beforeNavigationTrigger.fire(event);
+
+        MemberOfGroup1 bean1 = memberOfGroup1.get();
+
+        storages = context.getActiveContextualStorages();
+        Assert.assertEquals(1, storages.size());
+        // Now the second UI is active and its storage is a different one
+        Assert.assertNotSame(storage, storages.get(0));
     }
 
     private UI doSetUp(String windowName, VaadinSession session) {

@@ -151,6 +151,13 @@ public class RouteScopedContext extends AbstractContext {
                     new RouteStorageKey(key.getOwner(), getUIStoreId(ui)));
         }
 
+        private List<ContextualStorage> getActiveContextualStorages() {
+            return getKeySet().stream().filter(
+                    key -> key.getUIId().equals(getUIStoreId(UI.getCurrent())))
+                    .map(key -> getContextualStorage(key, false))
+                    .collect(Collectors.toList());
+        }
+
         private String getUIStoreId(UI ui) {
             ExtendedClientDetails details = ui.getInternals()
                     .getExtendedClientDetails();
@@ -247,6 +254,11 @@ public class RouteScopedContext extends AbstractContext {
     @Override
     public boolean isActive() {
         return isUIContextActive.get();
+    }
+
+    @Override
+    protected List<ContextualStorage> getActiveContextualStorages() {
+        return contextManager.getActiveContextualStorages();
     }
 
     @Override

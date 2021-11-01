@@ -37,6 +37,7 @@ import com.vaadin.flow.di.Lookup;
 import com.vaadin.flow.di.ResourceProvider;
 import com.vaadin.flow.server.StaticFileHandlerFactory;
 import com.vaadin.flow.server.StaticFileServer;
+import com.vaadin.flow.server.VaadinContext;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.startup.ApplicationConfiguration;
 import com.vaadin.flow.server.startup.ApplicationConfigurationFactory;
@@ -74,6 +75,9 @@ public class CdiVaadinServletTest {
                 .mock(ApplicationConfiguration.class);
         Mockito.when(applicationConfiguration.getPropertyNames())
                 .thenReturn(Collections.emptyEnumeration());
+        final VaadinContext context = Mockito.mock(VaadinContext.class);
+        Mockito.when(applicationConfiguration.getContext()).thenReturn(context);
+        Mockito.when(context.getAttribute(Lookup.class)).thenReturn(lookup);
 
         Mockito.when(lookup.lookup(ApplicationConfigurationFactory.class))
                 .thenReturn(applicationConfigurationFactory);

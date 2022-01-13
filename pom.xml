@@ -47,10 +47,10 @@
         <vaadin.flow.version>10.0-SNAPSHOT</vaadin.flow.version>
         <arquillian.version>1.4.0.Final</arquillian.version>
         <slf4j.version>1.7.32</slf4j.version>
-        <deltaspike.version>1.9.4</deltaspike.version>
+        <deltaspike.version>1.9.5</deltaspike.version>
         <owb.version>2.0.25</owb.version>
         <weld.version>3.1.8.Final</weld.version>
-        <arquillian.version>1.4.0.Final</arquillian.version>
+        <arquillian.version>1.6.0.Final</arquillian.version>
         <javax.enterprise.concurrent.api.version>1.0</javax.enterprise.concurrent.api.version>
         <javax.servlet.api.version>3.1.0</javax.servlet.api.version>
         <cdi.api.version>2.0.SP1</cdi.api.version>

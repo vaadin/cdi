@@ -58,7 +58,7 @@
         <junit.version>4.13.2</junit.version>
         <mokito.version>4.2.0</mokito.version>
         <maven.javadoc.version>3.3.1</maven.javadoc.version>
-        <cdi-api.version>2.0.0</cdi-api.version>
+        <cdi.api.version>2.0.SP1</cdi.api.version>
         <jsoup.version>1.14.3</jsoup.version>
     </properties>
 

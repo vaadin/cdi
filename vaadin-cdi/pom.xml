@@ -153,11 +153,6 @@
                     <artifactId>cdi-api</artifactId>
                     <version>${cdi.api.version}</version>
                 </dependency>
-                <dependency>
-                    <groupId>org.jsoup</groupId>
-                    <artifactId>jsoup</artifactId>
-                    <version>${jsoup.version}</version>
-                </dependency>
             </dependencies>
         </profile>
         <profile>

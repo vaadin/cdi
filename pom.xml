@@ -50,7 +50,9 @@
         <deltaspike.version>1.9.5</deltaspike.version>
         <owb.version>2.0.25</owb.version>
         <weld.version>3.1.8.Final</weld.version>
-        <arquillian.version>1.6.0.Final</arquillian.version>
+        <arquillian.junit.version>1.6.0.Final</arquillian.junit.version>
+        <shrinkwrap.resolver.version>3.1.4</shrinkwrap.resolver.version>
+        <shrinkwrap.descriptors.version>2.0.0</shrinkwrap.descriptors.version>
         <javax.enterprise.concurrent.api.version>1.0</javax.enterprise.concurrent.api.version>
         <javax.servlet.api.version>3.1.0</javax.servlet.api.version>
         <cdi.api.version>2.0.SP1</cdi.api.version>
@@ -202,16 +204,24 @@
                 <version>${mokito.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.jboss.arquillian</groupId>
-                <artifactId>arquillian-bom</artifactId>
-                <version>${arquillian.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            <dependency>
                 <groupId>com.vaadin</groupId>
                 <artifactId>flow-test-util</artifactId>
                 <version>${vaadin.flow.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian.junit</groupId>
+                <artifactId>arquillian-junit-container</artifactId>
+                <version>${arquillian.junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.shrinkwrap.resolver</groupId>
+                <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+                <version>${shrinkwrap.resolver.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+                <artifactId>shrinkwrap-descriptors-impl-javaee</artifactId>
+                <version>${shrinkwrap.descriptors.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

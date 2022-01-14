@@ -148,7 +148,7 @@
         <profile>
             <id>tomee</id>
             <properties>
-                <apache-tomee.version>7.0.7</apache-tomee.version>
+                <apache-tomee.version>8.0.9</apache-tomee.version>
             </properties>
             <dependencies>
                 <dependency>

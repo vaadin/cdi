@@ -43,15 +43,18 @@ public class PushComponent extends Div {
     private class ContextCheckTask implements Runnable {
 
         private final UI ui;
+        private ClassLoader classLoader;
 
         private ContextCheckTask(UI ui) {
             this.ui = ui;
+            this.classLoader = Thread.currentThread().getContextClassLoader();
         }
 
         @Override
         public void run() {
             // We can acquire the lock after the request started this thread is processed
             // Needed to make sure that this is sent as a push message
+            Thread.currentThread().setContextClassLoader(this.classLoader);
             Lock lockInstance = ui.getSession().getLockInstance();
             lockInstance.lock();
             lockInstance.unlock();

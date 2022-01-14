@@ -32,6 +32,8 @@ import javax.enterprise.concurrent.ManagedThreadFactory;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.spi.CDI;
+
 import java.lang.annotation.Annotation;
 import java.util.concurrent.locks.Lock;
 
@@ -75,7 +77,7 @@ public class PushComponent extends Div {
     }
 
     private void printContextIsActive(Class<? extends Annotation> scope) {
-        Label label = new Label(ContextUtils.isContextActive(scope) + "");
+        Label label = new Label(CDI.current().getBeanManager().getContext(scope).isActive() + "");
         label.setId(scope.getName());
         add(new Div(new Label(scope.getSimpleName() + ": "), label));
     }

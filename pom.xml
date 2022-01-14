@@ -47,7 +47,6 @@
 
         <vaadin.flow.version>8.0-SNAPSHOT</vaadin.flow.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <deltaspike.version>1.8.1</deltaspike.version>
         <owb.version>1.7.5</owb.version>
         <weld.version>2.4.6.Final</weld.version>
         <arquillian.version>1.1.15.Final</arquillian.version>
@@ -136,14 +135,6 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.deltaspike.distribution</groupId>
-                <artifactId>distributions-bom</artifactId>
-                <version>${deltaspike.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>

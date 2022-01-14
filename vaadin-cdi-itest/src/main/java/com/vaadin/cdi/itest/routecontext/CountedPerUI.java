@@ -16,7 +16,10 @@
 
 package com.vaadin.cdi.itest.routecontext;
 
-import org.apache.deltaspike.core.api.provider.BeanProvider;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.CDI;
 
 import com.vaadin.cdi.itest.Counter;
 import com.vaadin.flow.component.UI;
@@ -28,7 +31,10 @@ public interface CountedPerUI {
     }
 
     default Counter getCounter() {
-        return BeanProvider.getContextualReference(Counter.class);
+        BeanManager mngr = CDI.current().getBeanManager();
+        Bean<? extends Object> bean = mngr.resolve(mngr.getBeans(Counter.class));
+        CreationalContext<?> creational = mngr.createCreationalContext(bean);
+        return (Counter) mngr.getReference(bean, Counter.class, creational);
     }
 
     default void countConstruct() {

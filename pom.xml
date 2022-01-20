@@ -45,12 +45,11 @@
         <driver.binary.downloader.maven.plugin.version>1.0.18</driver.binary.downloader.maven.plugin.version>
 
         <vaadin.flow.version>10.0-SNAPSHOT</vaadin.flow.version>
-        <arquillian.version>1.4.0.Final</arquillian.version>
         <slf4j.version>1.7.32</slf4j.version>
         <deltaspike.version>1.9.5</deltaspike.version>
         <owb.version>2.0.25</owb.version>
         <weld.version>3.1.8.Final</weld.version>
-        <arquillian.junit.version>1.6.0.Final</arquillian.junit.version>
+        <arquillian.version>1.6.0.Final</arquillian.version>
         <shrinkwrap.resolver.version>3.1.4</shrinkwrap.resolver.version>
         <shrinkwrap.descriptors.version>2.0.0</shrinkwrap.descriptors.version>
         <javax.enterprise.concurrent.api.version>1.0</javax.enterprise.concurrent.api.version>
@@ -60,7 +59,6 @@
         <junit.version>4.13.2</junit.version>
         <mockito.version>4.2.0</mockito.version>
         <maven.javadoc.version>3.3.1</maven.javadoc.version>
-        <jsoup.version>1.14.3</jsoup.version>
     </properties>
 
     <repositories>
@@ -210,7 +208,7 @@
             <dependency>
                 <groupId>org.jboss.arquillian.junit</groupId>
                 <artifactId>arquillian-junit-container</artifactId>
-                <version>${arquillian.junit.version}</version>
+                <version>${arquillian.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.shrinkwrap.resolver</groupId>

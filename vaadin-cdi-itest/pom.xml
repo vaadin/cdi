@@ -182,7 +182,7 @@
                 <dependency>
                     <groupId>org.wildfly.arquillian</groupId>
                     <artifactId>wildfly-arquillian-container-managed</artifactId>
-                    <version>2.1.0.Final</version>
+                    <version>3.0.1.Final</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
@@ -241,14 +241,24 @@
             <dependencies>
                 <dependency>
                     <groupId>fish.payara.arquillian</groupId>
-                    <artifactId>arquillian-payara-server-4-managed</artifactId>
-                    <version>1.0.Beta2</version>
+                    <artifactId>arquillian-payara-server-managed</artifactId>
+                    <version>2.4.5</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-simple</artifactId>
                     <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                    <version>2.3.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>jakarta.activation</groupId>
+                    <artifactId>jakarta.activation-api</artifactId>
+                    <version>2.0.1</version>
                 </dependency>
             </dependencies>
             <build>
@@ -268,7 +278,7 @@
                                         <artifactItem>
                                             <groupId>fish.payara.distributions</groupId>
                                             <artifactId>payara</artifactId>
-                                            <version>4.1.2.181</version>
+                                            <version>5.2021.10</version>
                                             <type>zip</type>
                                             <overWrite>false</overWrite>
                                             <outputDirectory>target</outputDirectory>
@@ -285,12 +295,8 @@
                         <configuration>
                             <excludedGroups>${surefire.excludedGroups}</excludedGroups>
                             <groups>${surefire.groups}</groups>
-                            <environmentVariables>
-                                <GLASSFISH_HOME>
-                                    ${project.build.directory}/payara41
-                                </GLASSFISH_HOME>
-                            </environmentVariables>
                             <systemPropertyVariables>
+                                <payara.home>${project.build.directory}/payara5</payara.home>
                                 <vaadin.bowerMode>true</vaadin.bowerMode>
                                 <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
                             </systemPropertyVariables>

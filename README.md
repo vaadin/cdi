@@ -44,7 +44,7 @@ Since the current release version is a prerelease, you need to also include the 
 
 ## Building the project
 
-Execute `mvn clean install` in the root directory to build vaadin-cdi.
+Execute `mvn clean install -DskipTests` in the root directory to build vaadin-cdi.
 
 ## Run integration tests
 

@@ -16,6 +16,8 @@
 package com.vaadin.cdi.annotation;
 
 import javax.enterprise.context.NormalScope;
+import javax.enterprise.inject.Stereotype;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -41,6 +43,7 @@ import java.lang.annotation.Target;
  * reference the same underlying scope, so it is possible to get both a proxy
  * and a direct reference to the same object by using different annotations.
  */
+@Stereotype
 @NormalScope
 @Inherited
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD,

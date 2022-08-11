@@ -16,6 +16,11 @@
 
 package com.vaadin.cdi.annotation;
 
+import com.vaadin.flow.router.HasErrorParameter;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLayout;
+
+import javax.enterprise.inject.Stereotype;
 import javax.inject.Scope;
 
 import java.lang.annotation.ElementType;
@@ -23,10 +28,6 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import com.vaadin.flow.router.HasErrorParameter;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouterLayout;
 
 /**
  * The lifecycle of a RouteScoped component is controlled by route navigation.
@@ -60,6 +61,7 @@ import com.vaadin.flow.router.RouterLayout;
  * both a proxy and a direct reference to the same object by using different
  * annotations.
  */
+@Stereotype
 @Scope
 @Inherited
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD,

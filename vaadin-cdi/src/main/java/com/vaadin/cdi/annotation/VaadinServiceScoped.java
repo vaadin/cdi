@@ -17,6 +17,8 @@
 package com.vaadin.cdi.annotation;
 
 import javax.enterprise.context.NormalScope;
+import javax.enterprise.inject.Stereotype;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -30,6 +32,7 @@ import java.lang.annotation.Target;
  * Injecting with this annotation will create a proxy for the contextual
  * instance rather than provide the contextual instance itself.
  */
+@Stereotype
 @NormalScope
 @Inherited
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR })

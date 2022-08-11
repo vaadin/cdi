@@ -18,6 +18,8 @@ package com.vaadin.cdi.annotation;
 import com.vaadin.flow.server.VaadinSession;
 
 import javax.enterprise.context.NormalScope;
+import javax.enterprise.inject.Stereotype;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -37,6 +39,7 @@ import java.lang.annotation.Target;
  *
  * @since 3.0
  */
+@Stereotype
 @NormalScope
 @Inherited
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR })

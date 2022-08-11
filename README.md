@@ -1,14 +1,54 @@
+[![Published on Vaadin  Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0.svg)](https://vaadin.com/directory/component/vaadin-cdi)
+[![Stars on Vaadin Directory](https://img.shields.io/vaadin-directory/star/vaadin-cdi.svg)](https://vaadin.com/directory/component/vaadin-cdi)
+
 # Vaadin CDI
 
-Vaadin CDI is the official CDI integration for [Vaadin Framework](https://github.com/vaadin/framework).
+This is the official CDI integration for [Vaadin Flow](https://github.com/vaadin/flow).
 
-## Download release
+This branch is compatible with upcoming Vaadin platform versions. See other branches for other Vaadin versions:
 
-Official releases of this add-on are available at Vaadin Directory. For Maven instructions, download and reviews, go to [Vaadin CDI](https://vaadin.com/addon/vaadin-cdi).
+* 11.2 for Vaadin 14.2
+* 11.1 for Vaadin 14.1
+* 11.0 for Vaadin 14.0
+* 3.0 for Vaadin 8.2+
+* 2.0 for Vaadin Framework 8.0...8.1 versions
+* 1.0 for Vaadin Framework 7 versions
+
+## Using with Vaadin 10
+
+To use CDI with Vaadin 10, you need to add the following dependency to your pom.xml:
+```xml
+<dependency>
+  <groupdId>com.vaadin</groupId>
+  <artifactId>vaadin-cdi</artifactId>
+  <version>10.0.0.beta1</version> <!-- Or the LATEST version -->
+</dependency>
+```
+
+Since the current release version is a prerelease, you need to also include the prerelease Maven repository:
+
+```xml
+<repositories>
+  <repository>
+    <id>Vaadin prereleases</id>
+    <url>https://maven.vaadin.com/vaadin-prereleases</url>
+  </repository>
+<repositories>
+```
+
+## Getting started
+
+**NOTE: This is still WIP.** The easiest way for starting a project is to go to [vaadin.com/start](https://vaadin.com/start) and select the _Project Base with CDI_ to get an empty project with everything setup ready for you.
+
+**NOTE: This is still WIP.** There is a tutorial also available in https://github.com/vaadin/flow-cdi-tutorial that helps you get started with Vaadin 10 and CDI.
 
 ## Building the project
 
-Execute `mvn clean install` in the root directory to build vaadin-cdi.
+Execute `mvn clean install -DskipTests` in the root directory to build vaadin-cdi.
+
+## Run integration tests
+
+Execute `mvn -pl vaadin-cdi-itest -Ptomee verify` in the root directory to run integration tests.
 
 ## Issue tracking
 
@@ -16,20 +56,4 @@ If you find an issue, please report it in the [GitHub issue tracker](https://git
 
 ## Contributions
 
-Contributions to the project can be done through pull requests in GitHub.
-
----
-
-Copyright 2012-2017 Vaadin Ltd.
-
-Licensed under the Apache License, Version 2.0 (the "License"); you may not
-use this file except in compliance with the License. You may obtain a copy of
-the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-License for the specific language governing permissions and limitations under
-the License.
+The contributing docs can be found here: https://vaadin.com/docs-beta/latest/guide/contributing/overview/

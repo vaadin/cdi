@@ -32,7 +32,6 @@ import java.lang.annotation.Target;
  * Injecting with this annotation will create a proxy for the contextual
  * instance rather than provide the contextual instance itself.
  */
-@Stereotype
 @NormalScope
 @Inherited
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR })

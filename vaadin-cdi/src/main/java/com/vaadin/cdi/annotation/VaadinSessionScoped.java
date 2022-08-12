@@ -39,7 +39,6 @@ import java.lang.annotation.Target;
  *
  * @since 3.0
  */
-@Stereotype
 @NormalScope
 @Inherited
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR })

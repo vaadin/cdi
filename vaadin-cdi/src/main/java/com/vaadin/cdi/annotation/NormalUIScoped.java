@@ -43,7 +43,6 @@ import java.lang.annotation.Target;
  * reference the same underlying scope, so it is possible to get both a proxy
  * and a direct reference to the same object by using different annotations.
  */
-@Stereotype
 @NormalScope
 @Inherited
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD,

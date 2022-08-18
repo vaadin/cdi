@@ -27,6 +27,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -264,11 +265,6 @@ public class RouteScopedContext extends AbstractContext {
     @Override
     protected ContextualStorage getContextualStorage(Contextual<?> contextual,
                                                      boolean createIfNotExist) {
-        RouteStorageKey key = convertToKey(contextual, createIfNotExist);
-        return contextManager.getContextualStorage(key, createIfNotExist);
-    }
-
-    private RouteStorageKey convertToKey(Contextual<?> contextual, boolean createIfNotExist) {
         Bean<?> bean = getBean(contextual);
         UI ui = UI.getCurrent();
         Class<?> owner = getOwner(ui, bean);
@@ -278,7 +274,8 @@ public class RouteScopedContext extends AbstractContext {
                             + "active navigation components chain: the scope defined by the bean '%s' doesn't exist.",
                     owner, bean.getBeanClass().getName()));
         }
-        return contextManager.getKey(ui, owner);
+        RouteStorageKey key = contextManager.getKey(ui, owner);
+        return contextManager.getContextualStorage(key, createIfNotExist);
     }
 
     private boolean navigationChainHasOwner(UI ui, Class<?> owner) {

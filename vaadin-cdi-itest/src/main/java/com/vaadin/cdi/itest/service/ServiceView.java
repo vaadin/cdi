@@ -16,12 +16,12 @@
 
 package com.vaadin.cdi.itest.service;
 
+import jakarta.annotation.PostConstruct;
+
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
-
-import javax.annotation.PostConstruct;
 
 @Route("")
 public class ServiceView extends Div {

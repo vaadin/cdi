@@ -16,11 +16,10 @@
 
 package com.vaadin.cdi.context;
 
-import javax.enterprise.context.ContextNotActiveException;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.enterprise.context.ContextNotActiveException;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.junit.After;
 import org.junit.Before;

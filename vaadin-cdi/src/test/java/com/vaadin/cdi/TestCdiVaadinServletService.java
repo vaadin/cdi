@@ -16,10 +16,10 @@
 
 package com.vaadin.cdi;
 
-import javax.enterprise.inject.spi.BeanManager;
-import javax.servlet.ServletContext;
-
 import java.util.Properties;
+
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.servlet.ServletContext;
 
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.server.VaadinRequest;

@@ -16,15 +16,16 @@
 
 package com.vaadin.cdi.context;
 
-import com.vaadin.cdi.annotation.VaadinSessionScoped;
-import com.vaadin.flow.server.VaadinSession;
+import java.lang.annotation.Annotation;
+
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.inject.spi.BeanManager;
 import org.apache.deltaspike.core.util.ContextUtils;
 import org.apache.deltaspike.core.util.context.AbstractContext;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
 
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.inject.spi.BeanManager;
-import java.lang.annotation.Annotation;
+import com.vaadin.cdi.annotation.VaadinSessionScoped;
+import com.vaadin.flow.server.VaadinSession;
 
 /**
  * Context for {@link VaadinSessionScoped @VaadinSessionScoped} beans.

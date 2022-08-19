@@ -15,7 +15,7 @@
  */
 package com.vaadin.cdi.itest.routecontext;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.flow.component.html.Div;

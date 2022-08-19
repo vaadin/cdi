@@ -17,13 +17,13 @@
 package com.vaadin.cdi.itest.service;
 
 
+import jakarta.inject.Inject;
+
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.itest.Counter;
 import com.vaadin.flow.server.ErrorEvent;
 import com.vaadin.flow.server.ErrorHandler;
-
-import javax.inject.Inject;
 
 @VaadinServiceEnabled
 @VaadinServiceScoped

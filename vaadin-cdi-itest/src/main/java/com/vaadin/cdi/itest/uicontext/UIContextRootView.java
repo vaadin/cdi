@@ -16,6 +16,10 @@
 
 package com.vaadin.cdi.itest.uicontext;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
+
 import com.vaadin.cdi.itest.uicontext.UIScopedLabel.SetTextEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
@@ -23,10 +27,6 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 
 @Route("")
 public class UIContextRootView extends Div {

@@ -15,6 +15,20 @@
  */
 package com.vaadin.cdi;
 
+import java.io.Serializable;
+import java.util.Optional;
+import java.util.Set;
+
+import jakarta.enterprise.context.spi.Context;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.AmbiguousResolutionException;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import org.apache.deltaspike.core.api.provider.BeanManagerProvider;
+import org.apache.deltaspike.core.util.ProxyUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.context.VaadinSessionScopedContext;
@@ -39,20 +53,6 @@ import com.vaadin.flow.server.SystemMessagesProvider;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
-
-import javax.enterprise.context.spi.Context;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.AmbiguousResolutionException;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import java.io.Serializable;
-import java.util.Optional;
-import java.util.Set;
-
-import org.apache.deltaspike.core.api.provider.BeanManagerProvider;
-import org.apache.deltaspike.core.util.ProxyUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static com.vaadin.cdi.BeanLookup.SERVICE;
 

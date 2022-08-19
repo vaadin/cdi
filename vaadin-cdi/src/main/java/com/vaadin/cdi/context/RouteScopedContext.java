@@ -16,12 +16,6 @@
 
 package com.vaadin.cdi.context;
 
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.PassivationCapable;
-
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
@@ -31,6 +25,11 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.PassivationCapable;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.apache.deltaspike.core.util.context.AbstractContext;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
@@ -46,7 +45,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.VaadinSession;
 
-import static javax.enterprise.event.Reception.IF_EXISTS;
+import static jakarta.enterprise.event.Reception.IF_EXISTS;
 
 /**
  * Context for {@link RouteScoped @RouteScoped} beans.

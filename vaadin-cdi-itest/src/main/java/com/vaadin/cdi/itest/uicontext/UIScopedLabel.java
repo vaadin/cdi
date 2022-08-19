@@ -16,14 +16,14 @@
 
 package com.vaadin.cdi.itest.uicontext;
 
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
+
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.cdi.itest.Counter;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Label;
-
-import javax.annotation.PreDestroy;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 
 @UIScoped
 public class UIScopedLabel extends Label {

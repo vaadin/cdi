@@ -16,12 +16,6 @@
 
 package com.vaadin.cdi;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -29,6 +23,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.spi.Annotated;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
 
 import com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode;
 import com.vaadin.cdi.annotation.NormalRouteScoped;

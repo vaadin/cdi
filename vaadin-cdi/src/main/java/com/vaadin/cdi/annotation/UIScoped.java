@@ -15,14 +15,15 @@
  */
 package com.vaadin.cdi.annotation;
 
-import com.vaadin.flow.component.UI;
-
-import javax.inject.Scope;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import jakarta.inject.Scope;
+
+import com.vaadin.flow.component.UI;
 
 /**
  * The lifecycle of a UIScoped component is bound to a browser tab.

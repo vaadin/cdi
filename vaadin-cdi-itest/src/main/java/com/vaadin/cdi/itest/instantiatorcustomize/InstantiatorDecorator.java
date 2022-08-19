@@ -16,16 +16,16 @@
 
 package com.vaadin.cdi.itest.instantiatorcustomize;
 
+import jakarta.annotation.Priority;
+import jakarta.decorator.Decorator;
+import jakarta.decorator.Delegate;
+import jakarta.inject.Inject;
+import jakarta.interceptor.Interceptor;
+
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.router.NavigationEvent;
-
-import javax.annotation.Priority;
-import javax.decorator.Decorator;
-import javax.decorator.Delegate;
-import javax.inject.Inject;
-import javax.interceptor.Interceptor;
 
 @Priority(Interceptor.Priority.APPLICATION)
 @Decorator

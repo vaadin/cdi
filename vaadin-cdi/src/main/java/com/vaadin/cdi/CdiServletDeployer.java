@@ -16,18 +16,19 @@
 
 package com.vaadin.cdi;
 
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinServlet;
-import com.vaadin.flow.server.startup.ServletDeployer;
+import java.util.Set;
+
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletRegistration;
+import jakarta.servlet.annotation.HandlesTypes;
+import jakarta.servlet.annotation.WebListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRegistration;
-import javax.servlet.annotation.HandlesTypes;
-import javax.servlet.annotation.WebListener;
-import java.util.Set;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinServlet;
+import com.vaadin.flow.server.startup.ServletDeployer;
 
 /**
  * Container initializer that automatically registers a CDI Vaadin servlet.

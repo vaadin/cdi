@@ -16,14 +16,14 @@
 
 package com.vaadin.cdi.itest.uicontext;
 
+import jakarta.annotation.PostConstruct;
+
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
-
-import javax.annotation.PostConstruct;
 
 @Route("uiscoped")
 @UIScoped

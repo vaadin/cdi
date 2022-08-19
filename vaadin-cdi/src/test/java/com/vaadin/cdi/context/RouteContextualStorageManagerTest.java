@@ -16,15 +16,14 @@
 
 package com.vaadin.cdi.context;
 
-import javax.annotation.PreDestroy;
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
-import javax.inject.Provider;
-
 import java.util.Collections;
 import java.util.List;
 
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.After;

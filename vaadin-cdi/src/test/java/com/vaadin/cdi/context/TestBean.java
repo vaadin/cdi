@@ -16,9 +16,10 @@
 
 package com.vaadin.cdi.context;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 public class TestBean {
     private static AtomicInteger beanCount = new AtomicInteger();

@@ -16,11 +16,11 @@
 
 package com.vaadin.cdi.itest.uicontext;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 @Route("injecter")
 public class UIScopeInjecterView extends Div {

@@ -39,13 +39,6 @@
 
     <properties>
 
-        <!--
-        Skip tests due to DeltaSpike invalid package names (jakarta.naming. instead of javax.naming.) in
-        org.apache.deltaspike.core.impl.util.JndiUtils while using 'jakarta' classifier
-        see: https://issues.apache.org/jira/browse/DELTASPIKE-1434
-        -->
-        <maven.test.skip>true</maven.test.skip>
-
         <encoding>UTF-8</encoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
@@ -54,7 +47,7 @@
 
         <vaadin.flow.version>23.2.jakarta-servlet5-SNAPSHOT</vaadin.flow.version>
         <slf4j.version>1.7.32</slf4j.version>
-        <deltaspike.version>1.9.6</deltaspike.version>
+        <deltaspike.version>1.9.7-SNAPSHOT</deltaspike.version>
         <owb.version>2.0.25</owb.version>
         <weld.version>3.1.8.Final</weld.version>
         <arquillian.version>1.6.0.Final</arquillian.version>
@@ -93,6 +86,13 @@
             <url>https://maven.vaadin.com/vaadin-addons</url>
             <snapshots>
                 <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>apache-snapshot-repository</id>
+            <url>https://repository.apache.org/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
     </repositories>
@@ -185,11 +185,13 @@
             <dependency>
                 <groupId>org.apache.openwebbeans</groupId>
                 <artifactId>openwebbeans-impl</artifactId>
+                <classifier>jakarta</classifier>
                 <version>${owb.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.openwebbeans</groupId>
                 <artifactId>openwebbeans-spi</artifactId>
+                <classifier>jakarta</classifier>
                 <version>${owb.version}</version>
             </dependency>
             <dependency>

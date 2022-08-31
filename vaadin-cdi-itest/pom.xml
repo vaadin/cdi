@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-cdi-parent</artifactId>
@@ -141,7 +141,7 @@
         <profile>
             <id>tomee</id>
             <properties>
-                <apache-tomee.version>8.0.9</apache-tomee.version>
+                <apache-tomee.version>9.0.0-M8</apache-tomee.version>
             </properties>
             <dependencies>
                 <dependency>
@@ -242,23 +242,12 @@
                 <dependency>
                     <groupId>fish.payara.arquillian</groupId>
                     <artifactId>arquillian-payara-server-managed</artifactId>
-                    <version>2.4.5</version>
+                    <version>3.0.alpha6</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                    <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                    <version>2.3.0</version>
-                </dependency>
-                <dependency>
-                    <groupId>jakarta.activation</groupId>
-                    <artifactId>jakarta.activation-api</artifactId>
-                    <version>2.0.1</version>
+                    <groupId>org.apache.deltaspike.core</groupId>
+                    <artifactId>deltaspike-core-impl</artifactId>
                 </dependency>
             </dependencies>
             <build>
@@ -278,7 +267,7 @@
                                         <artifactItem>
                                             <groupId>fish.payara.distributions</groupId>
                                             <artifactId>payara</artifactId>
-                                            <version>5.2022.3</version>
+                                            <version>6.2022.1.Alpha3</version>
                                             <type>zip</type>
                                             <overWrite>false</overWrite>
                                             <outputDirectory>target</outputDirectory>
@@ -296,7 +285,7 @@
                             <excludedGroups>${surefire.excludedGroups}</excludedGroups>
                             <groups>${surefire.groups}</groups>
                             <systemPropertyVariables>
-                                <payara.home>${project.build.directory}/payara5</payara.home>
+                                <payara.home>${project.build.directory}/payara6</payara.home>
                                 <vaadin.bowerMode>true</vaadin.bowerMode>
                                 <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
                             </systemPropertyVariables>

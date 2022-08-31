@@ -40,17 +40,17 @@
     <properties>
 
         <encoding>UTF-8</encoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
         <driver.binary.downloader.maven.plugin.version>1.0.18</driver.binary.downloader.maven.plugin.version>
 
         <vaadin.flow.version>23.2.jakarta-servlet5-SNAPSHOT</vaadin.flow.version>
         <slf4j.version>1.7.32</slf4j.version>
         <deltaspike.version>1.9.7-SNAPSHOT</deltaspike.version>
-        <owb.version>2.0.25</owb.version>
-        <weld.version>3.1.8.Final</weld.version>
-        <arquillian.version>1.6.0.Final</arquillian.version>
+        <owb.version>2.0.27</owb.version>
+        <weld.version>4.0.3.Final</weld.version>
+        <arquillian.version>1.7.0.Alpha12</arquillian.version>
         <shrinkwrap.resolver.version>3.1.4</shrinkwrap.resolver.version>
         <shrinkwrap.descriptors.version>2.0.0</shrinkwrap.descriptors.version>
         <jakarta.enterprise.concurrent.api.version>3.0.1</jakarta.enterprise.concurrent.api.version>
@@ -119,6 +119,7 @@
 
     <modules>
         <module>vaadin-cdi</module>
+        <module>jakarta-shades/deltaspike-test-control-module-impl</module>
     </modules>
 
     <dependencyManagement>

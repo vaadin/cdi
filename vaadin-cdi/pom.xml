@@ -57,6 +57,12 @@
             <version>${deltaspike.version}</version>
             <classifier>jakarta</classifier>
             <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.deltaspike.core</groupId>
+                    <artifactId>deltaspike-core-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Test dependencies -->
@@ -86,12 +92,17 @@
             <version>${deltaspike.version}</version>
             <classifier>jakarta</classifier>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.deltaspike.core</groupId>
+                    <artifactId>deltaspike-core-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.deltaspike.modules</groupId>
+            <groupId>com.vaadin</groupId>
             <artifactId>deltaspike-test-control-module-impl</artifactId>
-            <version>${deltaspike.version}</version>
-            <classifier>jakarta</classifier>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

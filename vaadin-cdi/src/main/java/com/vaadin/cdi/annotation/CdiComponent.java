@@ -19,7 +19,7 @@ import javax.enterprise.inject.Stereotype;
 import java.lang.annotation.*;
 
 /**
- * This is a {@link @Stereotype} to let the container scan and manage the
+ * This is a {@code @Stereotype} to let the container scan and manage the
  * instances of the annotated type.
  * <p>
  * When the bean-discovery-mode="annotated" is set in the beans.xml file

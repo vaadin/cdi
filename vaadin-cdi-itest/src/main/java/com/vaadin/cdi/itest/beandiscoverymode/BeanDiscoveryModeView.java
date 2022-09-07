@@ -11,7 +11,7 @@ import com.vaadin.flow.router.Route;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-@Route
+@Route("")
 @RouteScoped
 @CdiComponent
 public class BeanDiscoveryModeView extends Div {

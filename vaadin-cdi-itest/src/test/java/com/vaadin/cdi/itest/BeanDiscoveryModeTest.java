@@ -54,14 +54,22 @@ public class BeanDiscoveryModeTest extends AbstractCdiTest {
     @Test
     @OperateOnDeployment("bean-discovery-mode-annotated")
     public void beanDiscoveryWorks_when_beanDiscoveryModeIsAnnotated() {
-        click(NORMAL_SRV_BTN_ID);
-        waitUntilNot(driver -> getText(RESULT_SPAN_ID) == null);
-        Assert.assertEquals("Hello MyName", getText(RESULT_SPAN_ID));
+        validateBeanDiscoveryAndInjectionWorks();
     }
 
     @Test
     @OperateOnDeployment("bean-discovery-mode-all")
     public void beanDiscoveryWorks_when_beanDiscoveryModeIsAll() {
+        validateBeanDiscoveryAndInjectionWorks();
+    }
+
+    private void validateBeanDiscoveryAndInjectionWorks() {
+        click(NORMAL_SRV_BTN_ID);
+        waitUntilNot(driver -> getText(RESULT_SPAN_ID) == null);
+        Assert.assertEquals("Hello MyName", getText(RESULT_SPAN_ID));
+
+        cleanUp();
+
         click(CDI_SRV_BTN_ID);
         waitUntilNot(driver -> getText(RESULT_SPAN_ID) == null);
         Assert.assertEquals("Hello MyName", getText(RESULT_SPAN_ID));

@@ -43,7 +43,6 @@ public class BeanDiscoveryModeTest extends AbstractCdiTest {
     @Before
     public void setUp() {
         open();
-        click(SET_NAME_BTN_ID);
     }
 
     @After
@@ -64,12 +63,14 @@ public class BeanDiscoveryModeTest extends AbstractCdiTest {
     }
 
     private void validateBeanDiscoveryAndInjectionWorks() {
+        click(SET_NAME_BTN_ID);
         click(NORMAL_SRV_BTN_ID);
         waitUntilNot(driver -> getText(RESULT_SPAN_ID) == null);
         Assert.assertEquals("Hello MyName", getText(RESULT_SPAN_ID));
 
         cleanUp();
 
+        click(SET_NAME_BTN_ID);
         click(CDI_SRV_BTN_ID);
         waitUntilNot(driver -> getText(RESULT_SPAN_ID) == null);
         Assert.assertEquals("Hello MyName", getText(RESULT_SPAN_ID));

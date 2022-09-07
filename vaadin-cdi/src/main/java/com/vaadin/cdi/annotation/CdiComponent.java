@@ -19,18 +19,24 @@ import javax.enterprise.inject.Stereotype;
 import java.lang.annotation.*;
 
 /**
- * This is a {@code @Stereotype} to let the container scan and manage the
- * instances of the annotated type.
+ * This is a {@code @Stereotype} to let the container scan and manage
+ * the instances of the annotated types.
  * <p>
- * When the bean-discovery-mode="annotated" is set in the beans.xml file
- * (implicit bean archive), CDI can only manage and inject beans annotated
- * with a "scope" type.
- * See https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#normal_scope for
- * more information about scopes and pseudo-scopes.
+ * Annotating the beans with this annotation is necessary when the
+ * {@code bean-discovery-mode="annotated"} is set in the beans.xml
+ * file (implicit bean archive), and in this case CDI can only manage
+ * and inject beans annotated with a "scope" type.
  * <p>
- * If the explicit bean archive strategy is in use (an empty beans.xml or the
- * one containing bean-discovery-mode="all"), CDI can manage
- * and inject any bean, except those annotated with @Vetoed.
+ * Although, this can be applied to any type of beans such as service
+ * objects, it is originally designed to be used on Vaadin components
+ * or views that may or may not already bean annotated by any other
+ * pseudo-scope annotations e.g. {@code @RouteScoped} or {@code @UIScoped}.
+ * See https://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#normal_scope
+ * for more information about scopes and pseudo-scopes.
+ * <p>
+ * If the explicit bean archive strategy is in use (via an empty
+ * beans.xml or the one containing bean-discovery-mode="all"), CDI can
+ * manage and inject any bean, except those annotated with @Vetoed.
  */
 @Stereotype
 @Inherited

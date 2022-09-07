@@ -40,16 +40,14 @@ public class BeanDiscoveryModeView extends Div {
         Span resultSpan = new Span();
         resultSpan.setId(RESULT_SPAN_ID);
 
-        // Button click listeners can be defined as lambda expressions
         NativeButton normalServiceButton = new NativeButton("Normal Scoped Say hello",
                 e -> resultSpan.setText(normalScopedGreetService.greet(nameField.getValue())));
         normalServiceButton.setId(NORMAL_SRV_BTN_ID);
 
-        // Button click listeners can be defined as lambda expressions
         NativeButton cdiCompServiceButton = new NativeButton("CDI Component Say hello",
                 e -> resultSpan.setText(cdiComponentGreetService.greet(nameField.getValue())));
         cdiCompServiceButton.setId(CDI_SRV_BTN_ID);
 
-        add(nameField, resultSpan, normalServiceButton, cdiCompServiceButton);
+        add(setNameButton, clearNameButton, nameField, resultSpan, normalServiceButton, cdiCompServiceButton);
     }
 }

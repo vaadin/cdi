@@ -21,6 +21,8 @@ import java.util.List;
 
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.event.Event;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.event.Reception;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
@@ -97,6 +99,22 @@ public class RouteContextualStorageManagerTest {
 
     }
 
+    @Route("")
+    public static class ConditionalComponentRoute extends HasElementTestBean {
+
+    }
+
+    @RouteScoped
+    @RouteScopeOwner(ConditionalComponentRoute.class)
+    public static class ConditionalComponent extends HasElementTestBean {
+
+        private void onEvent(@Observes(notifyObserver = Reception.IF_EXISTS) CustomEvent event) {
+        }
+    }
+
+    private static class CustomEvent {
+    }
+
     private UIUnderTestContext uiUnderTestContext;
 
     @Inject
@@ -111,6 +129,9 @@ public class RouteContextualStorageManagerTest {
 
     @Inject
     private Event<AfterNavigationEvent> afterNavigationTrigger;
+
+    @Inject
+    private Event<CustomEvent> customEventEventTrigger;
 
     private BeforeEnterEvent event;
     private AfterNavigationEvent afterEvent;
@@ -278,6 +299,14 @@ public class RouteContextualStorageManagerTest {
         Assert.assertEquals(1, storages.size());
         // Now the second UI is active and its storage is a different one
         Assert.assertNotSame(storage, storages.get(0));
+    }
+
+    @Test
+    public void onBeforeEnter_conditionalBean_doesNotThrow() {
+        Mockito.when(event.getNavigationTarget())
+                .thenReturn((Class) InitialRoute.class);
+        beforeNavigationTrigger.fire(event);
+        customEventEventTrigger.fire(new CustomEvent());
     }
 
     private UI doSetUp(String windowName, VaadinSession session) {

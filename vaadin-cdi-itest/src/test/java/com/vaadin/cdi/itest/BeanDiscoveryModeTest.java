@@ -66,13 +66,15 @@ public class BeanDiscoveryModeTest extends AbstractCdiTest {
         click(SET_NAME_BTN_ID);
         click(NORMAL_SRV_BTN_ID);
         waitUntilNot(driver -> getText(RESULT_SPAN_ID) == null);
-        Assert.assertEquals("Hello MyName", getText(RESULT_SPAN_ID));
+        Assert.assertEquals("Hello MyName from NormalScoped service.",
+                getText(RESULT_SPAN_ID));
 
         cleanUp();
 
         click(SET_NAME_BTN_ID);
         click(CDI_SRV_BTN_ID);
         waitUntilNot(driver -> getText(RESULT_SPAN_ID) == null);
-        Assert.assertEquals("Hello MyName", getText(RESULT_SPAN_ID));
+        Assert.assertEquals("Hello MyName from CDIComponent service.",
+                getText(RESULT_SPAN_ID));
     }
 }

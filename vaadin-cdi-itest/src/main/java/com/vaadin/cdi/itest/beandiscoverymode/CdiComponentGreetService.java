@@ -8,10 +8,11 @@ import com.vaadin.cdi.annotation.UIScoped;
 public class CdiComponentGreetService {
 
     public String greet(String name) {
+        String greeting = "Hello %s from CDIComponent service.";
         if (name == null || name.isEmpty()) {
-            return "Hello anonymous user";
+            return String.format(greeting, "anonymous user");
         } else {
-            return "Hello " + name;
+            return String.format(greeting, name);
         }
     }
 }

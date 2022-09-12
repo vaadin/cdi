@@ -25,7 +25,7 @@ import java.lang.annotation.*;
  * Annotating the beans with this annotation is necessary when the
  * {@code bean-discovery-mode="annotated"} is set in the beans.xml
  * file (implicit bean archive), and in this case CDI can only manage
- * and inject beans annotated with a "scope" type.
+ * and inject beans annotated with bean defining annotations.
  * <p>
  * Although, this can be applied to any type of beans such as service
  * objects, it is originally designed to be used on Vaadin components

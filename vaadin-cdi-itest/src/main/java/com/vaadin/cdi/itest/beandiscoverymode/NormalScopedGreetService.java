@@ -6,10 +6,11 @@ import com.vaadin.cdi.annotation.NormalUIScoped;
 public class NormalScopedGreetService {
 
     public String greet(String name) {
+        String greeting = "Hello %s from NormalScoped service.";
         if (name == null || name.isEmpty()) {
-            return "Hello anonymous user";
+            return String.format(greeting, "anonymous user");
         } else {
-            return "Hello " + name;
+            return String.format(greeting, name);
         }
     }
 }

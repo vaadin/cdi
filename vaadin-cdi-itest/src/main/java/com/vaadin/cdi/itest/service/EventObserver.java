@@ -16,13 +16,13 @@
 
 package com.vaadin.cdi.itest.service;
 
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
+
 import com.vaadin.cdi.itest.Counter;
 import com.vaadin.flow.server.SessionDestroyEvent;
 import com.vaadin.flow.server.SessionInitEvent;
 import com.vaadin.flow.server.UIInitEvent;
-
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 
 public class EventObserver {
     @Inject

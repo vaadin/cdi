@@ -15,7 +15,7 @@
  */
 package com.vaadin.cdi.annotation;
 
-import javax.enterprise.inject.Stereotype;
+import jakarta.enterprise.inject.Stereotype;
 import java.lang.annotation.*;
 
 /**

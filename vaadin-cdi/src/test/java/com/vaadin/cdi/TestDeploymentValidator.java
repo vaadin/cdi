@@ -16,13 +16,14 @@
 
 package com.vaadin.cdi;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Inject;
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.Consumer;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.inject.Inject;
 
 @Alternative
 @Dependent

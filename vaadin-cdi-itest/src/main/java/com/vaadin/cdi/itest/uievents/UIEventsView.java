@@ -16,6 +16,13 @@
 
 package com.vaadin.cdi.itest.uievents;
 
+import java.util.EventObject;
+import java.util.List;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
+
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.flow.component.PollEvent;
 import com.vaadin.flow.component.UI;
@@ -24,12 +31,6 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.Route;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import java.util.EventObject;
-import java.util.List;
 
 @Route("uievents")
 @UIScoped

@@ -16,7 +16,7 @@
 
 package com.vaadin.cdi.itest.routecontext;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.cdi.annotation.RouteScoped;

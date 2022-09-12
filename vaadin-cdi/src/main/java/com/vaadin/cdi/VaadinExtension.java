@@ -16,6 +16,22 @@
 
 package com.vaadin.cdi;
 
+import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.Set;
+
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
+import jakarta.enterprise.inject.spi.AfterDeploymentValidation;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.ProcessBean;
+import org.apache.deltaspike.core.api.provider.BeanProvider;
+import org.apache.deltaspike.core.api.provider.DependentProvider;
+import org.apache.deltaspike.core.util.context.AbstractContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.cdi.DeploymentValidator.BeanInfo;
 import com.vaadin.cdi.annotation.NormalRouteScoped;
 import com.vaadin.cdi.annotation.NormalUIScoped;
@@ -24,21 +40,6 @@ import com.vaadin.cdi.context.RouteScopedContext;
 import com.vaadin.cdi.context.UIScopedContext;
 import com.vaadin.cdi.context.VaadinServiceScopedContext;
 import com.vaadin.cdi.context.VaadinSessionScopedContext;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
-import org.apache.deltaspike.core.api.provider.DependentProvider;
-import org.apache.deltaspike.core.util.context.AbstractContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.AfterDeploymentValidation;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.ProcessBean;
-import java.lang.annotation.Annotation;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * CDI Extension needed to register Vaadin scopes to the runtime.

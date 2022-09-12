@@ -16,16 +16,17 @@
 
 package com.vaadin.cdi.itest.uievents;
 
-import com.vaadin.cdi.annotation.VaadinSessionScoped;
-import com.vaadin.flow.router.AfterNavigationEvent;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeLeaveEvent;
-
-import javax.enterprise.event.Observes;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
+
+import jakarta.enterprise.event.Observes;
+
+import com.vaadin.cdi.annotation.VaadinSessionScoped;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeLeaveEvent;
 
 @VaadinSessionScoped
 public class NavigationObserver implements Serializable {

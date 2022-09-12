@@ -16,18 +16,19 @@
 
 package com.vaadin.cdi.context;
 
+import java.util.Set;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.spi.AlterableContext;
+import jakarta.enterprise.context.spi.Context;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+
 import com.vaadin.cdi.CdiVaadinServletService;
 import com.vaadin.cdi.TestCdiVaadinServletService;
 import com.vaadin.cdi.context.VaadinServiceScopedContext.ContextualStorageManager;
 import com.vaadin.flow.server.ServiceDestroyEvent;
 import com.vaadin.flow.server.VaadinService;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.spi.AlterableContext;
-import javax.enterprise.context.spi.Context;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import java.util.Set;
 
 public class ServiceUnderTestContext implements UnderTestContext {
     private CdiVaadinServletService service;

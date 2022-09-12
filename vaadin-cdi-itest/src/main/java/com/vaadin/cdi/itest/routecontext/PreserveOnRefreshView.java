@@ -15,8 +15,8 @@
  */
 package com.vaadin.cdi.itest.routecontext;
 
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.flow.component.AttachEvent;

@@ -16,6 +16,17 @@
 
 package com.vaadin.cdi.itest.push;
 
+import java.lang.annotation.Annotation;
+import java.util.concurrent.locks.Lock;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
+import jakarta.enterprise.concurrent.ManagedThreadFactory;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.SessionScoped;
+import org.apache.deltaspike.core.util.ContextUtils;
+
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
@@ -24,16 +35,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.NativeButton;
-import org.apache.deltaspike.core.util.ContextUtils;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.enterprise.concurrent.ManagedThreadFactory;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
-import java.lang.annotation.Annotation;
-import java.util.concurrent.locks.Lock;
 
 public class PushComponent extends Div {
 

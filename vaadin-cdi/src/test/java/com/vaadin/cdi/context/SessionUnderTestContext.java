@@ -16,10 +16,9 @@
 
 package com.vaadin.cdi.context;
 
-import javax.enterprise.inject.spi.CDI;
-
 import java.util.Properties;
 
+import jakarta.enterprise.inject.spi.CDI;
 import org.mockito.Mockito;
 
 import com.vaadin.flow.function.DeploymentConfiguration;

@@ -46,7 +46,6 @@
         <configuration>
             <property name="adminPort">4848</property>
             <property name="adminPassword">${my.admin.password}</property>
-            <property name="debug">true</property>
         </configuration>
     </container>
 </arquillian>

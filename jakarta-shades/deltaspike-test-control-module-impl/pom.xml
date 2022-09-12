@@ -28,14 +28,12 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-<!--            <version>${jakarta.servlet.api.version}</version>-->
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
-<!--            <version>${jakarta.enterprise.cdi.api.version}</version>-->
             <scope>provided</scope>
         </dependency>
 
@@ -87,13 +85,6 @@
             <scope>provided</scope>
             <version>${geronimo-servlet-2.5-spec.version}</version>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>commons-logging</groupId>-->
-<!--            <artifactId>commons-logging</artifactId>-->
-<!--            <scope>test</scope>-->
-<!--            <version>1.2</version>-->
-<!--        </dependency>-->
 
         <dependency>
             <groupId>org.mockito</groupId>

@@ -16,6 +16,9 @@
 
 package com.vaadin.cdi.itest.routecontext;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.flow.component.html.Div;
@@ -24,9 +27,6 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 @RouteScoped
 @Route(value = "apart", layout = MasterView.class)

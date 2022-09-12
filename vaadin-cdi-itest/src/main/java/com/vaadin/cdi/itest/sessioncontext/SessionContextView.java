@@ -17,6 +17,10 @@
 package com.vaadin.cdi.itest.sessioncontext;
 
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
+
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
 import com.vaadin.cdi.itest.Counter;
 import com.vaadin.flow.component.html.Div;
@@ -24,10 +28,6 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
 
 
 @Route("")

@@ -16,10 +16,6 @@
 
 package com.vaadin.cdi.context;
 
-import javax.annotation.PreDestroy;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,6 +24,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
 import org.apache.deltaspike.core.util.context.AbstractContext;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
 

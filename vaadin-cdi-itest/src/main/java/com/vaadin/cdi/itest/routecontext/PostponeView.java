@@ -16,6 +16,8 @@
 
 package com.vaadin.cdi.itest.routecontext;
 
+import jakarta.annotation.PostConstruct;
+
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.NativeButton;
@@ -23,8 +25,6 @@ import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
-
-import javax.annotation.PostConstruct;
 
 @Route("postpone")
 @RouteScoped

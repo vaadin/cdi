@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-cdi-parent</artifactId>
-        <version>14.0-SNAPSHOT</version>
+        <version>15.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>vaadin-cdi</artifactId>
@@ -26,18 +26,18 @@
             <artifactId>flow-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -48,11 +48,21 @@
             <groupId>org.apache.deltaspike.core</groupId>
             <artifactId>deltaspike-core-api</artifactId>
             <scope>compile</scope>
+            <version>${deltaspike.version}</version>
+            <classifier>jakarta</classifier>
         </dependency>
         <dependency>
             <groupId>org.apache.deltaspike.core</groupId>
             <artifactId>deltaspike-core-impl</artifactId>
+            <version>${deltaspike.version}</version>
+            <classifier>jakarta</classifier>
             <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.deltaspike.core</groupId>
+                    <artifactId>deltaspike-core-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Test dependencies -->
@@ -79,11 +89,20 @@
         <dependency>
             <groupId>org.apache.deltaspike.modules</groupId>
             <artifactId>deltaspike-test-control-module-api</artifactId>
+            <version>${deltaspike.version}</version>
+            <classifier>jakarta</classifier>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.deltaspike.core</groupId>
+                    <artifactId>deltaspike-core-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.deltaspike.modules</groupId>
+            <groupId>com.vaadin</groupId>
             <artifactId>deltaspike-test-control-module-impl</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -136,22 +155,32 @@
                 <dependency>
                     <groupId>org.apache.deltaspike.cdictrl</groupId>
                     <artifactId>deltaspike-cdictrl-owb</artifactId>
+                    <version>${deltaspike.version}</version>
+                    <classifier>jakarta</classifier>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.openwebbeans</groupId>
                     <artifactId>openwebbeans-impl</artifactId>
+                    <classifier>jakarta</classifier>
                     <scope>test</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.apache.openwebbeans</groupId>
+                            <artifactId>openwebbeans-spi</artifactId>
+                        </exclusion>
+                    </exclusions>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.openwebbeans</groupId>
                     <artifactId>openwebbeans-spi</artifactId>
+                    <classifier>jakarta</classifier>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
-                    <groupId>javax.enterprise</groupId>
-                    <artifactId>cdi-api</artifactId>
-                    <version>${cdi.api.version}</version>
+                    <groupId>jakarta.enterprise</groupId>
+                    <artifactId>jakarta.enterprise.cdi-api</artifactId>
+                    <version>${jakarta.enterprise.cdi.api.version}</version>
                 </dependency>
             </dependencies>
         </profile>
@@ -166,6 +195,8 @@
                 <dependency>
                     <groupId>org.apache.deltaspike.cdictrl</groupId>
                     <artifactId>deltaspike-cdictrl-weld</artifactId>
+                    <classifier>jakarta</classifier>
+                    <version>${deltaspike.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>

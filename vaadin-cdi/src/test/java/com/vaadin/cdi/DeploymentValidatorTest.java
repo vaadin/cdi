@@ -16,10 +16,6 @@
 
 package com.vaadin.cdi;
 
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Vetoed;
-import javax.inject.Inject;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +27,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Vetoed;
+import jakarta.inject.Inject;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.After;
 import org.junit.Before;

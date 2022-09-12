@@ -16,15 +16,15 @@
 
 package com.vaadin.cdi.itest.uicontext;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+
 import com.vaadin.cdi.annotation.NormalUIScoped;
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.router.Route;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 @Route("normalscopedbean")
 public class UINormalScopedBeanView extends Div {

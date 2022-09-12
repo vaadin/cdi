@@ -16,12 +16,13 @@
 
 package com.vaadin.cdi.annotation;
 
-import javax.enterprise.context.NormalScope;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import jakarta.enterprise.context.NormalScope;
 
 /**
  * The lifecycle of a VaadinServiceScoped bean is bound to a

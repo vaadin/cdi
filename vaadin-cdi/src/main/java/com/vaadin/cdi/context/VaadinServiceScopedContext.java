@@ -16,22 +16,23 @@
 
 package com.vaadin.cdi.context;
 
+import java.lang.annotation.Annotation;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.BeanManager;
+import org.apache.deltaspike.core.api.provider.BeanProvider;
+import org.apache.deltaspike.core.util.context.AbstractContext;
+import org.apache.deltaspike.core.util.context.ContextualStorage;
+
 import com.vaadin.cdi.CdiVaadinServlet;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.flow.server.ServiceDestroyEvent;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.flow.server.VaadinServletService;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
-import org.apache.deltaspike.core.util.context.AbstractContext;
-import org.apache.deltaspike.core.util.context.ContextualStorage;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.BeanManager;
-import java.lang.annotation.Annotation;
-
-import static javax.enterprise.event.Reception.IF_EXISTS;
+import static jakarta.enterprise.event.Reception.IF_EXISTS;
 
 /**
  * Context for {@link VaadinServiceScoped @VaadinServiceScoped} beans.

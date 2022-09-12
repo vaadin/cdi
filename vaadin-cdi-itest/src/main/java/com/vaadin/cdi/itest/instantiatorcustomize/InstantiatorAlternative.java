@@ -18,11 +18,10 @@ package com.vaadin.cdi.itest.instantiatorcustomize;
 
 import java.util.stream.Stream;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.spi.Unmanaged;
-import javax.interceptor.Interceptor;
-
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.spi.Unmanaged;
+import jakarta.interceptor.Interceptor;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;

@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>vaadin-cdi-parent</artifactId>
-    <version>14.0-SNAPSHOT</version>
+    <version>15.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>vaadin-cdi-parent</name>
@@ -38,24 +38,25 @@
     </scm>
 
     <properties>
+
         <encoding>UTF-8</encoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
         <driver.binary.downloader.maven.plugin.version>1.0.18</driver.binary.downloader.maven.plugin.version>
 
-        <vaadin.flow.version>23.0-SNAPSHOT</vaadin.flow.version>
+        <vaadin.flow.version>24.0-SNAPSHOT</vaadin.flow.version>
         <slf4j.version>1.7.32</slf4j.version>
-        <deltaspike.version>1.9.5</deltaspike.version>
-        <owb.version>2.0.25</owb.version>
-        <weld.version>3.1.8.Final</weld.version>
-        <arquillian.version>1.6.0.Final</arquillian.version>
+        <deltaspike.version>1.9.7-SNAPSHOT</deltaspike.version>
+        <owb.version>2.0.27</owb.version>
+        <weld.version>4.0.3.Final</weld.version>
+        <arquillian.version>1.7.0.Alpha12</arquillian.version>
         <shrinkwrap.resolver.version>3.1.4</shrinkwrap.resolver.version>
         <shrinkwrap.descriptors.version>2.0.0</shrinkwrap.descriptors.version>
-        <javax.enterprise.concurrent.api.version>1.0</javax.enterprise.concurrent.api.version>
-        <javax.servlet.api.version>3.1.0</javax.servlet.api.version>
-        <cdi.api.version>2.0.SP1</cdi.api.version>
-        <javax.annotation.api.version>1.3.2</javax.annotation.api.version>
+        <jakarta.enterprise.concurrent.api.version>3.0.1</jakarta.enterprise.concurrent.api.version>
+        <jakarta.servlet.api.version>5.0.0</jakarta.servlet.api.version>
+        <jakarta.enterprise.cdi.api.version>3.0.1</jakarta.enterprise.cdi.api.version>
+        <jakarta.annotation.api.version>2.0.0</jakarta.annotation.api.version>
         <junit.version>4.13.2</junit.version>
         <mockito.version>4.2.0</mockito.version>
         <maven.javadoc.version>3.3.1</maven.javadoc.version>
@@ -87,6 +88,13 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>apache-snapshot-repository</id>
+            <url>https://repository.apache.org/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -111,6 +119,7 @@
 
     <modules>
         <module>vaadin-cdi</module>
+        <module>jakarta-shades/deltaspike-test-control-module-impl</module>
     </modules>
 
     <dependencyManagement>
@@ -154,34 +163,36 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
-                <version>${javax.servlet.api.version}</version>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>${jakarta.servlet.api.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>javax.enterprise</groupId>
-                <artifactId>cdi-api</artifactId>
-                <version>${cdi.api.version}</version>
+                <groupId>jakarta.enterprise</groupId>
+                <artifactId>jakarta.enterprise.cdi-api</artifactId>
+                <version>${jakarta.enterprise.cdi.api.version}</version>
             </dependency>
             <dependency>
-                <groupId>javax.annotation</groupId>
-                <artifactId>javax.annotation-api</artifactId>
-                <version>${javax.annotation.api.version}</version>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${jakarta.annotation.api.version}</version>
             </dependency>
             <dependency>
-                <groupId>javax.enterprise.concurrent</groupId>
-                <artifactId>javax.enterprise.concurrent-api</artifactId>
-                <version>${javax.enterprise.concurrent.api.version}</version>
+                <groupId>jakarta.enterprise.concurrent</groupId>
+                <artifactId>jakarta.enterprise.concurrent-api</artifactId>
+                <version>${jakarta.enterprise.concurrent.api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.openwebbeans</groupId>
                 <artifactId>openwebbeans-impl</artifactId>
+                <classifier>jakarta</classifier>
                 <version>${owb.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.openwebbeans</groupId>
                 <artifactId>openwebbeans-spi</artifactId>
+                <classifier>jakarta</classifier>
                 <version>${owb.version}</version>
             </dependency>
             <dependency>

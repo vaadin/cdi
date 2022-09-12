@@ -15,18 +15,19 @@
  */
 package com.vaadin.cdi.context;
 
+import java.lang.annotation.Annotation;
+
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.inject.spi.BeanManager;
+import org.apache.deltaspike.core.api.provider.BeanProvider;
+import org.apache.deltaspike.core.util.context.AbstractContext;
+import org.apache.deltaspike.core.util.context.ContextualStorage;
+
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
-import org.apache.deltaspike.core.util.context.AbstractContext;
-import org.apache.deltaspike.core.util.context.ContextualStorage;
-
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.inject.spi.BeanManager;
-import java.lang.annotation.Annotation;
 
 /**
  * UIScopedContext is the context for {@link UIScoped @UIScoped} beans.

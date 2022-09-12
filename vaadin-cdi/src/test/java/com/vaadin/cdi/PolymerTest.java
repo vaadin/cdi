@@ -16,11 +16,8 @@
 
 package com.vaadin.cdi;
 
-import static org.junit.Assert.assertNotNull;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
-
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.jsoup.Jsoup;
 import org.junit.After;
@@ -41,6 +38,8 @@ import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.templatemodel.TemplateModel;
+
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(CdiTestRunner.class)
 public class PolymerTest {

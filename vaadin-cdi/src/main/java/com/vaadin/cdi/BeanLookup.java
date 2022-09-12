@@ -16,25 +16,26 @@
 
 package com.vaadin.cdi;
 
-import com.vaadin.cdi.annotation.VaadinServiceEnabled;
-import org.apache.deltaspike.core.api.literal.AnyLiteral;
-
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.AmbiguousResolutionException;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.util.AnnotationLiteral;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.AmbiguousResolutionException;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.util.AnnotationLiteral;
+import org.apache.deltaspike.core.api.literal.AnyLiteral;
+
+import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 
 /**
  * Utility class for CDI lookup, and instantiation.
  * <p>
  * Dependent beans are instantiated without any warning,
  * but do not get destroyed properly.
- * {@link javax.annotation.PreDestroy} won't run.
+ * {@link jakarta.annotation.PreDestroy} won't run.
  *
  * @param <T> Bean Type
  */

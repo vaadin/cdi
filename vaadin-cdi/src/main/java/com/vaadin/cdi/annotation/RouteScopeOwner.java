@@ -16,14 +16,15 @@
 
 package com.vaadin.cdi.annotation;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import jakarta.inject.Qualifier;
+
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLayout;
-
-import javax.inject.Qualifier;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;

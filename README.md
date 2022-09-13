@@ -5,7 +5,7 @@
 
 This is the official CDI integration for [Vaadin Flow](https://github.com/vaadin/flow).
 
-This branch is compatible with upcoming Vaadin platform versions. See other branches for other Vaadin versions:
+This branch is Vaadin 23.0 to 23.2 compatible. See other branches for other Vaadin versions:
 
 * 15.0 for upcoming Vaadin 24
 * 14.1 for upcoming Vaadin 23.3

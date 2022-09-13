@@ -27,6 +27,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -93,7 +94,7 @@ public class RouteScopedContext extends AbstractContext {
         }
 
         private void destroyDescopedBeans(UI ui,
-                Set<Class<?>> navigationChain) {
+                                          Set<Class<?>> navigationChain) {
             String uiStoreId = getUIStoreId(ui);
 
             Set<RouteStorageKey> missingKeys = getKeySet().stream()
@@ -153,7 +154,7 @@ public class RouteScopedContext extends AbstractContext {
 
         private List<ContextualStorage> getActiveContextualStorages() {
             return getKeySet().stream().filter(
-                    key -> key.getUIId().equals(getUIStoreId(UI.getCurrent())))
+                            key -> key.getUIId().equals(getUIStoreId(UI.getCurrent())))
                     .map(key -> getContextualStorage(key, false))
                     .collect(Collectors.toList());
         }
@@ -216,7 +217,7 @@ public class RouteScopedContext extends AbstractContext {
         private final List<Class<? extends RouterLayout>> layouts;
 
         NavigationData(Class<?> navigationTarget,
-                List<Class<? extends RouterLayout>> layouts) {
+                       List<Class<? extends RouterLayout>> layouts) {
             this.navigationTarget = navigationTarget;
             this.layouts = layouts;
         }
@@ -239,7 +240,7 @@ public class RouteScopedContext extends AbstractContext {
     }
 
     public void init(BeanManager beanManager,
-            Supplier<Boolean> isUIContextActive) {
+                     Supplier<Boolean> isUIContextActive) {
         contextManager = BeanProvider.getContextualReference(beanManager,
                 ContextualStorageManager.class, false);
         this.beanManager = beanManager;
@@ -263,22 +264,18 @@ public class RouteScopedContext extends AbstractContext {
 
     @Override
     protected ContextualStorage getContextualStorage(Contextual<?> contextual,
-            boolean createIfNotExist) {
-        RouteStorageKey key = convertToKey(contextual);
-        return contextManager.getContextualStorage(key, createIfNotExist);
-    }
-
-    private RouteStorageKey convertToKey(Contextual<?> contextual) {
+                                                     boolean createIfNotExist) {
         Bean<?> bean = getBean(contextual);
         UI ui = UI.getCurrent();
         Class<?> owner = getOwner(ui, bean);
-        if (!navigationChainHasOwner(ui, owner)) {
+        if (!navigationChainHasOwner(ui, owner) && createIfNotExist) {
             throw new IllegalStateException(String.format(
                     "Route owner '%s' instance is not available in the "
                             + "active navigation components chain: the scope defined by the bean '%s' doesn't exist.",
                     owner, bean.getBeanClass().getName()));
         }
-        return contextManager.getKey(ui, owner);
+        RouteStorageKey key = contextManager.getKey(ui, owner);
+        return contextManager.getContextualStorage(key, createIfNotExist);
     }
 
     private boolean navigationChainHasOwner(UI ui, Class<?> owner) {

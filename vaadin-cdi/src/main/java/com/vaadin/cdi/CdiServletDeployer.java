@@ -86,6 +86,7 @@ public class CdiServletDeployer implements ServletContainerInitializer {
 
         registration.setAsyncSupported(true);
         registration.addMapping("/*");
+        registration.setLoadOnStartup(1);
     }
 
     private static ServletRegistration findRootServlet(ServletContext context) {

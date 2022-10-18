@@ -15,6 +15,7 @@
         <maven.deploy.skip>true</maven.deploy.skip>
         <surefire.groups></surefire.groups>
         <surefire.excludedGroups>com.vaadin.cdi.itest.SlowTests</surefire.excludedGroups>
+        <wildfly.version>26.1.2.Final</wildfly.version>
     </properties>
 
     <pluginRepositories>
@@ -208,7 +209,7 @@
                                         <artifactItem>
                                             <groupId>org.wildfly</groupId>
                                             <artifactId>wildfly-preview-dist</artifactId>
-                                            <version>26.1.1.Final</version>
+                                            <version>${wildfly.version}</version>
                                             <type>zip</type>
                                             <outputDirectory>target</outputDirectory>
                                         </artifactItem>
@@ -226,7 +227,7 @@
                             <groups>${surefire.groups}</groups>
                             <systemPropertyVariables>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                                <jboss.home>${project.build.directory}/wildfly-preview-26.1.1.Final</jboss.home>
+                                <jboss.home>${project.build.directory}/wildfly-preview-${wildfly.version}</jboss.home>
                                 <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
                                 <arquillian.launch>wildfly</arquillian.launch>
                             </systemPropertyVariables>

@@ -208,7 +208,7 @@
                                     <artifactItems>
                                         <artifactItem>
                                             <groupId>org.wildfly</groupId>
-                                            <artifactId>wildfly-preview-dist</artifactId>
+                                            <artifactId>wildfly-dist</artifactId>
                                             <version>${wildfly.version}</version>
                                             <type>zip</type>
                                             <outputDirectory>target</outputDirectory>
@@ -227,7 +227,7 @@
                             <groups>${surefire.groups}</groups>
                             <systemPropertyVariables>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                                <jboss.home>${project.build.directory}/wildfly-preview-${wildfly.version}</jboss.home>
+                                <jboss.home>${project.build.directory}/wildfly-${wildfly.version}</jboss.home>
                                 <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
                                 <arquillian.launch>wildfly</arquillian.launch>
                             </systemPropertyVariables>

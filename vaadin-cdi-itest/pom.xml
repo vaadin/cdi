@@ -15,7 +15,7 @@
         <maven.deploy.skip>true</maven.deploy.skip>
         <surefire.groups></surefire.groups>
         <surefire.excludedGroups>com.vaadin.cdi.itest.SlowTests</surefire.excludedGroups>
-        <wildfly.version>26.1.2.Final</wildfly.version>
+        <wildfly.version>27.0.0.Beta1</wildfly.version>
     </properties>
 
     <pluginRepositories>

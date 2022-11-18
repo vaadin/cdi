@@ -42,7 +42,7 @@
         <encoding>UTF-8</encoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
+        <maven.surefire.plugin.version>3.0.0-M7</maven.surefire.plugin.version>
         <driver.binary.downloader.maven.plugin.version>1.0.18</driver.binary.downloader.maven.plugin.version>
 
         <vaadin.flow.version>24.0-SNAPSHOT</vaadin.flow.version>
@@ -50,14 +50,14 @@
         <deltaspike.version>1.9.7-SNAPSHOT</deltaspike.version>
         <owb.version>2.0.27</owb.version>
         <weld.version>4.0.3.Final</weld.version>
-        <arquillian.version>1.7.0.Alpha12</arquillian.version>
+        <arquillian.version>1.7.0.Alpha13</arquillian.version>
         <shrinkwrap.resolver.version>3.1.4</shrinkwrap.resolver.version>
         <shrinkwrap.descriptors.version>2.0.0</shrinkwrap.descriptors.version>
         <jakarta.enterprise.concurrent.api.version>3.0.1</jakarta.enterprise.concurrent.api.version>
         <jakarta.servlet.api.version>5.0.0</jakarta.servlet.api.version>
         <jakarta.enterprise.cdi.api.version>3.0.1</jakarta.enterprise.cdi.api.version>
         <jakarta.annotation.api.version>2.0.0</jakarta.annotation.api.version>
-        <junit.version>4.13.2</junit.version>
+        <junit.jupiter.version>5.9.1</junit.jupiter.version>
         <mockito.version>4.2.0</mockito.version>
         <maven.javadoc.version>3.3.1</maven.javadoc.version>
     </properties>
@@ -202,9 +202,11 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit.jupiter.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>

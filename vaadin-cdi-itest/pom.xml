@@ -321,7 +321,6 @@
                                     <goal>create</goal>
                                     <goal>install-feature</goal>
                                     <goal>configure-arquillian</goal>
-                                    <goal>deploy</goal>
                                 </goals>
                                 <configuration>
                                     <useOpenLiberty>true</useOpenLiberty>
@@ -329,16 +328,13 @@
                                     <features>
                                         <feature>localConnector-1.0</feature>
                                     </features>
-                                    <appsDirectory>apps</appsDirectory>
-                                    <deployPackages>dependencies</deployPackages>
-                                    <stripVersion>true</stripVersion>
                                 </configuration>
                             </execution>
                         </executions>
                     </plugin>
                     <plugin>
                         <!-- liberty-maven-plugin:install-feature goal installs new features but does not update
-                         server.xml file. Arquillian fails without <feature>localConnector-1.0</feature> -->
+                         server.xml file. localConnector-1.0 needs to be present in server.xml for Arquillian -->
                         <artifactId>maven-antrun-plugin</artifactId>
                         <version>3.1.0</version>
                         <executions>
@@ -346,10 +342,8 @@
                                 <phase>process-test-classes</phase>
                                 <configuration>
                                     <target>
-                                        <replace file="${project.build.directory}/liberty/wlp/usr/servers/defaultServer/server.xml">
-                                            <replacetoken><![CDATA[</feature>]]></replacetoken>
-                                            <replacevalue><![CDATA[</feature><feature>localConnector-1.0</feature>]]></replacevalue>
-                                        </replace>
+                                        <copy overwrite="true" file="${project.build.testSourceDirectory}/../resources/liberty/server.xml"
+                                              tofile="${project.build.directory}/liberty/wlp/usr/servers/defaultServer/server.xml" />
                                     </target>
                                 </configuration>
                                 <goals>

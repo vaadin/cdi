@@ -50,7 +50,7 @@
         <deltaspike.version>1.9.7-SNAPSHOT</deltaspike.version>
         <owb.version>2.0.27</owb.version>
         <weld.version>4.0.3.Final</weld.version>
-        <arquillian.version>1.7.0.Alpha13</arquillian.version>
+        <arquillian.version>1.7.0.Alpha12</arquillian.version>
         <shrinkwrap.resolver.version>3.1.4</shrinkwrap.resolver.version>
         <shrinkwrap.descriptors.version>2.0.0</shrinkwrap.descriptors.version>
         <jakarta.enterprise.concurrent.api.version>3.0.1</jakarta.enterprise.concurrent.api.version>
@@ -58,7 +58,6 @@
         <jakarta.enterprise.cdi.api.version>3.0.1</jakarta.enterprise.cdi.api.version>
         <jakarta.annotation.api.version>2.0.0</jakarta.annotation.api.version>
         <junit.version>4.13.2</junit.version>
-        <junit.jupiter.version>5.9.1</junit.jupiter.version>
         <mockito.version>4.2.0</mockito.version>
         <maven.javadoc.version>3.3.1</maven.javadoc.version>
     </properties>

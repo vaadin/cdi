@@ -298,6 +298,78 @@
             </build>
         </profile>
         <profile>
+            <id>liberty</id>
+            <dependencies>
+                <dependency>
+                    <groupId>io.openliberty.arquillian</groupId>
+                    <artifactId>arquillian-liberty-managed-jakarta-junit</artifactId>
+                    <version>2.1.2</version>
+                    <type>pom</type>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.openliberty.tools</groupId>
+                        <artifactId>liberty-maven-plugin</artifactId>
+                        <version>3.7.1</version>
+                        <executions>
+                            <execution>
+                                <id>create-server</id>
+                                <phase>process-test-classes</phase>
+                                <goals>
+                                    <goal>create</goal>
+                                    <goal>install-feature</goal>
+                                    <goal>configure-arquillian</goal>
+                                </goals>
+                                <configuration>
+                                    <useOpenLiberty>true</useOpenLiberty>
+                                    <template>jakartaee9</template>
+                                    <features>
+                                        <feature>localConnector-1.0</feature>
+                                    </features>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <!-- liberty-maven-plugin:install-feature goal installs new features but does not update
+                         server.xml file. localConnector-1.0 needs to be present in server.xml for Arquillian -->
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <phase>process-test-classes</phase>
+                                <configuration>
+                                    <target>
+                                        <copy overwrite="true" file="${project.build.testSourceDirectory}/../resources/liberty/server.xml"
+                                              tofile="${project.build.directory}/liberty/wlp/usr/servers/defaultServer/server.xml" />
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${maven.surefire.plugin.version}</version>
+                        <configuration>
+                            <excludedGroups>${surefire.excludedGroups}</excludedGroups>
+                            <groups>${surefire.groups}</groups>
+                            <systemPropertyVariables>
+                                <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
+                                <arquillian.launch>liberty_managed</arquillian.launch>
+                            </systemPropertyVariables>
+                            <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>local-run</id>
             <activation>
                 <property>

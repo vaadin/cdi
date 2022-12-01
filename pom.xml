@@ -46,7 +46,7 @@
         <driver.binary.downloader.maven.plugin.version>1.0.18</driver.binary.downloader.maven.plugin.version>
 
         <vaadin.flow.version>24.0-SNAPSHOT</vaadin.flow.version>
-        <slf4j.version>1.7.32</slf4j.version>
+        <slf4j.version>2.0.4</slf4j.version>
         <deltaspike.version>1.9.7-SNAPSHOT</deltaspike.version>
         <owb.version>2.0.27</owb.version>
         <weld.version>4.0.3.Final</weld.version>

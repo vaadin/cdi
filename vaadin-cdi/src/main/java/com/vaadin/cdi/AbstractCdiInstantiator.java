@@ -96,6 +96,7 @@ abstract public class AbstractCdiInstantiator implements Instantiator {
     @Override
     public Stream<VaadinServiceInitListener> getServiceInitListeners() {
         return Stream.concat(delegate.getServiceInitListeners(),
-                Stream.of(getBeanManager()::fireEvent));
+                Stream.of(serviceInitEvent -> getBeanManager().getEvent()
+                        .fire(serviceInitEvent)));
     }
 }

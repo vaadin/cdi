@@ -21,8 +21,10 @@ import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
 
 import java.util.Collections;
+import java.util.Map;
 
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
@@ -96,6 +98,16 @@ public class CdiVaadinServletTest {
         Mockito.when(servletConfig.getServletName()).thenReturn("test");
         Mockito.when(servletContext.getInitParameterNames())
                 .thenReturn(Collections.emptyEnumeration());
+
+        final ServletRegistration servletRegistration
+                = Mockito.mock(ServletRegistration.class);
+        final Map servletRegistrationMap
+                = Collections.singletonMap("test", servletRegistration);
+        Mockito.when(servletContext.getServletRegistrations())
+                .thenReturn(servletRegistrationMap);
+        Mockito.when(servletRegistration.getMappings())
+                .thenReturn(Collections.emptyList());
+
         servlet = new CdiVaadinServlet();
         BeanProvider.injectFields(servlet);
         servlet.init(servletConfig);

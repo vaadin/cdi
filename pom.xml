@@ -44,7 +44,7 @@
         <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
         <driver.binary.downloader.maven.plugin.version>1.0.18</driver.binary.downloader.maven.plugin.version>
 
-        <vaadin.flow.version>23.0-SNAPSHOT</vaadin.flow.version>
+        <vaadin.flow.version>23.3-SNAPSHOT</vaadin.flow.version>
         <slf4j.version>1.7.32</slf4j.version>
         <deltaspike.version>1.9.5</deltaspike.version>
         <owb.version>2.0.25</owb.version>

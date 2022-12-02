@@ -17,12 +17,14 @@
 package com.vaadin.cdi;
 
 import java.util.Collections;
+import java.util.Map;
 
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRegistration;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.After;
@@ -95,6 +97,16 @@ public class CdiVaadinServletTest {
         Mockito.when(servletConfig.getServletName()).thenReturn("test");
         Mockito.when(servletContext.getInitParameterNames())
                 .thenReturn(Collections.emptyEnumeration());
+
+        final ServletRegistration servletRegistration
+                = Mockito.mock(ServletRegistration.class);
+        final Map servletRegistrationMap
+                = Collections.singletonMap("test", servletRegistration);
+        Mockito.when(servletContext.getServletRegistrations())
+                .thenReturn(servletRegistrationMap);
+        Mockito.when(servletRegistration.getMappings())
+                .thenReturn(Collections.emptyList());
+
         servlet = new CdiVaadinServlet();
         BeanProvider.injectFields(servlet);
         servlet.init(servletConfig);

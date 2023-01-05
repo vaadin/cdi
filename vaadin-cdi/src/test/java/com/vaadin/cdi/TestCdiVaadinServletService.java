@@ -21,6 +21,7 @@ import java.util.Properties;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.servlet.ServletContext;
 
+import com.vaadin.flow.di.Lookup;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinSession;
@@ -36,8 +37,10 @@ public class TestCdiVaadinServletService extends CdiVaadinServletService {
                 beanManager);
         when(getServlet().getServletName()).thenReturn(servletName);
         when(getServlet().getService()).thenReturn(this);
-        when(getServlet().getServletContext())
-                .thenReturn(mock(ServletContext.class));
+        final ServletContext servletcontext = mock(ServletContext.class);
+        when(getServlet().getServletContext()).thenReturn(servletcontext);
+        when(servletcontext.getAttribute(Lookup.class.getName()))
+                .thenReturn(mock(Lookup.class));
         DeploymentConfiguration config = getDeploymentConfiguration();
         Properties properties = new Properties();
         when(config.getInitParameters()).thenReturn(properties);

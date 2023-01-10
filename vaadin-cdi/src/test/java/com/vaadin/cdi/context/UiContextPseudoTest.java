@@ -17,10 +17,7 @@
 package com.vaadin.cdi.context;
 
 import com.vaadin.cdi.annotation.UIScoped;
-import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
-import org.junit.runner.RunWith;
 
-@RunWith(CdiTestRunner.class)
 public class UiContextPseudoTest
         extends AbstractContextTest<UiContextPseudoTest.UIScopedTestBean> {
 

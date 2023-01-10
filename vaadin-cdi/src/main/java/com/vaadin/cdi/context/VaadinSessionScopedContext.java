@@ -20,9 +20,9 @@ import java.lang.annotation.Annotation;
 
 import jakarta.enterprise.context.spi.Contextual;
 import jakarta.enterprise.inject.spi.BeanManager;
-import org.apache.deltaspike.core.util.ContextUtils;
-import org.apache.deltaspike.core.util.context.AbstractContext;
-import org.apache.deltaspike.core.util.context.ContextualStorage;
+import com.vaadin.cdi.util.ContextUtils;
+import com.vaadin.cdi.util.AbstractContext;
+import com.vaadin.cdi.util.ContextualStorage;
 
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
 import com.vaadin.flow.server.VaadinSession;

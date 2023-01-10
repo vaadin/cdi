@@ -26,18 +26,17 @@ import jakarta.enterprise.event.Reception;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
-import org.apache.deltaspike.core.util.context.ContextualStorage;
-import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.vaadin.cdi.AbstractWeldTest;
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.cdi.context.RouteScopedContext.NavigationData;
+import com.vaadin.cdi.util.ContextualStorage;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.UI;
@@ -49,8 +48,7 @@ import com.vaadin.flow.router.LocationChangeEvent;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
-@RunWith(CdiTestRunner.class)
-public class RouteContextualStorageManagerTest {
+public class RouteContextualStorageManagerTest extends AbstractWeldTest {
 
     private static final String STATE = "hello";
 
@@ -142,32 +140,36 @@ public class RouteContextualStorageManagerTest {
     @Inject
     private BeanManager manager;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         doSetUp(null, null);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         uiUnderTestContext.tearDownAll();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void onBeforeEnter_initialNavigationTarget_scopeDoesNotExist_Throws() {
-        Mockito.when(event.getNavigationTarget())
-                .thenReturn((Class) InitialRoute.class);
-        beforeNavigationTrigger.fire(event);
-
-        memberOfGroup1.get();
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            Mockito.when(event.getNavigationTarget())
+                    .thenReturn((Class) InitialRoute.class);
+            beforeNavigationTrigger.fire(event);
+    
+            memberOfGroup1.get();
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void afterNavigation_initialNavigationTarget_scopeDoesNotExist_Throws() {
-        Mockito.when(afterEvent.getActiveChain())
-                .thenReturn(Collections.singletonList(new InitialRoute()));
-        afterNavigationTrigger.fire(afterEvent);
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            Mockito.when(afterEvent.getActiveChain())
+                    .thenReturn(Collections.singletonList(new InitialRoute()));
+            afterNavigationTrigger.fire(afterEvent);
 
-        memberOfGroup1.get();
+            memberOfGroup1.get();
+        });
     }
 
     @Test
@@ -178,10 +180,10 @@ public class RouteContextualStorageManagerTest {
 
         MemberOfGroup1 bean = memberOfGroup1.get();
         bean.setState(STATE);
-        Assert.assertEquals(STATE, memberOfGroup1.get().getState());
+        Assertions.assertEquals(STATE, memberOfGroup1.get().getState());
 
         noOwnerBean.get().setState(STATE);
-        Assert.assertEquals(STATE, noOwnerBean.get().getState());
+        Assertions.assertEquals(STATE, noOwnerBean.get().getState());
     }
 
     @Test
@@ -199,11 +201,11 @@ public class RouteContextualStorageManagerTest {
                 .thenReturn((Class) Group2.class);
         beforeNavigationTrigger.fire(event);
 
-        Assert.assertTrue(bean1.isDestroyed);
-        Assert.assertTrue(bean2.isDestroyed);
+        Assertions.assertTrue(bean1.isDestroyed);
+        Assertions.assertTrue(bean2.isDestroyed);
 
         // no owner bean is not preserved: the new one is created
-        Assert.assertNotEquals(STATE, noOwnerBean.get().getState());
+        Assertions.assertNotEquals(STATE, noOwnerBean.get().getState());
     }
 
     @Test
@@ -221,8 +223,8 @@ public class RouteContextualStorageManagerTest {
                 .thenReturn(Collections.singletonList(new Group2()));
         afterNavigationTrigger.fire(afterEvent);
 
-        Assert.assertTrue(bean1.isDestroyed);
-        Assert.assertTrue(bean2.isDestroyed);
+        Assertions.assertTrue(bean1.isDestroyed);
+        Assertions.assertTrue(bean2.isDestroyed);
     }
 
     @Test
@@ -243,8 +245,8 @@ public class RouteContextualStorageManagerTest {
 
         ComponentUtil.onComponentDetach(ui);
 
-        Assert.assertFalse(bean1.isDestroyed);
-        Assert.assertEquals(STATE, memberOfGroup1.get().getState());
+        Assertions.assertFalse(bean1.isDestroyed);
+        Assertions.assertEquals(STATE, memberOfGroup1.get().getState());
     }
 
     @Test
@@ -265,8 +267,8 @@ public class RouteContextualStorageManagerTest {
 
         ComponentUtil.onComponentDetach(ui);
 
-        Assert.assertTrue(bean1.isDestroyed);
-        Assert.assertNotEquals(STATE, memberOfGroup1.get().getState());
+        Assertions.assertTrue(bean1.isDestroyed);
+        Assertions.assertNotEquals(STATE, memberOfGroup1.get().getState());
     }
 
     @Test
@@ -284,7 +286,7 @@ public class RouteContextualStorageManagerTest {
 
         List<ContextualStorage> storages = context
                 .getActiveContextualStorages();
-        Assert.assertEquals(1, storages.size());
+        Assertions.assertEquals(1, storages.size());
         ContextualStorage storage = storages.get(0);
 
         doSetUp(null, ui.getSession());
@@ -296,9 +298,9 @@ public class RouteContextualStorageManagerTest {
         MemberOfGroup1 bean1 = memberOfGroup1.get();
 
         storages = context.getActiveContextualStorages();
-        Assert.assertEquals(1, storages.size());
+        Assertions.assertEquals(1, storages.size());
         // Now the second UI is active and its storage is a different one
-        Assert.assertNotSame(storage, storages.get(0));
+        Assertions.assertNotSame(storage, storages.get(0));
     }
 
     @Test

@@ -22,10 +22,10 @@ import jakarta.annotation.Priority;
 import jakarta.enterprise.inject.Alternative;
 import jakarta.enterprise.inject.spi.Unmanaged;
 import jakarta.interceptor.Interceptor;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
 
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
+import com.vaadin.cdi.util.BeanProvider;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.server.VaadinService;

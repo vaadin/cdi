@@ -43,6 +43,7 @@ import com.vaadin.flow.server.SystemMessages;
 import com.vaadin.flow.server.SystemMessagesInfo;
 import com.vaadin.flow.server.SystemMessagesProvider;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.same;
@@ -83,38 +84,37 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
         Assertions.assertTrue(CdiInstantiator.class.isAssignableFrom(instantiator.getClass()));
     }
 
-//    @Test(expected = ServiceException.class)
-//    public void init_instantiatorAmbiguous_ExceptionThrown()
-//            throws ServiceException {
-//        assertAmbiguousThrowsException(Instantiator.class);
-//    }
-//
-//    @Test(expected = ServiceException.class)
-//    public void init_instantiatorUnsatisfied_ExceptionThrown() throws ServiceException {
-//        initServiceWithoutBeanFor(Instantiator.class);
-//    }
+    @Test
+    public void init_instantiatorAmbiguous_ExceptionThrown()
+            throws ServiceException {
+        assertAmbiguousThrowsException(Instantiator.class);
+    }
 
-//    @Test(expected = ServiceException.class)
-//    public void init_instantiatorInitReturnsFalse_ExceptionThrown()
-//            throws ServiceException {
-//        BeanManager mockBm = mock(BeanManager.class);
-//        Bean<Instantiator> mockBean = mock(Bean.class);
-//        Set<Bean<?>> beans = Collections.singleton(mockBean);
-//        when(mockBm.getBeans(eq(Instantiator.class), same(BeanLookup.SERVICE)))
-//                .thenReturn(beans);
-//        //noinspection unchecked
-//        when(mockBm.resolve(same(beans))).thenReturn((Bean) mockBean);
-//        Instantiator mockInstantiator = mock(Instantiator.class);
-//        Context mockContext = mock(Context.class);
-//        when(mockBm.getContext(VaadinServiceScoped.class))
-//                .thenReturn(mockContext);
-//        when(mockContext.get(same(mockBean), any()))
-//                .thenReturn(mockInstantiator);
-//        when(mockInstantiator.init(any())).thenReturn(false);
-//        initService(mockBm);
-//
-//        verify(mockInstantiator, times(1)).init(same(service));
-//    }
+    @Test
+    public void init_instantiatorUnsatisfied_ExceptionThrown() {
+        Assertions.assertThrows(ServiceException.class,
+                () -> initServiceWithoutBeanFor(Instantiator.class));
+    }
+
+    @Test
+    public void init_instantiatorInitReturnsFalse_ExceptionThrown() {
+        BeanManager mockBm = mock(BeanManager.class);
+        Bean<Instantiator> mockBean = mock(Bean.class);
+        Set<Bean<?>> beans = Collections.singleton(mockBean);
+        when(mockBm.getBeans(eq(Instantiator.class), same(BeanLookup.SERVICE)))
+                .thenReturn(beans);
+        //noinspection unchecked
+        when(mockBm.resolve(same(beans))).thenReturn((Bean) mockBean);
+        Instantiator mockInstantiator = mock(Instantiator.class);
+        Context mockContext = mock(Context.class);
+        when(mockBm.getContext(VaadinServiceScoped.class))
+                .thenReturn(mockContext);
+        when(mockContext.get(same(mockBean), any()))
+                .thenReturn(mockInstantiator);
+        when(mockInstantiator.init(any())).thenReturn(false);
+        Assertions.assertThrows(ServiceException.class, () -> initService(mockBm));
+        verify(mockInstantiator, times(1)).init(same(service));
+    }
 
     @Test
     public void init_SystemMessagesProviderExists_configured() throws ServiceException {
@@ -124,15 +124,13 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
         Assertions.assertTrue(CdiSystemMessagesProvider.class.isAssignableFrom(systemMessagesProvider.getClass()));
     }
 
-//    @Test(expected = ServiceException.class)
-//    public void init_SystemMessagesProviderAmbiguous_ExceptionThrown()
-//            throws ServiceException {
-//        assertAmbiguousThrowsException(SystemMessagesProvider.class);
-//    }
+    @Test
+    public void init_SystemMessagesProviderAmbiguous_ExceptionThrown() {
+        assertAmbiguousThrowsException(SystemMessagesProvider.class);
+    }
 
     @Test
-    public void init_SystemMessagesProviderMissing_defaultConfigured()
-            throws ServiceException {
+    public void init_SystemMessagesProviderMissing_defaultConfigured() {
         Assertions.assertThrows(ServiceException.class, () -> {
             initServiceWithoutBeanFor(SystemMessagesProvider.class);
             Assertions.assertTrue(DefaultSystemMessagesProvider.class.isAssignableFrom(service.getSystemMessagesProvider().getClass()));
@@ -190,8 +188,7 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
         initService(mockBm);
     }
 
-    private void assertAmbiguousThrowsException(Class<?> type)
-            throws ServiceException {
+    private void assertAmbiguousThrowsException(Class<?> type) {
         BeanManager mockBm = mock(BeanManager.class);
         Bean<?> mockBean = mock(Bean.class);
         Set<Bean<?>> beans = new HashSet<>(Arrays.asList(mockBean, mockBean));
@@ -200,7 +197,7 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
         //noinspection unchecked
         when(mockBm.resolve(same(beans)))
                 .thenThrow(AmbiguousResolutionException.class);
-        initService(mockBm);
+        Assertions.assertThrows(ServiceException.class, () -> initService(mockBm));
 
         verify(mockBm, times(1)).resolve(same(beans));
     }

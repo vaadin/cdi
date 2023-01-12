@@ -246,10 +246,6 @@
                     <version>3.0.alpha6</version>
                     <scope>test</scope>
                 </dependency>
-                <dependency>
-                    <groupId>org.apache.deltaspike.core</groupId>
-                    <artifactId>deltaspike-core-impl</artifactId>
-                </dependency>
             </dependencies>
             <build>
                 <plugins>

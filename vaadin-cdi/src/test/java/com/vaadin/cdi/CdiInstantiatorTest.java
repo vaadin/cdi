@@ -20,19 +20,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Vetoed;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.servlet.ServletException;
-import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
@@ -43,8 +40,7 @@ import com.vaadin.flow.internal.UsageStatistics;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinService;
 
-@RunWith(CdiTestRunner.class)
-public class CdiInstantiatorTest {
+public class CdiInstantiatorTest extends AbstractWeldTest {
 
     @Singleton
     public static class SomeCdiBean {
@@ -90,7 +86,7 @@ public class CdiInstantiatorTest {
 
     }
 
-    @RequestScoped
+    @Singleton
     public static class ServiceInitObserver {
 
         ServiceInitEvent event;
@@ -120,15 +116,15 @@ public class CdiInstantiatorTest {
 
     private ServiceUnderTestContext serviceUnderTestContext;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         serviceUnderTestContext = new ServiceUnderTestContext(beanManager);
         serviceUnderTestContext.activate();
         CdiVaadinServletService service = serviceUnderTestContext.getService();
-        Assert.assertTrue(instantiator.init(service));
+        Assertions.assertTrue(instantiator.init(service));
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         serviceUnderTestContext.tearDownAll();
     }
@@ -136,13 +132,13 @@ public class CdiInstantiatorTest {
     @Test
     public void getI18NProvider_beanEnabled_instanceReturned() {
         I18NProvider i18NProvider = instantiator.getI18NProvider();
-        Assert.assertNotNull(i18NProvider);
-        Assert.assertTrue((i18NProvider instanceof I18NTestProvider));
+        Assertions.assertNotNull(i18NProvider);
+        Assertions.assertTrue((i18NProvider instanceof I18NTestProvider));
     }
 
     @Test
     public void getServiceInitListeners_javaSPIListenerExists_containsJavaSPIListener() {
-        Assert.assertTrue(instantiator.getServiceInitListeners().anyMatch(
+        Assertions.assertTrue(instantiator.getServiceInitListeners().anyMatch(
                 listener -> listener instanceof JavaSPIVaadinServiceInitListener));
     }
 
@@ -154,35 +150,35 @@ public class CdiInstantiatorTest {
                 .filter(listener -> listener.getClass().getPackage()
                         .equals(CdiInstantiator.class.getPackage()))
                 .forEach(listener -> listener.serviceInit(event));
-        Assert.assertSame(event, serviceInitObserver.getEvent());
+        Assertions.assertSame(event, serviceInitObserver.getEvent());
     }
 
     @Test
     public void getOrCreate_beanSingleton_sameInstanceReturned() {
-        Assert.assertSame(singleton,
+        Assertions.assertSame(singleton,
                 instantiator.getOrCreate(SomeCdiBean.class));
     }
 
     @Test
     public void getOrCreate_beanUnsatisfied_instantiatedAndInjectionOccurred() {
         NotACdiBean instance = instantiator.getOrCreate(NotACdiBean.class);
-        Assert.assertNotNull(instance);
-        Assert.assertNotNull(instance.getBm());
+        Assertions.assertNotNull(instance);
+        Assertions.assertNotNull(instance.getBm());
     }
 
     @Test
     public void getOrCreate_beanAmbiguous_instantiatedAndInjectionOccurred() {
         ParentBean instance = instantiator.getOrCreate(ParentBean.class);
-        Assert.assertNotNull(instance);
-        Assert.assertNotNull(instance.getBm());
+        Assertions.assertNotNull(instance);
+        Assertions.assertNotNull(instance.getBm());
     }
 
     @Test
     public void createComponent_componentIsCreated() {
         SingletonComponent component = instantiator
                 .createComponent(SingletonComponent.class);
-        Assert.assertNotNull(component);
-        Assert.assertNotNull(component.beanManager);
+        Assertions.assertNotNull(component);
+        Assertions.assertNotNull(component.beanManager);
     }
 
     @Test
@@ -190,11 +186,11 @@ public class CdiInstantiatorTest {
             throws ServletException {
         SingletonComponent component = instantiator
                 .createComponent(SingletonComponent.class);
-        Assert.assertNotNull(component);
+        Assertions.assertNotNull(component);
 
         SingletonComponent anotherComponent = instantiator
                 .createComponent(SingletonComponent.class);
-        Assert.assertNotEquals(component, anotherComponent);
+        Assertions.assertNotEquals(component, anotherComponent);
     }
 
     @Test
@@ -202,10 +198,10 @@ public class CdiInstantiatorTest {
         // @Before does instantiator.init()
         // There will be other entries too to filter out
         List<UsageStatistics.UsageEntry> entries = UsageStatistics.getEntries().filter(entry -> entry.getName().contains("Cdi")).collect(Collectors.toList());
-        Assert.assertEquals(1, entries.size());
+        Assertions.assertEquals(1, entries.size());
 
         UsageStatistics.UsageEntry entry = entries.get(0);
-        Assert.assertEquals("flow/CdiInstantiator", entry.getName());
+        Assertions.assertEquals("flow/CdiInstantiator", entry.getName());
     }
 
 }

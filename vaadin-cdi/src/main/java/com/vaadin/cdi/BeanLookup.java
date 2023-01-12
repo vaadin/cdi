@@ -26,9 +26,9 @@ import jakarta.enterprise.inject.AmbiguousResolutionException;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.util.AnnotationLiteral;
-import org.apache.deltaspike.core.api.literal.AnyLiteral;
 
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
+import com.vaadin.cdi.util.AnyLiteral;
 
 /**
  * Utility class for CDI lookup, and instantiation.

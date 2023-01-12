@@ -24,14 +24,14 @@ import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.AmbiguousResolutionException;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
-import org.apache.deltaspike.core.api.provider.BeanManagerProvider;
-import org.apache.deltaspike.core.util.ProxyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.context.VaadinSessionScopedContext;
+import com.vaadin.cdi.util.BeanManagerProvider;
+import com.vaadin.cdi.util.ProxyUtils;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.PollEvent;
 import com.vaadin.flow.component.UI;

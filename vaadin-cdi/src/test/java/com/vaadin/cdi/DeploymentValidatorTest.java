@@ -30,11 +30,10 @@ import java.util.stream.Collectors;
 import jakarta.enterprise.inject.Produces;
 import jakarta.enterprise.inject.Vetoed;
 import jakarta.inject.Inject;
-import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,11 +53,8 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLayout;
 
 import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.NORMAL_SCOPED_COMPONENT;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
-@RunWith(CdiTestRunner.class)
-public class DeploymentValidatorTest {
+public class DeploymentValidatorTest extends AbstractWeldTest {
 
     @NormalUIScoped
     public static class NormalScopedLabel extends Label {
@@ -169,12 +165,12 @@ public class DeploymentValidatorTest {
 
     private List<Throwable> problems;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         problems = new ArrayList<>();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         problems.forEach(problem -> getLogger().error(problem.getMessage()));
     }
@@ -187,7 +183,7 @@ public class DeploymentValidatorTest {
 
         validator.validateForTest(infoSet, problems::add);
 
-        assertEquals(2, problems.size());
+        Assertions.assertEquals(2, problems.size());
         assertProblemExists(NORMAL_SCOPED_COMPONENT, NormalScopedLabel.class);
         assertProblemExists(NORMAL_SCOPED_COMPONENT,
                 ProducedNormalScopedComponent.class);
@@ -203,7 +199,7 @@ public class DeploymentValidatorTest {
 
         validator.validateForTest(infoSet, problems::add);
 
-        assertEquals(0, problems.size());
+        Assertions.assertEquals(0, problems.size());
     }
 
     private void assertProblemExists(ErrorCode errorCode, Type baseType) {
@@ -212,7 +208,7 @@ public class DeploymentValidatorTest {
                 .map(info -> new ProblemId((DeploymentProblem) info))
                 .anyMatch(Predicate.isEqual(expected));
         if (!match) {
-            fail("Problem does not exist: " + expected);
+            Assertions.fail("Problem does not exist: " + expected);
         }
     }
 

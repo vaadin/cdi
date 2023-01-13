@@ -21,7 +21,6 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -31,13 +30,13 @@ import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.PassivationCapable;
-import com.vaadin.cdi.util.BeanProvider;
-import com.vaadin.cdi.util.AbstractContext;
-import com.vaadin.cdi.util.ContextualStorage;
 
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
+import com.vaadin.cdi.util.AbstractContext;
+import com.vaadin.cdi.util.BeanProvider;
+import com.vaadin.cdi.util.ContextualStorage;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.page.ExtendedClientDetails;
@@ -305,8 +304,8 @@ public class RouteScopedContext extends AbstractContext {
                             + "so bean '%s' has no scope and may not be injected",
                     bean.getBeanClass().getName()));
         }
-        if( data.getLayouts( ).contains( bean.getBeanClass( ) ) )
-            return bean.getBeanClass( );
+        if (data.getLayouts().contains(bean.getBeanClass()))
+            return bean.getBeanClass();
         return data.getNavigationTarget();
     }
 

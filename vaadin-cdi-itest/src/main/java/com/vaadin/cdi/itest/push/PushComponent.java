@@ -25,12 +25,12 @@ import jakarta.enterprise.concurrent.ManagedThreadFactory;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.context.SessionScoped;
-import org.apache.deltaspike.core.util.ContextUtils;
 
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
+import com.vaadin.cdi.util.ContextUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;

@@ -26,9 +26,9 @@ import jakarta.enterprise.inject.spi.AfterDeploymentValidation;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.Extension;
 import jakarta.enterprise.inject.spi.ProcessBean;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
-import org.apache.deltaspike.core.api.provider.DependentProvider;
-import org.apache.deltaspike.core.util.context.AbstractContext;
+import com.vaadin.cdi.util.BeanProvider;
+import com.vaadin.cdi.util.DependentProvider;
+import com.vaadin.cdi.util.AbstractContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -21,7 +21,7 @@ import java.lang.annotation.Annotation;
 import jakarta.enterprise.context.spi.AlterableContext;
 import jakarta.enterprise.context.spi.Contextual;
 import jakarta.enterprise.context.spi.CreationalContext;
-import org.apache.deltaspike.core.util.context.AbstractContext;
+import com.vaadin.cdi.util.AbstractContext;
 
 /**
  * Used to bind multiple scope annotations to a single context. Will delegate

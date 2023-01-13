@@ -18,23 +18,13 @@ package com.vaadin.cdi.context;
 
 import java.util.Collections;
 
-import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
-import org.junit.runner.RunWith;
-
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.cdi.context.RouteScopedContext.NavigationData;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.router.Route;
 
-@RunWith(CdiTestRunner.class)
 public class RouteContextPseudoTest extends
         AbstractContextTest<RouteContextPseudoTest.RouteScopedTestBean> {
-
-    @Override
-    public void setUp() {
-        // TODO Auto-generated method stub
-        super.setUp();
-    }
 
     @RouteScoped
     @Route("")

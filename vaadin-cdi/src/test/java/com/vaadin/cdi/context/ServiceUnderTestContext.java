@@ -57,7 +57,7 @@ public class ServiceUnderTestContext implements UnderTestContext {
     @Override
     public void destroy() {
         if (service != null) {
-            beanManager.fireEvent(new ServiceDestroyEvent(service));
+            beanManager.getEvent().fire(new ServiceDestroyEvent(service));
         }
     }
 

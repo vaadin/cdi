@@ -19,10 +19,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 import jakarta.enterprise.inject.spi.BeanManager;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.cdi.util.BeanProvider;
 import com.vaadin.flow.di.DefaultInstantiator;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.i18n.I18NProvider;
@@ -96,6 +96,7 @@ abstract public class AbstractCdiInstantiator implements Instantiator {
     @Override
     public Stream<VaadinServiceInitListener> getServiceInitListeners() {
         return Stream.concat(delegate.getServiceInitListeners(),
-                Stream.of(getBeanManager()::fireEvent));
+                Stream.of(serviceInitEvent -> getBeanManager().getEvent()
+                        .fire(serviceInitEvent)));
     }
 }

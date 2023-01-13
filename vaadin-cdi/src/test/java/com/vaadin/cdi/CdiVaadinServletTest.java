@@ -17,21 +17,22 @@
 package com.vaadin.cdi;
 
 import java.util.Collections;
+import java.util.Map;
 
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
-import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import jakarta.servlet.ServletRegistration;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.vaadin.cdi.context.ServiceUnderTestContext;
+import com.vaadin.cdi.util.BeanProvider;
 import com.vaadin.flow.di.Lookup;
 import com.vaadin.flow.di.ResourceProvider;
 import com.vaadin.flow.server.StaticFileHandlerFactory;
@@ -42,18 +43,14 @@ import com.vaadin.flow.server.startup.ApplicationConfiguration;
 import com.vaadin.flow.server.startup.ApplicationConfigurationFactory;
 import com.vaadin.flow.server.startup.DefaultApplicationConfigurationFactory;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-@RunWith(CdiTestRunner.class)
-public class CdiVaadinServletTest {
+public class CdiVaadinServletTest extends AbstractWeldTest {
 
     @Inject
     private BeanManager beanManager;
 
     private CdiVaadinServlet servlet;
 
-    @Before
+    @BeforeEach
     public void setUp() throws ServletException {
         final ServletConfig servletConfig = Mockito.mock(ServletConfig.class);
         final ServletContext servletContext = Mockito
@@ -95,12 +92,22 @@ public class CdiVaadinServletTest {
         Mockito.when(servletConfig.getServletName()).thenReturn("test");
         Mockito.when(servletContext.getInitParameterNames())
                 .thenReturn(Collections.emptyEnumeration());
+
+        final ServletRegistration servletRegistration
+                = Mockito.mock(ServletRegistration.class);
+        final Map servletRegistrationMap
+                = Collections.singletonMap("test", servletRegistration);
+        Mockito.when(servletContext.getServletRegistrations())
+                .thenReturn(servletRegistrationMap);
+        Mockito.when(servletRegistration.getMappings())
+                .thenReturn(Collections.emptyList());
+
         servlet = new CdiVaadinServlet();
         BeanProvider.injectFields(servlet);
         servlet.init(servletConfig);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         new ServiceUnderTestContext(beanManager).tearDownAll();
         servlet.destroy();
@@ -109,6 +116,6 @@ public class CdiVaadinServletTest {
     @Test
     public void getService_servletInitialized_cdiVaadinServletServiceReturned() {
         final VaadinService service = servlet.getService();
-        assertThat(service, instanceOf(CdiVaadinServletService.class));
+        Assertions.assertTrue(CdiVaadinServletService.class.isAssignableFrom(service.getClass()));
     }
 }

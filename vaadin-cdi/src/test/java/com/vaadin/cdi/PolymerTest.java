@@ -18,13 +18,11 @@ package com.vaadin.cdi;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
-import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.jsoup.Jsoup;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.cdi.context.UIUnderTestContext;
@@ -39,10 +37,7 @@ import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
-import static org.junit.Assert.assertNotNull;
-
-@RunWith(CdiTestRunner.class)
-public class PolymerTest {
+public class PolymerTest extends AbstractWeldTest {
 
     @UIScoped
     @Tag("uiscoped-label")
@@ -68,7 +63,7 @@ public class PolymerTest {
     private UIUnderTestContext uiUnderTestContext;
     private Instantiator instantiator;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         uiUnderTestContext = new UIUnderTestContext();
         uiUnderTestContext.activate();
@@ -80,7 +75,7 @@ public class PolymerTest {
         template = instantiator.getOrCreate(TestTemplate.class);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         uiUnderTestContext.tearDownAll();
         CurrentInstance.clearAll();
@@ -89,12 +84,12 @@ public class PolymerTest {
     @Test
     public void injectField_componentHasScope_scopeIsIgnored() {
         final PseudoScopedLabel label = pseudoScopedLabelProvider.get();
-        Assert.assertNotSame(label, template.pseudo);
+        Assertions.assertNotSame(label, template.pseudo);
     }
 
     @Test
     public void injectField_componentHasScope_elementBindingSuccess() {
-        assertNotNull(template.pseudo.getElement().getNode().getParent());
+        Assertions.assertNotNull(template.pseudo.getElement().getNode().getParent());
     }
 
     private static String getTemplateContent() {

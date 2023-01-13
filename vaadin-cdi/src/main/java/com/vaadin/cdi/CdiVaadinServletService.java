@@ -24,14 +24,14 @@ import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.AmbiguousResolutionException;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
-import org.apache.deltaspike.core.api.provider.BeanManagerProvider;
-import org.apache.deltaspike.core.util.ProxyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.context.VaadinSessionScopedContext;
+import com.vaadin.cdi.util.BeanManagerProvider;
+import com.vaadin.cdi.util.ProxyUtils;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.PollEvent;
 import com.vaadin.flow.component.UI;
@@ -163,7 +163,8 @@ public class CdiVaadinServletService extends VaadinServletService {
         public void init() throws ServiceException {
             lookup(SystemMessagesProvider.class)
                     .ifPresent(vaadinService::setSystemMessagesProvider);
-            vaadinService.addUIInitListener(e -> getBeanManager().fireEvent(e));
+            vaadinService.addUIInitListener(e -> getBeanManager().getEvent()
+                    .fire(e));
             vaadinService.addSessionInitListener(this::sessionInit);
             vaadinService.addSessionDestroyListener(this::sessionDestroy);
             vaadinService.addServiceDestroyListener(this::fireCdiDestroyEvent);
@@ -198,11 +199,11 @@ public class CdiVaadinServletService extends VaadinServletService {
                 throws ServiceException {
             VaadinSession session = sessionInitEvent.getSession();
             lookup(ErrorHandler.class).ifPresent(session::setErrorHandler);
-            getBeanManager().fireEvent(sessionInitEvent);
+            getBeanManager().getEvent().fire(sessionInitEvent);
         }
 
         private void sessionDestroy(SessionDestroyEvent sessionDestroyEvent) {
-            getBeanManager().fireEvent(sessionDestroyEvent);
+            getBeanManager().getEvent().fire(sessionDestroyEvent);
             if (VaadinSessionScopedContext.guessContextIsUndeployed()) {
                 // Happens on tomcat when it expires sessions upon undeploy.
                 // beanManager.getPassivationCapableBean returns null for
@@ -219,7 +220,7 @@ public class CdiVaadinServletService extends VaadinServletService {
 
         private void fireCdiDestroyEvent(ServiceDestroyEvent event) {
             try {
-                getBeanManager().fireEvent(event);
+                getBeanManager().getEvent().fire(event);
             } catch (Exception e) {
                 // During application shutdown on TomEE 7,
                 // beans are lost at this point.
@@ -250,22 +251,22 @@ public class CdiVaadinServletService extends VaadinServletService {
 
         @Override
         public void afterNavigation(AfterNavigationEvent event) {
-            delegate.getBeanManager().fireEvent(event);
+            delegate.getBeanManager().getEvent().fire(event);
         }
 
         @Override
         public void beforeEnter(BeforeEnterEvent event) {
-            delegate.getBeanManager().fireEvent(event);
+            delegate.getBeanManager().getEvent().fire(event);
         }
 
         @Override
         public void beforeLeave(BeforeLeaveEvent event) {
-            delegate.getBeanManager().fireEvent(event);
+            delegate.getBeanManager().getEvent().fire(event);
         }
 
         @Override
         public void onComponentEvent(PollEvent event) {
-            delegate.getBeanManager().fireEvent(event);
+            delegate.getBeanManager().getEvent().fire(event);
         }
     }
 }

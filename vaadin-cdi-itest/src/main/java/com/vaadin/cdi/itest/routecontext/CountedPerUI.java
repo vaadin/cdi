@@ -16,7 +16,7 @@
 
 package com.vaadin.cdi.itest.routecontext;
 
-import org.apache.deltaspike.core.api.provider.BeanProvider;
+import com.vaadin.cdi.util.BeanProvider;
 
 import com.vaadin.cdi.itest.Counter;
 import com.vaadin.flow.component.UI;

@@ -27,8 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
-import org.apache.deltaspike.core.util.context.AbstractContext;
-import org.apache.deltaspike.core.util.context.ContextualStorage;
+import com.vaadin.cdi.util.AbstractContext;
+import com.vaadin.cdi.util.ContextualStorage;
 
 /**
  * Base class for manage and store ContextualStorages.

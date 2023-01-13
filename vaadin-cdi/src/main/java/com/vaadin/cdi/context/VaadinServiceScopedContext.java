@@ -22,9 +22,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.spi.Contextual;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.spi.BeanManager;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
-import org.apache.deltaspike.core.util.context.AbstractContext;
-import org.apache.deltaspike.core.util.context.ContextualStorage;
+import com.vaadin.cdi.util.BeanProvider;
+import com.vaadin.cdi.util.AbstractContext;
+import com.vaadin.cdi.util.ContextualStorage;
 
 import com.vaadin.cdi.CdiVaadinServlet;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;

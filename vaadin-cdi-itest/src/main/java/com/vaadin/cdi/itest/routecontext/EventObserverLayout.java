@@ -42,7 +42,6 @@ public class EventObserverLayout extends Div implements RouterLayout {
     }
 
     public void onEvent(@Observes(notifyObserver = Reception.IF_EXISTS) CustomEvent event) {
-        System.out.println("================================================= OK ");
         receivedEvents.setText("EVENTS COUNT: " + ++counter);
         add(new Span("EVENT AT " + LocalDateTime.now()));
     }

@@ -28,7 +28,6 @@ import com.vaadin.flow.router.Route;
 
 @Route(value = "layout-event", layout = EventObserverLayout.class)
 @RouteScoped
-
 public class LayoutEventView extends Div {
 
     public static final String FIRE = "FIRE";

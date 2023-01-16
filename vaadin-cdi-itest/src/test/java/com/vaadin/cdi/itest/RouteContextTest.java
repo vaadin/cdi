@@ -36,7 +36,10 @@ import com.vaadin.cdi.itest.routecontext.DetailAssignedView;
 import com.vaadin.cdi.itest.routecontext.ErrorHandlerView;
 import com.vaadin.cdi.itest.routecontext.ErrorParentView;
 import com.vaadin.cdi.itest.routecontext.ErrorView;
+import com.vaadin.cdi.itest.routecontext.EventObserverLayout;
 import com.vaadin.cdi.itest.routecontext.EventView;
+import com.vaadin.cdi.itest.routecontext.LayoutEventView;
+import com.vaadin.cdi.itest.routecontext.LayoutEventView2;
 import com.vaadin.cdi.itest.routecontext.MainLayout;
 import com.vaadin.cdi.itest.routecontext.MasterView;
 import com.vaadin.cdi.itest.routecontext.PostponeView;
@@ -156,6 +159,27 @@ public class RouteContextTest extends AbstractCdiTest {
 
         click(EventView.FIRE);
         assertTextEquals("HELLO", EventView.OBSERVER_LABEL);
+    }
+
+    @Test
+    public void eventObservedByLayout() {
+        follow(RootView.LAYOUT_EVENT);
+        assertTextEquals("", EventObserverLayout.EVENTS_COUNTER_LABEL);
+
+        click(LayoutEventView.FIRE);
+        assertTextEquals("EVENTS COUNT: 1", EventObserverLayout.EVENTS_COUNTER_LABEL);
+
+        click(LayoutEventView.CHANGE_VIEW);
+        assertTextEquals("Layout Event View 2", LayoutEventView2.VIEW_NAME);
+
+        click(LayoutEventView2.FIRE);
+        assertTextEquals("EVENTS COUNT: 2", EventObserverLayout.EVENTS_COUNTER_LABEL);
+
+        click(LayoutEventView2.CHANGE_VIEW);
+        assertTextEquals("Layout Event View 1", LayoutEventView.VIEW_NAME);
+
+        click(LayoutEventView.FIRE);
+        assertTextEquals("EVENTS COUNT: 3", EventObserverLayout.EVENTS_COUNTER_LABEL);
     }
 
     @Test

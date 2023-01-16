@@ -27,7 +27,6 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -306,6 +305,8 @@ public class RouteScopedContext extends AbstractContext {
                             + "so bean '%s' has no scope and may not be injected",
                     bean.getBeanClass().getName()));
         }
+        if (data.getLayouts().contains(bean.getBeanClass()))
+            return bean.getBeanClass();
         return data.getNavigationTarget();
     }
 

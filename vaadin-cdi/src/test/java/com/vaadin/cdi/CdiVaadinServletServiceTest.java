@@ -36,6 +36,7 @@ import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.context.ServiceUnderTestContext;
 import com.vaadin.flow.di.Instantiator;
+import com.vaadin.flow.di.InstantiatorFactory;
 import com.vaadin.flow.server.CustomizedSystemMessages;
 import com.vaadin.flow.server.DefaultSystemMessagesProvider;
 import com.vaadin.flow.server.ServiceException;
@@ -87,33 +88,33 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
     @Test
     public void init_instantiatorAmbiguous_ExceptionThrown()
             throws ServiceException {
-        assertAmbiguousThrowsException(Instantiator.class);
+        assertAmbiguousThrowsException(InstantiatorFactory.class);
     }
 
     @Test
     public void init_instantiatorUnsatisfied_ExceptionThrown() {
         Assertions.assertThrows(ServiceException.class,
-                () -> initServiceWithoutBeanFor(Instantiator.class));
+                () -> initServiceWithoutBeanFor(InstantiatorFactory.class));
     }
 
     @Test
     public void init_instantiatorInitReturnsFalse_ExceptionThrown() {
         BeanManager mockBm = mock(BeanManager.class);
-        Bean<Instantiator> mockBean = mock(Bean.class);
+        Bean<InstantiatorFactory> mockBean = mock(Bean.class);
         Set<Bean<?>> beans = Collections.singleton(mockBean);
-        when(mockBm.getBeans(eq(Instantiator.class), same(BeanLookup.SERVICE)))
+        when(mockBm.getBeans(eq(InstantiatorFactory.class), same(BeanLookup.SERVICE)))
                 .thenReturn(beans);
         //noinspection unchecked
         when(mockBm.resolve(same(beans))).thenReturn((Bean) mockBean);
-        Instantiator mockInstantiator = mock(Instantiator.class);
+        InstantiatorFactory mockInstantiatorFactory = mock(InstantiatorFactory.class);
         Context mockContext = mock(Context.class);
         when(mockBm.getContext(VaadinServiceScoped.class))
                 .thenReturn(mockContext);
         when(mockContext.get(same(mockBean), any()))
-                .thenReturn(mockInstantiator);
-        when(mockInstantiator.init(any())).thenReturn(false);
+                .thenReturn(mockInstantiatorFactory);
+        when(mockInstantiatorFactory.createInstantitor(any())).thenReturn(null);
         Assertions.assertThrows(ServiceException.class, () -> initService(mockBm));
-        verify(mockInstantiator, times(1)).init(same(service));
+        verify(mockInstantiatorFactory, times(1)).createInstantitor(same(service));
     }
 
     @Test
@@ -148,13 +149,13 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
         serviceUnderTestContext.activate();
         CdiVaadinServletService service = serviceUnderTestContext.getService();
 
-        Bean<Instantiator> mockBean = mock(Bean.class);
+        Bean<InstantiatorFactory> mockBean = mock(Bean.class);
         Set<Bean<?>> beans = Collections.singleton(mockBean);
-        when(mockBm.getBeans(eq(Instantiator.class), same(BeanLookup.SERVICE)))
+        when(mockBm.getBeans(eq(InstantiatorFactory.class), same(BeanLookup.SERVICE)))
                 .thenReturn(beans);
         when(mockBm.resolve(same(beans))).thenReturn((Bean) mockBean);
 
-        CreationalContext<Instantiator> mockCreationalContext = mock(
+        CreationalContext<InstantiatorFactory> mockCreationalContext = mock(
                 CreationalContext.class);
         when(mockBm.createCreationalContext(same(mockBean)))
                 .thenReturn(mockCreationalContext);
@@ -163,10 +164,12 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
         when(mockBm.getContext(VaadinServiceScoped.class))
                 .thenReturn(mockContext);
 
-        Instantiator mockInstantiator = mock(Instantiator.class);
+        InstantiatorFactory mockInstantiatorFactory = mock(InstantiatorFactory.class);
         when(mockContext.get(same(mockBean), same(mockCreationalContext)))
-                .thenReturn(mockInstantiator);
-        when(mockInstantiator.init(same(service))).thenReturn(true);
+                .thenReturn(mockInstantiatorFactory);
+
+        Instantiator mockInstantiator = mock(Instantiator.class);
+        when(mockInstantiatorFactory.createInstantitor(same(service))).thenReturn(mockInstantiator);
 
         Optional<Instantiator> maybeInstantiator = service.loadInstantiators();
         Assertions.assertTrue(maybeInstantiator.isPresent());

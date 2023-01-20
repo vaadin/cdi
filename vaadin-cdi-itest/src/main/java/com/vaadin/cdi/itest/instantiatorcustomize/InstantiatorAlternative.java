@@ -18,29 +18,14 @@ package com.vaadin.cdi.itest.instantiatorcustomize;
 
 import java.util.stream.Stream;
 
-import jakarta.annotation.Priority;
-import jakarta.enterprise.inject.Alternative;
 import jakarta.enterprise.inject.spi.Unmanaged;
-import jakarta.interceptor.Interceptor;
 
-import com.vaadin.cdi.annotation.VaadinServiceEnabled;
-import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.util.BeanProvider;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.di.Instantiator;
-import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 
-@Priority(Interceptor.Priority.APPLICATION)
-@Alternative
-@VaadinServiceEnabled
-@VaadinServiceScoped
 public class InstantiatorAlternative implements Instantiator {
-
-    @Override
-    public boolean init(VaadinService service) {
-        return true;
-    }
 
     @Override
     public Stream<VaadinServiceInitListener> getServiceInitListeners() {

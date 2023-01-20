@@ -18,37 +18,38 @@ package com.vaadin.cdi;
 
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.Unmanaged;
-import jakarta.inject.Inject;
 
-import com.vaadin.cdi.annotation.VaadinServiceEnabled;
-import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.di.DefaultInstantiator;
 import com.vaadin.flow.di.Instantiator;
+import com.vaadin.flow.internal.UsageStatistics;
 import com.vaadin.flow.server.VaadinService;
 
 /**
  * Default CDI instantiator.
- * <p>
- * Can be overridden by a @{@link VaadinServiceEnabled} CDI
- * Alternative/Specializes, or can be customized with a Decorator.
  *
  * @see Instantiator
  */
-@VaadinServiceScoped
-@VaadinServiceEnabled
 public class CdiInstantiator extends AbstractCdiInstantiator {
 
-    @Inject
-    private BeanManager beanManager;
+    private final BeanManager beanManager;
+
+    private final DefaultInstantiator delegate;
+
+    public CdiInstantiator(BeanManager beanManager, VaadinService service) {
+        this.beanManager = beanManager;
+        this.delegate = new DefaultInstantiator(service);
+        UsageStatistics.markAsUsed("flow/CdiInstantiator", null);
+    }
+
+    @Override
+    protected DefaultInstantiator getDelegate() {
+        return delegate;
+    }
 
     @Override
     public BeanManager getBeanManager() {
         return beanManager;
-    }
-
-    @Override
-    public Class<? extends VaadinService> getServiceClass() {
-        return CdiVaadinServletService.class;
     }
 
     @Override

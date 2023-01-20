@@ -35,6 +35,7 @@ import org.mockito.Mockito;
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.context.ServiceUnderTestContext;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.i18n.I18NProvider;
 import com.vaadin.flow.internal.UsageStatistics;
 import com.vaadin.flow.server.ServiceInitEvent;
@@ -106,7 +107,9 @@ public class CdiInstantiatorTest extends AbstractWeldTest {
 
     @Inject
     @VaadinServiceEnabled
-    private CdiInstantiator instantiator;
+    private CdiInstantiatorFactory instantiatorFactory;
+
+    private Instantiator instantiator;
 
     @Inject
     private SomeCdiBean singleton;
@@ -120,8 +123,7 @@ public class CdiInstantiatorTest extends AbstractWeldTest {
     public void setUp() {
         serviceUnderTestContext = new ServiceUnderTestContext(beanManager);
         serviceUnderTestContext.activate();
-        CdiVaadinServletService service = serviceUnderTestContext.getService();
-        Assertions.assertTrue(instantiator.init(service));
+        instantiator = instantiatorFactory.createInstantitor(VaadinService.getCurrent());
     }
 
     @AfterEach

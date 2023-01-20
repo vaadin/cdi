@@ -18,8 +18,9 @@ package com.vaadin.cdi.itest;
 
 
 import com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorAlternative;
+import com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorFactoryAlternative;
 import com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorCustomizeView;
-import com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorDecorator;
+import com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorFactoryDecorator;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -31,12 +32,13 @@ import static com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorCustomizeVi
 import static com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorCustomizeView.VIEW;
 
 @SuppressWarnings("ArquillianTooManyDeployment")
-public class InstantiatorCustomizeTest extends AbstractCdiTest {
+public class InstantiatorFactoryCustomizeTest extends AbstractCdiTest {
 
     @Deployment(name = "decorator", testable = false)
     public static WebArchive decoratorDeployment() {
         return ArchiveProvider.createWebArchive("instantiator-decorator-test",
-                InstantiatorDecorator.class,
+                InstantiatorAlternative.class,
+                InstantiatorFactoryDecorator.class,
                 InstantiatorCustomizeView.class);
     }
 
@@ -44,6 +46,7 @@ public class InstantiatorCustomizeTest extends AbstractCdiTest {
     public static WebArchive alternativeDeployment() {
         return ArchiveProvider.createWebArchive("instantiator-alternative-test",
                 InstantiatorAlternative.class,
+                InstantiatorFactoryAlternative.class,
                 InstantiatorCustomizeView.class);
     }
 

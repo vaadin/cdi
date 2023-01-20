@@ -16,8 +16,6 @@
 
 package com.vaadin.cdi.itest;
 
-import com.vaadin.cdi.itest.invaliddeployment.DeploymentView;
-import com.vaadin.cdi.itest.invaliddeployment.NormalScopedLabel;
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -26,6 +24,9 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import com.vaadin.cdi.itest.invaliddeployment.DeploymentView;
+import com.vaadin.cdi.itest.invaliddeployment.NormalScopedLabel;
 
 @RunWith(Arquillian.class)
 @RunAsClient

@@ -53,6 +53,17 @@ Execute `mvn clean install -DskipTests` in the root directory to build vaadin-cd
 
 Execute `mvn -pl vaadin-cdi-itest -Ptomee verify` in the root directory to run integration tests.
 
+Test can be executed against the following containers, activating the specific profile:
+
+* Wildfly Jakarta EE 9: `-Pwidfly`
+* Wildfly Jakarta EE 10: `-Pwidfly,jakartaee-10`
+* OpenLiberty Jakarta EE 9: `-Pliberty`
+* OpenLiberty Jakarta EE 10: `-Pliberty,jakartaee-10`
+* Payara Jakarta EE 10: `-Ppayara`
+  (Payara does not support Jakarta EE 9)
+* TomEE Jakarta EE 9: `-Ptomee`
+  (TomEE does not yet support Jakarta EE 10)
+
 ## Issue tracking
 
 If you find an issue, please report it in the [GitHub issue tracker](https://github.com/vaadin/cdi/issues).

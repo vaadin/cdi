@@ -16,6 +16,9 @@
         <surefire.groups></surefire.groups>
         <surefire.excludedGroups>com.vaadin.cdi.itest.SlowTests</surefire.excludedGroups>
         <wildfly.version>26.1.2.Final</wildfly.version>
+        <openliberty.version>22.0.0.13</openliberty.version>
+        <openliberty.template>jakartaee9</openliberty.template>
+        <openliberty.runtimeArtifactGroupId>io.openliberty</openliberty.runtimeArtifactGroupId>
     </properties>
 
     <pluginRepositories>
@@ -325,8 +328,14 @@
                                     <goal>configure-arquillian</goal>
                                 </goals>
                                 <configuration>
+                                    <runtimeArtifact>
+                                        <groupId>${openliberty.runtimeArtifactGroupId}</groupId>
+                                        <artifactId>openliberty-runtime</artifactId>
+                                        <version>${openliberty.version}</version>
+                                        <type>zip</type>
+                                    </runtimeArtifact>
                                     <useOpenLiberty>true</useOpenLiberty>
-                                    <template>jakartaee9</template>
+                                    <template>${openliberty.template}</template>
                                     <features>
                                         <feature>localConnector-1.0</feature>
                                     </features>
@@ -370,6 +379,23 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>jakartaee-10</id>
+            <properties>
+                <!-- Widlfy -->
+                <wildfly.version>27.0.1.Final</wildfly.version>
+
+                <!-- OpenLiberty -->
+                <openliberty.version>22.0.0.13-beta</openliberty.version>
+                <openliberty.template>jakartaee10</openliberty.template>
+                <openliberty.runtimeArtifactGroupId>io.openliberty.beta</openliberty.runtimeArtifactGroupId>
+
+                <!-- Tomee: no support for Jakarta EE 10 at the moment -->
+
+                <!-- Payara: no support for Jakarta EE 9 -->
+
+            </properties>
         </profile>
         <profile>
             <id>local-run</id>

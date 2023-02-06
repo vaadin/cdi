@@ -17,11 +17,13 @@ package com.vaadin.cdi.itest.routecontext;
 
 import java.util.UUID;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.cdi.annotation.RouteScoped;
 
 @RouteScoped
 @RouteScopeOwner(ErrorHandlerView.class)
+@CdiComponent
 public class CustomExceptionSubDiv extends AbstractCountedView {
 
     public CustomExceptionSubDiv() {

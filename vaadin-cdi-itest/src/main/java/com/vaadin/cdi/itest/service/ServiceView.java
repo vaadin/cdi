@@ -18,12 +18,14 @@ package com.vaadin.cdi.itest.service;
 
 import jakarta.annotation.PostConstruct;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
 @Route("")
+@CdiComponent
 public class ServiceView extends Div {
 
     public static final String EXPIRE = "EXPIRE";

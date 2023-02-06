@@ -1,5 +1,6 @@
 package com.vaadin.cdi.itest.regression;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
@@ -11,6 +12,7 @@ import com.vaadin.flow.router.RouterLayout;
 
 @UIScoped
 @Route("")
+@CdiComponent
 public class RemoveOldContentView extends Div
         implements RouterLayout {
 

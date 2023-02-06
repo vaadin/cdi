@@ -16,9 +16,11 @@
 
 package com.vaadin.cdi.itest.invaliddeployment;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 
 @Route("")
+@CdiComponent
 public class DeploymentView extends Div {
 }

@@ -20,12 +20,14 @@ import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.cdi.itest.Counter;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Label;
 
 @UIScoped
+@CdiComponent
 public class UIScopedLabel extends Label {
 
     public static final String DESTROY_COUNT = "UIScopedLabelDestroy";

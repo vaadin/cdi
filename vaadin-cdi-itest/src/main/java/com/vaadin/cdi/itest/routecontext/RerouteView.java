@@ -16,6 +16,7 @@
 
 package com.vaadin.cdi.itest.routecontext;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -23,6 +24,7 @@ import com.vaadin.flow.router.Route;
 
 @Route("reroute")
 @RouteScoped
+@CdiComponent
 public class RerouteView extends AbstractCountedView implements BeforeEnterObserver {
 
     @Override

@@ -19,11 +19,13 @@ package com.vaadin.cdi.itest.service;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.itest.Counter;
 import com.vaadin.flow.server.SessionDestroyEvent;
 import com.vaadin.flow.server.SessionInitEvent;
 import com.vaadin.flow.server.UIInitEvent;
 
+@CdiComponent
 public class EventObserver {
     @Inject
     private Counter counter;

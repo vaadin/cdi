@@ -19,6 +19,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
@@ -28,6 +29,7 @@ import com.vaadin.flow.router.Route;
 
 @Route(value = "layout-event-2", layout = EventObserverLayout.class)
 @RouteScoped
+@CdiComponent
 public class LayoutEventView2 extends Div {
 
     public static final String FIRE = "FIRE";

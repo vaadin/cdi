@@ -18,9 +18,11 @@ package com.vaadin.cdi.itest.service;
 
 import jakarta.enterprise.event.Observes;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.communication.IndexHtmlResponse;
 
+@CdiComponent
 public class BootstrapCustomizer {
 
     public static final String APPENDED_ID = "TEST_ID";

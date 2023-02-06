@@ -20,6 +20,7 @@ import jakarta.enterprise.event.Event;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -34,6 +35,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 @JsModule("./test-template.js")
 @UIScoped
 @Route("")
+@CdiComponent
 public class TestTemplate extends PolymerTemplate<TemplateModel> {
     private @Id("input") Input input;
 

@@ -246,6 +246,11 @@
                     <version>3.0.alpha6</version>
                     <scope>test</scope>
                 </dependency>
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
             </dependencies>
             <build>
                 <plugins>
@@ -264,7 +269,7 @@
                                         <artifactItem>
                                             <groupId>fish.payara.distributions</groupId>
                                             <artifactId>payara</artifactId>
-                                            <version>6.2022.1.Alpha3</version>
+                                            <version>6.2023.1</version>
                                             <type>zip</type>
                                             <overWrite>false</overWrite>
                                             <outputDirectory>target</outputDirectory>
@@ -283,6 +288,7 @@
                             <groups>${surefire.groups}</groups>
                             <systemPropertyVariables>
                                 <payara.home>${project.build.directory}/payara6</payara.home>
+                                <arquillian.launch>payara</arquillian.launch>
                                 <vaadin.bowerMode>true</vaadin.bowerMode>
                                 <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
                             </systemPropertyVariables>

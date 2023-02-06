@@ -18,6 +18,7 @@ package com.vaadin.cdi.itest.uicontext;
 
 import jakarta.annotation.PostConstruct;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
@@ -27,6 +28,7 @@ import com.vaadin.flow.router.RouterLink;
 
 @Route("uiscoped")
 @UIScoped
+@CdiComponent
 public class UIScopedView extends Div {
 
     public static final String VIEWSTATE_LABEL = "VIEWSTATE_LABEL";

@@ -18,6 +18,7 @@ package com.vaadin.cdi.itest.routecontext;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.NativeButton;
@@ -25,6 +26,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 
 @Route(value = "child-no-owner", layout = ParentNoOwnerView.class)
+@CdiComponent
 public class ChildNoOwnerView extends Div {
 
     @Inject

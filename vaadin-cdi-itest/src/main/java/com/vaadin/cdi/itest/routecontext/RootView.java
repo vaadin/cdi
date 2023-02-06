@@ -18,6 +18,7 @@ package com.vaadin.cdi.itest.routecontext;
 
 import jakarta.annotation.PostConstruct;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
@@ -26,6 +27,7 @@ import com.vaadin.flow.router.RouterLink;
 
 @Route(value = "", layout = MainLayout.class)
 @RouteScoped
+@CdiComponent
 public class RootView extends AbstractCountedView {
 
     public static final String MASTER = "master";

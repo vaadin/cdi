@@ -21,6 +21,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
 import com.vaadin.cdi.itest.Counter;
 import com.vaadin.flow.component.html.Div;
@@ -31,6 +32,7 @@ import com.vaadin.flow.server.VaadinSession;
 
 
 @Route("")
+@CdiComponent
 public class SessionContextView extends Div {
 
     public static final String SETVALUEBTN_ID = "setvalbtn";

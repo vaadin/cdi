@@ -22,6 +22,7 @@ import jakarta.enterprise.event.Event;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.flow.component.html.Div;
@@ -31,6 +32,7 @@ import com.vaadin.flow.router.Route;
 
 @Route("event")
 @RouteScoped
+@CdiComponent
 public class EventView extends Div {
 
     public static final String FIRE = "FIRE";
@@ -38,6 +40,7 @@ public class EventView extends Div {
 
     @RouteScoped
     @RouteScopeOwner(EventView.class)
+    @CdiComponent
     public static class ObserverLabel extends Label {
         private void onPrintEvent(@Observes PrintEvent printEvent) {
             setText(printEvent.getMessage());

@@ -19,10 +19,12 @@ package com.vaadin.cdi.itest.uicontext;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 
 @Route("injecter")
+@CdiComponent
 public class UIScopeInjecterView extends Div {
     @Inject
     private UIScopedLabel label;

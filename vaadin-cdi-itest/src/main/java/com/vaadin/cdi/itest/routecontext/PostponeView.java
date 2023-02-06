@@ -18,6 +18,7 @@ package com.vaadin.cdi.itest.routecontext;
 
 import jakarta.annotation.PostConstruct;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.NativeButton;
@@ -28,6 +29,7 @@ import com.vaadin.flow.router.RouterLink;
 
 @Route("postpone")
 @RouteScoped
+@CdiComponent
 public class PostponeView extends AbstractCountedView implements BeforeLeaveObserver {
 
     public static final String NAVIGATE = "NAVIGATE";

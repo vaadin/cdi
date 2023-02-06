@@ -23,6 +23,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.flow.component.PollEvent;
 import com.vaadin.flow.component.UI;
@@ -34,6 +35,7 @@ import com.vaadin.flow.router.Route;
 
 @Route("uievents")
 @UIScoped
+@CdiComponent
 public class UIEventsView extends Div implements AfterNavigationObserver {
 
     public static final String POLL_FROM_CLIENT = "POLL_FROM_CLIENT";

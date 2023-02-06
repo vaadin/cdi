@@ -18,6 +18,7 @@ package com.vaadin.cdi.itest.routecontext;
 
 import jakarta.annotation.PostConstruct;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.flow.router.Route;
@@ -27,6 +28,7 @@ import com.vaadin.flow.router.RouterLink;
 @RouteScoped
 @RouteScopeOwner(ErrorParentView.class)
 @Route("error-layout")
+@CdiComponent
 public class ErrorParentView extends AbstractCountedView
         implements RouterLayout {
 

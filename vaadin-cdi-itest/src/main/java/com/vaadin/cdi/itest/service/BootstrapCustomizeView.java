@@ -16,9 +16,11 @@
 
 package com.vaadin.cdi.itest.service;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 
 @Route("bootstrap")
+@CdiComponent
 public class BootstrapCustomizeView extends Div {
 }

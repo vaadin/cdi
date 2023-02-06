@@ -18,6 +18,7 @@ package com.vaadin.cdi.itest.routecontext;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.html.Div;
@@ -26,6 +27,7 @@ import com.vaadin.flow.router.Route;
 
 @PreserveOnRefresh
 @Route(value = "preserve-on-refresh", layout = MainLayout.class)
+@CdiComponent
 public class PreserveOnRefreshView extends Div {
 
     @Inject

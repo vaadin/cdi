@@ -26,6 +26,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.context.SessionScoped;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
@@ -36,6 +37,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.NativeButton;
 
+@CdiComponent
 public class PushComponent extends Div {
 
     public static final String RUN_BACKGROUND = "RUN_BACKGROUND";

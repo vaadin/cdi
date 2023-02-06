@@ -19,6 +19,7 @@ package com.vaadin.cdi.itest.uicontext;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.NormalUIScoped;
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
 import com.vaadin.flow.component.UI;
@@ -27,6 +28,7 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.router.Route;
 
 @Route("normalscopedbean")
+@CdiComponent
 public class UINormalScopedBeanView extends Div {
 
     public static final String UIID_LABEL = "UIID_LABEL";

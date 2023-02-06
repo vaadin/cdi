@@ -19,6 +19,7 @@ package com.vaadin.cdi.itest.routecontext;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 
+import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.flow.component.html.Div;
@@ -31,6 +32,7 @@ import com.vaadin.flow.router.RouterLink;
 @RouteScoped
 @RouteScopeOwner(MasterView.class)
 @Route(value = "assigned", layout = MasterView.class)
+@CdiComponent
 public class DetailAssignedView extends AbstractCountedView implements AfterNavigationObserver {
 
     public static final String MASTER = "master";

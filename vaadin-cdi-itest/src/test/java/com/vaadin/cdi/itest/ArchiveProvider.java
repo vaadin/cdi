@@ -19,6 +19,8 @@ package com.vaadin.cdi.itest;
 import java.io.File;
 import java.util.function.Consumer;
 
+import org.jboss.arquillian.container.test.api.BeforeDeployment;
+import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -29,14 +31,14 @@ import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 public class ArchiveProvider {
 
     public static WebArchive createWebArchive(String warName,
-            Consumer<WebArchive> customizer) {
+                                              Consumer<WebArchive> customizer) {
         WebArchive archive = base(warName);
         customizer.accept(archive);
         return archive;
     }
 
     public static WebArchive createWebArchive(String warName,
-            Class... classes) {
+                                              Class... classes) {
         return createWebArchive(warName,
                 archive -> archive.addClasses(classes)
                         .addAsResource(new File("target/classes/META-INF")));
@@ -45,7 +47,7 @@ public class ArchiveProvider {
     private static WebArchive base(String warName) {
         PomEquippedResolveStage pom = Maven.configureResolver().workOffline()
                 .loadPomFromFile("target/effective-pom.xml");
-        return ShrinkWrap.create(WebArchive.class, warName + ".war")
+        WebArchive archive = ShrinkWrap.create(WebArchive.class, warName + ".war")
                 .addAsLibraries(pom.resolve("com.vaadin:vaadin-cdi")
                         .withTransitivity().asFile())
                 .addAsLibraries(pom.resolve("com.vaadin:flow-server")
@@ -59,6 +61,20 @@ public class ArchiveProvider {
                 .addAsWebInfResource(EmptyAsset.INSTANCE,
                         ArchivePaths.create("beans.xml"))
                 .addClasses(Counter.class, CounterFilter.class);
+        return applyPayaraSlf4jWorkaround(archive, pom);
+    }
+
+
+    // Workaround for https://github.com/payara/Payara/issues/5898
+    // Slf4J implementation lookup error in Payara 6
+    private static WebArchive applyPayaraSlf4jWorkaround(WebArchive archive, PomEquippedResolveStage pom) {
+        if ("payara".equals(System.getProperty("arquillian.launch"))) {
+            archive.addAsWebInfResource(AbstractCdiTest.class.getClassLoader().getResource("payara/glassfish-web.xml"),
+                            "glassfish-web.xml")
+                    .addAsLibraries(pom.resolve("org.slf4j:slf4j-simple").withoutTransitivity().asFile());
+
+        }
+        return archive;
     }
 
 }

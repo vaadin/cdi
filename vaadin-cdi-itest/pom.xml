@@ -275,7 +275,7 @@
                                         <artifactItem>
                                             <groupId>fish.payara.distributions</groupId>
                                             <artifactId>payara</artifactId>
-                                            <version>4.1.2.181</version>
+                                            <version>5.2022.5</version>
                                             <type>zip</type>
                                             <overWrite>false</overWrite>
                                             <outputDirectory>target</outputDirectory>
@@ -294,7 +294,7 @@
                             <groups>${surefire.groups}</groups>
                             <environmentVariables>
                                 <GLASSFISH_HOME>
-                                    ${project.build.directory}/payara41
+                                    ${project.build.directory}/payara5
                                 </GLASSFISH_HOME>
                             </environmentVariables>
                             <systemPropertyVariables>

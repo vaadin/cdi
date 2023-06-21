@@ -16,25 +16,31 @@
 
 package com.vaadin.cdi;
 
+import jakarta.enterprise.context.spi.Context;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.AmbiguousResolutionException;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import jakarta.enterprise.context.spi.Context;
-import jakarta.enterprise.context.spi.CreationalContext;
-import jakarta.enterprise.inject.AmbiguousResolutionException;
-import jakarta.enterprise.inject.spi.Bean;
-import jakarta.enterprise.inject.spi.BeanManager;
-import jakarta.inject.Inject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.context.ServiceUnderTestContext;
+import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.PollEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.di.InstantiatorFactory;
 import com.vaadin.flow.server.CustomizedSystemMessages;
@@ -43,7 +49,9 @@ import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.SystemMessages;
 import com.vaadin.flow.server.SystemMessagesInfo;
 import com.vaadin.flow.server.SystemMessagesProvider;
+import com.vaadin.flow.server.VaadinSession;
 
+import static com.vaadin.cdi.SerializationUtils.serializeAndDeserialize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -65,6 +73,15 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
             return new CustomizedSystemMessages();
         }
 
+    }
+
+    @Singleton
+    private static class UIListenerEventReceiver {
+
+        private UI pollEventUI;
+        void onPollEvent(@Observes PollEvent pollEvent) {
+            pollEventUI = pollEvent.getSource();
+        }
     }
 
     @Inject
@@ -174,6 +191,25 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
         Optional<Instantiator> maybeInstantiator = service.loadInstantiators();
         Assertions.assertTrue(maybeInstantiator.isPresent());
         Assertions.assertEquals(mockInstantiator, maybeInstantiator.get());
+    }
+
+    @Test
+    void fireUIInitListeners_serialization_UIserializableAndListenersWork() throws Exception {
+        initService(beanManager);
+
+        UIListenerEventReceiver uiListenerEventReceiver = service.getInstantiator().getOrCreate(UIListenerEventReceiver.class);
+        UI ui = new UI();
+        ui.getInternals().setSession(Mockito.mock(VaadinSession.class, Mockito.withSettings().serializable()));
+        service.fireUIInitListeners(ui);
+
+        ComponentUtil.fireEvent(ui, new PollEvent(ui, false));
+        Assertions.assertEquals(ui, uiListenerEventReceiver.pollEventUI);
+
+        UI ui2 = serializeAndDeserialize(ui);
+        Assertions.assertNotNull(ui2);
+
+        ComponentUtil.fireEvent(ui2, new PollEvent(ui2, false));
+        Assertions.assertEquals(ui2, uiListenerEventReceiver.pollEventUI);
     }
 
     private void initService(BeanManager beanManager) throws ServiceException {

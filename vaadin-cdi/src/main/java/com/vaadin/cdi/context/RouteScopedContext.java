@@ -210,7 +210,7 @@ public class RouteScopedContext extends AbstractContext {
 
     }
 
-    static class NavigationData {
+    static class NavigationData implements Serializable {
         private final Class<?> navigationTarget;
         private final List<Class<? extends RouterLayout>> layouts;
 

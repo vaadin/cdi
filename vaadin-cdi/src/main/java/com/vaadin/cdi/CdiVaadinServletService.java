@@ -53,6 +53,7 @@ import com.vaadin.flow.server.SystemMessagesProvider;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.WrappedSession;
 
 import static com.vaadin.cdi.BeanLookup.SERVICE;
 
@@ -86,7 +87,7 @@ public class CdiVaadinServletService extends VaadinServletService {
 
     @Override
     public void init() throws ServiceException {
-        delegate.init();
+        delegate.init(this);
         super.init();
     }
 
@@ -94,6 +95,20 @@ public class CdiVaadinServletService extends VaadinServletService {
     public void fireUIInitListeners(UI ui) {
         delegate.addUIListeners(ui);
         super.fireUIInitListeners(ui);
+    }
+
+    @Override
+    protected VaadinSession loadSession(WrappedSession wrappedSession) {
+        return super.loadSession(wrappedSession);
+    }
+
+    @Override
+    protected void storeSession(VaadinSession session, WrappedSession wrappedSession) {
+        super.storeSession(session, wrappedSession);
+    }
+
+    private void restoreDelegate(VaadinSession session) {
+
     }
 
     public Optional<Instantiator> loadInstantiators() throws ServiceException {
@@ -145,8 +160,6 @@ public class CdiVaadinServletService extends VaadinServletService {
      */
     public static class CdiVaadinServiceDelegate implements Serializable {
 
-        private final VaadinService vaadinService;
-
         private transient BeanManager beanManager;
 
         private final UIEventListener uiEventListener;
@@ -154,12 +167,10 @@ public class CdiVaadinServletService extends VaadinServletService {
         public CdiVaadinServiceDelegate(VaadinService vaadinService,
                 BeanManager beanManager) {
             this.beanManager = beanManager;
-            this.vaadinService = vaadinService;
-
             uiEventListener = new UIEventListener(this);
         }
 
-        public void init() throws ServiceException {
+        public void init(VaadinService vaadinService) throws ServiceException {
             lookup(SystemMessagesProvider.class)
                     .ifPresent(vaadinService::setSystemMessagesProvider);
             vaadinService.addUIInitListener(e -> getBeanManager().getEvent()

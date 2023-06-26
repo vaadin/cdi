@@ -16,19 +16,31 @@
 
 package com.vaadin.cdi.context;
 
+import java.io.Serializable;
 import java.util.Collections;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import com.vaadin.cdi.annotation.NormalRouteScoped;
 import com.vaadin.cdi.context.RouteScopedContext.NavigationData;
+import com.vaadin.cdi.util.BeanProvider;
 import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.startup.ApplicationConfiguration;
+
+import static com.vaadin.cdi.SerializationUtils.serializeAndDeserialize;
 
 public class RouteContextNormalTest extends
         AbstractContextTest<RouteContextNormalTest.RouteScopedTestBean> {
 
     @NormalRouteScoped
     @Route("")
-    public static class RouteScopedTestBean extends TestBean {
+    public static class RouteScopedTestBean extends TestBean implements Serializable {
     }
 
     @Override
@@ -57,6 +69,20 @@ public class RouteContextNormalTest extends
     @Override
     protected boolean isNormalScoped() {
         return true;
+    }
+
+    @Test
+    void activeContext_UISerializable() throws Exception {
+        UIUnderTestContext context = (UIUnderTestContext) createContext();
+        context.activate();
+        BeanProvider.getContextualReference(getBeanType());
+        UI ui = context.getUi();
+        try (MockedStatic<ApplicationConfiguration> appCfg = Mockito.mockStatic(ApplicationConfiguration.class)) {
+            appCfg.when(() -> ApplicationConfiguration.get(ArgumentMatchers.any()))
+                    .thenReturn(Mockito.mock(ApplicationConfiguration.class));
+            UI ui2 = serializeAndDeserialize(ui);
+            Assertions.assertNotNull(ui2);
+        }
     }
 
 }

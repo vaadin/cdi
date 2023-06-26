@@ -17,7 +17,6 @@
 package com.vaadin.cdi.context;
 
 import javax.enterprise.inject.spi.CDI;
-
 import java.util.Properties;
 
 import org.mockito.Mockito;
@@ -41,7 +40,7 @@ public class SessionUnderTestContext implements UnderTestContext {
             serviceUnderTestContext.activate();
         }
         session = Mockito.mock(TestSession.class,
-                Mockito.withSettings().useConstructor());
+                Mockito.withSettings().useConstructor().serializable());
         doCallRealMethod().when(session).setAttribute(Mockito.any(String.class),
                 Mockito.any());
         doCallRealMethod().when(session)
@@ -52,7 +51,7 @@ public class SessionUnderTestContext implements UnderTestContext {
 
         when(session.hasLock()).thenReturn(true);
         DeploymentConfiguration configuration = Mockito
-                .mock(DeploymentConfiguration.class);
+                .mock(DeploymentConfiguration.class, Mockito.withSettings().serializable());
         when(session.getConfiguration()).thenReturn(configuration);
         when(configuration.isBowerMode()).thenReturn(true);
         Properties props = new Properties();

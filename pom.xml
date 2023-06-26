@@ -52,7 +52,7 @@
         <weld.version>2.4.6.Final</weld.version>
         <arquillian.version>1.1.15.Final</arquillian.version>
     </properties>
-         
+
     <repositories>
         <!-- The order of definitions matters. Explicitly defining central here to make sure it has the highest priority. -->
         <repository>

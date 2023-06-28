@@ -16,10 +16,19 @@
 
 package com.vaadin.cdi.context;
 
-import com.vaadin.cdi.annotation.RouteScoped;
-import com.vaadin.flow.router.Route;
+import java.io.Serializable;
+
+import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import com.vaadin.cdi.annotation.RouteScoped;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.router.Route;
+
+import static com.vaadin.cdi.SerializationUtils.serializeAndDeserialize;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(CdiTestRunner.class)
 public class RouteContextPseudoTest
@@ -27,7 +36,7 @@ public class RouteContextPseudoTest
 
     @RouteScoped
     @Route("")
-    public static class RouteScopedTestBean extends TestBean {
+    public static class RouteScopedTestBean extends TestBean implements Serializable {
     }
 
     @Override
@@ -44,6 +53,16 @@ public class RouteContextPseudoTest
     @Override
     protected boolean isNormalScoped() {
         return false;
+    }
+
+    @Test
+    public void activeContext_UISerializable() throws Exception {
+        UIUnderTestContext context = (UIUnderTestContext) createContext();
+        context.activate();
+        BeanProvider.getContextualReference(getBeanType());
+        UI ui = context.getUi();
+        UI ui2 = serializeAndDeserialize(ui);
+        assertNotNull(ui2);
     }
 
 }

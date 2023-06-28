@@ -82,7 +82,7 @@ public class CdiVaadinServletService extends VaadinServletService {
                                    DeploymentConfiguration configuration,
                                    BeanManager beanManager) {
         super(servlet, configuration);
-        this.delegate = new CdiVaadinServiceDelegate(this, beanManager);
+        this.delegate = new CdiVaadinServiceDelegate(beanManager);
     }
 
     @Override
@@ -164,8 +164,7 @@ public class CdiVaadinServletService extends VaadinServletService {
 
         private final UIEventListener uiEventListener;
 
-        public CdiVaadinServiceDelegate(VaadinService vaadinService,
-                BeanManager beanManager) {
+        public CdiVaadinServiceDelegate(BeanManager beanManager) {
             this.beanManager = beanManager;
             uiEventListener = new UIEventListener(this);
         }

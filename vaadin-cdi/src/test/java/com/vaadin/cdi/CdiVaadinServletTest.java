@@ -18,6 +18,7 @@ package com.vaadin.cdi;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
@@ -25,10 +26,12 @@ import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRegistration;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import com.vaadin.cdi.context.ServiceUnderTestContext;
@@ -64,6 +67,8 @@ public class CdiVaadinServletTest extends AbstractWeldTest {
                 .thenReturn(provider);
         Mockito.when(servletContext.getAttribute(Lookup.class.getName()))
                 .thenReturn(lookup);
+        Mockito.when(servletContext.getAttribute(Lookup.class.getName()))
+                .thenReturn(lookup);
 
         final DefaultApplicationConfigurationFactory applicationConfigurationFactory = Mockito
                 .mock(DefaultApplicationConfigurationFactory.class);
@@ -74,6 +79,8 @@ public class CdiVaadinServletTest extends AbstractWeldTest {
         final VaadinContext context = Mockito.mock(VaadinContext.class);
         Mockito.when(applicationConfiguration.getContext()).thenReturn(context);
         Mockito.when(context.getAttribute(Lookup.class)).thenReturn(lookup);
+        Mockito.when(context.getAttribute(ArgumentMatchers.any(Class.class), ArgumentMatchers.any(Supplier.class)))
+                .then(i -> i.getArgument(1, Supplier.class).get());
 
         Mockito.when(lookup.lookup(ApplicationConfigurationFactory.class))
                 .thenReturn(applicationConfigurationFactory);

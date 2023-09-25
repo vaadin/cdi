@@ -67,8 +67,6 @@ public class CdiVaadinServletTest extends AbstractWeldTest {
                 .thenReturn(provider);
         Mockito.when(servletContext.getAttribute(Lookup.class.getName()))
                 .thenReturn(lookup);
-        Mockito.when(servletContext.getAttribute(Lookup.class.getName()))
-                .thenReturn(lookup);
 
         final DefaultApplicationConfigurationFactory applicationConfigurationFactory = Mockito
                 .mock(DefaultApplicationConfigurationFactory.class);

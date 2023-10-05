@@ -36,7 +36,7 @@ Since the current release version is a prerelease, you need to also include the 
     <id>Vaadin prereleases</id>
     <url>https://maven.vaadin.com/vaadin-prereleases</url>
   </repository>
-<repositories>
+</repositories>
 ```
 
 ## Getting started

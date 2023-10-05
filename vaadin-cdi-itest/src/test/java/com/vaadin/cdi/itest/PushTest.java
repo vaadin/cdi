@@ -22,6 +22,7 @@ import javax.enterprise.context.SessionScoped;
 import java.io.File;
 import java.lang.annotation.Annotation;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -33,6 +34,7 @@ import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
 import com.vaadin.cdi.itest.push.PushComponent;
 
+@NotThreadSafe
 public class PushTest extends AbstractCdiTest {
 
     @Deployment(testable = false)

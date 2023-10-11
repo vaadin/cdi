@@ -94,7 +94,7 @@ public class PushComponent extends Div {
     private void init() {
         NativeButton bgButton = new NativeButton("background", event -> {
             ContextCheckTask task = new ContextCheckTask(UI.getCurrent());
-            // Delay execution to prevent UIDL being pushed by the thread service
+            // Delay execution to prevent UIDL being pushed by the thread serving
             // the current HTTP request instead of the background thread
             executorService.schedule(task, 10, TimeUnit.MILLISECONDS);
         });

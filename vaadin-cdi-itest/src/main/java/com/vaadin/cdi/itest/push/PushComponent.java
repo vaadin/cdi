@@ -16,15 +16,17 @@
 
 package com.vaadin.cdi.itest.push;
 
-import java.lang.annotation.Annotation;
-import java.util.concurrent.locks.Lock;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import jakarta.enterprise.concurrent.ManagedScheduledExecutorService;
 import jakarta.enterprise.concurrent.ManagedThreadFactory;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.context.SessionScoped;
+import java.lang.annotation.Annotation;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScoped;
@@ -36,6 +38,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.component.html.Span;
 
 @CdiComponent
 public class PushComponent extends Div {
@@ -55,20 +58,24 @@ public class PushComponent extends Div {
 
         @Override
         public void run() {
-            // We can acquire the lock after the request started this thread is processed
-            // Needed to make sure that this is sent as a push message
+            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(this.classLoader);
-            Lock lockInstance = ui.getSession().getLockInstance();
-            lockInstance.lock();
-            lockInstance.unlock();
+            try {
+                // We can acquire the lock after the request started this thread is processed
+                // Needed to make sure that this is sent as a push message
+                Lock lockInstance = ui.getSession().getLockInstance();
+                lockInstance.lock();
+                lockInstance.unlock();
 
-            ui.access(PushComponent.this::print);
+                ui.access(PushComponent.this::print);
+            } finally {
+                Thread.currentThread().setContextClassLoader(contextClassLoader);
+            }
         }
-
     }
 
     @Resource
-    private ManagedThreadFactory threadFactory;
+    private ManagedScheduledExecutorService executorService;
 
     private void print() {
         printContextIsActive(RequestScoped.class);
@@ -90,8 +97,9 @@ public class PushComponent extends Div {
     private void init() {
         NativeButton bgButton = new NativeButton("background", event -> {
             ContextCheckTask task = new ContextCheckTask(UI.getCurrent());
-            Thread thread = threadFactory.newThread(task);
-            thread.start();
+            // Delay execution to prevent UIDL being written on current
+            // request instead of being pushed through websocket
+            executorService.schedule(task, 10, TimeUnit.MILLISECONDS);
         });
         bgButton.setId(RUN_BACKGROUND);
 

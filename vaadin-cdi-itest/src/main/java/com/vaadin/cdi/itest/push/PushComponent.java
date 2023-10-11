@@ -19,14 +19,12 @@ package com.vaadin.cdi.itest.push;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.concurrent.ManagedScheduledExecutorService;
-import jakarta.enterprise.concurrent.ManagedThreadFactory;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.context.SessionScoped;
 import java.lang.annotation.Annotation;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScoped;
@@ -38,7 +36,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.NativeButton;
-import com.vaadin.flow.component.html.Span;
 
 @CdiComponent
 public class PushComponent extends Div {
@@ -97,8 +94,8 @@ public class PushComponent extends Div {
     private void init() {
         NativeButton bgButton = new NativeButton("background", event -> {
             ContextCheckTask task = new ContextCheckTask(UI.getCurrent());
-            // Delay execution to prevent UIDL being written on current
-            // request instead of being pushed through websocket
+            // Delay execution to prevent UIDL being pushed by the thread service
+            // the current HTTP request instead of the background thread
             executorService.schedule(task, 10, TimeUnit.MILLISECONDS);
         });
         bgButton.setId(RUN_BACKGROUND);

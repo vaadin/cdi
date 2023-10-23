@@ -15,7 +15,7 @@
         <maven.deploy.skip>true</maven.deploy.skip>
         <surefire.groups></surefire.groups>
         <surefire.excludedGroups>com.vaadin.cdi.itest.SlowTests</surefire.excludedGroups>
-        <wildfly.version>26.1.2.Final</wildfly.version>
+        <wildfly.version>26.1.3.Final</wildfly.version>
         <openliberty.version>22.0.0.13</openliberty.version>
         <openliberty.template>jakartaee9</openliberty.template>
         <openliberty.runtimeArtifactGroupId>io.openliberty</openliberty.runtimeArtifactGroupId>
@@ -384,7 +384,7 @@
             <id>jakartaee-10</id>
             <properties>
                 <!-- Widlfy -->
-                <wildfly.version>27.0.1.Final</wildfly.version>
+                <wildfly.version>30.0.0.Final</wildfly.version>
 
                 <!-- OpenLiberty -->
                 <openliberty.version>22.0.0.13-beta</openliberty.version>

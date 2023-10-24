@@ -389,7 +389,7 @@
                 <!-- OpenLiberty -->
                 <openliberty.version>23.0.0.10</openliberty.version>
                 <openliberty.template>jakartaee10</openliberty.template>
-                <openliberty.runtimeArtifactGroupId>io.openliberty.beta</openliberty.runtimeArtifactGroupId>
+                <openliberty.runtimeArtifactGroupId>io.openliberty</openliberty.runtimeArtifactGroupId>
 
                 <!-- Tomee: no support for Jakarta EE 10 at the moment -->
 

@@ -308,7 +308,7 @@
                 <dependency>
                     <groupId>io.openliberty.arquillian</groupId>
                     <artifactId>arquillian-liberty-managed-jakarta-junit</artifactId>
-                    <version>2.1.2</version>
+                    <version>2.1.4</version>
                     <type>pom</type>
                 </dependency>
             </dependencies>
@@ -317,7 +317,7 @@
                     <plugin>
                         <groupId>io.openliberty.tools</groupId>
                         <artifactId>liberty-maven-plugin</artifactId>
-                        <version>3.7.1</version>
+                        <version>3.9</version>
                         <executions>
                             <execution>
                                 <id>create-server</id>
@@ -387,9 +387,9 @@
                 <wildfly.version>30.0.0.Final</wildfly.version>
 
                 <!-- OpenLiberty -->
-                <openliberty.version>22.0.0.13-beta</openliberty.version>
+                <openliberty.version>23.0.0.10</openliberty.version>
                 <openliberty.template>jakartaee10</openliberty.template>
-                <openliberty.runtimeArtifactGroupId>io.openliberty.beta</openliberty.runtimeArtifactGroupId>
+                <openliberty.runtimeArtifactGroupId>io.openliberty</openliberty.runtimeArtifactGroupId>
 
                 <!-- Tomee: no support for Jakarta EE 10 at the moment -->
 

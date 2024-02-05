@@ -48,7 +48,7 @@
         <vaadin.flow.version>24.0-SNAPSHOT</vaadin.flow.version>
         <slf4j.version>2.0.4</slf4j.version>
         <weld.version>5.1.0.Final</weld.version>
-        <arquillian.version>1.7.0.Alpha12</arquillian.version>
+        <arquillian.version>1.8.0.Final</arquillian.version>
         <shrinkwrap.resolver.version>3.1.4</shrinkwrap.resolver.version>
         <shrinkwrap.descriptors.version>2.0.0</shrinkwrap.descriptors.version>
         <jakarta.enterprise.concurrent.api.version>3.0.2</jakarta.enterprise.concurrent.api.version>

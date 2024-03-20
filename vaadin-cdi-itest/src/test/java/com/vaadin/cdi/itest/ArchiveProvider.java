@@ -19,8 +19,6 @@ package com.vaadin.cdi.itest;
 import java.io.File;
 import java.util.function.Consumer;
 
-import org.jboss.arquillian.container.test.api.BeforeDeployment;
-import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -48,16 +46,11 @@ public class ArchiveProvider {
         PomEquippedResolveStage pom = Maven.configureResolver().workOffline()
                 .loadPomFromFile("target/effective-pom.xml");
         WebArchive archive = ShrinkWrap.create(WebArchive.class, warName + ".war")
-                .addAsLibraries(pom.resolve("com.vaadin:vaadin-cdi")
-                        .withTransitivity().asFile())
-                .addAsLibraries(pom.resolve("com.vaadin:flow-server")
-                        .withTransitivity().asFile())
-                .addAsLibraries(pom.resolve("com.vaadin:flow-client")
-                        .withTransitivity().asFile())
-                .addAsLibraries(pom.resolve("com.vaadin:flow-html-components")
-                        .withTransitivity().asFile())
-                .addAsLibraries(pom.resolve("com.vaadin:flow-polymer-template")
-                        .withTransitivity().asFile())
+                .addAsLibraries(pom.resolve(
+                        "com.vaadin:vaadin-cdi", "com.vaadin:flow-server",
+                        "com.vaadin:flow-client", "com.vaadin:flow-html-components",
+                        "com.vaadin:flow-polymer-template"
+                ).withTransitivity().asFile())
                 .addAsWebInfResource(EmptyAsset.INSTANCE,
                         ArchivePaths.create("beans.xml"))
                 .addClasses(Counter.class, CounterFilter.class);

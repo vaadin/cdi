@@ -16,21 +16,19 @@
 
 package com.vaadin.cdi;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
-
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Vetoed;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.Interceptors;
+import jakarta.interceptor.InvocationContext;
 import jakarta.servlet.ServletException;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.context.ServiceUnderTestContext;
@@ -40,12 +38,38 @@ import com.vaadin.flow.i18n.I18NProvider;
 import com.vaadin.flow.internal.UsageStatistics;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinService;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class CdiInstantiatorTest extends AbstractWeldTest {
 
     @Singleton
     public static class SomeCdiBean {
     }
+
+    @ApplicationScoped
+    public static class ScopedCdiBean {
+    }
+
+    public static class MyInterceptor {
+
+        @AroundInvoke
+        public Object intercept(InvocationContext ctx) throws Exception {
+            return ctx.proceed();
+        }
+    }
+
+    @Interceptors(MyInterceptor.class)
+    public static class InterceptedCdiBean {
+
+        public void exec() {
+
+        }
+    }
+
 
     public static class ParentBean {
 
@@ -204,6 +228,38 @@ public class CdiInstantiatorTest extends AbstractWeldTest {
 
         UsageStatistics.UsageEntry entry = entries.get(0);
         Assertions.assertEquals("flow/CdiInstantiator", entry.getName());
+    }
+
+    @Test
+    public void getApplicationClass_regularClass_getsSameClass()
+            throws ServletException {
+        SomeCdiBean instance = instantiator.getOrCreate(SomeCdiBean.class);
+        Assertions.assertSame(SomeCdiBean.class,
+                instantiator.getApplicationClass(instance));
+        Assertions.assertSame(SomeCdiBean.class,
+                instantiator.getApplicationClass(instance.getClass()));
+    }
+
+    @Test
+    public void getApplicationClass_scopedBean_getsApplicationClass()
+            throws ServletException {
+        ScopedCdiBean instance = instantiator.getOrCreate(ScopedCdiBean.class);
+        Assertions.assertSame(ScopedCdiBean.class,
+                instantiator.getApplicationClass(instance));
+        Assertions.assertSame(ScopedCdiBean.class,
+                instantiator.getApplicationClass(instance.getClass()));
+    }
+
+    @Test
+    public void getApplicationClass_proxiedBean_getsApplicationClass()
+            throws ServletException {
+        InterceptedCdiBean instance = instantiator.getOrCreate(InterceptedCdiBean.class);
+        instance.exec();
+        Assertions.assertNotSame(InterceptedCdiBean.class, instance.getClass());
+        Assertions.assertSame(InterceptedCdiBean.class,
+                instantiator.getApplicationClass(instance));
+        Assertions.assertSame(InterceptedCdiBean.class,
+                instantiator.getApplicationClass(instance.getClass()));
     }
 
 }

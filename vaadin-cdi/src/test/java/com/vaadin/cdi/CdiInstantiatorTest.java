@@ -180,7 +180,7 @@ public class CdiInstantiatorTest extends AbstractWeldTest {
     }
 
     @Test
-    public void getMenuAccessControl_beanNotProvided_instanceReturned() {
+    public void getMenuAccessControl_beanEnabled_instanceReturned() {
         MenuAccessControl menuAccessControl = instantiator
                 .getMenuAccessControl();
         Assertions.assertNotNull(menuAccessControl);

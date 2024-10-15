@@ -27,6 +27,7 @@ import com.vaadin.flow.di.DefaultInstantiator;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.i18n.I18NProvider;
 import com.vaadin.flow.server.VaadinServiceInitListener;
+import com.vaadin.flow.server.auth.MenuAccessControl;
 
 abstract public class AbstractCdiInstantiator implements Instantiator {
 
@@ -76,6 +77,13 @@ abstract public class AbstractCdiInstantiator implements Instantiator {
             });
         }
         return lookup.lookupOrElseGet(getDelegate()::getI18NProvider);
+    }
+
+    @Override
+    public MenuAccessControl getMenuAccessControl() {
+        final BeanLookup<MenuAccessControl> lookup = new BeanLookup<>(
+                getBeanManager(), MenuAccessControl.class, BeanLookup.SERVICE);
+        return lookup.lookupOrElseGet(getDelegate()::getMenuAccessControl);
     }
 
     private static Logger getLogger() {

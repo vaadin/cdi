@@ -38,6 +38,8 @@ import com.vaadin.flow.i18n.I18NProvider;
 import com.vaadin.flow.internal.UsageStatistics;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.auth.MenuAccessControl;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -111,6 +113,21 @@ public class CdiInstantiatorTest extends AbstractWeldTest {
 
     }
 
+    @VaadinServiceEnabled
+    public static class TestMenuAccessControl implements MenuAccessControl {
+
+        @Override
+        public void setPopulateClientSideMenu(
+                PopulateClientMenu populateClientSideMenu) {
+
+        }
+
+        @Override
+        public PopulateClientMenu getPopulateClientSideMenu() {
+            return null;
+        }
+    }
+
     @Singleton
     public static class ServiceInitObserver {
 
@@ -160,6 +177,14 @@ public class CdiInstantiatorTest extends AbstractWeldTest {
         I18NProvider i18NProvider = instantiator.getI18NProvider();
         Assertions.assertNotNull(i18NProvider);
         Assertions.assertTrue((i18NProvider instanceof I18NTestProvider));
+    }
+
+    @Test
+    public void getMenuAccessControl_beanEnabled_instanceReturned() {
+        MenuAccessControl menuAccessControl = instantiator
+                .getMenuAccessControl();
+        Assertions.assertNotNull(menuAccessControl);
+        Assertions.assertInstanceOf(TestMenuAccessControl.class, menuAccessControl);
     }
 
     @Test

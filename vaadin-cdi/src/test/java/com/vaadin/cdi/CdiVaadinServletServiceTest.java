@@ -29,11 +29,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
@@ -79,6 +80,7 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
     private static class UIListenerEventReceiver {
 
         private UI pollEventUI;
+
         void onPollEvent(@Observes PollEvent pollEvent) {
             pollEventUI = pollEvent.getSource();
         }
@@ -199,8 +201,14 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
 
         UIListenerEventReceiver uiListenerEventReceiver = service.getInstantiator().getOrCreate(UIListenerEventReceiver.class);
         UI ui = new UI();
-        ui.getInternals().setSession(Mockito.mock(VaadinSession.class, Mockito.withSettings().serializable()));
-        service.fireUIInitListeners(ui);
+        VaadinSession session = new MockVaadinSession();
+        session.getLockInstance().lock();
+        try {
+            ui.getInternals().setSession(session);
+            service.fireUIInitListeners(ui);
+        } finally {
+            session.getLockInstance().unlock();
+        }
 
         ComponentUtil.fireEvent(ui, new PollEvent(ui, false));
         Assertions.assertEquals(ui, uiListenerEventReceiver.pollEventUI);
@@ -241,4 +249,17 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
         verify(mockBm, times(1)).resolve(same(beans));
     }
 
+    private static class MockVaadinSession extends VaadinSession {
+
+        ReentrantLock lock = new ReentrantLock();
+
+        public MockVaadinSession() {
+            super(null);
+        }
+
+        @Override
+        public Lock getLockInstance() {
+            return lock;
+        }
+    }
 }

@@ -16,10 +16,6 @@
 
 package com.vaadin.cdi.itest;
 
-import static com.vaadin.cdi.itest.service.ServiceView.ACTION;
-import static com.vaadin.cdi.itest.service.ServiceView.EXPIRE;
-import static com.vaadin.cdi.itest.service.ServiceView.FAIL;
-
 import java.io.IOException;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -39,6 +35,10 @@ import com.vaadin.cdi.itest.service.TestSystemMessagesProvider;
 import com.vaadin.flow.server.SessionDestroyEvent;
 import com.vaadin.flow.server.SessionInitEvent;
 import com.vaadin.flow.server.UIInitEvent;
+
+import static com.vaadin.cdi.itest.service.ServiceView.ACTION;
+import static com.vaadin.cdi.itest.service.ServiceView.EXPIRE;
+import static com.vaadin.cdi.itest.service.ServiceView.FAIL;
 
 public class ServiceTest extends AbstractCdiTest {
 
@@ -108,8 +108,8 @@ public class ServiceTest extends AbstractCdiTest {
     }
 
     private void assertSystemMessageEquals(String expected) {
-        WebElement message = findElement(
-                By.cssSelector("div.v-system-error div.message"));
+        WebElement message = waitUntil(d -> findElement(
+                By.cssSelector("div.v-system-error div.message")));
         Assert.assertEquals(expected, message.getText());
     }
 }

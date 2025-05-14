@@ -7,6 +7,8 @@ This is the official CDI integration for [Vaadin Flow](https://github.com/vaadin
 
 This branch is compatible with upcoming Vaadin platform versions. See other branches for other Vaadin versions:
 
+* 15.2 for Vaadin 24.8
+* 15.1 for Vaadin 24.4
 * 15.0 for Vaadin 24
 * 14.1 for Vaadin 23.3
 * 13.1 for Vaadin 22.1
@@ -23,7 +25,7 @@ To use CDI with Vaadin 10, you need to add the following dependency to your pom.
 <dependency>
   <groupdId>com.vaadin</groupId>
   <artifactId>vaadin-cdi</artifactId>
-  <version>10.0.0.beta1</version> <!-- Or the LATEST version -->
+  <version>15.1.0</version> <!-- Or the LATEST version -->
 </dependency>
 ```
 

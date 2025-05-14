@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-cdi-parent</artifactId>
-        <version>15.1-SNAPSHOT</version>
+        <version>15.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,9 +15,10 @@
         <maven.deploy.skip>true</maven.deploy.skip>
         <surefire.groups></surefire.groups>
         <surefire.excludedGroups>com.vaadin.cdi.itest.SlowTests</surefire.excludedGroups>
-        <wildfly.version>26.1.3.Final</wildfly.version>
-        <openliberty.version>22.0.0.13</openliberty.version>
-        <openliberty.template>jakartaee9</openliberty.template>
+        <apache-tomee.version>10.0.1</apache-tomee.version>
+        <wildfly.version>30.0.0.Final</wildfly.version>
+        <openliberty.version>23.0.0.10</openliberty.version>
+        <openliberty.template>jakartaee10</openliberty.template>
         <openliberty.runtimeArtifactGroupId>io.openliberty</openliberty.runtimeArtifactGroupId>
     </properties>
 
@@ -144,9 +145,6 @@
     <profiles>
         <profile>
             <id>tomee</id>
-            <properties>
-                <apache-tomee.version>9.1.1</apache-tomee.version>
-            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.apache.tomee</groupId>
@@ -173,7 +171,6 @@
                             <groups>${surefire.groups}</groups>
                             <systemPropertyVariables>
                                 <tomee.host>0.0.0.0</tomee.host>
-                                <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -231,7 +228,6 @@
                             <systemPropertyVariables>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                                 <jboss.home>${project.build.directory}/wildfly-preview-${wildfly.version}</jboss.home>
-                                <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
                                 <arquillian.launch>wildfly</arquillian.launch>
                             </systemPropertyVariables>
                             <redirectTestOutputToFile>false</redirectTestOutputToFile>
@@ -246,7 +242,7 @@
                 <dependency>
                     <groupId>fish.payara.arquillian</groupId>
                     <artifactId>arquillian-payara-server-managed</artifactId>
-                    <version>3.0.alpha8</version>
+                    <version>3.1</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
@@ -293,7 +289,6 @@
                                 <payara.home>${project.build.directory}/payara6</payara.home>
                                 <arquillian.launch>payara</arquillian.launch>
                                 <vaadin.bowerMode>true</vaadin.bowerMode>
-                                <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
                             </systemPropertyVariables>
                             <redirectTestOutputToFile>false
                             </redirectTestOutputToFile>
@@ -317,7 +312,7 @@
                     <plugin>
                         <groupId>io.openliberty.tools</groupId>
                         <artifactId>liberty-maven-plugin</artifactId>
-                        <version>3.9</version>
+                        <version>3.11.3</version>
                         <executions>
                             <execution>
                                 <id>create-server</id>
@@ -371,59 +366,10 @@
                             <excludedGroups>${surefire.excludedGroups}</excludedGroups>
                             <groups>${surefire.groups}</groups>
                             <systemPropertyVariables>
-                                <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
                                 <arquillian.launch>liberty_managed</arquillian.launch>
                             </systemPropertyVariables>
                             <redirectTestOutputToFile>false</redirectTestOutputToFile>
                         </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>jakartaee-10</id>
-            <properties>
-                <!-- Widlfy -->
-                <wildfly.version>30.0.0.Final</wildfly.version>
-
-                <!-- OpenLiberty -->
-                <openliberty.version>23.0.0.10</openliberty.version>
-                <openliberty.template>jakartaee10</openliberty.template>
-                <openliberty.runtimeArtifactGroupId>io.openliberty</openliberty.runtimeArtifactGroupId>
-
-                <!-- Tomee: no support for Jakarta EE 10 at the moment -->
-
-                <!-- Payara: no support for Jakarta EE 9 -->
-
-            </properties>
-        </profile>
-        <profile>
-            <id>local-run</id>
-            <activation>
-                <property>
-                    <name>!test.use.hub</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.lazerycode.selenium</groupId>
-                        <artifactId>driver-binary-downloader-maven-plugin</artifactId>
-                        <version>${driver.binary.downloader.maven.plugin.version}</version>
-                        <configuration>
-                            <onlyGetDriversForHostOperatingSystem>true</onlyGetDriversForHostOperatingSystem>
-                            <rootStandaloneServerDirectory>${project.build.directory}/driver</rootStandaloneServerDirectory>
-                            <downloadedZipFileDirectory>${project.build.directory}/driver_zips</downloadedZipFileDirectory>
-                            <customRepositoryMap>${project.basedir}/drivers.xml</customRepositoryMap>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>generate-test-resources</phase>
-                                <goals>
-                                    <goal>selenium</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>

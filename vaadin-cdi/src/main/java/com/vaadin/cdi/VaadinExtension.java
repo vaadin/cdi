@@ -19,27 +19,30 @@ package com.vaadin.cdi;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Executor;
 
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
 import jakarta.enterprise.inject.spi.AfterDeploymentValidation;
+import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.Extension;
 import jakarta.enterprise.inject.spi.ProcessBean;
-import com.vaadin.cdi.util.BeanProvider;
-import com.vaadin.cdi.util.DependentProvider;
-import com.vaadin.cdi.util.AbstractContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.cdi.DeploymentValidator.BeanInfo;
 import com.vaadin.cdi.annotation.NormalRouteScoped;
 import com.vaadin.cdi.annotation.NormalUIScoped;
+import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.context.ContextWrapper;
 import com.vaadin.cdi.context.RouteScopedContext;
 import com.vaadin.cdi.context.UIScopedContext;
 import com.vaadin.cdi.context.VaadinServiceScopedContext;
 import com.vaadin.cdi.context.VaadinSessionScopedContext;
+import com.vaadin.cdi.util.AbstractContext;
+import com.vaadin.cdi.util.BeanProvider;
+import com.vaadin.cdi.util.DependentProvider;
 
 /**
  * CDI Extension needed to register Vaadin scopes to the runtime.
@@ -52,12 +55,12 @@ public class VaadinExtension implements Extension {
     private Set<BeanInfo> beanInfoSet = new HashSet<>();
 
     private void storeBeanValidationInfo(@Observes ProcessBean processBean) {
-        beanInfoSet.add(
-                new BeanInfo(processBean.getBean(), processBean.getAnnotated()));
+        beanInfoSet.add(new BeanInfo(processBean.getBean(),
+                processBean.getAnnotated()));
     }
 
     private void addContexts(@Observes AfterBeanDiscovery afterBeanDiscovery,
-                             BeanManager beanManager) {
+            BeanManager beanManager) {
         serviceScopedContext = new VaadinServiceScopedContext(beanManager);
         uiScopedContext = new UIScopedContext(beanManager);
         routeScopedContext = new RouteScopedContext(beanManager);
@@ -65,34 +68,51 @@ public class VaadinExtension implements Extension {
         addContext(afterBeanDiscovery,
                 new VaadinSessionScopedContext(beanManager), null);
         addContext(afterBeanDiscovery, uiScopedContext, NormalUIScoped.class);
-        addContext(afterBeanDiscovery, routeScopedContext, NormalRouteScoped.class);
+        addContext(afterBeanDiscovery, routeScopedContext,
+                NormalRouteScoped.class);
     }
 
+    // Validate annotated executor
+
     private void initializeContexts(@Observes AfterDeploymentValidation adv,
-                                    BeanManager beanManager) {
+            BeanManager beanManager) {
         serviceScopedContext.init(beanManager);
         uiScopedContext.init(beanManager);
         routeScopedContext.init(beanManager, uiScopedContext::isActive);
     }
 
     private void validateDeployment(@Observes AfterDeploymentValidation adv,
-                                    BeanManager beanManager) {
-        DependentProvider<DeploymentValidator> validatorProvider
-                = BeanProvider.getDependent(beanManager, DeploymentValidator.class);
+            BeanManager beanManager) {
+        DependentProvider<DeploymentValidator> validatorProvider = BeanProvider
+                .getDependent(beanManager, DeploymentValidator.class);
         DeploymentValidator validator = validatorProvider.get();
         validator.validate(beanInfoSet, adv::addDeploymentProblem);
         validatorProvider.destroy();
         beanInfoSet = null;
     }
 
+    private void ensureAtMostOneVaadinTaskExecutor(
+            @Observes AfterDeploymentValidation event,
+            BeanManager beanManager) {
+        Set<Bean<?>> candidates = beanManager.getBeans(Executor.class,
+                BeanLookup.SERVICE);
+        if (candidates.size() > 1) {
+            event.addDeploymentProblem(new IllegalStateException(
+                    "There must be at most one Executor bean annotated with @"
+                            + VaadinServiceEnabled.class.getSimpleName()
+                            + " in the application. " + "Found "
+                            + candidates.size() + ": " + candidates));
+        }
+    }
+
     private void addContext(AfterBeanDiscovery afterBeanDiscovery,
-                            AbstractContext context,
-                            Class<? extends Annotation> additionalScope) {
-        afterBeanDiscovery.addContext(
-                new ContextWrapper(context, context.getScope()));
+            AbstractContext context,
+            Class<? extends Annotation> additionalScope) {
+        afterBeanDiscovery
+                .addContext(new ContextWrapper(context, context.getScope()));
         if (additionalScope != null) {
-            afterBeanDiscovery.addContext(
-                    new ContextWrapper(context, additionalScope));
+            afterBeanDiscovery
+                    .addContext(new ContextWrapper(context, additionalScope));
         }
         getLogger().info("{} registered for Vaadin CDI",
                 context.getClass().getSimpleName());

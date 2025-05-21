@@ -332,6 +332,7 @@
                                     <useOpenLiberty>true</useOpenLiberty>
                                     <template>${openliberty.template}</template>
                                     <features>
+                                        <feature>jakartaee-10.0</feature>
                                         <feature>localConnector-1.0</feature>
                                     </features>
                                 </configuration>

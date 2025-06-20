@@ -25,7 +25,7 @@ import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
 import com.vaadin.cdi.itest.Counter;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
@@ -69,7 +69,7 @@ public class SessionContextView extends Div {
         expireBtn.setId(EXPIREBTN_ID);
         add(expireBtn);
 
-        Label label = new Label();
+        NativeLabel label = new NativeLabel();
         label.setText(sessionScopedBean.getValue()); // bean instantiated here
         label.setId(VALUELABEL_ID);
         add(label);

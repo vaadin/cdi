@@ -17,8 +17,8 @@
 package com.vaadin.cdi.itest.invaliddeployment;
 
 import com.vaadin.cdi.annotation.NormalUIScoped;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.NativeLabel;
 
 @NormalUIScoped
-public class NormalScopedLabel extends Label {
+public class NormalScopedLabel extends NativeLabel {
 }

@@ -26,7 +26,7 @@ import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.router.Route;
 
@@ -41,7 +41,7 @@ public class EventView extends Div {
     @RouteScoped
     @RouteScopeOwner(EventView.class)
     @CdiComponent
-    public static class ObserverLabel extends Label {
+    public static class ObserverLabel extends NativeLabel {
         private void onPrintEvent(@Observes PrintEvent printEvent) {
             setText(printEvent.getMessage());
         }
@@ -61,7 +61,7 @@ public class EventView extends Div {
 
     @Inject
     @RouteScopeOwner(EventView.class)
-    private Label label;
+    private NativeLabel label;
     @Inject
     private Event<PrintEvent> printEventTrigger;
 

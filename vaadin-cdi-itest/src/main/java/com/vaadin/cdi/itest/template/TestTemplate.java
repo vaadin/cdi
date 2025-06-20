@@ -25,7 +25,7 @@ import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Input;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.Route;
@@ -39,7 +39,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 public class TestTemplate extends PolymerTemplate<TemplateModel> {
     private @Id("input") Input input;
 
-    private @Id("label") Label label;
+    private @Id("label") NativeLabel label;
 
     private @Inject Event<InputChangeEvent> setTextEventTrigger;
 

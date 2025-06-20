@@ -24,7 +24,7 @@ import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.itest.uicontext.UIScopedLabel.SetTextEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
@@ -53,7 +53,7 @@ public class UIContextRootView extends Div {
         final String uiIdStr = UI.getCurrent().getUIId() + "";
         label.setText(uiIdStr);
 
-        final Label uiId = new Label(uiIdStr);
+        final NativeLabel uiId = new NativeLabel(uiIdStr);
         uiId.setId(UIID_LABEL);
 
         final NativeButton closeUI = new NativeButton("close UI",

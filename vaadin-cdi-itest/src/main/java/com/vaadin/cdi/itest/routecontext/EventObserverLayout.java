@@ -23,7 +23,7 @@ import jakarta.enterprise.event.Reception;
 import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.RouterLayout;
 
@@ -32,11 +32,11 @@ import com.vaadin.flow.router.RouterLayout;
 public class EventObserverLayout extends Div implements RouterLayout {
 
     public static final String EVENTS_COUNTER_LABEL = "eventsCounter";
-    private final Label receivedEvents;
+    private final NativeLabel receivedEvents;
     private int counter = 0;
 
     public EventObserverLayout() {
-        receivedEvents = new Label();
+        receivedEvents = new NativeLabel();
         receivedEvents.setId(EVENTS_COUNTER_LABEL);
         add(receivedEvents);
     }

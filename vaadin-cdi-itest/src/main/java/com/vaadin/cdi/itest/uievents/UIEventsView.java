@@ -28,7 +28,7 @@ import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.flow.component.PollEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.Route;
@@ -59,13 +59,13 @@ public class UIEventsView extends Div implements AfterNavigationObserver {
         events.setId(NAVIGATION_EVENTS);
         List<EventObject> navigationEvents = navigationObserver.getNavigationEvents();
         navigationEvents.stream()
-                .map(event -> new Label(event.getClass().getSimpleName()))
+                .map(event -> new NativeLabel(event.getClass().getSimpleName()))
                 .forEach(events::add);
         add(events);
     }
 
     private void showPollEvent(@Observes PollEvent pollEvent) {
-        final Label poll = new Label(pollEvent.isFromClient() + "");
+        final NativeLabel poll = new NativeLabel(pollEvent.isFromClient() + "");
         poll.setId(POLL_FROM_CLIENT);
         add(new Div(poll));
     }

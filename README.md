@@ -7,6 +7,7 @@ This is the official CDI integration for [Vaadin Flow](https://github.com/vaadin
 
 This branch is compatible with upcoming Vaadin platform versions. See other branches for other Vaadin versions:
 
+* 16.0 for Vaadin 25.0
 * 15.2 for Vaadin 24.8
 * 15.1 for Vaadin 24.4
 * 15.0 for Vaadin 24
@@ -18,14 +19,14 @@ This branch is compatible with upcoming Vaadin platform versions. See other bran
 * 2.0 for Vaadin Framework 8.0...8.1 versions
 * 1.0 for Vaadin Framework 7 versions
 
-## Using with Vaadin 10
+## Using with Vaadin
 
-To use CDI with Vaadin 10, you need to add the following dependency to your pom.xml:
+To use CDI with Vaadin, you need to add the following dependency to your pom.xml:
 ```xml
 <dependency>
   <groupdId>com.vaadin</groupId>
   <artifactId>vaadin-cdi</artifactId>
-  <version>15.1.0</version> <!-- Or the LATEST version -->
+  <version>15.2.0</version> <!-- Or the LATEST version -->
 </dependency>
 ```
 
@@ -56,14 +57,10 @@ Execute `mvn -pl vaadin-cdi-itest -Ptomee verify` in the root directory to run i
 
 Test can be executed against the following containers, activating the specific profile:
 
-* Wildfly Jakarta EE 9: `-Pwidfly`
-* Wildfly Jakarta EE 10: `-Pwidfly,jakartaee-10`
-* OpenLiberty Jakarta EE 9: `-Pliberty`
-* OpenLiberty Jakarta EE 10: `-Pliberty,jakartaee-10`
+* Wildfly Jakarta EE 10: `-Pwidfly`
+* OpenLiberty Jakarta EE 10: `-Pliberty`
 * Payara Jakarta EE 10: `-Ppayara`
-  (Payara does not support Jakarta EE 9)
-* TomEE Jakarta EE 9: `-Ptomee`
-  (TomEE does not yet support Jakarta EE 10)
+* TomEE Jakarta EE 10: `-Ptomee`
 
 ## Issue tracking
 

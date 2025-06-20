@@ -24,11 +24,11 @@ import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.cdi.itest.Counter;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.NativeLabel;
 
 @UIScoped
 @CdiComponent
-public class UIScopedLabel extends Label {
+public class UIScopedLabel extends NativeLabel {
 
     public static final String DESTROY_COUNT = "UIScopedLabelDestroy";
 

@@ -24,7 +24,7 @@ import jakarta.inject.Inject;
 
 import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.router.Route;
 
@@ -36,7 +36,7 @@ public class CdiView extends Div {
 
     public CdiView() {
         add(new NativeButton("Click me",
-                event -> add(new Label(getLabelText()))));
+                event -> add(new NativeLabel(getLabelText()))));
     }
 
     private String getLabelText() {

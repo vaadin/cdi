@@ -34,7 +34,7 @@ import com.vaadin.cdi.annotation.VaadinSessionScoped;
 import com.vaadin.cdi.util.ContextUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.html.NativeButton;
 
 @CdiComponent
@@ -85,9 +85,9 @@ public class PushComponent extends Div {
     }
 
     private void printContextIsActive(Class<? extends Annotation> scope) {
-        Label label = new Label(ContextUtils.isContextActive(scope) + "");
+        NativeLabel label = new NativeLabel(ContextUtils.isContextActive(scope) + "");
         label.setId(scope.getName());
-        add(new Div(new Label(scope.getSimpleName() + ": "), label));
+        add(new Div(new NativeLabel(scope.getSimpleName() + ": "), label));
     }
 
     @PostConstruct

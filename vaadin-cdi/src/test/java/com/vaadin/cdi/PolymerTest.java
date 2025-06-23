@@ -28,7 +28,7 @@ import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.cdi.context.UIUnderTestContext;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.polymertemplate.TemplateParser.TemplateData;
@@ -41,7 +41,7 @@ public class PolymerTest extends AbstractWeldTest {
 
     @UIScoped
     @Tag("uiscoped-label")
-    public static class PseudoScopedLabel extends Label {
+    public static class PseudoScopedLabel extends Span {
     }
 
     @Tag("test-template")

@@ -21,7 +21,7 @@ import jakarta.annotation.PostConstruct;
 import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 
@@ -39,7 +39,7 @@ public class RootView extends AbstractCountedView {
 
     @PostConstruct
     private void init() {
-        add(new Div(new Label("ROOT")),
+        add(new Div(new NativeLabel("ROOT")),
                 new Div(new RouterLink(MASTER, MasterView.class)),
                 new Div(new RouterLink(REROUTE, RerouteView.class)),
                 new Div(new RouterLink(POSTPONE, PostponeView.class)),

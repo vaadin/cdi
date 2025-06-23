@@ -45,7 +45,8 @@ import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.ErrorParameter;
 import com.vaadin.flow.router.HasErrorParameter;
@@ -57,11 +58,11 @@ import static com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode.NOR
 public class DeploymentValidatorTest extends AbstractWeldTest {
 
     @NormalUIScoped
-    public static class NormalScopedLabel extends Label {
+    public static class NormalScopedLabel extends Span {
     }
 
     @UIScoped
-    public static class PseudoScopedLabel extends Label {
+    public static class PseudoScopedLabel extends Span {
     }
 
     @NormalUIScoped
@@ -75,20 +76,20 @@ public class DeploymentValidatorTest extends AbstractWeldTest {
     @Route
     @RouteScoped
     @RouteScopeOwner(RouteTargetOfSelf.class)
-    public static class RouteTargetOfSelf extends Label {
+    public static class RouteTargetOfSelf extends Span {
     }
 
     @Route
     @RouteScoped
-    public static class TestRouteScopedTarget extends Label {
+    public static class TestRouteScopedTarget extends Span {
     }
 
     @RouteScoped
-    public static class TestRouterLayout extends Label implements RouterLayout {
+    public static class TestRouterLayout extends Div implements RouterLayout {
     }
 
     @RouteScoped
-    public static class TestHasErrorParameter extends Label
+    public static class TestHasErrorParameter extends Span
             implements HasErrorParameter<NullPointerException> {
         @Override
         public int setErrorParameter(BeforeEnterEvent event,

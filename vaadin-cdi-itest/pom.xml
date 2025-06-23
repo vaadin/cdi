@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-cdi-parent</artifactId>
-        <version>15.2-SNAPSHOT</version>
+        <version>16.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,11 +15,12 @@
         <maven.deploy.skip>true</maven.deploy.skip>
         <surefire.groups></surefire.groups>
         <surefire.excludedGroups>com.vaadin.cdi.itest.SlowTests</surefire.excludedGroups>
-        <apache-tomee.version>10.0.1</apache-tomee.version>
-        <wildfly.version>30.0.0.Final</wildfly.version>
-        <openliberty.version>23.0.0.10</openliberty.version>
+        <apache-tomee.version>10.1.0</apache-tomee.version>
+        <wildfly.version>36.0.1.Final</wildfly.version>
+        <openliberty.version>25.0.0.6</openliberty.version>
         <openliberty.template>jakartaee10</openliberty.template>
         <openliberty.runtimeArtifactGroupId>io.openliberty</openliberty.runtimeArtifactGroupId>
+        <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
     </properties>
 
     <pluginRepositories>
@@ -128,6 +129,7 @@
                 -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-help-plugin</artifactId>
+                <version>3.5.1</version>
                 <configuration>
                     <output>${project.build.directory}/effective-pom.xml</output>
                 </configuration>
@@ -197,6 +199,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
+                        <version>${maven-dependency-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>unpack</id>
@@ -256,6 +259,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
+                        <version>${maven-dependency-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>unpack</id>
@@ -268,7 +272,7 @@
                                         <artifactItem>
                                             <groupId>fish.payara.distributions</groupId>
                                             <artifactId>payara</artifactId>
-                                            <version>6.2023.10</version>
+                                            <version>6.2025.6</version>
                                             <type>zip</type>
                                             <overWrite>false</overWrite>
                                             <outputDirectory>target</outputDirectory>
@@ -312,7 +316,7 @@
                     <plugin>
                         <groupId>io.openliberty.tools</groupId>
                         <artifactId>liberty-maven-plugin</artifactId>
-                        <version>3.11.3</version>
+                        <version>3.11.4</version>
                         <executions>
                             <execution>
                                 <id>create-server</id>

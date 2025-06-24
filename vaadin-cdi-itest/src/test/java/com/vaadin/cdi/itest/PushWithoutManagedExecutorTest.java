@@ -26,27 +26,26 @@ import net.jcip.annotations.NotThreadSafe;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.openqa.selenium.By;
 
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
+import com.vaadin.cdi.itest.push.CustomSchedulerPushComponent;
 import com.vaadin.cdi.itest.push.ManagedExecutorPushComponent;
 import com.vaadin.cdi.itest.push.PushComponent;
 import com.vaadin.cdi.itest.push.WebsocketPushView;
 import com.vaadin.cdi.itest.push.WebsocketXhrPushView;
 
 @NotThreadSafe
-@Category(NeedsCDICompliantContainer.class)
-public class PushTest extends AbstractCdiTest {
+public class PushWithoutManagedExecutorTest extends AbstractCdiTest {
 
     @Deployment(testable = false)
-    public static WebArchive deployment() {
+    public static WebArchive deploymentTomcatWeld() {
         return ArchiveProvider.createWebArchive("push", webArchive -> webArchive
                 .addClasses(WebsocketPushView.class, WebsocketXhrPushView.class,
-                        PushComponent.class, ManagedExecutorPushComponent.class)
+                        PushComponent.class, CustomSchedulerPushComponent.class)
                 .addAsResource(new File("target/classes/META-INF")));
     }
 

@@ -18,7 +18,7 @@
         <apache-tomee.version>10.1.0</apache-tomee.version>
         <wildfly.version>36.0.1.Final</wildfly.version>
         <openliberty.version>25.0.0.6</openliberty.version>
-        <openliberty.template>jakartaee10</openliberty.template>
+        <openliberty.template>jakartaee11</openliberty.template>
         <openliberty.runtimeArtifactGroupId>io.openliberty</openliberty.runtimeArtifactGroupId>
         <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
     </properties>
@@ -336,7 +336,7 @@
                                     <useOpenLiberty>true</useOpenLiberty>
                                     <template>${openliberty.template}</template>
                                     <features>
-                                        <feature>jakartaee-10.0</feature>
+                                        <feature>jakartaee-11.0</feature>
                                         <feature>localConnector-1.0</feature>
                                     </features>
                                 </configuration>

@@ -15,6 +15,7 @@
         <maven.deploy.skip>true</maven.deploy.skip>
         <surefire.groups></surefire.groups>
         <surefire.excludedGroups>com.vaadin.cdi.itest.SlowTests</surefire.excludedGroups>
+        <apache-tomcat.version>11.0.8</apache-tomcat.version>
         <apache-tomee.version>10.1.0</apache-tomee.version>
         <wildfly.version>36.0.1.Final</wildfly.version>
         <openliberty.version>25.0.0.6</openliberty.version>
@@ -374,6 +375,94 @@
                                 <arquillian.launch>liberty_managed</arquillian.launch>
                             </systemPropertyVariables>
                             <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>tomcat-weld</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.arquillian.container</groupId>
+                    <artifactId>arquillian-tomcat-managed-10</artifactId>
+                    <version>1.2.3.Final</version>
+                    <scope>test</scope>
+                </dependency>
+                <!-- Weld servlet for testing CDI injections -->
+                <dependency>
+                    <groupId>org.jboss.weld.servlet</groupId>
+                    <artifactId>weld-servlet-shaded</artifactId>
+                    <version>${weld.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>jakarta.enterprise.concurrent</groupId>
+                    <artifactId>jakarta.enterprise.concurrent-api</artifactId>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>${maven-dependency-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>unpack</id>
+                                <phase>process-test-classes</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.apache.tomcat</groupId>
+                                            <artifactId>tomcat</artifactId>
+                                            <version>${apache-tomcat.version}</version>
+                                            <type>zip</type>
+                                            <outputDirectory>target</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>setup-tomcat-users</id>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <phase>process-test-classes</phase>
+                                <configuration>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/test/resources/tomcat</directory>
+                                            <includes>
+                                                <include>tomcat-users.xml</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                    <outputDirectory>${project.build.directory}/apache-tomcat-${apache-tomcat.version}/conf</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${maven.surefire.plugin.version}</version>
+                        <configuration>
+                            <excludedGroups>com.vaadin.cdi.itest.NeedsCDICompliantContainer,${surefire.excludedGroups}</excludedGroups>
+                            <groups>${surefire.groups}</groups>
+                            <systemPropertyVariables>
+                                <arquillian.launch>tomcat-weld</arquillian.launch>
+                                <catalina.home>${project.build.directory}/apache-tomcat-${apache-tomcat.version}</catalina.home>
+                            </systemPropertyVariables>
                         </configuration>
                     </plugin>
                 </plugins>

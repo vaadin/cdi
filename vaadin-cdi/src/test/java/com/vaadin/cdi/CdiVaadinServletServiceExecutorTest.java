@@ -171,7 +171,7 @@ public class CdiVaadinServletServiceExecutorTest {
                     // Simulate @Resource injection without name or lookup into
                     // VaadinTaskExecutorSelector bean in weld mock environment
                     .bindResource(
-                            "java:comp/env/com.vaadin.cdi.VaadinTaskExecutorSelector/managedExecutor",
+                            "java:comp/env/com.vaadin.cdi.VaadinTaskExecutorSelector$FromResource/managedExecutor",
                             managedExecutorService);
         }
 

@@ -29,42 +29,52 @@ import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 public class ArchiveProvider {
 
     public static WebArchive createWebArchive(String warName,
-                                              Consumer<WebArchive> customizer) {
+            Consumer<WebArchive> customizer) {
         WebArchive archive = base(warName);
         customizer.accept(archive);
         return archive;
     }
 
     public static WebArchive createWebArchive(String warName,
-                                              Class... classes) {
-        return createWebArchive(warName,
-                archive -> archive.addClasses(classes)
-                        .addAsResource(new File("target/classes/META-INF")));
+            Class... classes) {
+        return createWebArchive(warName, archive -> archive.addClasses(classes)
+                .addAsResource(new File("target/classes/META-INF")));
     }
 
     private static WebArchive base(String warName) {
         PomEquippedResolveStage pom = Maven.configureResolver().workOffline()
                 .loadPomFromFile("target/effective-pom.xml");
-        WebArchive archive = ShrinkWrap.create(WebArchive.class, warName + ".war")
-                .addAsLibraries(pom.resolve(
-                        "com.vaadin:vaadin-cdi", "com.vaadin:flow-server",
-                        "com.vaadin:flow-client", "com.vaadin:flow-html-components",
-                        "com.vaadin:flow-polymer-template"
-                ).withTransitivity().asFile())
+        WebArchive archive = ShrinkWrap
+                .create(WebArchive.class, warName + ".war")
+                .addAsLibraries(pom.resolve("com.vaadin:vaadin-cdi",
+                        "com.vaadin:flow-server", "com.vaadin:flow-client",
+                        "com.vaadin:flow-html-components",
+                        "com.vaadin:flow-polymer-template").withTransitivity()
+                        .asFile())
                 .addAsWebInfResource(EmptyAsset.INSTANCE,
                         ArchivePaths.create("beans.xml"))
                 .addClasses(Counter.class, CounterFilter.class);
-        return applyPayaraSlf4jWorkaround(archive, pom);
+        return applyContainerConfigurations(archive, pom);
     }
 
+    private static WebArchive applyContainerConfigurations(WebArchive archive,
+            PomEquippedResolveStage pom) {
+        // Testing Tomcat + Weld
+        if ("tomcat-weld".equals(System.getProperty("arquillian.launch"))) {
+            archive.addAsLibraries(pom
+                    .resolve("org.slf4j:slf4j-simple",
+                            "org.jboss.weld.servlet:weld-servlet-shaded")
+                    .withoutTransitivity().asFile());
 
-    // Workaround for https://github.com/payara/Payara/issues/5898
-    // Slf4J implementation lookup error in Payara 6
-    private static WebArchive applyPayaraSlf4jWorkaround(WebArchive archive, PomEquippedResolveStage pom) {
-        if ("payara".equals(System.getProperty("arquillian.launch"))) {
-            archive.addAsWebInfResource(AbstractCdiTest.class.getClassLoader().getResource("payara/glassfish-web.xml"),
-                            "glassfish-web.xml")
-                    .addAsLibraries(pom.resolve("org.slf4j:slf4j-simple").withoutTransitivity().asFile());
+        }
+        // Workaround for https://github.com/payara/Payara/issues/5898
+        // Slf4J implementation lookup error in Payara 6
+        else if ("payara".equals(System.getProperty("arquillian.launch"))) {
+            archive.addAsWebInfResource(AbstractCdiTest.class.getClassLoader()
+                    .getResource("payara/glassfish-web.xml"),
+                    "glassfish-web.xml")
+                    .addAsLibraries(pom.resolve("org.slf4j:slf4j-simple")
+                            .withoutTransitivity().asFile());
 
         }
         return archive;

@@ -22,7 +22,25 @@
 
     <engine>
         <property name="deploymentExportPath">target/deployment</property>
+
     </engine>
+
+    <container qualifier="tomcat-weld">
+        <configuration>
+            <property name="catalinaHome">${catalina.home}</property>
+            <property name="user">deployer</property>
+            <property name="pass">deployer</property>
+            <property name="javaVmArguments">
+                --add-opens=java.base/java.io=ALL-UNNAMED
+                --add-opens=java.base/java.lang=ALL-UNNAMED
+                --add-opens=java.base/java.util=ALL-UNNAMED
+                --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+                --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+                --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED
+                --add-opens=java.base/java.net=ALL-UNNAMED
+            </property>
+        </configuration>
+    </container>
 
     <container qualifier="tomee-debug">
         <configuration>

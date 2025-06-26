@@ -18,11 +18,13 @@ package com.vaadin.cdi;
 
 import java.util.Optional;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 import jakarta.annotation.Resource;
 import jakarta.enterprise.concurrent.ManagedExecutorService;
 import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +42,30 @@ import com.vaadin.cdi.annotation.VaadinServiceEnabled;
  */
 class VaadinTaskExecutorSelector {
 
-    @Resource
-    ManagedExecutorService managedExecutor;
+    /*
+     * Workaround for environments that aren't fully Jakarta EE compliant (e.g.,
+     * Tomcat with Weld).
+     *
+     * This inner class allows us to check at runtime whether
+     * ManagedExecutorService is available without causing deployment failures.
+     * By programmatically resolving this bean through CDI, we can gracefully
+     * handle two potential issues:
+     * 1. Missing ManagedExecutorService in the classpath
+     * 2. javax.naming.NameNotFoundException when JNDI lookup fails
+     *
+     * This approach prevents hard deployment failures and allows the
+     * application to fall back to alternative execution strategies when
+     * necessary.
+     *
+     * See https://github.com/vaadin/cdi/issues/476 for more details.
+     */
+    static class FromResource {
+        @Resource
+        ManagedExecutorService managedExecutor;
+    }
+
+    @Inject
+    BeanManager beanManager;
 
     @Inject
     @VaadinServiceEnabled
@@ -72,10 +96,17 @@ class VaadinTaskExecutorSelector {
                     VaadinServiceEnabled.class.getSimpleName(), candidates);
             throw new IllegalStateException(message);
         }
-        if (managedExecutor != null) {
+        Instance<FromResource> managerFromResource = beanManager
+                .createInstance().select(FromResource.class);
+
+        ExecutorService resolvedManagedExecutor = null;
+        if (managerFromResource.isResolvable()) {
+            resolvedManagedExecutor = managerFromResource.get().managedExecutor;
+        }
+        if (resolvedManagedExecutor != null) {
             LoggerFactory.getLogger(VaadinTaskExecutorSelector.class)
                     .debug("Using container Managed Executor");
         }
-        return Optional.ofNullable(managedExecutor);
+        return Optional.ofNullable(resolvedManagedExecutor);
     }
 }

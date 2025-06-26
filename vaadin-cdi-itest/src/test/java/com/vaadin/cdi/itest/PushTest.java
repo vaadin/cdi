@@ -53,7 +53,7 @@ public class PushTest extends AbstractCdiTest {
     @Test
     public void wsWithXhrBackgroundRequestAndSessionDoesNotActive() {
         getDriver().get(getTestURL() + "websocket-xhr");
-        click(ManagedExecutorPushComponent.RUN_BACKGROUND);
+        click(PushComponent.RUN_BACKGROUND);
         waitForPush();
         assertAllExceptRequestAndSessionActive();
     }
@@ -61,7 +61,7 @@ public class PushTest extends AbstractCdiTest {
     @Test
     public void wsWithXhrForegroundAllContextsActive() {
         getDriver().get(getTestURL() + "websocket-xhr");
-        click(ManagedExecutorPushComponent.RUN_FOREGROUND);
+        click(PushComponent.RUN_FOREGROUND);
         assertContextActive(RequestScoped.class, true);
         assertContextActive(SessionScoped.class, true);
         assertContextActive(ApplicationScoped.class, true);
@@ -71,7 +71,7 @@ public class PushTest extends AbstractCdiTest {
     @Test
     public void wsNoXhrBackgroundRequestAndSessionDoesNotActive() {
         getDriver().get(getTestURL() + "websocket");
-        click(ManagedExecutorPushComponent.RUN_BACKGROUND);
+        click(PushComponent.RUN_BACKGROUND);
         waitForPush();
         assertAllExceptRequestAndSessionActive();
     }
@@ -79,7 +79,7 @@ public class PushTest extends AbstractCdiTest {
     @Test
     public void wsNoXhrForegroundRequestAndSessionDoesNotActive() {
         getDriver().get(getTestURL() + "websocket");
-        click(ManagedExecutorPushComponent.RUN_FOREGROUND);
+        click(PushComponent.RUN_FOREGROUND);
         assertAllExceptRequestAndSessionActive();
     }
 

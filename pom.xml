@@ -191,6 +191,11 @@
                 <version>${vaadin.flow.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.lucee</groupId>
+                <artifactId>jcip-annotations</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
                 <groupId>org.jboss.arquillian.junit</groupId>
                 <artifactId>arquillian-junit-container</artifactId>
                 <version>${arquillian.version}</version>

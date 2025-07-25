@@ -50,6 +50,7 @@ import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.SystemMessages;
 import com.vaadin.flow.server.SystemMessagesInfo;
 import com.vaadin.flow.server.SystemMessagesProvider;
+import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 
 import static com.vaadin.cdi.SerializationUtils.serializeAndDeserialize;
@@ -201,7 +202,7 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
 
         UIListenerEventReceiver uiListenerEventReceiver = service.getInstantiator().getOrCreate(UIListenerEventReceiver.class);
         UI ui = new UI();
-        VaadinSession session = new MockVaadinSession();
+        VaadinSession session = new MockVaadinSession(service);
         session.getLockInstance().lock();
         try {
             ui.getInternals().setSession(session);
@@ -253,8 +254,8 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
 
         ReentrantLock lock = new ReentrantLock();
 
-        public MockVaadinSession() {
-            super(null);
+        public MockVaadinSession(VaadinService service) {
+            super(service);
         }
 
         @Override

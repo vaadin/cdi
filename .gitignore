@@ -13,3 +13,6 @@ vaadin-cdi-itest/package-lock.json
 vaadin-cdi-itest/webpack.config.js
 vaadin-cdi-itest/webpack.generated.js
 vaadin-cdi-itest/error-screenshots
+vaadin-cdi-itest/src/main/frontend/generated
+vaadin-cdi-itest/src/main/frontend/index.html
+vaadin-cdi-itest/src/main/bundles

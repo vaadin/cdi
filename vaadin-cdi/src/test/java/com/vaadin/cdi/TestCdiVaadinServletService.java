@@ -21,9 +21,12 @@ import javax.servlet.ServletContext;
 
 import java.util.Properties;
 
+import com.vaadin.flow.di.Lookup;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.startup.ApplicationConfiguration;
+import com.vaadin.flow.server.startup.ApplicationConfigurationFactory;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,8 +39,14 @@ public class TestCdiVaadinServletService extends CdiVaadinServletService {
                 beanManager);
         when(getServlet().getServletName()).thenReturn(servletName);
         when(getServlet().getService()).thenReturn(this);
+        final ServletContext servletcontext = mock(ServletContext.class);
         when(getServlet().getServletContext())
-                .thenReturn(mock(ServletContext.class));
+                .thenReturn(servletcontext);
+        Lookup lookup = mock(Lookup.class);
+        when(servletcontext.getAttribute(Lookup.class.getName()))
+                .thenReturn(lookup);
+        when(lookup.lookup(ApplicationConfigurationFactory.class))
+                .thenReturn(context -> mock(ApplicationConfiguration.class));
         DeploymentConfiguration config = getDeploymentConfiguration();
         Properties properties = new Properties();
         when(config.getInitParameters()).thenReturn(properties);

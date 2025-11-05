@@ -60,7 +60,8 @@ public class ArchiveProvider {
     private static WebArchive applyContainerConfigurations(WebArchive archive,
             PomEquippedResolveStage pom) {
         // Testing Tomcat + Weld
-        if ("tomcat-weld".equals(System.getProperty("arquillian.launch"))) {
+        String container = System.getProperty("arquillian.launch");
+        if ("tomcat-weld".equals(container)) {
             archive.addAsLibraries(pom
                     .resolve("org.slf4j:slf4j-simple",
                             "org.jboss.weld.servlet:weld-servlet-shaded")
@@ -69,14 +70,19 @@ public class ArchiveProvider {
         }
         // Workaround for https://github.com/payara/Payara/issues/5898
         // Slf4J implementation lookup error in Payara 6
-        else if ("payara".equals(System.getProperty("arquillian.launch"))) {
+        else if ("payara".equals(container)) {
             archive.addAsWebInfResource(AbstractCdiTest.class.getClassLoader()
                     .getResource("payara/glassfish-web.xml"),
                     "glassfish-web.xml")
                     .addAsLibraries(pom.resolve("org.slf4j:slf4j-simple")
                             .withoutTransitivity().asFile());
 
+        } else if ("wildfly".equals(container)) {
+            archive.addAsWebInfResource(AbstractCdiTest.class.getClassLoader()
+                    .getResource("wildfly/jboss-deployment-structure.xml"),
+                    "jboss-deployment-structure.xml");
         }
+
         return archive;
     }
 

@@ -126,19 +126,14 @@ public class RouteScopedContext extends AbstractContext {
         }
 
         private static String getWindowName(UI ui) {
-            ExtendedClientDetails details = ui.getInternals()
-                    .getExtendedClientDetails();
-            if (details == null) {
-                return null;
-            }
+            ExtendedClientDetails details = ui.getInternals().getExtendedClientDetails();
             return details.getWindowName();
         }
 
         private RouteStorageKey getKey(UI ui, Class<?> owner) {
-            ExtendedClientDetails details = ui.getInternals()
-                    .getExtendedClientDetails();
+            ExtendedClientDetails details = ui.getInternals().getExtendedClientDetails();
             RouteStorageKey key = new RouteStorageKey(owner, getUIStoreId(ui));
-            if (details == null) {
+            if (details.getWindowName() == null) {
                 ui.getPage().retrieveExtendedClientDetails(
                         det -> relocate(ui, key));
             }
@@ -158,9 +153,8 @@ public class RouteScopedContext extends AbstractContext {
         }
 
         private String getUIStoreId(UI ui) {
-            ExtendedClientDetails details = ui.getInternals()
-                    .getExtendedClientDetails();
-            if (details == null) {
+            ExtendedClientDetails details = ui.getInternals().getExtendedClientDetails();
+            if (details.getWindowName() == null) {
                 return "uid-" + ui.getUIId();
             } else {
                 return "win-" + getWindowName(ui);

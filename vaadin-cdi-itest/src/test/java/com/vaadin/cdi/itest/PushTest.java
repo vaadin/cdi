@@ -44,7 +44,7 @@ public class PushTest extends AbstractCdiTest {
 
     @Deployment(testable = false)
     public static WebArchive deployment() {
-        return ArchiveProvider.createWebArchive("push", webArchive -> webArchive
+        return ArchiveProvider.createWebArchive("push-managed", webArchive -> webArchive
                 .addClasses(WebsocketPushView.class, WebsocketXhrPushView.class,
                         PushComponent.class, ManagedExecutorPushComponent.class)
                 .addAsResource(new File("target/classes/META-INF")));

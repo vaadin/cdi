@@ -15,9 +15,14 @@
   -->
 
 <jboss-deployment-structure>
+    <!--
+        This is required to avoid conflicts with WildFly's Jackson module
+        Affected Wildfly versions are 36, 37 and 38. Wildfly 39 ships Jackson
+        2.20 that is compatible with Vaadin 25
     <deployment>
         <exclusions>
             <module name="com.fasterxml.jackson.core.jackson-annotations"/>
         </exclusions>
     </deployment>
+    -->
 </jboss-deployment-structure>

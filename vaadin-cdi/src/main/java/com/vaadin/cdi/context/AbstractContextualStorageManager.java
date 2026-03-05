@@ -37,7 +37,7 @@ import com.vaadin.cdi.util.ContextualStorage;
  * for a context key - destroying ContextualStorages
  */
 @SuppressWarnings("CdiManagedBeanInconsistencyInspection")
-abstract class AbstractContextualStorageManager<K> implements Serializable {
+public abstract class AbstractContextualStorageManager<K> implements Serializable {
     @Inject
     private BeanManager beanManager;
     private final boolean concurrent;

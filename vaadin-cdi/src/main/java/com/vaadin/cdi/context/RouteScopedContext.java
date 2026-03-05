@@ -163,7 +163,7 @@ public class RouteScopedContext extends AbstractContext {
 
     }
 
-    private static class RouteStorageKey implements Serializable {
+    public static class RouteStorageKey implements Serializable {
         private final Class<?> owner;
         private final String uiId;
 
@@ -204,7 +204,7 @@ public class RouteScopedContext extends AbstractContext {
 
     }
 
-    static class NavigationData implements Serializable {
+    public static class NavigationData implements Serializable {
         private final Class<?> navigationTarget;
         private final List<Class<? extends RouterLayout>> layouts;
 

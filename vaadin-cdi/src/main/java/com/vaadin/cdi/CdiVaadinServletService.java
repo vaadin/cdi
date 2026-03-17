@@ -198,6 +198,7 @@ public class CdiVaadinServletService extends VaadinServletService {
             ui.addBeforeLeaveListener(uiEventListener);
             ui.addBeforeEnterListener(uiEventListener);
             ui.addPollListener(uiEventListener);
+            ui.addDetachListener(e -> getBeanManager().getEvent().fire(e));
         }
 
         public <T> Optional<T> lookup(Class<T> type) throws ServiceException {
@@ -267,8 +268,7 @@ public class CdiVaadinServletService extends VaadinServletService {
     @ListenerPriority(-100) // navigation event listeners are last by default
     private static class UIEventListener
             implements AfterNavigationListener, BeforeEnterListener,
-            BeforeLeaveListener, ComponentEventListener<PollEvent>,
-            ComponentEventListener<DetachEvent> {
+            BeforeLeaveListener, ComponentEventListener<PollEvent> {
 
         private final CdiVaadinServiceDelegate delegate;
 
@@ -293,11 +293,6 @@ public class CdiVaadinServletService extends VaadinServletService {
 
         @Override
         public void onComponentEvent(PollEvent event) {
-            delegate.getBeanManager().getEvent().fire(event);
-        }
-
-        @Override
-        public void onComponentEvent(DetachEvent event) {
             delegate.getBeanManager().getEvent().fire(event);
         }
     }

@@ -34,6 +34,7 @@ import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.context.VaadinSessionScopedContext;
 import com.vaadin.cdi.util.BeanManagerProvider;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.PollEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.di.Instantiator;
@@ -291,6 +292,11 @@ public class CdiVaadinServletService extends VaadinServletService {
 
         @Override
         public void onComponentEvent(PollEvent event) {
+            delegate.getBeanManager().getEvent().fire(event);
+        }
+
+        @Override
+        public void onComponentEvent(DetachEvent event) {
             delegate.getBeanManager().getEvent().fire(event);
         }
     }

@@ -267,7 +267,8 @@ public class CdiVaadinServletService extends VaadinServletService {
     @ListenerPriority(-100) // navigation event listeners are last by default
     private static class UIEventListener
             implements AfterNavigationListener, BeforeEnterListener,
-            BeforeLeaveListener, ComponentEventListener<PollEvent> {
+            BeforeLeaveListener, ComponentEventListener<PollEvent>,
+            ComponentEventListener<DetachEvent> {
 
         private final CdiVaadinServiceDelegate delegate;
 

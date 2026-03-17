@@ -197,7 +197,8 @@ public class CdiVaadinServletService extends VaadinServletService {
             ui.addBeforeLeaveListener(uiEventListener);
             ui.addBeforeEnterListener(uiEventListener);
             ui.addPollListener(uiEventListener);
-            ui.addDetachListener(e -> getBeanManager().getEvent().fire(e));
+            ui.addDetachListener(e -> 
+                    getBeanManager().getEvent().fire(new UIDetachEvent(e)));
         }
 
         public <T> Optional<T> lookup(Class<T> type) throws ServiceException {

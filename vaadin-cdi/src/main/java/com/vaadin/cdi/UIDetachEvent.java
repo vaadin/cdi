@@ -16,6 +16,7 @@
 package com.vaadin.cdi;
 
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 
 /**
  * Event fired before a {@link UI} is detached.

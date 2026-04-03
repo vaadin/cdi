@@ -67,7 +67,8 @@ public class VaadinSessionScopedContext extends AbstractContext {
 
     @Override
     public boolean isActive() {
-        return VaadinSession.getCurrent() != null;
+        VaadinSession session = VaadinSession.getCurrent();
+        return session != null && session.hasLock();
     }
 
     public static void destroy(VaadinSession session) {

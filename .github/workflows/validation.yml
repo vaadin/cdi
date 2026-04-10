@@ -1,0 +1,165 @@
+name: CDI Validation
+
+on:
+  push:
+    # Change this when backporting to a maintenance branch
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    # Change this when backporting to a maintenance branch
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  JAVA_VERSION: '21'
+  NODE_VERSION: '22'
+  MAVEN_VERSION: '3.8.7'
+
+jobs:
+  build:
+    environment: ${{ github.event.pull_request.head.repo.fork && 'pr-tests' || '' }}
+    timeout-minutes: 15
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Set up Maven ${{ env.MAVEN_VERSION }}
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: ${{ env.MAVEN_VERSION }}
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Build
+        run: mvn clean install -B -ntp -DskipTests
+
+      - name: Save workspace
+        run: |
+          cd ~
+          tar cf ${{ github.workspace }}/workspace.tar \
+            .m2/repository/com/vaadin/vaadin-cdi-parent \
+            .m2/repository/com/vaadin/vaadin-cdi
+
+      - name: Upload workspace
+        uses: actions/upload-artifact@v5
+        with:
+          name: saved-workspace
+          path: workspace.tar
+          retention-days: 1
+
+  test:
+    needs: build
+    timeout-minutes: 30
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [tomee, wildfly, payara, liberty, tomcat-weld]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Set up Maven ${{ env.MAVEN_VERSION }}
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: ${{ env.MAVEN_VERSION }}
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Download workspace
+        uses: actions/download-artifact@v5
+        with:
+          name: saved-workspace
+
+      - name: Restore workspace
+        run: tar xf workspace.tar -C ~
+
+      - name: Set TB License
+        run: |
+          TB_LICENSE=${{secrets.TB_LICENSE}}
+          mkdir -p ~/.vaadin/
+          echo '{"username":"'`echo $TB_LICENSE | cut -d / -f1`'","proKey":"'`echo $TB_LICENSE | cut -d / -f2`'"}' > ~/.vaadin/proKey
+
+      - name: Validation (${{ matrix.profile }})
+        run: |
+          mvn -B -e -V-ntp org.jacoco:jacoco-maven-plugin:prepare-agent verify javadoc:javadoc \
+            -P${{ matrix.profile }} \
+            -Dcom.vaadin.testbench.Parameters.maxAttempts=2
+
+      - name: Package test reports
+        if: ${{ always() }}
+        run: |
+          find . -name surefire-reports -type d \
+            | tar -czf tests-report-${{ matrix.profile }}.tgz -T -
+
+      - name: Upload test reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: tests-output-${{ matrix.profile }}
+          path: tests-report-${{ matrix.profile }}.tgz
+
+  test-results:
+    if: ${{ always() }}
+    needs: test
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: write
+      checks: write
+      pull-requests: write
+    steps:
+      - name: Merge test artifacts
+        uses: actions/upload-artifact/merge@v5
+        with:
+          name: tests-output
+          pattern: tests-output-*
+          delete-merged: true
+
+      - name: Download merged artifacts
+        uses: actions/download-artifact@v5
+        with:
+          name: tests-output
+
+      - name: Extract test reports
+        run: for f in *.tgz; do tar xf "$f"; done
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: '**/target/surefire-reports/TEST-*.xml'
+          check_run_annotations: all tests, skipped tests
+
+      - name: Set failure status
+        if: ${{ always() && needs.test.result != 'success' }}
+        run: exit 1

@@ -103,6 +103,13 @@ jobs:
       - name: Restore workspace
         run: tar xf workspace.tar -C ~
 
+      # create a minimal settings-security.xml before the tests run.
+      # The ShrinkWrap Maven resolver in Arquillian requires this file
+      # to resolve dependencies for test deployments,
+      # but setup-java with Maven caching doesn't create it.
+      - name: Create Maven security settings
+        run: echo '<settingsSecurity><master>placeholder</master></settingsSecurity>' > ~/.m2/settings-security.xml
+
       - name: Set TB License
         env:
           TB_LICENSE: ${{secrets.TB_LICENSE}}

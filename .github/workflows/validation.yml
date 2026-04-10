@@ -106,8 +106,9 @@ jobs:
         run: tar xf workspace.tar -C ~
 
       - name: Set TB License
+        env:
+          TB_LICENSE: ${{secrets.TB_LICENSE}}
         run: |
-          TB_LICENSE=${{secrets.TB_LICENSE}}
           mkdir -p ~/.vaadin/
           echo '{"username":"'`echo $TB_LICENSE | cut -d / -f1`'","proKey":"'`echo $TB_LICENSE | cut -d / -f2`'"}' > ~/.vaadin/proKey
 
@@ -123,12 +124,15 @@ jobs:
           find . -name surefire-reports -type d \
             | tar -czf tests-report-${{ matrix.profile }}.tgz -T -
 
-      - name: Upload test reports
+      - name: Upload test reports and error screenshots
         if: ${{ always() }}
         uses: actions/upload-artifact@v5
         with:
           name: tests-output-${{ matrix.profile }}
-          path: tests-report-${{ matrix.profile }}.tgz
+          path: |
+            tests-report-${{ matrix.profile }}.tgz
+            **/error-screenshots/**
+          if-no-files-found: ignore
 
   test-results:
     if: ${{ always() }}
@@ -144,6 +148,7 @@ jobs:
         with:
           name: tests-output
           pattern: tests-output-*
+          separate-directories: true
           delete-merged: true
 
       - name: Download merged artifacts
@@ -152,7 +157,7 @@ jobs:
           name: tests-output
 
       - name: Extract test reports
-        run: for f in *.tgz; do tar xf "$f"; done
+        run: find . -name '*.tgz' -exec tar xf {} \;
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2

@@ -83,7 +83,12 @@ jobs:
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
-          cache: 'maven'
+
+      # setup-java generates settings.xml with an encrypted GITHUB_TOKEN.
+      # The old ShrinkWrap resolver (2.1.1) tries to decrypt it and fails.
+      # Remove it to match the clean state on TeamCity where tests pass.
+      - name: Clean Maven settings for ShrinkWrap resolver
+        run: rm -f ~/.m2/settings.xml ~/.m2/settings-security.xml
 
       - name: Set up Maven ${{ env.MAVEN_VERSION }}
         uses: stCarolas/setup-maven@v5.1
@@ -102,13 +107,6 @@ jobs:
 
       - name: Restore workspace
         run: tar xf workspace.tar -C ~
-
-      # create a minimal settings-security.xml before the tests run.
-      # The ShrinkWrap Maven resolver in Arquillian requires this file
-      # to resolve dependencies for test deployments,
-      # but setup-java with Maven caching doesn't create it.
-      - name: Create Maven security settings
-        run: echo '<settingsSecurity><master>placeholder</master></settingsSecurity>' > ~/.m2/settings-security.xml
 
       - name: Set TB License
         env:

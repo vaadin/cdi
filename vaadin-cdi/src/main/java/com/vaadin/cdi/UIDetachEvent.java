@@ -21,7 +21,7 @@ import com.vaadin.flow.component.UI;
 /**
  * Event fired before a {@link UI} is detached.
  *
- * @since
+ * @since 16.1
  */
 public class UIDetachEvent extends DetachEvent {
 

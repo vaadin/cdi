@@ -51,11 +51,14 @@ import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.SystemMessages;
 import com.vaadin.flow.server.SystemMessagesInfo;
 import com.vaadin.flow.server.SystemMessagesProvider;
+import com.vaadin.flow.server.UIInitEvent;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 
 import static com.vaadin.cdi.SerializationUtils.serializeAndDeserialize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.same;
@@ -95,6 +98,16 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
 
         void onUIDetach(@Observes UIDetachEvent uiDetachEvent) {
             detachEventUI = (UI) uiDetachEvent.getSource();
+        }
+    }
+
+    @Singleton
+    private static class UIInitEventReceiver {
+
+        private UI initEventUI;
+
+        void onUIInit(@Observes UIInitEvent uiInitEvent) {
+            initEventUI = (UI) uiInitEvent.getUI();
         }
     }
 
@@ -239,6 +252,8 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
 
         UIDetachEventReceiver uiDetachEventReceiver = service.getInstantiator()
                 .getOrCreate(UIDetachEventReceiver.class);
+        UIInitEventReceiver uiInitEventReceiver = service.getInstantiator()
+                .getOrCreate(UIInitEventReceiver.class);
         UI ui = new UI();
         VaadinSession session = new MockVaadinSession(service);
         session.getLockInstance().lock();
@@ -249,7 +264,14 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
             session.getLockInstance().unlock();
         }
 
-        ComponentUtil.fireEvent(ui, new DetachEvent(ui));
+        Assertions.assertEquals(ui, uiInitEventReceiver.initEventUI);
+
+        session.getLockInstance().lock();
+        try {
+            ui.getInternals().setSession(null);
+        } finally {
+            session.getLockInstance().unlock();
+        }
 
         Assertions.assertEquals(ui, uiDetachEventReceiver.detachEventUI);
     }

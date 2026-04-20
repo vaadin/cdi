@@ -40,6 +40,7 @@ import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.context.ServiceUnderTestContext;
 import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.PollEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.di.Instantiator;
@@ -84,6 +85,16 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
 
         void onPollEvent(@Observes PollEvent pollEvent) {
             pollEventUI = pollEvent.getSource();
+        }
+    }
+
+    @Singleton
+    private static class UIDetachEventReceiver {
+
+        private UI detachEventUI;
+
+        void onUIDetach(@Observes UIDetachEvent uiDetachEvent) {
+            detachEventUI = (UI) uiDetachEvent.getSource();
         }
     }
 
@@ -219,6 +230,28 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
 
         ComponentUtil.fireEvent(ui2, new PollEvent(ui2, false));
         Assertions.assertEquals(ui2, uiListenerEventReceiver.pollEventUI);
+    }
+
+    @Test
+    void fireUIInitListeners_uiDetached_UIDetachEventCanBeObserved()
+            throws Exception {
+        initService(beanManager);
+
+        UIDetachEventReceiver uiDetachEventReceiver = service.getInstantiator()
+                .getOrCreate(UIDetachEventReceiver.class);
+        UI ui = new UI();
+        VaadinSession session = new MockVaadinSession(service);
+        session.getLockInstance().lock();
+        try {
+            ui.getInternals().setSession(session);
+            service.fireUIInitListeners(ui);
+        } finally {
+            session.getLockInstance().unlock();
+        }
+
+        ComponentUtil.fireEvent(ui, new DetachEvent(ui));
+
+        Assertions.assertEquals(ui, uiDetachEventReceiver.detachEventUI);
     }
 
     private void initService(BeanManager beanManager) throws ServiceException {

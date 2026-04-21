@@ -246,7 +246,7 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
     }
 
     @Test
-    void fireUIInitListeners_uiDetached_UIInitEventAndUIDetachEventCanBeObserved()
+    void fireUIInitListeners_uiAttachedAndDetached_UIeventsCanBeObserved()
             throws Exception {
         initService(beanManager);
 

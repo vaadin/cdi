@@ -40,6 +40,7 @@ import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.context.ServiceUnderTestContext;
 import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.PollEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.di.Instantiator;
@@ -50,11 +51,14 @@ import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.SystemMessages;
 import com.vaadin.flow.server.SystemMessagesInfo;
 import com.vaadin.flow.server.SystemMessagesProvider;
+import com.vaadin.flow.server.UIInitEvent;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 
 import static com.vaadin.cdi.SerializationUtils.serializeAndDeserialize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.same;
@@ -84,6 +88,26 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
 
         void onPollEvent(@Observes PollEvent pollEvent) {
             pollEventUI = pollEvent.getSource();
+        }
+    }
+
+    @Singleton
+    private static class UIDetachEventReceiver {
+
+        private UI detachEventUI;
+
+        void onUIDetach(@Observes UIDetachEvent uiDetachEvent) {
+            detachEventUI = (UI) uiDetachEvent.getSource();
+        }
+    }
+
+    @Singleton
+    private static class UIInitEventReceiver {
+
+        private UI initEventUI;
+
+        void onUIInit(@Observes UIInitEvent uiInitEvent) {
+            initEventUI = (UI) uiInitEvent.getUI();
         }
     }
 
@@ -219,6 +243,37 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
 
         ComponentUtil.fireEvent(ui2, new PollEvent(ui2, false));
         Assertions.assertEquals(ui2, uiListenerEventReceiver.pollEventUI);
+    }
+
+    @Test
+    void fireUIInitListeners_uiAttachedAndDetached_UIeventsCanBeObserved()
+            throws Exception {
+        initService(beanManager);
+
+        UIDetachEventReceiver uiDetachEventReceiver = service.getInstantiator()
+                .getOrCreate(UIDetachEventReceiver.class);
+        UIInitEventReceiver uiInitEventReceiver = service.getInstantiator()
+                .getOrCreate(UIInitEventReceiver.class);
+        UI ui = new UI();
+        VaadinSession session = new MockVaadinSession(service);
+        session.getLockInstance().lock();
+        try {
+            ui.getInternals().setSession(session);
+            service.fireUIInitListeners(ui);
+        } finally {
+            session.getLockInstance().unlock();
+        }
+
+        Assertions.assertEquals(ui, uiInitEventReceiver.initEventUI);
+
+        session.getLockInstance().lock();
+        try {
+            ui.getInternals().setSession(null);
+        } finally {
+            session.getLockInstance().unlock();
+        }
+
+        Assertions.assertEquals(ui, uiDetachEventReceiver.detachEventUI);
     }
 
     private void initService(BeanManager beanManager) throws ServiceException {

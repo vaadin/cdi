@@ -16,7 +16,16 @@
 
 package com.vaadin.cdi.context;
 
+import jakarta.enterprise.context.ContextNotActiveException;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
+import com.vaadin.cdi.util.BeanProvider;
+import com.vaadin.flow.server.VaadinSession;
 
 public class SessionContextTest extends AbstractContextTest<SessionContextTest.SessionScopedTestBean> {
 
@@ -33,6 +42,27 @@ public class SessionContextTest extends AbstractContextTest<SessionContextTest.S
     @Override
     protected Class<SessionScopedTestBean> getBeanType() {
         return SessionScopedTestBean.class;
+    }
+
+    @Test
+    public void get_sessionExistsButNotLocked_contextNotActive() {
+        SessionUnderTestContext context = new SessionUnderTestContext();
+        context.activate();
+
+        VaadinSession session = context.getSession();
+        when(session.hasLock()).thenReturn(false);
+
+        VaadinSessionScopedContext sessionContext =
+                new VaadinSessionScopedContext(weld.select().select(
+                        jakarta.enterprise.inject.spi.BeanManager.class).get());
+
+        assertFalse(sessionContext.isActive());
+
+        assertThrows(ContextNotActiveException.class, () -> {
+            SessionScopedTestBean ref =
+                    BeanProvider.getContextualReference(SessionScopedTestBean.class);
+            ref.getState();
+        });
     }
 
     @VaadinSessionScoped

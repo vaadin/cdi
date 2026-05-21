@@ -50,14 +50,29 @@ public class VaadinSessionScopedContext extends AbstractContext {
         VaadinSession session = VaadinSession.getCurrent();
         ContextualStorage storage = findContextualStorage(session);
         if (storage == null && createIfNotExist) {
-            storage = new ContextualStorage(beanManager, false, true);
-            session.setAttribute(ATTRIBUTE_NAME, storage);
+            storage = initializeContextualStorage(beanManager, session);
         }
         return storage;
     }
 
     private static ContextualStorage findContextualStorage(VaadinSession session) {
         return getContextualStorage(session);
+    }
+
+    /**
+     * Initializes the contextual storage for the given session. Handles locking internally.
+     * @param beanManager the bean manager
+     * @param session the concerned session
+     * @return the initialized contextual storage
+     */
+    private static ContextualStorage initializeContextualStorage(final BeanManager beanManager, final VaadinSession session) {
+        final ContextualStorage storage = new ContextualStorage(beanManager, false, true);
+        if (session.hasLock()) {
+            session.setAttribute(ATTRIBUTE_NAME, storage);
+        } else {
+            session.accessSynchronously(() -> session.setAttribute(ATTRIBUTE_NAME, storage));
+        }
+        return storage;
     }
 
     /**

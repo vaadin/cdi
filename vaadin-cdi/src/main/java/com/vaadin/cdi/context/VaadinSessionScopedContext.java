@@ -17,6 +17,7 @@
 package com.vaadin.cdi.context;
 
 import java.lang.annotation.Annotation;
+import java.util.concurrent.atomic.AtomicReference;
 
 import jakarta.enterprise.context.spi.Contextual;
 import jakarta.enterprise.inject.spi.BeanManager;
@@ -56,8 +57,22 @@ public class VaadinSessionScopedContext extends AbstractContext {
     }
 
     private static ContextualStorage findContextualStorage(VaadinSession session) {
-        // session lock is checked inside
-        return (ContextualStorage) session.getAttribute(ATTRIBUTE_NAME);
+        return getContextualStorage(session);
+    }
+
+    /**
+     * Retrieves the contextual storage from the session. Handles locking internally.
+     * @param session the concerned session
+     * @return the contextual storage
+     */
+    private static ContextualStorage getContextualStorage(final VaadinSession session) {
+        final AtomicReference<ContextualStorage> result = new AtomicReference<>();
+        if (session.hasLock()) {
+            result.set((ContextualStorage) session.getAttribute(ATTRIBUTE_NAME));
+        } else {
+            session.accessSynchronously(() -> result.set((ContextualStorage) session.getAttribute(ATTRIBUTE_NAME)));
+        }
+        return result.get();
     }
 
     @Override
@@ -68,7 +83,7 @@ public class VaadinSessionScopedContext extends AbstractContext {
     @Override
     public boolean isActive() {
         VaadinSession session = VaadinSession.getCurrent();
-        return session != null && session.hasLock();
+        return session != null;
     }
 
     public static void destroy(VaadinSession session) {

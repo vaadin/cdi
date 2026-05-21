@@ -16,11 +16,10 @@
 
 package com.vaadin.cdi.context;
 
-import jakarta.enterprise.context.ContextNotActiveException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
@@ -56,9 +55,9 @@ public class SessionContextTest extends AbstractContextTest<SessionContextTest.S
                 new VaadinSessionScopedContext(weld.select().select(
                         jakarta.enterprise.inject.spi.BeanManager.class).get());
 
-        assertFalse(sessionContext.isActive());
+        assertTrue(sessionContext.isActive());
 
-        assertThrows(ContextNotActiveException.class, () -> {
+        assertDoesNotThrow(() -> {
             SessionScopedTestBean ref =
                     BeanProvider.getContextualReference(SessionScopedTestBean.class);
             ref.getState();

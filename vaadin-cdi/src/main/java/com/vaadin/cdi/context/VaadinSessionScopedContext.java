@@ -138,8 +138,11 @@ public class VaadinSessionScopedContext extends AbstractContext {
         if (registry == null) {
             return VaadinSessionScopeActivationPolicy.DEFAULT_STRICT;
         }
+        final Class<? extends AppShellConfigurator> configurator = registry.getShell();
+        if (configurator == null) {
+            return VaadinSessionScopeActivationPolicy.DEFAULT_STRICT;
+        }
         if (STRICT_VALIDATION_INITIALIZED.compareAndSet(false, true)) {
-            final Class<? extends AppShellConfigurator> configurator = registry.getShell();
             if (configurator.isAnnotationPresent(VaadinSessionScopeActivationPolicy.class)) {
                 final VaadinSessionScopeActivationPolicy policy = configurator.getAnnotation(VaadinSessionScopeActivationPolicy.class);
                 useStrictValidation = policy.strict();

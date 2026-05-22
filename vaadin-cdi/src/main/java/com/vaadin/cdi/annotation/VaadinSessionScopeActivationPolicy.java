@@ -14,14 +14,14 @@ import com.vaadin.flow.server.VaadinSession;
  * {@link VaadinSessionScopedContext}.
  * <p>
  * Place this annotation on your {@link AppShellConfigurator}
- * implementation to control whether the {@code VaadinSessionScoped} context requires
+ * implementation to control whether {@link VaadinSessionScoped} context requires
  * the current {@link VaadinSession} to be locked to
  * be considered active.
  * <ul>
  *     <li>{@link Policy#LENIENT} (default) – context is active as long as a
- *         {@code VaadinSession} is available on the current thread, regardless of
+ *         {@link VaadinSession} is available on the current thread, regardless of
  *         whether the session is locked.</li>
- *     <li>{@link Policy#STRICT} – context is active only if a {@code VaadinSession}
+ *     <li>{@link Policy#STRICT} – context is active only if a {@link VaadinSession}
  *         is available <em>and</em> currently locked by the calling thread.</li>
  * </ul>
  *

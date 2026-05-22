@@ -35,6 +35,8 @@ import com.vaadin.cdi.DeploymentValidator.BeanInfo;
 import com.vaadin.cdi.annotation.NormalRouteScoped;
 import com.vaadin.cdi.annotation.NormalUIScoped;
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
+import com.vaadin.cdi.annotation.VaadinSessionScopeActivationPolicy;
+import com.vaadin.cdi.annotation.VaadinSessionScopeActivationPolicy.Policy;
 import com.vaadin.cdi.context.ContextWrapper;
 import com.vaadin.cdi.context.RouteScopedContext;
 import com.vaadin.cdi.context.UIScopedContext;
@@ -43,6 +45,11 @@ import com.vaadin.cdi.context.VaadinSessionScopedContext;
 import com.vaadin.cdi.util.AbstractContext;
 import com.vaadin.cdi.util.BeanProvider;
 import com.vaadin.cdi.util.DependentProvider;
+import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.server.AppShellRegistry;
+import com.vaadin.flow.server.ServiceInitEvent;
+import com.vaadin.flow.server.VaadinContext;
+import com.vaadin.flow.server.VaadinService;
 
 /**
  * CDI Extension needed to register Vaadin scopes to the runtime.
@@ -54,6 +61,11 @@ public class VaadinExtension implements Extension {
     private RouteScopedContext routeScopedContext;
     private Set<BeanInfo> beanInfoSet = new HashSet<>();
 
+    /**
+     * The current VaadinSessionScopeActivationPolicy.
+     */
+    private static Policy vaadinSessionScopeActivationPolicy = VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
+
     private void storeBeanValidationInfo(@Observes ProcessBean processBean) {
         beanInfoSet.add(new BeanInfo(processBean.getBean(),
                 processBean.getAnnotated()));
@@ -62,6 +74,9 @@ public class VaadinExtension implements Extension {
     private void addContexts(@Observes AfterBeanDiscovery afterBeanDiscovery,
             BeanManager beanManager) {
         serviceScopedContext = new VaadinServiceScopedContext(beanManager);
+        afterBeanDiscovery.<ServiceInitEvent>addObserverMethod()
+            .observedType(ServiceInitEvent.class)
+            .notifyWith(instance -> this.onServiceInit(instance.getEvent()));
         uiScopedContext = new UIScopedContext(beanManager);
         routeScopedContext = new RouteScopedContext(beanManager);
         addContext(afterBeanDiscovery, serviceScopedContext, null);
@@ -70,6 +85,41 @@ public class VaadinExtension implements Extension {
         addContext(afterBeanDiscovery, uiScopedContext, NormalUIScoped.class);
         addContext(afterBeanDiscovery, routeScopedContext,
                 NormalRouteScoped.class);
+    }
+
+    /**
+     * Called when the VaadinService is initialized.
+     * @param event the ServiceInitEvent
+     */
+    private void onServiceInit(final ServiceInitEvent event) {
+        vaadinSessionScopeActivationPolicy = this.determineVaadinSessionScopeActivationPolicy(event.getSource());
+    }
+
+    /**
+     * Determine the VaadinSessionScopeActivationPolicy for the current VaadinService.
+     * @param vaadinService the current VaadinService
+     * @return the determined policy
+     */
+    private Policy determineVaadinSessionScopeActivationPolicy(final VaadinService vaadinService) {
+        if (vaadinService == null) {
+            return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
+        }
+        final VaadinContext context = vaadinService.getContext();
+        if (context == null) {
+            return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
+        }
+        final AppShellRegistry registry = AppShellRegistry.getInstance(context);
+        if (registry == null) {
+            return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
+        }
+        final Class<? extends AppShellConfigurator> configurator = registry.getShell();
+        if (configurator == null) {
+            return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
+        }
+        if (configurator.isAnnotationPresent(VaadinSessionScopeActivationPolicy.class)) {
+            return configurator.getAnnotation(VaadinSessionScopeActivationPolicy.class).value();
+        }
+        return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
     }
 
     // Validate annotated executor
@@ -120,6 +170,14 @@ public class VaadinExtension implements Extension {
 
     private static Logger getLogger() {
         return LoggerFactory.getLogger(VaadinExtension.class);
+    }
+
+    /**
+     * Get the current VaadinSessionScopeActivationPolicy.
+     * @return the current VaadinSessionScopeActivationPolicy
+     */
+    public static Policy getVaadinSessionScopeActivationPolicy() {
+        return vaadinSessionScopeActivationPolicy;
     }
 
 }

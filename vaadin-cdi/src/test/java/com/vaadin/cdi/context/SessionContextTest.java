@@ -17,11 +17,19 @@
 package com.vaadin.cdi.context;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import jakarta.enterprise.context.ContextNotActiveException;
+
+import com.vaadin.cdi.VaadinExtension;
+import com.vaadin.cdi.annotation.VaadinSessionScopeActivationPolicy.Policy;
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
 import com.vaadin.cdi.util.BeanProvider;
 import com.vaadin.flow.server.VaadinSession;
@@ -44,24 +52,52 @@ public class SessionContextTest extends AbstractContextTest<SessionContextTest.S
     }
 
     @Test
-    public void get_sessionExistsButNotLocked_contextNotActive() {
-        SessionUnderTestContext context = new SessionUnderTestContext();
-        context.activate();
+    public void get_context_withStrictPolicy_contextNotActive() {
+        try (final MockedStatic<VaadinExtension> mockedExtension = Mockito.mockStatic(VaadinExtension.class)) {
+            mockedExtension.when(VaadinExtension::getVaadinSessionScopeActivationPolicy).thenReturn(Policy.STRICT);
+            final SessionUnderTestContext context = new SessionUnderTestContext();
+            context.activate();
 
-        VaadinSession session = context.getSession();
-        when(session.hasLock()).thenReturn(false);
+            final VaadinSession session = context.getSession();
+            when(session.hasLock()).thenReturn(false);
 
-        VaadinSessionScopedContext sessionContext =
+            final VaadinSessionScopedContext sessionContext =
                 new VaadinSessionScopedContext(weld.select().select(
-                        jakarta.enterprise.inject.spi.BeanManager.class).get());
+                    jakarta.enterprise.inject.spi.BeanManager.class).get());
 
-        assertTrue(sessionContext.isActive());
+            assertFalse(sessionContext.isActive());
 
-        assertDoesNotThrow(() -> {
-            SessionScopedTestBean ref =
+            assertThrows(ContextNotActiveException.class, () -> {
+                SessionScopedTestBean ref =
                     BeanProvider.getContextualReference(SessionScopedTestBean.class);
-            ref.getState();
-        });
+                ref.getState();
+            });
+        }
+
+    }
+
+    @Test
+    public void get_context_withLenientPolicy() {
+        try (final MockedStatic<VaadinExtension> mockedExtension = Mockito.mockStatic(VaadinExtension.class)) {
+            mockedExtension.when(VaadinExtension::getVaadinSessionScopeActivationPolicy).thenReturn(Policy.LENIENT);
+            final SessionUnderTestContext context = new SessionUnderTestContext();
+            context.activate();
+
+            final VaadinSession session = context.getSession();
+            when(session.hasLock()).thenReturn(false);
+
+            final VaadinSessionScopedContext sessionContext =
+                new VaadinSessionScopedContext(weld.select().select(
+                    jakarta.enterprise.inject.spi.BeanManager.class).get());
+
+            assertTrue(sessionContext.isActive());
+
+            assertDoesNotThrow(() -> {
+                SessionScopedTestBean ref =
+                    BeanProvider.getContextualReference(SessionScopedTestBean.class);
+                ref.getState();
+            });
+        }
     }
 
     @VaadinSessionScoped

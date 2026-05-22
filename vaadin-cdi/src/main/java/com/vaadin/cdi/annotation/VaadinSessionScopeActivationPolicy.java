@@ -5,18 +5,29 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotation to specify the activation policy for the VaadinSessionScopedContext.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface VaadinSessionScopeActivationPolicy {
 
 	/**
-	 * Default value for {@link #strict()}
+	 * Activation policies for the VaadinSessionScopedContext.
 	 */
-	boolean DEFAULT_STRICT = false;
+	enum Policy {
+		STRICT,
+		LENIENT
+	}
+
+	/**
+	 * Default policy for the VaadinSessionScopedContext.
+	 */
+	Policy DEFAULT_POLICY = Policy.LENIENT;
 
 	/**
 	 * Determines if the session scope should check the session lock to activate the Scope.
-	 * @return true if strict session locking should be enabled, false otherwise
+	 * @return Policy indicating the activation policy for VaadinSessionScoped beans
 	 */
-	boolean strict() default DEFAULT_STRICT;
+	Policy value() default Policy.LENIENT;
 }

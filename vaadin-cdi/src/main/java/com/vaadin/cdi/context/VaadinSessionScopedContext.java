@@ -17,16 +17,14 @@
 package com.vaadin.cdi.context;
 
 import java.lang.annotation.Annotation;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.vaadin.cdi.annotation.VaadinSessionScopeActivationPolicy;
-import com.vaadin.flow.component.page.AppShellConfigurator;
-import com.vaadin.flow.server.AppShellRegistry;
-import com.vaadin.flow.server.VaadinContext;
-import com.vaadin.flow.server.VaadinService;
 import jakarta.enterprise.context.spi.Contextual;
 import jakarta.enterprise.inject.spi.BeanManager;
+
+import com.vaadin.cdi.VaadinExtension;
+import com.vaadin.cdi.annotation.VaadinSessionScopeActivationPolicy.Policy;
 import com.vaadin.cdi.util.ContextUtils;
 import com.vaadin.cdi.util.AbstractContext;
 import com.vaadin.cdi.util.ContextualStorage;
@@ -45,8 +43,6 @@ import com.vaadin.flow.server.VaadinSession;
 public class VaadinSessionScopedContext extends AbstractContext {
     private final BeanManager beanManager;
     private static final String ATTRIBUTE_NAME = VaadinSessionScopedContext.class.getName();
-    private static final AtomicBoolean STRICT_VALIDATION_INITIALIZED = new AtomicBoolean(false);
-    private static boolean useStrictValidation = VaadinSessionScopeActivationPolicy.DEFAULT_STRICT;
 
     public VaadinSessionScopedContext(BeanManager beanManager) {
         super(beanManager);
@@ -103,55 +99,20 @@ public class VaadinSessionScopedContext extends AbstractContext {
         return VaadinSessionScoped.class;
     }
 
+    /**
+     * Determines if the context is active based on the current session and activation policy.
+     * @return true if the context is active, false otherwise
+     */
     @Override
     public boolean isActive() {
         final VaadinSession session = VaadinSession.getCurrent();
-        final boolean isStrict = this.shouldUseStrictChecks(session);
+        final boolean isStrict = Objects.equals(Policy.STRICT, VaadinExtension.getVaadinSessionScopeActivationPolicy());
         if (isStrict) {
             return session != null && session.hasLock();
         }
         return session != null;
     }
 
-
-    /**
-     * Retrieves the VaadinSessionScopeActivationPolicy from the AppShell and Caches it.
-     * @param session the current VaadinSession
-     * @return true if strict validation is enabled, false otherwise.
-     */
-    private boolean shouldUseStrictChecks(final VaadinSession session) {
-        if (STRICT_VALIDATION_INITIALIZED.get()) {
-            return useStrictValidation;
-        }
-        if (session == null) {
-            return VaadinSessionScopeActivationPolicy.DEFAULT_STRICT;
-        }
-        final VaadinService service = session.getService();
-        if (service == null) {
-            return VaadinSessionScopeActivationPolicy.DEFAULT_STRICT;
-        }
-        final VaadinContext context = service.getContext();
-        if (context == null) {
-            return VaadinSessionScopeActivationPolicy.DEFAULT_STRICT;
-        }
-        final AppShellRegistry registry = AppShellRegistry.getInstance(context);
-        if (registry == null) {
-            return VaadinSessionScopeActivationPolicy.DEFAULT_STRICT;
-        }
-        final Class<? extends AppShellConfigurator> configurator = registry.getShell();
-        if (configurator == null) {
-            return VaadinSessionScopeActivationPolicy.DEFAULT_STRICT;
-        }
-        if (STRICT_VALIDATION_INITIALIZED.compareAndSet(false, true)) {
-            if (configurator.isAnnotationPresent(VaadinSessionScopeActivationPolicy.class)) {
-                final VaadinSessionScopeActivationPolicy policy = configurator.getAnnotation(VaadinSessionScopeActivationPolicy.class);
-                useStrictValidation = policy.strict();
-            } else {
-                useStrictValidation = VaadinSessionScopeActivationPolicy.DEFAULT_STRICT;
-            }
-        }
-        return useStrictValidation;
-    }
 
     public static void destroy(VaadinSession session) {
         ContextualStorage storage = findContextualStorage(session);

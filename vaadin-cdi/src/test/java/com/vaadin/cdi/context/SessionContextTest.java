@@ -16,6 +16,7 @@
 
 package com.vaadin.cdi.context;
 
+import com.vaadin.cdi.util.VaadinSessionActivationPolicyHolder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -55,8 +56,8 @@ public class SessionContextTest extends AbstractContextTest<SessionContextTest.S
 
     @Test
     public void get_context_withStrictPolicy_contextNotActive() {
-        try (final MockedStatic<VaadinSessionScopedContext> mockedExtension = Mockito.mockStatic(VaadinSessionScopedContext.class, Mockito.CALLS_REAL_METHODS)) {
-            mockedExtension.when(() -> VaadinSessionScopedContext.getActivationPolicy(Mockito.any(VaadinSession.class))).thenReturn(Policy.STRICT);
+        try (final MockedStatic<VaadinSessionActivationPolicyHolder> mockedExtension = Mockito.mockStatic(VaadinSessionActivationPolicyHolder.class, Mockito.CALLS_REAL_METHODS)) {
+            mockedExtension.when(() -> VaadinSessionActivationPolicyHolder.get(Mockito.any(VaadinSession.class))).thenReturn(Policy.STRICT);
             final SessionUnderTestContext context = new SessionUnderTestContext();
             context.activate();
 
@@ -80,8 +81,8 @@ public class SessionContextTest extends AbstractContextTest<SessionContextTest.S
 
     @Test
     public void get_context_withLenientPolicy() {
-        try (final MockedStatic<VaadinSessionScopedContext> mockedExtension = Mockito.mockStatic(VaadinSessionScopedContext.class, Mockito.CALLS_REAL_METHODS)) {
-            mockedExtension.when(() -> VaadinSessionScopedContext.getActivationPolicy(Mockito.any(VaadinSession.class))).thenReturn(Policy.LENIENT);
+        try (final MockedStatic<VaadinSessionActivationPolicyHolder> mockedExtension = Mockito.mockStatic(VaadinSessionActivationPolicyHolder.class, Mockito.CALLS_REAL_METHODS)) {
+            mockedExtension.when(() -> VaadinSessionActivationPolicyHolder.get(Mockito.any(VaadinSession.class))).thenReturn(Policy.LENIENT);
             final SessionUnderTestContext context = new SessionUnderTestContext();
             context.activate();
 
@@ -109,9 +110,9 @@ public class SessionContextTest extends AbstractContextTest<SessionContextTest.S
         "true,  STRICT"
     })
     public void get_context_withLockAndPolicy(boolean hasLock, Policy policy) {
-        try (final MockedStatic<VaadinSessionScopedContext> mockedExtension =
-            Mockito.mockStatic(VaadinSessionScopedContext.class, Mockito.CALLS_REAL_METHODS)) {
-            mockedExtension.when(() -> VaadinSessionScopedContext.getActivationPolicy(Mockito.any(VaadinSession.class))).thenReturn(policy);
+        try (final MockedStatic<VaadinSessionActivationPolicyHolder> mockedExtension =
+            Mockito.mockStatic(VaadinSessionActivationPolicyHolder.class, Mockito.CALLS_REAL_METHODS)) {
+            mockedExtension.when(() -> VaadinSessionActivationPolicyHolder.get(Mockito.any(VaadinSession.class))).thenReturn(policy);
             final SessionUnderTestContext context = new SessionUnderTestContext();
             context.activate();
             final VaadinSession session = context.getSession();

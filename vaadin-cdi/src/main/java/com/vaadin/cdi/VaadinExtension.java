@@ -54,7 +54,6 @@ public class VaadinExtension implements Extension {
     private RouteScopedContext routeScopedContext;
     private Set<BeanInfo> beanInfoSet = new HashSet<>();
 
-
     private void storeBeanValidationInfo(@Observes ProcessBean processBean) {
         beanInfoSet.add(new BeanInfo(processBean.getBean(),
                 processBean.getAnnotated()));
@@ -66,12 +65,12 @@ public class VaadinExtension implements Extension {
         uiScopedContext = new UIScopedContext(beanManager);
         routeScopedContext = new RouteScopedContext(beanManager);
         addContext(afterBeanDiscovery, serviceScopedContext, null);
-        addContext(afterBeanDiscovery,new VaadinSessionScopedContext(beanManager), null);
+        addContext(afterBeanDiscovery,
+                new VaadinSessionScopedContext(beanManager), null);
         addContext(afterBeanDiscovery, uiScopedContext, NormalUIScoped.class);
         addContext(afterBeanDiscovery, routeScopedContext,
                 NormalRouteScoped.class);
     }
-
 
     // Validate annotated executor
 

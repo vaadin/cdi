@@ -43,7 +43,13 @@ public @interface VaadinSessionScopeActivationPolicy {
 	 * Activation policies for the VaadinSessionScopedContext.
 	 */
 	enum Policy {
+		/**
+		 * Context is active only if a {@link VaadinSession} is available <em>and</em> currently locked by the calling thread.
+		 */
 		STRICT,
+		/**
+		 * Context is active as long as a {@link VaadinSession} is available on the current thread, regardless of whether the session is locked.
+		 */
 		LENIENT
 	}
 

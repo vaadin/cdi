@@ -7,20 +7,17 @@ import java.util.function.Supplier;
 import com.vaadin.cdi.annotation.VaadinSessionScopeActivationPolicy;
 import com.vaadin.cdi.annotation.VaadinSessionScopeActivationPolicy.Policy;
 import com.vaadin.flow.component.page.AppShellConfigurator;
-import com.vaadin.flow.server.AppShellRegistry;
-import com.vaadin.flow.server.VaadinContext;
-import com.vaadin.flow.server.VaadinService;
-import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.*;
 
 /**
- * Utility class to get the VaadinSessionScopeActivationPolicy for the current VaadinService.
+ * Utility class to get the VaadinSessionScopeActivationPolicy for a VaadinService.
  */
 public class VaadinSessionActivationPolicyHolder {
 
 	/**
 	 * Caches the Policies for each VaadinService.
 	 */
-	private static final ConcurrentHashMap<String, PolicyWrapper> policyCache = new ConcurrentHashMap<>();
+	private static final ConcurrentHashMap<String, Policy> policyCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Get the VaadinSessionScopeActivationPolicy for the current VaadinService.
@@ -31,8 +28,11 @@ public class VaadinSessionActivationPolicyHolder {
 		if (vaadinService == null) {
 			return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
 		}
-		final PolicyWrapper wrapper = policyCache.computeIfAbsent(vaadinService.getServiceName(), s -> initializePolicy(vaadinService));
-		return wrapper.policy;
+		final String servletName = isServiceInitialized(vaadinService) ? vaadinService.getServiceName() : null;
+		if (servletName == null) {
+			return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
+		}
+		return policyCache.computeIfAbsent(servletName, s -> initializePolicy(vaadinService));
 	}
 
 	/**
@@ -47,9 +47,34 @@ public class VaadinSessionActivationPolicyHolder {
 		return get(session.getService());
 	}
 
-	private static PolicyWrapper initializePolicy(final VaadinService vaadinService) {
-		vaadinService.addServiceDestroyListener(event -> policyCache.remove(vaadinService.getServiceName()));
-		return new PolicyWrapper(determinePolicy(vaadinService));
+
+	/**
+	 * Initialize the policy for the given VaadinService.
+	 * @param vaadinService the VaadinService to initialize the policy for
+	 * @return the policy
+	 */
+	private static Policy initializePolicy(final VaadinService vaadinService) {
+		final String servletName = isServiceInitialized(vaadinService) ? vaadinService.getServiceName() : null;
+		if (servletName == null) {
+			return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
+		}
+		vaadinService.addServiceDestroyListener(event -> policyCache.remove(servletName));
+		return determinePolicy(vaadinService);
+	}
+
+
+	/**
+	 * Check if the VaadinService is initialized.
+	 * @param vaadinService the VaadinService to check
+	 * @return true if the VaadinService is initialized, false otherwise
+	 */
+	private static boolean isServiceInitialized(final VaadinService vaadinService) {
+		if (vaadinService instanceof final VaadinServletService servletService) {
+			final VaadinServlet servlet = servletService.getServlet();
+			return servlet.getServletConfig() != null;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -77,13 +102,6 @@ public class VaadinSessionActivationPolicyHolder {
 			return configurator.getAnnotation(VaadinSessionScopeActivationPolicy.class).value();
 		}
 		return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
-	}
-
-	/**
-	 * Wrapper for the VaadinSessionScopeActivationPolicy.
-	 * @param policy the policy
-	 */
-	private record PolicyWrapper(Policy policy) {
 	}
 
 }

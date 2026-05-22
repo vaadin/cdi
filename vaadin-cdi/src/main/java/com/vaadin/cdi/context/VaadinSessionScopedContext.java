@@ -107,7 +107,7 @@ public class VaadinSessionScopedContext extends AbstractContext {
     @Override
     public boolean isActive() {
         final VaadinSession session = VaadinSession.getCurrent();
-        final boolean isStrict = Objects.equals(Policy.STRICT, VaadinSessionScopedContext.getActivationPolicy(session));
+        final boolean isStrict = Objects.equals(Policy.STRICT, VaadinSessionActivationPolicyHolder.get(session));
         if (isStrict) {
             return session != null && session.hasLock();
         }
@@ -136,21 +136,6 @@ public class VaadinSessionScopedContext extends AbstractContext {
         // except we get here after the application is undeployed.
         return (VaadinSession.getCurrent() != null
                 && !ContextUtils.isContextActive(VaadinSessionScoped.class));
-    }
-
-    /**
-     * Returns the current activation policy.
-     * @param session the current session, or null if there is no current session
-     * @return the current activation policy
-     */
-    public static Policy getActivationPolicy(final VaadinSession session) {
-        final Policy policy;
-        if (session == null) {
-            policy = VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
-        } else {
-            policy = VaadinSessionActivationPolicyHolder.get(session);
-        }
-        return policy;
     }
 
 }

@@ -43,7 +43,6 @@ import com.vaadin.cdi.context.VaadinSessionScopedContext;
 import com.vaadin.cdi.util.AbstractContext;
 import com.vaadin.cdi.util.BeanProvider;
 import com.vaadin.cdi.util.DependentProvider;
-import com.vaadin.flow.server.ServiceInitEvent;
 
 /**
  * CDI Extension needed to register Vaadin scopes to the runtime.
@@ -67,11 +66,7 @@ public class VaadinExtension implements Extension {
         uiScopedContext = new UIScopedContext(beanManager);
         routeScopedContext = new RouteScopedContext(beanManager);
         addContext(afterBeanDiscovery, serviceScopedContext, null);
-        VaadinSessionScopedContext sessionScopedContext = new VaadinSessionScopedContext(beanManager);
-        afterBeanDiscovery.<ServiceInitEvent>addObserverMethod()
-            .observedType(ServiceInitEvent.class)
-            .notifyWith(instance -> sessionScopedContext.initializeActivationPolicy(instance.getEvent()));
-        addContext(afterBeanDiscovery,sessionScopedContext, null);
+        addContext(afterBeanDiscovery,new VaadinSessionScopedContext(beanManager), null);
         addContext(afterBeanDiscovery, uiScopedContext, NormalUIScoped.class);
         addContext(afterBeanDiscovery, routeScopedContext,
                 NormalRouteScoped.class);

@@ -30,11 +30,7 @@ import com.vaadin.cdi.util.AbstractContext;
 import com.vaadin.cdi.util.ContextualStorage;
 
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
-import com.vaadin.flow.component.page.AppShellConfigurator;
-import com.vaadin.flow.server.AppShellRegistry;
-import com.vaadin.flow.server.ServiceInitEvent;
-import com.vaadin.flow.server.VaadinContext;
-import com.vaadin.flow.server.VaadinService;
+import com.vaadin.cdi.util.VaadinSessionActivationPolicyHolder;
 import com.vaadin.flow.server.VaadinSession;
 
 /**
@@ -48,11 +44,6 @@ import com.vaadin.flow.server.VaadinSession;
 public class VaadinSessionScopedContext extends AbstractContext {
     private final BeanManager beanManager;
     private static final String ATTRIBUTE_NAME = VaadinSessionScopedContext.class.getName();
-
-    /**
-     * The current VaadinSessionScopeActivationPolicy.
-     */
-    private static final AtomicReference<Policy> activationPolicy = new AtomicReference<>(null);
 
     public VaadinSessionScopedContext(BeanManager beanManager) {
         super(beanManager);
@@ -116,49 +107,11 @@ public class VaadinSessionScopedContext extends AbstractContext {
     @Override
     public boolean isActive() {
         final VaadinSession session = VaadinSession.getCurrent();
-        if (VaadinSessionScopedContext.getActivationPolicy() == null && session != null) {
-            activationPolicy.compareAndSet(null, determineVaadinSessionScopeActivationPolicy(session.getService()));
-        }
-        final boolean isStrict = Objects.equals(Policy.STRICT, VaadinSessionScopedContext.getActivationPolicy());
+        final boolean isStrict = Objects.equals(Policy.STRICT, VaadinSessionScopedContext.getActivationPolicy(session));
         if (isStrict) {
             return session != null && session.hasLock();
         }
         return session != null;
-    }
-
-    /**
-     * Initialize the VaadinSessionScopeActivationPolicy. Ensures the Operation is done exactly once.
-     * @param initEvent the ServiceInitEvent containing the current VaadinService.
-     */
-    public void initializeActivationPolicy(final ServiceInitEvent initEvent) {
-        activationPolicy.compareAndSet(null, determineVaadinSessionScopeActivationPolicy(initEvent.getSource()));
-    }
-
-    /**
-     * Determine the VaadinSessionScopeActivationPolicy for the current VaadinService.
-     * @param vaadinService the current VaadinService
-     * @return the determined policy
-     */
-    private Policy determineVaadinSessionScopeActivationPolicy(final VaadinService vaadinService) {
-        if (vaadinService == null) {
-            return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
-        }
-        final VaadinContext context = vaadinService.getContext();
-        if (context == null) {
-            return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
-        }
-        final AppShellRegistry registry = AppShellRegistry.getInstance(context);
-        if (registry == null) {
-            return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
-        }
-        final Class<? extends AppShellConfigurator> configurator = registry.getShell();
-        if (configurator == null) {
-            return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
-        }
-        if (configurator.isAnnotationPresent(VaadinSessionScopeActivationPolicy.class)) {
-            return configurator.getAnnotation(VaadinSessionScopeActivationPolicy.class).value();
-        }
-        return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
     }
 
 
@@ -186,11 +139,18 @@ public class VaadinSessionScopedContext extends AbstractContext {
     }
 
     /**
-     * Get the current VaadinSessionScopeActivationPolicy.
-     * @return the current policy
+     * Returns the current activation policy.
+     * @param session the current session, or null if there is no current session
+     * @return the current activation policy
      */
-    public static Policy getActivationPolicy() {
-        return activationPolicy.get();
+    public static Policy getActivationPolicy(final VaadinSession session) {
+        final Policy policy;
+        if (session == null) {
+            policy = VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
+        } else {
+            policy = VaadinSessionActivationPolicyHolder.get(session);
+        }
+        return policy;
     }
 
 }

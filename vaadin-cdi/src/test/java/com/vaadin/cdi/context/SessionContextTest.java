@@ -56,7 +56,7 @@ public class SessionContextTest extends AbstractContextTest<SessionContextTest.S
     @Test
     public void get_context_withStrictPolicy_contextNotActive() {
         try (final MockedStatic<VaadinSessionScopedContext> mockedExtension = Mockito.mockStatic(VaadinSessionScopedContext.class, Mockito.CALLS_REAL_METHODS)) {
-            mockedExtension.when(VaadinSessionScopedContext::getActivationPolicy).thenReturn(Policy.STRICT);
+            mockedExtension.when(() -> VaadinSessionScopedContext.getActivationPolicy(Mockito.any(VaadinSession.class))).thenReturn(Policy.STRICT);
             final SessionUnderTestContext context = new SessionUnderTestContext();
             context.activate();
 
@@ -81,7 +81,7 @@ public class SessionContextTest extends AbstractContextTest<SessionContextTest.S
     @Test
     public void get_context_withLenientPolicy() {
         try (final MockedStatic<VaadinSessionScopedContext> mockedExtension = Mockito.mockStatic(VaadinSessionScopedContext.class, Mockito.CALLS_REAL_METHODS)) {
-            mockedExtension.when(VaadinSessionScopedContext::getActivationPolicy).thenReturn(Policy.LENIENT);
+            mockedExtension.when(() -> VaadinSessionScopedContext.getActivationPolicy(Mockito.any(VaadinSession.class))).thenReturn(Policy.LENIENT);
             final SessionUnderTestContext context = new SessionUnderTestContext();
             context.activate();
 
@@ -111,7 +111,7 @@ public class SessionContextTest extends AbstractContextTest<SessionContextTest.S
     public void get_context_withLockAndPolicy(boolean hasLock, Policy policy) {
         try (final MockedStatic<VaadinSessionScopedContext> mockedExtension =
             Mockito.mockStatic(VaadinSessionScopedContext.class, Mockito.CALLS_REAL_METHODS)) {
-            mockedExtension.when(VaadinSessionScopedContext::getActivationPolicy).thenReturn(policy);
+            mockedExtension.when(() -> VaadinSessionScopedContext.getActivationPolicy(Mockito.any(VaadinSession.class))).thenReturn(policy);
             final SessionUnderTestContext context = new SessionUnderTestContext();
             context.activate();
             final VaadinSession session = context.getSession();

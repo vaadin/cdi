@@ -28,7 +28,6 @@ import static org.mockito.Mockito.when;
 
 import jakarta.enterprise.context.ContextNotActiveException;
 
-import com.vaadin.cdi.VaadinExtension;
 import com.vaadin.cdi.annotation.VaadinSessionScopeActivationPolicy.Policy;
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
 import com.vaadin.cdi.util.BeanProvider;
@@ -53,8 +52,8 @@ public class SessionContextTest extends AbstractContextTest<SessionContextTest.S
 
     @Test
     public void get_context_withStrictPolicy_contextNotActive() {
-        try (final MockedStatic<VaadinExtension> mockedExtension = Mockito.mockStatic(VaadinExtension.class)) {
-            mockedExtension.when(VaadinExtension::getVaadinSessionScopeActivationPolicy).thenReturn(Policy.STRICT);
+        try (final MockedStatic<VaadinSessionScopedContext> mockedExtension = Mockito.mockStatic(VaadinSessionScopedContext.class, Mockito.CALLS_REAL_METHODS)) {
+            mockedExtension.when(VaadinSessionScopedContext::getActivationPolicy).thenReturn(Policy.STRICT);
             final SessionUnderTestContext context = new SessionUnderTestContext();
             context.activate();
 
@@ -78,8 +77,8 @@ public class SessionContextTest extends AbstractContextTest<SessionContextTest.S
 
     @Test
     public void get_context_withLenientPolicy() {
-        try (final MockedStatic<VaadinExtension> mockedExtension = Mockito.mockStatic(VaadinExtension.class)) {
-            mockedExtension.when(VaadinExtension::getVaadinSessionScopeActivationPolicy).thenReturn(Policy.LENIENT);
+        try (final MockedStatic<VaadinSessionScopedContext> mockedExtension = Mockito.mockStatic(VaadinSessionScopedContext.class, Mockito.CALLS_REAL_METHODS)) {
+            mockedExtension.when(VaadinSessionScopedContext::getActivationPolicy).thenReturn(Policy.LENIENT);
             final SessionUnderTestContext context = new SessionUnderTestContext();
             context.activate();
 

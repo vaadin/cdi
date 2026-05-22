@@ -1,5 +1,6 @@
 package com.vaadin.cdi.util;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -17,6 +18,11 @@ import com.vaadin.flow.server.VaadinSession;
 public class VaadinSessionActivationPolicyHolder {
 
 	/**
+	 * Caches the Policies for each VaadinService.
+	 */
+	private static final ConcurrentHashMap<String, PolicyWrapper> policyCache = new ConcurrentHashMap<>();
+
+	/**
 	 * Get the VaadinSessionScopeActivationPolicy for the current VaadinService.
 	 * @param vaadinService the current VaadinService
 	 * @return the determined policy
@@ -25,12 +31,8 @@ public class VaadinSessionActivationPolicyHolder {
 		if (vaadinService == null) {
 			return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
 		}
-		final VaadinContext context = vaadinService.getContext();
-		if (context == null) {
-			return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
-		}
-		final PolicyWrapper attribute = context.getAttribute(PolicyWrapper.class, () -> new PolicyWrapper(determinePolicy(vaadinService)));
-		return attribute.policy;
+		final PolicyWrapper wrapper = policyCache.computeIfAbsent(vaadinService.getServiceName(), s -> initializePolicy(vaadinService));
+		return wrapper.policy;
 	}
 
 	/**
@@ -42,45 +44,12 @@ public class VaadinSessionActivationPolicyHolder {
 		if (session == null) {
 			return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
 		}
-		PolicyWrapper wrapper = ensureLock(session, () -> session.getAttribute(PolicyWrapper.class));
-		if (wrapper == null) {
-			// We can do some performance optimization...
-			final Policy policy = get(session.getService());
-			wrapper = new PolicyWrapper(policy);
-			final PolicyWrapper finalWrapper = wrapper;
-			ensureLock(session, () -> session.setAttribute(PolicyWrapper.class, finalWrapper));
-		}
-		return wrapper.policy;
+		return get(session.getService());
 	}
 
-	/**
-	 * Ensures that the session has a lock before executing the supplier.
-	 * @param session the session
-	 * @param supplier the supplier
-	 * @return the result of the supplier
-	 * @param <T> the type of the result
-	 */
-	private static <T> T ensureLock(final VaadinSession session, final Supplier<T> supplier) {
-		if (session.hasLock()) {
-			return supplier.get();
-		} else {
-			final AtomicReference<T> result = new AtomicReference<>();
-			session.accessSynchronously(() -> result.set(supplier.get()));
-			return result.get();
-		}
-	}
-
-	/**
-	 * Ensures that the session has a lock before executing the runnable.
-	 * @param session the session
-	 * @param runnable the runnable
-	 */
-	private static void ensureLock(final VaadinSession session, final Runnable runnable) {
-		if (session.hasLock()) {
-			runnable.run();
-		} else {
-			session.accessSynchronously(runnable::run);
-		}
+	private static PolicyWrapper initializePolicy(final VaadinService vaadinService) {
+		vaadinService.addServiceDestroyListener(event -> policyCache.remove(vaadinService.getServiceName()));
+		return new PolicyWrapper(determinePolicy(vaadinService));
 	}
 
 	/**

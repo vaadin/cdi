@@ -83,9 +83,6 @@ public class VaadinSessionActivationPolicyHolder {
 	 * @return the determined policy
 	 */
 	private static Policy determinePolicy(final VaadinService vaadinService) {
-		if (vaadinService == null) {
-			return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
-		}
 		final VaadinContext context = vaadinService.getContext();
 		if (context == null) {
 			return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;

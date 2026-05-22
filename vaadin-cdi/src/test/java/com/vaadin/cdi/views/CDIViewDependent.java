@@ -4,7 +4,7 @@ import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 
-import javax.enterprise.context.Dependent;
+import jakarta.enterprise.context.Dependent;
 
 @CDIView("viewDependent")
 @Dependent

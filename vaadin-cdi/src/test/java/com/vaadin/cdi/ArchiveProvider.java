@@ -5,7 +5,7 @@
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -24,12 +24,12 @@ import com.vaadin.cdi.server.VaadinCDIServletService;
 import com.vaadin.cdi.viewcontextstrategy.*;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 
-import javax.enterprise.inject.spi.Extension;
+import jakarta.enterprise.inject.spi.Extension;
 
 /**
  */
@@ -74,7 +74,7 @@ public class ArchiveProvider {
                 .create(WebArchive.class, warName + ".war")
                 .addClasses(FRAMEWORK_CLASSES)
                 .addAsLibraries(
-                        pom.resolve("com.vaadin:vaadin-server")
+                        pom.resolve("com.vaadin:vaadin-server-mpr-jakarta")
                                 .withTransitivity().asFile())
                 .addAsLibraries(
                         pom.resolve("com.vaadin:vaadin-client-compiled")
@@ -88,7 +88,8 @@ public class ArchiveProvider {
                                 .withTransitivity().asFile())
                 .addAsServiceProvider(Extension.class, VaadinExtension.class);
         if (emptyBeansXml) {
-            archive = archive.addAsWebInfResource(EmptyAsset.INSTANCE,
+            archive = archive.addAsWebInfResource(
+                    new StringAsset("<beans xmlns=\"https://jakarta.ee/xml/ns/jakartaee\" version=\"4.0\" bean-discovery-mode=\"all\"></beans>"),
                     ArchivePaths.create("beans.xml"));
         }
         return archive;

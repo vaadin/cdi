@@ -5,7 +5,7 @@
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -22,9 +22,9 @@ import com.vaadin.navigator.View;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.*;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.*;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.List;

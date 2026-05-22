@@ -6,7 +6,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 
 public class ClusterIncTestLayout extends VerticalLayout {

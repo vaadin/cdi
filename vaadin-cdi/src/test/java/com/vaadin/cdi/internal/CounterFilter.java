@@ -1,12 +1,12 @@
 package com.vaadin.cdi.internal;
 
-import javax.inject.Inject;
-import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
+import jakarta.inject.Inject;
+import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
 import java.io.IOException;
 
 @WebFilter(urlPatterns = "/*", asyncSupported = true)
-public class CounterFilter implements javax.servlet.Filter {
+public class CounterFilter implements jakarta.servlet.Filter {
 
     @Inject
     Counter counter;

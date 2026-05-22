@@ -5,7 +5,7 @@
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -20,14 +20,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletRegistration;
-import javax.servlet.annotation.WebListener;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.ServletRegistration;
+import jakarta.servlet.annotation.WebListener;
 
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.URLMapping;
@@ -73,7 +73,7 @@ public class ContextDeployer implements ServletContextListener {
         getLogger().info("Done deploying Vaadin UIs");
     }
 
-    private Class getVaadinServletDefinedInDeploymentDescriptor(
+    private Class<?> getVaadinServletDefinedInDeploymentDescriptor(
             ServletContext context) {
         for (ServletRegistration servletRegistration : context
                 .getServletRegistrations().values()) {
@@ -224,13 +224,13 @@ public class ContextDeployer implements ServletContextListener {
      * @param context
      */
     private void deployVaadinServlet(ServletContext context) {
-        Class vaadinServletClass = getVaadinServletDefinedInDeploymentDescriptor(context);
+        Class<?> vaadinServletClass = getVaadinServletDefinedInDeploymentDescriptor(context);
         if (vaadinServletClass != null) {
             getLogger()
                     .warning(
                             "Vaadin related servlet is defined in deployment descriptor, "
                                     + "automated deployment of VaadinCDIServlet is now disabled");
-            Class enclosingClass = vaadinServletClass.getEnclosingClass();
+            Class<?> enclosingClass = vaadinServletClass.getEnclosingClass();
             if (!VaadinCDIServlet.class.isAssignableFrom(vaadinServletClass)
                     && enclosingClass != null
                     && enclosingClass.isAnnotationPresent(CDIUI.class)) {

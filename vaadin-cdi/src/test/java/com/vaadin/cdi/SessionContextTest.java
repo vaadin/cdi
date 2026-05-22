@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+//@Ignore("Arquillian integration test - requires an application server container profile and browser")
 public class SessionContextTest extends AbstractManagedCDIIntegrationTest {
     @Deployment(testable = false)
     public static WebArchive deployment() {

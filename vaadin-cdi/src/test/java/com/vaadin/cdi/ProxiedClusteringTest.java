@@ -145,7 +145,7 @@ public class ProxiedClusteringTest extends AbstractCDIIntegrationTest {
 
         public String getUrl() {
             int localPort = ((InetSocketAddress) reverseProxy.getListenerInfo().get(0).getAddress()).getPort();
-            return  "http://localhost:" + localPort + contextRoot;
+            return  "https://localhost:" + localPort + contextRoot;
         }
 
         private class HostSelectorImpl implements LoadBalancingProxyClient.HostSelector {

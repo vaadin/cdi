@@ -9,6 +9,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.openqa.selenium.By;
 
 import com.vaadin.cdi.internal.CrossInjectingBean;
@@ -17,6 +18,7 @@ import com.vaadin.cdi.views.CrossInjectingView;
 
 import java.net.MalformedURLException;
 
+//@Ignore("Arquillian integration test - requires an application server container profile and browser")
 public class CrossInjectionTest extends AbstractManagedCDIIntegrationTest {
 
     @Deployment(name = "crossInjection", testable = false)

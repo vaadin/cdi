@@ -9,7 +9,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @CDIUI("viewscoped")
 public class ViewScopedIncUI extends UI {

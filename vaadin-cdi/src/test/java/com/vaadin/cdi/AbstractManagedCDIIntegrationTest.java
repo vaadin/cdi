@@ -1,9 +1,7 @@
 package com.vaadin.cdi;
 
-import com.google.common.base.Predicate;
 import com.vaadin.cdi.internal.Conventions;
 import com.vaadin.cdi.uis.RootUI;
-import org.jboss.arquillian.graphene.Graphene;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -16,7 +14,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -42,7 +40,7 @@ public abstract class AbstractManagedCDIIntegrationTest extends
     public void openWindow(WebDriver window, String uri)
             throws MalformedURLException {
         openWindowNoWait(window, uri, contextPath);
-        (new WebDriverWait(window, 15)).until(ExpectedConditions
+        (new WebDriverWait(window, Duration.ofSeconds(15))).until(ExpectedConditions
                 .presenceOfElementLocated(LABEL));
     }
 
@@ -51,23 +49,13 @@ public abstract class AbstractManagedCDIIntegrationTest extends
     }
 
     public void waitForValue(final By by, final int value) {
-        Graphene.waitModel(firstWindow).withTimeout(10, TimeUnit.SECONDS)
-                .until(new Predicate<WebDriver>() {
-                    @Override
-                    public boolean apply(WebDriver driver) {
-                        return number(driver.findElement(by).getText()) == value;
-                    }
-                });
+        new WebDriverWait(firstWindow, Duration.ofSeconds(10))
+                .until(driver -> number(driver.findElement(by).getText()) == value);
     }
 
     public void waitForValue(final By by, final String value) {
-        Graphene.waitModel(firstWindow).withTimeout(10, TimeUnit.SECONDS)
-                .until(new Predicate<WebDriver>() {
-                    @Override
-                    public boolean apply(WebDriver driver) {
-                        return value.equals(driver.findElement(by).getText());
-                    }
-                });
+        new WebDriverWait(firstWindow, Duration.ofSeconds(10))
+                .until(driver -> value.equals(driver.findElement(by).getText()));
     }
 
     public void resetCounts() throws IOException {

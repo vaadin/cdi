@@ -99,7 +99,7 @@ See also the notes for earlier releases below.
 - breaking change: NormalScopes (including @NormalUIScoped and
   @NormalViewScoped) are not supported classes implementing
   com.vaadin.ui.Component
-- See http://dev.vaadin.com/query?status=closed&status=released&milestone=Vaadin+CDI+1.0.0.beta3
+- See https://dev.vaadin.com/query?status=closed&status=released&milestone=Vaadin+CDI+1.0.0.beta3
   for the complete list of changes.
 
 See also the notes for earlier releases below.
@@ -112,7 +112,7 @@ See also the notes for earlier releases below.
 - Various fixes including
   - UI and View are now correctly included in their own scopes
   - Sub-views with slash in view name are now handled correctly
-- See http://dev.vaadin.com/query?status=closed&status=released&milestone=Vaadin+CDI+1.0.0.beta2
+- See https://dev.vaadin.com/query?status=closed&status=released&milestone=Vaadin+CDI+1.0.0.beta2
   for the complete list of changes.
 
 See also the notes for earlier releases below.
@@ -132,7 +132,7 @@ name mappings) when upgrading from earlier versions.
   background threads (within UI.access())
 - DeltaSpike library is used internally by the add-on
 - Various fixes and small enhancements
-- See http://dev.vaadin.com/query?status=closed&status=released&milestone=Vaadin+CDI+1.0.0.beta1
+- See https://dev.vaadin.com/query?status=closed&status=released&milestone=Vaadin+CDI+1.0.0.beta1
   for the complete list of changes.
 
 If any VaadinServlet is explicitly configured either with @WebServlet or
@@ -150,14 +150,14 @@ functionality otherwise.
 - Reintroduce conventions for mapping of views and UIs
   - This requires updating @CDIUI and @CDIView parameter values in existing
     applications.
-  - see http://dev.vaadin.com/ticket/12385 for details
+  - see https://dev.vaadin.com/ticket/12385 for details
 - @UIScoped is inherited by subclasses of an annotated UI
 - Support non-JEE containers with Weld (BeanManager look-up)
 - Use BeanManager.resolve() to support @Alternative UIs
 - Partial passivation support
 - Automatically injected servlet has async-supported enabled
 - Reduced unnecessary logging
-- See http://dev.vaadin.com/query?&status=released&milestone=Vaadin+CDI+1.0.0.alpha3
+- See https://dev.vaadin.com/query?&status=released&milestone=Vaadin+CDI+1.0.0.alpha3
   for the complete list of changes.
 
 ---
@@ -168,7 +168,7 @@ Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this file except in compliance with the License. You may obtain a copy of
 the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+https://www.apache.org/licenses/LICENSE-2.0
  
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS, WITHOUT

@@ -10,7 +10,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.Serializable;
 
 @CDIUI

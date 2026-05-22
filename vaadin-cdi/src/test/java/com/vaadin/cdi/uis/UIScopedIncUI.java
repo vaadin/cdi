@@ -7,7 +7,7 @@ import com.vaadin.cdi.internal.ClusterIncTestLayout;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @CDIUI("uiscoped")
 public class UIScopedIncUI extends UI {

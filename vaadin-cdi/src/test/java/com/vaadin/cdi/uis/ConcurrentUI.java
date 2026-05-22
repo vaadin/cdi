@@ -10,8 +10,8 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 @CDIUI
 public class ConcurrentUI extends UI {

@@ -7,16 +7,19 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.MalformedURLException;
+import java.time.Duration;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
+//@Ignore("Arquillian integration test - requires an application server container profile and browser")
 public class MultipleSessionTest extends AbstractManagedCDIIntegrationTest {
 
     @Deployment(name = "multipleSessions", testable = false)
@@ -30,7 +33,7 @@ public class MultipleSessionTest extends AbstractManagedCDIIntegrationTest {
     public void injectedBeanDependsOnSessionTest() throws MalformedURLException {
         openWindow(Conventions.deriveMappingForUI(MultipleSessionUI.class));
 
-        (new WebDriverWait(firstWindow, 15)).until(ExpectedConditions
+        (new WebDriverWait(firstWindow, Duration.ofSeconds(15))).until(ExpectedConditions
                 .presenceOfElementLocated(By
                         .id(MultipleSessionUI.MAINSESSION2_ID)));
 

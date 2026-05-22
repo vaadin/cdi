@@ -1,6 +1,6 @@
 package com.vaadin.cdi.shiro;
 
-import javax.servlet.annotation.WebListener;
+import jakarta.servlet.annotation.WebListener;
 
 import org.apache.shiro.web.env.EnvironmentLoaderListener;
 

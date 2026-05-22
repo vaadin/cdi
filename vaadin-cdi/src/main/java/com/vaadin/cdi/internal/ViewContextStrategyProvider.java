@@ -4,13 +4,13 @@ import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy;
 import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategyQualifier;
 import com.vaadin.cdi.viewcontextstrategy.ViewContextByNameAndParameters;
 import com.vaadin.navigator.View;
-import org.apache.deltaspike.core.api.literal.AnyLiteral;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
@@ -19,7 +19,7 @@ import java.util.Set;
  */
 @ApplicationScoped
 public class ViewContextStrategyProvider {
-    private static AnyLiteral ANY_LITERAL = new AnyLiteral();
+    private static Any ANY_LITERAL = Any.Literal.INSTANCE;
     @Inject
     private BeanManager beanManager;
 

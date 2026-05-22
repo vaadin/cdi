@@ -5,7 +5,7 @@
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -20,9 +20,9 @@ import org.apache.deltaspike.core.util.context.AbstractContext;
 
 import java.lang.annotation.Annotation;
 
-import javax.enterprise.context.spi.AlterableContext;
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.context.spi.AlterableContext;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.context.spi.CreationalContext;
 
 /**
  * Used to bind multiple scope annotations to a single context. Will delegate

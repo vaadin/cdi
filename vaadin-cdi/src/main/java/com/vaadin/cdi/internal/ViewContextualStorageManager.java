@@ -5,7 +5,7 @@
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -25,10 +25,10 @@ import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.apache.deltaspike.core.util.context.AbstractContext;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
 
-import javax.annotation.PreDestroy;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
 import java.io.Serializable;
 
 /**

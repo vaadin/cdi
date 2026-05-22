@@ -10,6 +10,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import com.vaadin.cdi.internal.Conventions;
 import com.vaadin.cdi.internal.NonPassivatingBean;
@@ -17,6 +18,7 @@ import com.vaadin.cdi.internal.ViewScopedContext;
 import com.vaadin.cdi.uis.NonPassivatingUI;
 import com.vaadin.cdi.views.NonPassivatingContentView;
 
+//@Ignore("Arquillian integration test - requires an application server container profile and browser")
 public class NonPassivatingBeanTest extends AbstractManagedCDIIntegrationTest {
 
     

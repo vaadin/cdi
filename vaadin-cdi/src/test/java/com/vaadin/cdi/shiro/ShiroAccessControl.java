@@ -1,6 +1,6 @@
 package com.vaadin.cdi.shiro;
 
-import javax.enterprise.inject.Alternative;
+import jakarta.enterprise.inject.Alternative;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -13,7 +13,7 @@ import com.vaadin.cdi.access.AccessControl;
  * This implementation does not provide any custom Shiro session manager or
  * security context. To use server push and link Shiro sessions to Vaadin
  * session rather than the HTTP session, see e.g.
- * http://mikepilone.blogspot.fi/2013/07/vaadin-shiro-and-push.html .
+ * https://mikepilone.blogspot.fi/2013/07/vaadin-shiro-and-push.html .
  * 
  * In this test, Shiro is initialized by ShiroWebListener using shiro.ini and
  * sessions are managed using ShiroWebFilter.

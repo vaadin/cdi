@@ -1,6 +1,6 @@
 package com.vaadin.cdi.uis;
 
-import javax.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.cdi.CDIUI;

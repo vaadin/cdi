@@ -8,8 +8,8 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 @CDIView("")
 public class RootView extends CustomComponent implements View {

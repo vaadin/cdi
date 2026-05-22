@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 <!DOCTYPE module PUBLIC
           "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
-          "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+          "https://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 
 <!-- Checkstyle configuration for Vaadin that is based on the the sun coding
 	conventions from:
-	- the Java Language Specification at http://java.sun.com/docs/books/jls/second_edition/html/index.html
-	- the Sun Code Conventions at http://java.sun.com/docs/codeconv/
-	- the Javadoc guidelines at http://java.sun.com/j2se/javadoc/writingdoccomments/index.html
-	- the JDK Api documentation http://java.sun.com/j2se/docs/api/index.html
+	- the Java Language Specification at https://java.sun.com/docs/books/jls/second_edition/html/index.html
+	- the Sun Code Conventions at https://java.sun.com/docs/codeconv/
+	- the Javadoc guidelines at https://java.sun.com/j2se/javadoc/writingdoccomments/index.html
+	- the JDK Api documentation https://java.sun.com/j2se/docs/api/index.html
 	- some best practices Vaadin specific changes:
 	- Removed DoubleCheckedLocking because it doesn't work in CheckStyle 5.6
-	-> http://www.smartics.eu/bugzilla/show_bug.cgi?id=593
+	-> https://www.smartics.eu/bugzilla/show_bug.cgi?id=593
 	- Modified HiddenField Check to allow field shadowing on Constructor, Setter
 	and Abstract Method parameters.
 	- Modified StaticVariableName Check format for PUBLIC variables from ^[a-z][a-zA-Z0-9]*$
@@ -46,17 +46,17 @@
 
 <module name="Checker">
 	<!-- If you set the basedir property below, then all reported file names
-		will be relative to the specified directory. See http://checkstyle.sourceforge.net/5.x/config.html#Checker
+		will be relative to the specified directory. See https://checkstyle.sourceforge.net/5.x/config.html#Checker
 		<property name="basedir" value="${basedir}"/> -->
 
 	<!-- Checks that a package-info.java file exists for each package. -->
-	<!-- See http://checkstyle.sf.net/config_javadoc.html#JavadocPackage -->
+	<!-- See https://checkstyle.sf.net/config_javadoc.html#JavadocPackage -->
 	<module name="JavadocPackage">
 		<property name="severity" value="info" />
 	</module>
 
 	<!-- Checks whether files end with a new line. -->
-	<!-- See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
+	<!-- See https://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
 	<module name="NewlineAtEndOfFile">
 		<property name="severity" value="warning" />
 	</module>
@@ -67,25 +67,25 @@
     
 
 	<!-- Checks that property files contain the same keys. -->
-	<!-- See http://checkstyle.sf.net/config_misc.html#Translation -->
+	<!-- See https://checkstyle.sf.net/config_misc.html#Translation -->
 	<module name="Translation">
 		<property name="severity" value="warning" />
 	</module>
 
 	<!-- Checks for Size Violations. -->
-	<!-- See http://checkstyle.sf.net/config_sizes.html -->
+	<!-- See https://checkstyle.sf.net/config_sizes.html -->
 	<module name="FileLength">
 		<property name="severity" value="ignore" />
 	</module>
 
 	<!-- Checks for whitespace -->
-	<!-- See http://checkstyle.sf.net/config_whitespace.html -->
+	<!-- See https://checkstyle.sf.net/config_whitespace.html -->
 	<module name="FileTabCharacter">
 		<property name="severity" value="warning" />
 	</module>
 
 	<!-- Checks for Headers -->
-	<!-- See http://checkstyle.sf.net/config_header.html -->
+	<!-- See https://checkstyle.sf.net/config_header.html -->
 	<module name="Header">
 		<property name="headerFile" value="${checkstyle.header.file}" />
 		<property name="fileExtensions" value="java" />
@@ -99,7 +99,7 @@
 			<module name="com.vaadin.checks.IsSerializableClassCheck"/> -->
 
 		<!-- Checks for Javadoc comments. -->
-		<!-- See http://checkstyle.sf.net/config_javadoc.html -->
+		<!-- See https://checkstyle.sf.net/config_javadoc.html -->
 		<module name="JavadocMethod">
 			<property name="severity" value="info" />
 		</module>
@@ -114,7 +114,7 @@
 		</module>
 
 		<!-- Checks for Naming Conventions. -->
-		<!-- See http://checkstyle.sf.net/config_naming.html -->
+		<!-- See https://checkstyle.sf.net/config_naming.html -->
 		<module name="ConstantName" />
 		<module name="LocalFinalVariableName" />
 		<module name="LocalVariableName" />
@@ -136,7 +136,7 @@
 
 
 		<!-- Checks for imports -->
-		<!-- See http://checkstyle.sf.net/config_import.html -->
+		<!-- See https://checkstyle.sf.net/config_import.html -->
 		<module name="AvoidStarImport" />
 		<module name="IllegalImport" /> <!-- defaults to sun.* packages -->
 		<module name="RedundantImport" />
@@ -144,7 +144,7 @@
 
 
 		<!-- Checks for Size Violations. -->
-		<!-- See http://checkstyle.sf.net/config_sizes.html -->
+		<!-- See https://checkstyle.sf.net/config_sizes.html -->
 		<module name="LineLength">
 			<property name="severity" value="warning" />
 		</module>
@@ -157,7 +157,7 @@
 
 
 		<!-- Checks for whitespace -->
-		<!-- See http://checkstyle.sf.net/config_whitespace.html -->
+		<!-- See https://checkstyle.sf.net/config_whitespace.html -->
 		<module name="EmptyForIteratorPad" />
 		<module name="GenericWhitespace" />
 		<module name="MethodParamPad" />
@@ -180,7 +180,7 @@
 		</module>
 
 		<!-- Modifier Checks -->
-		<!-- See http://checkstyle.sf.net/config_modifiers.html -->
+		<!-- See https://checkstyle.sf.net/config_modifiers.html -->
 		<module name="ModifierOrder" />
 		<module name="RedundantModifier">
 			<property name="severity" value="warning" />
@@ -188,7 +188,7 @@
 
 
 		<!-- Checks for blocks. You know, those {}'s -->
-		<!-- See http://checkstyle.sf.net/config_blocks.html -->
+		<!-- See https://checkstyle.sf.net/config_blocks.html -->
 		<module name="AvoidNestedBlocks" />
 		<module name="EmptyBlock">
 			<property name="severity" value="warning" />
@@ -199,7 +199,7 @@
 
 
 		<!-- Checks for common coding problems -->
-		<!-- See http://checkstyle.sf.net/config_coding.html -->
+		<!-- See https://checkstyle.sf.net/config_coding.html -->
 		<module name="AvoidInlineConditionals">
 			<property name="severity" value="ignore" />
 		</module>
@@ -223,7 +223,7 @@
 		<module name="SimplifyBooleanReturn" />
 
 		<!-- Checks for class design -->
-		<!-- See http://checkstyle.sf.net/config_design.html -->
+		<!-- See https://checkstyle.sf.net/config_design.html -->
 		<module name="DesignForExtension">
 			<property name="severity" value="ignore" />
 		</module>
@@ -236,7 +236,7 @@
 
 
 		<!-- Miscellaneous other checks. -->
-		<!-- See http://checkstyle.sf.net/config_misc.html -->
+		<!-- See https://checkstyle.sf.net/config_misc.html -->
 		<module name="ArrayTypeStyle" />
 		<module name="FinalParameters">
 			<property name="severity" value="ignore" />

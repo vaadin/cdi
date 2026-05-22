@@ -8,10 +8,10 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
 
 @CDIUI("")
 public class ViewNavigationUI extends UI {

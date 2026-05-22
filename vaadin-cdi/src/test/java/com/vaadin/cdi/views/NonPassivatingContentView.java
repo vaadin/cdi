@@ -10,10 +10,10 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -113,22 +113,17 @@ public class NonPassivatingContentView extends CustomComponent implements View {
         }
 
         @Override
-        public boolean isNullable() {
-            return false;
-        }
-
-        @Override
-        public Set getInjectionPoints() {
+        public Set<?> getInjectionPoints() {
             return new HashSet();
         }
 
         @Override
-        public Class getBeanClass() {
+        public Class<?> getBeanClass() {
             return Object.class;
         }
 
         @Override
-        public Set getStereotypes() {
+        public Set<?> getStereotypes() {
             return new HashSet();
         }
 

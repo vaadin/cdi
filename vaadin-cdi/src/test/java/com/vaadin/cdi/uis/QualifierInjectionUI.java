@@ -1,6 +1,6 @@
 package com.vaadin.cdi.uis;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.internal.Alpha;

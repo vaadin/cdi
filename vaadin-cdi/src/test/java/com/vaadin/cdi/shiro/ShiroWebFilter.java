@@ -1,7 +1,7 @@
 package com.vaadin.cdi.shiro;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.annotation.WebFilter;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.annotation.WebFilter;
 
 import org.apache.shiro.web.servlet.ShiroFilter;
 

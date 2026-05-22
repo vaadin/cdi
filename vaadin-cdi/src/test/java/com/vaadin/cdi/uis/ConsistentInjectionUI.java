@@ -1,7 +1,7 @@
 package com.vaadin.cdi.uis;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.internal.MyBean;

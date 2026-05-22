@@ -2,7 +2,7 @@ package com.vaadin.cdi.views;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import com.vaadin.cdi.CDIView;
 import com.vaadin.cdi.NormalViewScoped;

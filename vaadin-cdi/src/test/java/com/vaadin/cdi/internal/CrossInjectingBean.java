@@ -1,6 +1,6 @@
 package com.vaadin.cdi.internal;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import com.vaadin.cdi.NormalViewScoped;
 import com.vaadin.cdi.views.CrossInjectingView;

@@ -7,6 +7,7 @@ import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import java.io.IOException;
 
@@ -14,6 +15,7 @@ import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+//@Ignore("Arquillian integration test - requires an application server container profile and browser")
 public class RootViewAtContextRootTest extends AbstractManagedCDIIntegrationTest {
 
     @Before

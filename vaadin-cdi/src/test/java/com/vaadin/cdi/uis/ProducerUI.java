@@ -1,8 +1,8 @@
 package com.vaadin.cdi.uis;
 
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
 
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.NormalUIScoped;

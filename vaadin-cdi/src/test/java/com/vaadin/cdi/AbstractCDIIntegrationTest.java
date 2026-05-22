@@ -1,6 +1,5 @@
 package com.vaadin.cdi;
 
-import com.google.common.base.Predicate;
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
@@ -14,16 +13,15 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import javax.enterprise.inject.New;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 
 @RunWith(Arquillian.class)
 @RunAsClient
 abstract public class AbstractCDIIntegrationTest {
 
     @Drone
-    @New
     WebDriver firstWindow;
 
     @ArquillianResource
@@ -66,7 +64,9 @@ abstract public class AbstractCDIIntegrationTest {
     }
 
     public void waitForClient() {
-        new WebDriverWait(firstWindow, 10).until(new ClientIsReadyPredicate());
+        new WebDriverWait(firstWindow, Duration.ofSeconds(10)).until(input ->
+                (Boolean) ((JavascriptExecutor) firstWindow)
+                        .executeScript("return !vaadin.clients[Object.keys(vaadin.clients)[0]].isActive()"));
     }
 
     public void refreshWindow() {
@@ -75,16 +75,8 @@ abstract public class AbstractCDIIntegrationTest {
 
     public void refreshWindow(WebDriver window) {
         window.navigate().refresh();
-        (new WebDriverWait(window, 15)).until(ExpectedConditions
+        (new WebDriverWait(window, Duration.ofSeconds(15))).until(ExpectedConditions
                 .presenceOfElementLocated(LABEL));
-    }
-
-    private class ClientIsReadyPredicate implements Predicate<WebDriver> {
-        @Override
-        public boolean apply(WebDriver input) {
-            return (Boolean) ((JavascriptExecutor) firstWindow)
-                    .executeScript("return !vaadin.clients[Object.keys(vaadin.clients)[0]].isActive()");
-        }
     }
 
 }

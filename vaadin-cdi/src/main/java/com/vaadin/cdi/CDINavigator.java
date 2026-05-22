@@ -5,7 +5,7 @@
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -26,8 +26,8 @@ import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.SingleComponentContainer;
 import com.vaadin.ui.UI;
 
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
 
 /**
  * Vaadin Navigator as a CDI Bean.

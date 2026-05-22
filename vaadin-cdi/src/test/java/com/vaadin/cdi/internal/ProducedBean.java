@@ -1,6 +1,6 @@
 package com.vaadin.cdi.internal;
 
-import javax.enterprise.inject.Typed;
+import jakarta.enterprise.inject.Typed;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Typed()

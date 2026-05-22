@@ -2,9 +2,9 @@ package com.vaadin.cdi.internal;
 
 import org.apache.deltaspike.core.util.context.ContextualStorage;
 
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.PassivationCapable;
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.PassivationCapable;
 
 /**
  * Customized version of ContextualStorage to also handle beans that are not

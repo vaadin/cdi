@@ -1,6 +1,6 @@
 package com.vaadin.cdi.shiro;
 
-import javax.annotation.security.RolesAllowed;
+import jakarta.annotation.security.RolesAllowed;
 
 import com.vaadin.cdi.CDIView;
 import com.vaadin.ui.Component;

@@ -28,11 +28,11 @@ public class VaadinSessionActivationPolicyHolder {
 		if (vaadinService == null) {
 			return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
 		}
-		final String servletName = isServiceInitialized(vaadinService) ? vaadinService.getServiceName() : null;
-		if (servletName == null) {
+		final String serviceName = isServiceInitialized(vaadinService) ? vaadinService.getServiceName() : null;
+		if (serviceName == null) {
 			return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
 		}
-		return policyCache.computeIfAbsent(servletName, s -> initializePolicy(vaadinService));
+		return policyCache.computeIfAbsent(serviceName, s -> initializePolicy(vaadinService));
 	}
 
 	/**
@@ -54,11 +54,11 @@ public class VaadinSessionActivationPolicyHolder {
 	 * @return the policy
 	 */
 	private static Policy initializePolicy(final VaadinService vaadinService) {
-		final String servletName = isServiceInitialized(vaadinService) ? vaadinService.getServiceName() : null;
-		if (servletName == null) {
+		final String serviceName = isServiceInitialized(vaadinService) ? vaadinService.getServiceName() : null;
+		if (serviceName == null) {
 			return VaadinSessionScopeActivationPolicy.DEFAULT_POLICY;
 		}
-		vaadinService.addServiceDestroyListener(event -> policyCache.remove(servletName));
+		vaadinService.addServiceDestroyListener(event -> policyCache.remove(serviceName));
 		return determinePolicy(vaadinService);
 	}
 

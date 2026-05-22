@@ -108,7 +108,7 @@ public class SessionContextTest extends AbstractContextTest<SessionContextTest.S
         "false, LENIENT",
         "true,  STRICT"
     })
-    public void get_context_withLockAndLenientPolicy(boolean hasLock, Policy policy) {
+    public void get_context_withLockAndPolicy(boolean hasLock, Policy policy) {
         try (final MockedStatic<VaadinSessionScopedContext> mockedExtension =
             Mockito.mockStatic(VaadinSessionScopedContext.class, Mockito.CALLS_REAL_METHODS)) {
             mockedExtension.when(VaadinSessionScopedContext::getActivationPolicy).thenReturn(policy);

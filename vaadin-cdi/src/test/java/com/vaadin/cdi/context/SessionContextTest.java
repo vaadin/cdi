@@ -17,6 +17,8 @@
 package com.vaadin.cdi.context;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -31,6 +33,7 @@ import jakarta.enterprise.context.ContextNotActiveException;
 import com.vaadin.cdi.annotation.VaadinSessionScopeActivationPolicy.Policy;
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
 import com.vaadin.cdi.util.BeanProvider;
+import com.vaadin.flow.server.Command;
 import com.vaadin.flow.server.VaadinSession;
 
 public class SessionContextTest extends AbstractContextTest<SessionContextTest.SessionScopedTestBean> {
@@ -98,6 +101,39 @@ public class SessionContextTest extends AbstractContextTest<SessionContextTest.S
             });
         }
     }
+
+    @ParameterizedTest(name = "CDI-Locking-Test [hasLock={0}, policy={1}]")
+    @CsvSource({
+        "true,  LENIENT",
+        "false, LENIENT",
+        "true,  STRICT"
+    })
+    public void get_context_withLockAndLenientPolicy(boolean hasLock, Policy policy) {
+        try (final MockedStatic<VaadinSessionScopedContext> mockedExtension =
+            Mockito.mockStatic(VaadinSessionScopedContext.class, Mockito.CALLS_REAL_METHODS)) {
+            mockedExtension.when(VaadinSessionScopedContext::getActivationPolicy).thenReturn(policy);
+            final SessionUnderTestContext context = new SessionUnderTestContext();
+            context.activate();
+            final VaadinSession session = context.getSession();
+            when(session.hasLock()).thenReturn(hasLock);
+
+            final VaadinSessionScopedContext sessionContext =
+                new VaadinSessionScopedContext(weld.select().select(
+                    jakarta.enterprise.inject.spi.BeanManager.class).get());
+            assertTrue(sessionContext.isActive());
+            assertDoesNotThrow(() -> {
+                SessionScopedTestBean ref =
+                    BeanProvider.getContextualReference(SessionScopedTestBean.class);
+                ref.getState();
+            });
+            if (hasLock) {
+                Mockito.verify(session, Mockito.never()).accessSynchronously(Mockito.any(Command.class));
+            } else {
+                Mockito.verify(session, Mockito.atLeastOnce()).accessSynchronously(Mockito.any(Command.class));
+            }
+        }
+    }
+
 
     @VaadinSessionScoped
     public static class SessionScopedTestBean extends TestBean {

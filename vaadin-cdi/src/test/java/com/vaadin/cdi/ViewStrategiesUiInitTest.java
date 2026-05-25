@@ -18,9 +18,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
 
-//@Ignore("Arquillian integration test - requires an application server container profile and browser")
 public class ViewStrategiesUiInitTest extends AbstractManagedCDIIntegrationTest {
 
     @Deployment(testable = false)

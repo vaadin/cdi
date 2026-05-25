@@ -16,14 +16,12 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
 
 import java.net.MalformedURLException;
 
 import static com.vaadin.cdi.uis.ViewStrategyCallUI.*;
 import static org.junit.Assert.assertEquals;
 
-//@Ignore("Arquillian integration test - requires an application server container profile and browser")
 public class ViewStrategyCallTest extends AbstractManagedCDIIntegrationTest {
 
     @Deployment(testable = false)

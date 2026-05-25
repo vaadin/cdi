@@ -14,9 +14,7 @@ import com.vaadin.cdi.uis.ViewStrategyUI;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
-import org.junit.Ignore;
 
-//@Ignore("Arquillian integration test - requires an application server container profile and browser")
 public class ViewStrategyAlwaysTest extends AbstractViewStrategyTest {
 
     @Deployment(testable = false)

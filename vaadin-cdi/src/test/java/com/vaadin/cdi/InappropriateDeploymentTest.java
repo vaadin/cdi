@@ -16,11 +16,9 @@ import com.vaadin.cdi.views.CDIViewNotImplementingView;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
-import org.junit.Ignore;
 
 import static org.junit.Assert.fail;
 
-//@Ignore("Arquillian integration test - requires an application server container profile and browser")
 public class InappropriateDeploymentTest extends
         AbstractCDIIntegrationTest {
 

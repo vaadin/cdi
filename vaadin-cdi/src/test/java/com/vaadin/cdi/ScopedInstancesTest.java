@@ -21,7 +21,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.openqa.selenium.By;
 
 import java.net.MalformedURLException;
@@ -31,7 +30,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
-//@Ignore("Arquillian integration test - requires an application server container profile and browser")
 public class ScopedInstancesTest extends AbstractManagedCDIIntegrationTest {
 
     @Deployment(name = "scopedNavigation", testable = false)

@@ -16,7 +16,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 
@@ -27,7 +26,6 @@ import static com.vaadin.cdi.internal.Conventions.deriveMappingForUI;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-//@Ignore("Arquillian integration test - requires an application server container profile and browser")
 public class CDIIntegrationWithDefaultDeploymentTest extends
         AbstractManagedCDIIntegrationTest {
 

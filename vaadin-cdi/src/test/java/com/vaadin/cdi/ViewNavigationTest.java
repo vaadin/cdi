@@ -16,7 +16,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
 
 import jakarta.enterprise.context.ContextNotActiveException;
 
@@ -24,7 +23,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-//@Ignore("Arquillian integration test - requires an application server container profile and browser")
 public class ViewNavigationTest extends AbstractManagedCDIIntegrationTest {
 
     @Deployment(testable = false)

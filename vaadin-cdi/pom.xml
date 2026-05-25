@@ -520,6 +520,7 @@
                 <dependency>
                     <groupId>jakarta.platform</groupId>
                     <artifactId>jakarta.jakartaee-api</artifactId>
+                    <version>${jakarta.ee.version}</version>
                     <scope>provided</scope>
                 </dependency>
             </dependencies>

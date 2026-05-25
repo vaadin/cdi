@@ -38,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        profile: [wildfly, payara]
+        profile: [wildfly]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4

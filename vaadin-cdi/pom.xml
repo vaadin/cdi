@@ -17,6 +17,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <currentYear>2026</currentYear>
 
         <vaadin.version>8.31.1</vaadin.version>
         <deltaspike.version>2.0.0</deltaspike.version>
@@ -777,6 +778,33 @@
                     <configLocation>checkstyle/vaadin-checkstyle.xml</configLocation>
                     <violationSeverity>error</violationSeverity>
                     <headerLocation>checkstyle/header</headerLocation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>4.6</version>
+                <configuration>
+                    <header>src/license/header.txt</header>
+                    <quiet>false</quiet>
+                    <failIfMissing>true</failIfMissing>
+                    <aggregate>false</aggregate>
+                    <useDefaultExcludes>true</useDefaultExcludes>
+                    <useDefaultMapping>true</useDefaultMapping>
+                    <encoding>UTF-8</encoding>
+                    <properties>
+                        <year>${currentYear}</year>
+                    </properties>
+                    <excludes>
+                        <exclude>**/*.xml</exclude>
+                        <exclude>**/*.properties</exclude>
+                        <exclude>**/*.txt</exclude>
+                        <exclude>**/*.html</exclude>
+                        <exclude>**/*.js</exclude>
+                        <exclude>**/*.css</exclude>
+                        <exclude>**/*.scss</exclude>
+                        <exclude>**/.sh</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
 

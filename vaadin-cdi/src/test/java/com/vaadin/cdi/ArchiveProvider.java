@@ -18,7 +18,7 @@ import com.vaadin.cdi.server.VaadinCDIServletService;
 import com.vaadin.cdi.viewcontextstrategy.*;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
@@ -82,8 +82,7 @@ public class ArchiveProvider {
                                 .withTransitivity().asFile())
                 .addAsServiceProvider(Extension.class, VaadinExtension.class);
         if (emptyBeansXml) {
-            archive = archive.addAsWebInfResource(
-                    new StringAsset("<beans xmlns=\"https://jakarta.ee/xml/ns/jakartaee\" version=\"4.0\" bean-discovery-mode=\"all\"></beans>"),
+            archive = archive.addAsWebInfResource(EmptyAsset.INSTANCE,
                     ArchivePaths.create("beans.xml"));
         }
         return archive;

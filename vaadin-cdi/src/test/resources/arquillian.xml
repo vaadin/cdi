@@ -5,11 +5,13 @@
         http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
 
     <extension qualifier="webdriver">
-        <property name="browser">phantomjs</property>
+        <property name="browser">chromeHeadless</property>
         <property name="browserSessionReuse">false</property>
         <property name="ensureCleanSession">true</property>
     </extension>
 
+    <!-- TODO: these cluster definitions are outdated, should be removed -->
+    <!--
     <group qualifier="tomee-cluster">
         <container qualifier="node-1">
             <configuration>
@@ -53,5 +55,6 @@
             </configuration>
         </container>
     </group>
+    -->
 
 </arquillian>

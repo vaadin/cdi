@@ -1,16 +1,26 @@
+/*
+ * Vaadin CDI Integration
+ *
+ * Copyright (C) 2012-2026 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
+ */
 package com.vaadin.cdi.internal;
 
 import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy;
 import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategyQualifier;
 import com.vaadin.cdi.viewcontextstrategy.ViewContextByNameAndParameters;
 import com.vaadin.navigator.View;
-import org.apache.deltaspike.core.api.literal.AnyLiteral;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
@@ -19,7 +29,7 @@ import java.util.Set;
  */
 @ApplicationScoped
 public class ViewContextStrategyProvider {
-    private static AnyLiteral ANY_LITERAL = new AnyLiteral();
+    private static final Any ANY_LITERAL = Any.Literal.INSTANCE;
     @Inject
     private BeanManager beanManager;
 

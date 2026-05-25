@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>com.vaadin</groupId>
 	<artifactId>vaadin-cdi-main</artifactId>
-	<version>3.0-SNAPSHOT</version>
+	<version>4.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>vaadin-cdi-main</name>
 	<modules>
@@ -12,15 +13,20 @@
 	</modules>
 	<organization>
 		<name>Vaadin Ltd</name>
-		<url>http://vaadin.com</url>
+		<url>https://vaadin.com</url>
 	</organization>
+	<properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
+	</properties>
 	<build>
 		<plugins>
 			<!-- Do not deploy top level pom. The vaadin-cdi module does not depend 
 				on it so no need for it to end up in Maven central -->
 			<plugin>
 				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.5</version>
+				<version>3.1.4</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>
@@ -28,7 +34,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2.1</version>
+				<version>3.8.0</version>
 				<configuration>
 					<skipAssembly>true</skipAssembly>
 				</configuration>

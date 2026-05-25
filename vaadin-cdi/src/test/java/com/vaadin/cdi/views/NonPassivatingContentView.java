@@ -1,3 +1,13 @@
+/*
+ * Vaadin CDI Integration
+ *
+ * Copyright (C) 2012-2026 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
+ */
 package com.vaadin.cdi.views;
 
 import com.vaadin.cdi.CDIView;
@@ -10,10 +20,10 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -93,17 +103,17 @@ public class NonPassivatingContentView extends CustomComponent implements View {
         }
 
         @Override
-        public Set getTypes() {
+        public Set<?> getTypes() {
             return null;
         }
 
         @Override
-        public Set getQualifiers() {
-            return new HashSet();
+        public Set<?> getQualifiers() {
+            return new HashSet<>();
         }
 
         @Override
-        public Class getScope() {
+        public Class<?> getScope() {
             return ViewScoped.class;
         }
 
@@ -113,23 +123,18 @@ public class NonPassivatingContentView extends CustomComponent implements View {
         }
 
         @Override
-        public boolean isNullable() {
-            return false;
+        public Set<?> getInjectionPoints() {
+            return new HashSet<>();
         }
 
         @Override
-        public Set getInjectionPoints() {
-            return new HashSet();
-        }
-
-        @Override
-        public Class getBeanClass() {
+        public Class<?> getBeanClass() {
             return Object.class;
         }
 
         @Override
-        public Set getStereotypes() {
-            return new HashSet();
+        public Set<?> getStereotypes() {
+            return new HashSet<>();
         }
 
         @Override

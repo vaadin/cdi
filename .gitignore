@@ -7,3 +7,5 @@ nbactions.xml
 .iml
 *.iml
 *.log
+.vscode**/**
+.vscode/settings.json

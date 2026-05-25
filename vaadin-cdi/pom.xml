@@ -19,6 +19,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <currentYear>2026</currentYear>
 
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
+
         <vaadin.version>8.31.1</vaadin.version>
         <deltaspike.version>2.0.0</deltaspike.version>
         <jakarta.ee.version>11.0.0</jakarta.ee.version>

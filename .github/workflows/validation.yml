@@ -46,6 +46,14 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
+
+      - name: Set TB License
+        env:
+          TB_LICENSE: ${{secrets.TB_LICENSE}}
+        run: |
+          mkdir -p ~/.vaadin/
+          echo '{"username":"'`echo $TB_LICENSE | cut -d / -f1`'","proKey":"'`echo $TB_LICENSE | cut -d / -f2`'"}' > ~/.vaadin/proKey
+
       - name: Run tests (${{ matrix.profile }})
         run: mvn -B -ntp verify -P${{ matrix.profile }}
       - name: Upload surefire reports

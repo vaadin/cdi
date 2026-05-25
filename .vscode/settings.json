@@ -1,9 +1,0 @@
-{
-    "java.configuration.updateBuildConfiguration": "interactive",
-    "chat.tools.terminal.autoApprove": {
-        "mvn dependency:tree": true,
-        "mvn -DskipTests clean": true,
-        "mvn clean": true,
-        "mvn help:all-profiles": true
-    }
-}

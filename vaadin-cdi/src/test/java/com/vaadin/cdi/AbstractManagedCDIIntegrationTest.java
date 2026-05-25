@@ -60,7 +60,13 @@ public abstract class AbstractManagedCDIIntegrationTest extends
 
     public void waitForValue(final By by, final int value) {
         new WebDriverWait(firstWindow, Duration.ofSeconds(10))
-                .until(driver -> number(driver.findElement(by).getText()) == value);
+                .until(driver -> {
+                    try {
+                        return number(driver.findElement(by).getText()) == value;
+                    } catch (NumberFormatException e) {
+                        return false;
+                    }
+                });
     }
 
     public void waitForValue(final By by, final String value) {

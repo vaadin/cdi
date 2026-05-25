@@ -57,7 +57,6 @@ public class ViewDestroyTest extends AbstractManagedCDIIntegrationTest {
     }
 
     @Test
-    @Ignore("this fails for some reason")
     public void testChangeToNonCdiViewDestroysViewScope() throws Exception {
         loadView(DestroyViewUI.VIEWSCOPED_VIEW);
         assertViewDestroyCounts(0);
@@ -71,6 +70,9 @@ public class ViewDestroyTest extends AbstractManagedCDIIntegrationTest {
     }
 
     private void loadView(final String view) throws MalformedURLException {
+        // Navigate to about:blank first to ensure a full page reload
+        // (avoids issues when the same URL is loaded but the previous UI was closed)
+        firstWindow.navigate().to("about:blank");
         String viewUri = Conventions.deriveMappingForUI(DestroyViewUI.class) + "#!" + view;
         openWindow(viewUri);
         uiId = findElement(DestroyViewUI.UIID_ID).getText();

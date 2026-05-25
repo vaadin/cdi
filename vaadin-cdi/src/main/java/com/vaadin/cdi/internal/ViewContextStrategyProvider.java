@@ -29,7 +29,7 @@ import java.util.Set;
  */
 @ApplicationScoped
 public class ViewContextStrategyProvider {
-    private static Any ANY_LITERAL = Any.Literal.INSTANCE;
+    private static final Any ANY_LITERAL = Any.Literal.INSTANCE;
     @Inject
     private BeanManager beanManager;
 

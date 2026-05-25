@@ -103,17 +103,17 @@ public class NonPassivatingContentView extends CustomComponent implements View {
         }
 
         @Override
-        public Set getTypes() {
+        public Set<?> getTypes() {
             return null;
         }
 
         @Override
-        public Set getQualifiers() {
-            return new HashSet();
+        public Set<?> getQualifiers() {
+            return new HashSet<>();
         }
 
         @Override
-        public Class getScope() {
+        public Class<?> getScope() {
             return ViewScoped.class;
         }
 
@@ -124,7 +124,7 @@ public class NonPassivatingContentView extends CustomComponent implements View {
 
         @Override
         public Set<?> getInjectionPoints() {
-            return new HashSet();
+            return new HashSet<>();
         }
 
         @Override
@@ -134,7 +134,7 @@ public class NonPassivatingContentView extends CustomComponent implements View {
 
         @Override
         public Set<?> getStereotypes() {
-            return new HashSet();
+            return new HashSet<>();
         }
 
         @Override

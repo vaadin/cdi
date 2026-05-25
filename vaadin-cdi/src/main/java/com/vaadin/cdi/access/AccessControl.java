@@ -1,5 +1,5 @@
 /*
- * Vaadin CDI Add-on
+ * Vaadin CDI Integration
  *
  * Copyright (C) 2012-2026 Vaadin Ltd
  *

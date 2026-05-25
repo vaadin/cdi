@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.uicontext;
 
 import jakarta.annotation.PostConstruct;
@@ -24,8 +23,8 @@ import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.itest.uicontext.UIScopedLabel.SetTextEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 
@@ -65,21 +64,18 @@ public class UIContextRootView extends Div {
         closeSession.setId(CLOSE_SESSION_BTN);
 
         final NativeButton triggerEvent = new NativeButton("event trigger",
-                event -> setTextEventTrigger.fire(new SetTextEvent(EVENT_PAYLOAD)));
+                event -> setTextEventTrigger
+                        .fire(new SetTextEvent(EVENT_PAYLOAD)));
         triggerEvent.setId(TRIGGER_EVENT_BTN);
 
         final Div navDiv = new Div(
                 new RouterLink(INJECTER_LINK, UIScopeInjecterView.class),
                 new RouterLink(UISCOPED_LINK, UIScopedView.class),
-                new RouterLink(NORMALSCOPED_LINK, UINormalScopedBeanView.class)
-        );
+                new RouterLink(NORMALSCOPED_LINK,
+                        UINormalScopedBeanView.class));
 
-        add(
-                new Div(uiId),
-                new Div(closeUI, closeSession),
-                new Div(triggerEvent),
-                new Div(this.label),
-                navDiv);
+        add(new Div(uiId), new Div(closeUI, closeSession),
+                new Div(triggerEvent), new Div(this.label), navDiv);
     }
 
 }

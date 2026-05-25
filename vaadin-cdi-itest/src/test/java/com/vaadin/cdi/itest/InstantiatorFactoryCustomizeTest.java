@@ -13,20 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest;
 
-
-import com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorAlternative;
-import com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorFactoryAlternative;
-import com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorCustomizeView;
-import com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorFactoryDecorator;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorAlternative;
+import com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorCustomizeView;
+import com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorFactoryAlternative;
+import com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorFactoryDecorator;
 
 import static com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorCustomizeView.CUSTOMIZED;
 import static com.vaadin.cdi.itest.instantiatorcustomize.InstantiatorCustomizeView.VIEW;

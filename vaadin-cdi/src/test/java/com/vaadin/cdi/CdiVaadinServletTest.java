@@ -13,12 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.function.Supplier;
 
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
@@ -26,6 +21,10 @@ import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRegistration;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -77,7 +76,8 @@ public class CdiVaadinServletTest extends AbstractWeldTest {
         final VaadinContext context = Mockito.mock(VaadinContext.class);
         Mockito.when(applicationConfiguration.getContext()).thenReturn(context);
         Mockito.when(context.getAttribute(Lookup.class)).thenReturn(lookup);
-        Mockito.when(context.getAttribute(ArgumentMatchers.any(Class.class), ArgumentMatchers.any(Supplier.class)))
+        Mockito.when(context.getAttribute(ArgumentMatchers.any(Class.class),
+                ArgumentMatchers.any(Supplier.class)))
                 .then(i -> i.getArgument(1, Supplier.class).get());
 
         Mockito.when(lookup.lookup(ApplicationConfigurationFactory.class))
@@ -98,10 +98,10 @@ public class CdiVaadinServletTest extends AbstractWeldTest {
         Mockito.when(servletContext.getInitParameterNames())
                 .thenReturn(Collections.emptyEnumeration());
 
-        final ServletRegistration servletRegistration
-                = Mockito.mock(ServletRegistration.class);
-        final Map servletRegistrationMap
-                = Collections.singletonMap("test", servletRegistration);
+        final ServletRegistration servletRegistration = Mockito
+                .mock(ServletRegistration.class);
+        final Map servletRegistrationMap = Collections.singletonMap("test",
+                servletRegistration);
         Mockito.when(servletContext.getServletRegistrations())
                 .thenReturn(servletRegistrationMap);
         Mockito.when(servletRegistration.getMappings())
@@ -121,6 +121,7 @@ public class CdiVaadinServletTest extends AbstractWeldTest {
     @Test
     public void getService_servletInitialized_cdiVaadinServletServiceReturned() {
         final VaadinService service = servlet.getService();
-        Assertions.assertTrue(CdiVaadinServletService.class.isAssignableFrom(service.getClass()));
+        Assertions.assertTrue(CdiVaadinServletService.class
+                .isAssignableFrom(service.getClass()));
     }
 }

@@ -13,18 +13,18 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.Executor;
-import java.util.function.Consumer;
 
 import jakarta.enterprise.concurrent.ManagedExecutorService;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.Executor;
+import java.util.function.Consumer;
+
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.junit.MockBean;
 import org.jboss.weld.junit5.EnableWeld;
@@ -39,7 +39,6 @@ import com.vaadin.cdi.context.ServiceUnderTestContext;
 import com.vaadin.flow.internal.ReflectTools;
 import com.vaadin.flow.server.ServiceException;
 
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -117,7 +116,8 @@ public class CdiVaadinServletServiceExecutorTest {
                 error = error.getCause();
             }
             assertNotNull(error);
-            assertTrue(error.getMessage().contains("at most one Executor bean"));
+            assertTrue(
+                    error.getMessage().contains("at most one Executor bean"));
             assertTrue(error.getMessage().contains("@VaadinServiceEnabled"));
         }
     }

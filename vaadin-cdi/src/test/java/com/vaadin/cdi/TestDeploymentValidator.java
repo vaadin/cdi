@@ -13,18 +13,17 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi;
-
-import java.util.Collections;
-import java.util.Set;
-import java.util.function.Consumer;
 
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Alternative;
 import jakarta.inject.Inject;
+
+import java.util.Collections;
+import java.util.Set;
+import java.util.function.Consumer;
 
 @Alternative
 @Dependent
@@ -57,7 +56,8 @@ class TestDeploymentValidator extends DeploymentValidator {
         beanInfoSetHolder.setInfoSet(infoSet);
     }
 
-    void validateForTest(Set<BeanInfo> infoSet, Consumer<Throwable> problemConsumer) {
+    void validateForTest(Set<BeanInfo> infoSet,
+            Consumer<Throwable> problemConsumer) {
         super.validate(infoSet, problemConsumer);
     }
 

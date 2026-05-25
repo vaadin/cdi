@@ -13,12 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.instantiatorcustomize;
 
-import java.util.stream.Stream;
-
 import jakarta.enterprise.inject.spi.Unmanaged;
+
+import java.util.stream.Stream;
 
 import com.vaadin.cdi.util.BeanProvider;
 import com.vaadin.flow.component.Component;

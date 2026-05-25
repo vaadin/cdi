@@ -13,16 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.annotation;
+
+import jakarta.enterprise.context.NormalScope;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import jakarta.enterprise.context.NormalScope;
 
 import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.Route;
@@ -31,11 +30,10 @@ import com.vaadin.flow.router.RouterLayout;
 /**
  * The lifecycle of a NormalRouteScoped bean is controlled by route navigation.
  * <p>
- * Every NormalRouteScoped bean belongs to one router component owner.
- * It can be a {@link Route @Route}, or a {@link RouterLayout},
- * or a {@link HasErrorParameter HasErrorParameter}.
- * Beans are qualified by {@link RouteScopeOwner @RouteScopeOwner}
- * to link with their owner.
+ * Every NormalRouteScoped bean belongs to one router component owner. It can be
+ * a {@link Route @Route}, or a {@link RouterLayout}, or a
+ * {@link HasErrorParameter HasErrorParameter}. Beans are qualified by
+ * {@link RouteScopeOwner @RouteScopeOwner} to link with their owner.
  * <p>
  * Until owner remains active, all beans owned by it remain in the scope.
  * <p>

@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest;
 
 import java.io.File;
@@ -167,19 +166,22 @@ public class RouteContextTest extends AbstractCdiTest {
         assertTextEquals("", EventObserverLayout.EVENTS_COUNTER_LABEL);
 
         click(LayoutEventView.FIRE);
-        assertTextEquals("EVENTS COUNT: 1", EventObserverLayout.EVENTS_COUNTER_LABEL);
+        assertTextEquals("EVENTS COUNT: 1",
+                EventObserverLayout.EVENTS_COUNTER_LABEL);
 
         click(LayoutEventView.CHANGE_VIEW);
         assertTextEquals("Layout Event View 2", LayoutEventView2.VIEW_NAME);
 
         click(LayoutEventView2.FIRE);
-        assertTextEquals("EVENTS COUNT: 2", EventObserverLayout.EVENTS_COUNTER_LABEL);
+        assertTextEquals("EVENTS COUNT: 2",
+                EventObserverLayout.EVENTS_COUNTER_LABEL);
 
         click(LayoutEventView2.CHANGE_VIEW);
         assertTextEquals("Layout Event View 1", LayoutEventView.VIEW_NAME);
 
         click(LayoutEventView.FIRE);
-        assertTextEquals("EVENTS COUNT: 3", EventObserverLayout.EVENTS_COUNTER_LABEL);
+        assertTextEquals("EVENTS COUNT: 3",
+                EventObserverLayout.EVENTS_COUNTER_LABEL);
     }
 
     @Test

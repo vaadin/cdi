@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.context;
 
 import java.io.Serializable;
@@ -40,7 +39,8 @@ public class RouteContextPseudoTest extends
 
     @RouteScoped
     @Route("")
-    public static class RouteScopedTestBean extends TestBean implements Serializable {
+    public static class RouteScopedTestBean extends TestBean
+            implements Serializable {
     }
 
     @Override
@@ -77,8 +77,10 @@ public class RouteContextPseudoTest extends
         context.activate();
         BeanProvider.getContextualReference(getBeanType());
         UI ui = context.getUi();
-        try (MockedStatic<ApplicationConfiguration> appCfg = Mockito.mockStatic(ApplicationConfiguration.class)) {
-            appCfg.when(() -> ApplicationConfiguration.get(ArgumentMatchers.any()))
+        try (MockedStatic<ApplicationConfiguration> appCfg = Mockito
+                .mockStatic(ApplicationConfiguration.class)) {
+            appCfg.when(
+                    () -> ApplicationConfiguration.get(ArgumentMatchers.any()))
                     .thenReturn(Mockito.mock(ApplicationConfiguration.class));
             UI ui2 = serializeAndDeserialize(ui);
             Assertions.assertNotNull(ui2);

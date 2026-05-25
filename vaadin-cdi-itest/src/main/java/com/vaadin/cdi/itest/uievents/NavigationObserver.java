@@ -13,15 +13,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.uievents;
+
+import jakarta.enterprise.event.Observes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
-
-import jakarta.enterprise.event.Observes;
 
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
 import com.vaadin.flow.router.AfterNavigationEvent;

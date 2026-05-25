@@ -1,20 +1,17 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+ * Copyright 2000-2026 Vaadin Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.vaadin.cdi.util;
 
@@ -30,13 +27,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * This Storage holds all information needed for storing
- * Contextual Instances in a Context.
+ * This Storage holds all information needed for storing Contextual Instances in
+ * a Context.
  *
  * It also addresses Serialisation in case of passivating scopes.
  */
-public class ContextualStorage implements Serializable
-{
+public class ContextualStorage implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private final Map<Object, ContextualInstanceInfo<?>> contextualInstances;
@@ -48,21 +44,22 @@ public class ContextualStorage implements Serializable
     private final boolean passivationCapable;
 
     /**
-     * @param beanManager is needed for serialisation
-     * @param concurrent whether the ContextualStorage might get accessed concurrently by different threads
-     * @param passivationCapable whether the storage is for passivation capable Scopes
+     * @param beanManager
+     *            is needed for serialisation
+     * @param concurrent
+     *            whether the ContextualStorage might get accessed concurrently
+     *            by different threads
+     * @param passivationCapable
+     *            whether the storage is for passivation capable Scopes
      */
-    public ContextualStorage(BeanManager beanManager, boolean concurrent, boolean passivationCapable)
-    {
+    public ContextualStorage(BeanManager beanManager, boolean concurrent,
+            boolean passivationCapable) {
         this.beanManager = beanManager;
         this.concurrent = concurrent;
         this.passivationCapable = passivationCapable;
-        if (concurrent)
-        {
+        if (concurrent) {
             contextualInstances = new ConcurrentHashMap<Object, ContextualInstanceInfo<?>>();
-        }
-        else
-        {
+        } else {
             contextualInstances = new HashMap<Object, ContextualInstanceInfo<?>>();
         }
     }
@@ -70,16 +67,15 @@ public class ContextualStorage implements Serializable
     /**
      * @return the underlying storage map.
      */
-    public Map<Object, ContextualInstanceInfo<?>> getStorage()
-    {
+    public Map<Object, ContextualInstanceInfo<?>> getStorage() {
         return contextualInstances;
     }
 
     /**
-     * @return whether the ContextualStorage might get accessed concurrently by different threads.
+     * @return whether the ContextualStorage might get accessed concurrently by
+     *         different threads.
      */
-    public boolean isConcurrent()
-    {
+    public boolean isConcurrent() {
         return concurrent;
     }
 
@@ -90,29 +86,24 @@ public class ContextualStorage implements Serializable
      * @param <T>
      * @return
      */
-    public <T> T createContextualInstance(Contextual<T> bean, CreationalContext<T> creationalContext)
-    {
+    public <T> T createContextualInstance(Contextual<T> bean,
+            CreationalContext<T> creationalContext) {
         Object beanKey = getBeanKey(bean);
-        if (isConcurrent())
-        {
+        if (isConcurrent()) {
             // locked approach
             ContextualInstanceInfo<T> instanceInfo = new ContextualInstanceInfo<T>();
 
-            ConcurrentMap<Object, ContextualInstanceInfo<?>> concurrentMap
-                    = (ConcurrentHashMap<Object, ContextualInstanceInfo<?>>) contextualInstances;
+            ConcurrentMap<Object, ContextualInstanceInfo<?>> concurrentMap = (ConcurrentHashMap<Object, ContextualInstanceInfo<?>>) contextualInstances;
 
-            ContextualInstanceInfo<T> oldInstanceInfo
-                    = (ContextualInstanceInfo<T>) concurrentMap.putIfAbsent(beanKey, instanceInfo);
+            ContextualInstanceInfo<T> oldInstanceInfo = (ContextualInstanceInfo<T>) concurrentMap
+                    .putIfAbsent(beanKey, instanceInfo);
 
-            if (oldInstanceInfo != null)
-            {
+            if (oldInstanceInfo != null) {
                 instanceInfo = oldInstanceInfo;
             }
-            synchronized (instanceInfo)
-            {
+            synchronized (instanceInfo) {
                 T instance = instanceInfo.getContextualInstance();
-                if (instance == null)
-                {
+                if (instance == null) {
                     instance = bean.create(creationalContext);
                     instanceInfo.setContextualInstance(instance);
                     instanceInfo.setCreationalContext(creationalContext);
@@ -121,9 +112,7 @@ public class ContextualStorage implements Serializable
                 return instance;
             }
 
-        }
-        else
-        {
+        } else {
             // simply create the contextual instance
             ContextualInstanceInfo<T> instanceInfo = new ContextualInstanceInfo<T>();
             instanceInfo.setCreationalContext(creationalContext);
@@ -136,15 +125,13 @@ public class ContextualStorage implements Serializable
     }
 
     /**
-     * If the context is a passivating scope then we return
-     * the passivationId of the Bean. Otherwise we use
-     * the Bean directly.
+     * If the context is a passivating scope then we return the passivationId of
+     * the Bean. Otherwise we use the Bean directly.
+     * 
      * @return the key to use in the context map
      */
-    public <T> Object getBeanKey(Contextual<T> bean)
-    {
-        if (passivationCapable)
-        {
+    public <T> Object getBeanKey(Contextual<T> bean) {
+        if (passivationCapable) {
             // if the
             return ((PassivationCapable) bean).getId();
         }
@@ -154,16 +141,13 @@ public class ContextualStorage implements Serializable
 
     /**
      * Restores the Bean from its beanKey.
+     * 
      * @see #getBeanKey(jakarta.enterprise.context.spi.Contextual)
      */
-    public Contextual<?> getBean(Object beanKey)
-    {
-        if (passivationCapable)
-        {
+    public Contextual<?> getBean(Object beanKey) {
+        if (passivationCapable) {
             return beanManager.getPassivationCapableBean((String) beanKey);
-        }
-        else
-        {
+        } else {
             return (Contextual<?>) beanKey;
         }
     }

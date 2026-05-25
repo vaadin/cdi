@@ -15,10 +15,10 @@
  */
 package com.vaadin.cdi.itest.routecontext;
 
-import java.time.LocalDateTime;
-
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.event.Reception;
+
+import java.time.LocalDateTime;
 
 import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScoped;
@@ -41,11 +41,11 @@ public class EventObserverLayout extends Div implements RouterLayout {
         add(receivedEvents);
     }
 
-    public void onEvent(@Observes(notifyObserver = Reception.IF_EXISTS) CustomEvent event) {
+    public void onEvent(
+            @Observes(notifyObserver = Reception.IF_EXISTS) CustomEvent event) {
         receivedEvents.setText("EVENTS COUNT: " + ++counter);
         add(new Span("EVENT AT " + LocalDateTime.now()));
     }
-
 
     public enum CustomEvent {
         INSTANCE

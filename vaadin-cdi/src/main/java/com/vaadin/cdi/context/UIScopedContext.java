@@ -15,16 +15,16 @@
  */
 package com.vaadin.cdi.context;
 
-import java.lang.annotation.Annotation;
-
 import jakarta.enterprise.context.spi.Contextual;
 import jakarta.enterprise.inject.spi.BeanManager;
-import com.vaadin.cdi.util.BeanProvider;
-import com.vaadin.cdi.util.AbstractContext;
-import com.vaadin.cdi.util.ContextualStorage;
+
+import java.lang.annotation.Annotation;
 
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
+import com.vaadin.cdi.util.AbstractContext;
+import com.vaadin.cdi.util.BeanProvider;
+import com.vaadin.cdi.util.ContextualStorage;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
@@ -41,13 +41,14 @@ public class UIScopedContext extends AbstractContext {
     }
 
     @Override
-    protected ContextualStorage getContextualStorage(Contextual<?> contextual, boolean createIfNotExist) {
+    protected ContextualStorage getContextualStorage(Contextual<?> contextual,
+            boolean createIfNotExist) {
         return contextualStorageManager.getContextualStorage(createIfNotExist);
     }
 
     public void init(BeanManager beanManager) {
-        contextualStorageManager = BeanProvider
-                .getContextualReference(beanManager, ContextualStorageManager.class, false);
+        contextualStorageManager = BeanProvider.getContextualReference(
+                beanManager, ContextualStorageManager.class, false);
     }
 
     @Override
@@ -57,13 +58,13 @@ public class UIScopedContext extends AbstractContext {
 
     @Override
     public boolean isActive() {
-        return VaadinSession.getCurrent() != null
-                && UI.getCurrent() != null
+        return VaadinSession.getCurrent() != null && UI.getCurrent() != null
                 && contextualStorageManager != null;
     }
 
     @VaadinSessionScoped
-    public static class ContextualStorageManager extends AbstractContextualStorageManager<Integer> {
+    public static class ContextualStorageManager
+            extends AbstractContextualStorageManager<Integer> {
 
         public ContextualStorageManager() {
             // Session lock checked in VaadinSessionScopedContext while
@@ -71,7 +72,8 @@ public class UIScopedContext extends AbstractContext {
             super(false);
         }
 
-        public ContextualStorage getContextualStorage(boolean createIfNotExist) {
+        public ContextualStorage getContextualStorage(
+                boolean createIfNotExist) {
             final Integer uiId = UI.getCurrent().getUIId();
             return super.getContextualStorage(uiId, createIfNotExist);
         }

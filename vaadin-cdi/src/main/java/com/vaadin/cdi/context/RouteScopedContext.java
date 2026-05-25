@@ -13,8 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.context;
+
+import jakarta.enterprise.context.spi.Contextual;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.PassivationCapable;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -24,12 +29,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import jakarta.enterprise.context.spi.Contextual;
-import jakarta.enterprise.event.Observes;
-import jakarta.enterprise.inject.spi.Bean;
-import jakarta.enterprise.inject.spi.BeanManager;
-import jakarta.enterprise.inject.spi.PassivationCapable;
 
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.cdi.annotation.RouteScoped;
@@ -92,7 +91,7 @@ public class RouteScopedContext extends AbstractContext {
         }
 
         private void destroyDescopedBeans(UI ui,
-                                          Set<Class<?>> navigationChain) {
+                Set<Class<?>> navigationChain) {
             String uiStoreId = getUIStoreId(ui);
 
             Set<RouteStorageKey> missingKeys = getKeySet().stream()
@@ -126,12 +125,14 @@ public class RouteScopedContext extends AbstractContext {
         }
 
         private static String getWindowName(UI ui) {
-            ExtendedClientDetails details = ui.getInternals().getExtendedClientDetails();
+            ExtendedClientDetails details = ui.getInternals()
+                    .getExtendedClientDetails();
             return details.getWindowName();
         }
 
         private RouteStorageKey getKey(UI ui, Class<?> owner) {
-            ExtendedClientDetails details = ui.getInternals().getExtendedClientDetails();
+            ExtendedClientDetails details = ui.getInternals()
+                    .getExtendedClientDetails();
             RouteStorageKey key = new RouteStorageKey(owner, getUIStoreId(ui));
             if (details.getWindowName() == null) {
                 ui.getPage().retrieveExtendedClientDetails(
@@ -147,13 +148,14 @@ public class RouteScopedContext extends AbstractContext {
 
         private List<ContextualStorage> getActiveContextualStorages() {
             return getKeySet().stream().filter(
-                            key -> key.getUIId().equals(getUIStoreId(UI.getCurrent())))
+                    key -> key.getUIId().equals(getUIStoreId(UI.getCurrent())))
                     .map(key -> getContextualStorage(key, false))
                     .collect(Collectors.toList());
         }
 
         private String getUIStoreId(UI ui) {
-            ExtendedClientDetails details = ui.getInternals().getExtendedClientDetails();
+            ExtendedClientDetails details = ui.getInternals()
+                    .getExtendedClientDetails();
             if (details.getWindowName() == null) {
                 return "uid-" + ui.getUIId();
             } else {
@@ -209,7 +211,7 @@ public class RouteScopedContext extends AbstractContext {
         private final List<Class<? extends RouterLayout>> layouts;
 
         NavigationData(Class<?> navigationTarget,
-                       List<Class<? extends RouterLayout>> layouts) {
+                List<Class<? extends RouterLayout>> layouts) {
             this.navigationTarget = navigationTarget;
             this.layouts = layouts;
         }
@@ -232,7 +234,7 @@ public class RouteScopedContext extends AbstractContext {
     }
 
     public void init(BeanManager beanManager,
-                     Supplier<Boolean> isUIContextActive) {
+            Supplier<Boolean> isUIContextActive) {
         contextManager = BeanProvider.getContextualReference(beanManager,
                 ContextualStorageManager.class, false);
         this.beanManager = beanManager;
@@ -256,7 +258,7 @@ public class RouteScopedContext extends AbstractContext {
 
     @Override
     protected ContextualStorage getContextualStorage(Contextual<?> contextual,
-                                                     boolean createIfNotExist) {
+            boolean createIfNotExist) {
         Bean<?> bean = getBean(contextual);
         UI ui = UI.getCurrent();
         Class<?> owner = getOwner(ui, bean);

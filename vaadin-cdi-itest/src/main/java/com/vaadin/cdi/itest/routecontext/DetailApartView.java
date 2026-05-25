@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.routecontext;
 
 import jakarta.annotation.PostConstruct;
@@ -32,7 +31,8 @@ import com.vaadin.flow.router.RouterLink;
 @RouteScoped
 @Route(value = "apart", layout = MasterView.class)
 @CdiComponent
-public class DetailApartView extends AbstractCountedView implements AfterNavigationObserver {
+public class DetailApartView extends AbstractCountedView
+        implements AfterNavigationObserver {
 
     public static final String MASTER = "master";
     public static final String BEAN_LABEL = "BEAN_LABEL";
@@ -47,10 +47,7 @@ public class DetailApartView extends AbstractCountedView implements AfterNavigat
         apartLabel = new NativeLabel();
         apartLabel.setId(BEAN_LABEL);
         apartBean.setData("APART");
-        add(
-                apartLabel,
-                new Div(new RouterLink(MASTER, MasterView.class))
-        );
+        add(apartLabel, new Div(new RouterLink(MASTER, MasterView.class)));
     }
 
     @Override

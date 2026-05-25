@@ -13,11 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.context;
-
-import java.util.Collections;
-import java.util.List;
 
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.event.Event;
@@ -26,6 +22,10 @@ import jakarta.enterprise.event.Reception;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
+
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -106,7 +106,8 @@ public class RouteContextualStorageManagerTest extends AbstractWeldTest {
     @RouteScopeOwner(ConditionalComponentRoute.class)
     public static class ConditionalComponent extends HasElementTestBean {
 
-        private void onEvent(@Observes(notifyObserver = Reception.IF_EXISTS) CustomEvent event) {
+        private void onEvent(
+                @Observes(notifyObserver = Reception.IF_EXISTS) CustomEvent event) {
         }
     }
 
@@ -156,7 +157,7 @@ public class RouteContextualStorageManagerTest extends AbstractWeldTest {
             Mockito.when(event.getNavigationTarget())
                     .thenReturn((Class) InitialRoute.class);
             beforeNavigationTrigger.fire(event);
-    
+
             memberOfGroup1.get();
         });
     }

@@ -15,9 +15,9 @@
  */
 package com.vaadin.cdi.itest.routecontext;
 
-import java.util.UUID;
-
 import jakarta.annotation.PostConstruct;
+
+import java.util.UUID;
 
 import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScopeOwner;

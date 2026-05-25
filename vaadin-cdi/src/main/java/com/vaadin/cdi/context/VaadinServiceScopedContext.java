@@ -13,21 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.context;
-
-import java.lang.annotation.Annotation;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.spi.Contextual;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.spi.BeanManager;
-import com.vaadin.cdi.util.BeanProvider;
-import com.vaadin.cdi.util.AbstractContext;
-import com.vaadin.cdi.util.ContextualStorage;
+
+import java.lang.annotation.Annotation;
 
 import com.vaadin.cdi.CdiVaadinServlet;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
+import com.vaadin.cdi.util.AbstractContext;
+import com.vaadin.cdi.util.BeanProvider;
+import com.vaadin.cdi.util.ContextualStorage;
 import com.vaadin.flow.server.ServiceDestroyEvent;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.flow.server.VaadinServletService;
@@ -46,21 +45,23 @@ public class VaadinServiceScopedContext extends AbstractContext {
     }
 
     public void init(BeanManager beanManager) {
-        contextManager = BeanProvider
-                .getContextualReference(beanManager, ContextualStorageManager.class, false);
+        contextManager = BeanProvider.getContextualReference(beanManager,
+                ContextualStorageManager.class, false);
     }
 
     @Override
-    protected ContextualStorage getContextualStorage(
-            Contextual<?> contextual, boolean createIfNotExist) {
-        CdiVaadinServlet servlet = (CdiVaadinServlet) VaadinServlet.getCurrent();
+    protected ContextualStorage getContextualStorage(Contextual<?> contextual,
+            boolean createIfNotExist) {
+        CdiVaadinServlet servlet = (CdiVaadinServlet) VaadinServlet
+                .getCurrent();
         String servletName;
         if (servlet != null) {
             servletName = servlet.getServletName();
         } else {
             servletName = CdiVaadinServlet.getCurrentServletName();
         }
-        return contextManager.getContextualStorage(servletName, createIfNotExist);
+        return contextManager.getContextualStorage(servletName,
+                createIfNotExist);
     }
 
     @Override
@@ -71,8 +72,7 @@ public class VaadinServiceScopedContext extends AbstractContext {
     @Override
     public boolean isActive() {
         VaadinServlet servlet = VaadinServlet.getCurrent();
-        return servlet instanceof CdiVaadinServlet
-                || (servlet == null
+        return servlet instanceof CdiVaadinServlet || (servlet == null
                 && CdiVaadinServlet.getCurrentServletName() != null);
     }
 
@@ -87,19 +87,20 @@ public class VaadinServiceScopedContext extends AbstractContext {
         /**
          * Service destroy event observer.
          *
-         * During application shutdown it is container specific whether
-         * this observer being called, or not.
-         * Application context destroy may happen earlier, and cleanup
-         * done by {@link #destroyAll()}.
+         * During application shutdown it is container specific whether this
+         * observer being called, or not. Application context destroy may happen
+         * earlier, and cleanup done by {@link #destroyAll()}.
          *
-         * @param event service destroy event
+         * @param event
+         *            service destroy event
          */
-        private void onServiceDestroy(@Observes(notifyObserver = IF_EXISTS)
-                                              ServiceDestroyEvent event) {
+        private void onServiceDestroy(
+                @Observes(notifyObserver = IF_EXISTS) ServiceDestroyEvent event) {
             if (!(event.getSource() instanceof VaadinServletService)) {
                 return;
             }
-            VaadinServletService service = (VaadinServletService) event.getSource();
+            VaadinServletService service = (VaadinServletService) event
+                    .getSource();
             String servletName = service.getServlet().getServletName();
             destroy(servletName);
         }

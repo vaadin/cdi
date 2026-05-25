@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.service;
 
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
@@ -30,7 +29,8 @@ public class TestSystemMessagesProvider implements SystemMessagesProvider {
     public static final String EXPIRED_BY_TEST = "EXPIRED BY TEST";
 
     @Override
-    public SystemMessages getSystemMessages(SystemMessagesInfo systemMessagesInfo) {
+    public SystemMessages getSystemMessages(
+            SystemMessagesInfo systemMessagesInfo) {
         CustomizedSystemMessages messages = new CustomizedSystemMessages();
         messages.setSessionExpiredNotificationEnabled(true);
         messages.setSessionExpiredMessage(EXPIRED_BY_TEST);

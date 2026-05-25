@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.uicontext;
 
 import jakarta.annotation.PostConstruct;
@@ -21,8 +20,8 @@ import jakarta.annotation.PostConstruct;
 import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.UIScoped;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 
@@ -41,11 +40,10 @@ public class UIScopedView extends Div {
         final NativeLabel state = new NativeLabel("");
         state.setId(VIEWSTATE_LABEL);
 
-        final NativeButton button =
-                new NativeButton("set state", event -> state.setText(UISCOPED_STATE));
+        final NativeButton button = new NativeButton("set state",
+                event -> state.setText(UISCOPED_STATE));
         button.setId(SETSTATE_BTN);
 
-        add(button, state,
-                new RouterLink(ROOT_LINK, UIContextRootView.class));
+        add(button, state, new RouterLink(ROOT_LINK, UIContextRootView.class));
     }
 }

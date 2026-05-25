@@ -16,6 +16,7 @@
 package com.vaadin.cdi.itest.smoke;
 
 import jakarta.interceptor.Interceptors;
+
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -50,14 +51,14 @@ public class ProxiedNavigationTargetView extends Div
         add(clickCounter);
 
         // Self navigation should use the same view instance
-        routerLink = new RouterLink("Self Link", ProxiedNavigationTargetView.class,
-                counter.incrementAndGet());
+        routerLink = new RouterLink("Self Link",
+                ProxiedNavigationTargetView.class, counter.incrementAndGet());
         add(routerLink);
     }
 
     @Override
     public void setParameter(BeforeEvent event,
-                             @OptionalParameter Integer parameter) {
+            @OptionalParameter Integer parameter) {
         if (parameter != null) {
             clickCounter.setText("P:" + parameter + ", C:" + counter.get());
             routerLink.setRoute(ProxiedNavigationTargetView.class,

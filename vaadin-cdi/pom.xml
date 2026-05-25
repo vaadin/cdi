@@ -174,8 +174,8 @@
     </developers>
     <licenses>
         <license>
-            <name>Apache License version 2.0</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0.html</url>
+            <name>Vaadin Commercial License and Terms</name>
+            <url>https://vaadin.com/commercial-license-and-service-terms</url>
             <distribution>repo</distribution>
         </license>
     </licenses>

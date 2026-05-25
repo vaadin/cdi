@@ -15,6 +15,7 @@ This branch is compatible with upcoming Vaadin platform versions. See other bran
 * 13.1 for Vaadin 22.1
 * 11.3 for Vaadin 14.10
 * 10.0 for Vaadin 10
+* 4.0 for Vaadin 8 Extended Maintenance with Jakarta
 * 3.0 for Vaadin 8.2+
 * 2.0 for Vaadin Framework 8.0...8.1 versions
 * 1.0 for Vaadin Framework 7 versions

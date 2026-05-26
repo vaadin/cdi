@@ -17,14 +17,20 @@
 package com.vaadin.cdi.context;
 
 import java.lang.annotation.Annotation;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import jakarta.enterprise.context.spi.Contextual;
 import jakarta.enterprise.inject.spi.BeanManager;
+
+import com.vaadin.cdi.annotation.VaadinSessionScopeActivationPolicy;
+import com.vaadin.cdi.annotation.VaadinSessionScopeActivationPolicy.Policy;
 import com.vaadin.cdi.util.ContextUtils;
 import com.vaadin.cdi.util.AbstractContext;
 import com.vaadin.cdi.util.ContextualStorage;
 
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
+import com.vaadin.cdi.util.VaadinSessionActivationPolicyHolder;
 import com.vaadin.flow.server.VaadinSession;
 
 /**
@@ -49,15 +55,44 @@ public class VaadinSessionScopedContext extends AbstractContext {
         VaadinSession session = VaadinSession.getCurrent();
         ContextualStorage storage = findContextualStorage(session);
         if (storage == null && createIfNotExist) {
-            storage = new ContextualStorage(beanManager, false, true);
-            session.setAttribute(ATTRIBUTE_NAME, storage);
+            storage = initializeContextualStorage(beanManager, session);
         }
         return storage;
     }
 
     private static ContextualStorage findContextualStorage(VaadinSession session) {
-        // session lock is checked inside
-        return (ContextualStorage) session.getAttribute(ATTRIBUTE_NAME);
+        return getContextualStorage(session);
+    }
+
+    /**
+     * Initializes the contextual storage for the given session. Handles locking internally.
+     * @param beanManager the bean manager
+     * @param session the concerned session
+     * @return the initialized contextual storage
+     */
+    private static ContextualStorage initializeContextualStorage(final BeanManager beanManager, final VaadinSession session) {
+        final ContextualStorage storage = new ContextualStorage(beanManager, false, true);
+        if (session.hasLock()) {
+            session.setAttribute(ATTRIBUTE_NAME, storage);
+        } else {
+            session.accessSynchronously(() -> session.setAttribute(ATTRIBUTE_NAME, storage));
+        }
+        return storage;
+    }
+
+    /**
+     * Retrieves the contextual storage from the session. Handles locking internally.
+     * @param session the concerned session
+     * @return the contextual storage
+     */
+    private static ContextualStorage getContextualStorage(final VaadinSession session) {
+        final AtomicReference<ContextualStorage> result = new AtomicReference<>();
+        if (session.hasLock()) {
+            result.set((ContextualStorage) session.getAttribute(ATTRIBUTE_NAME));
+        } else {
+            session.accessSynchronously(() -> result.set((ContextualStorage) session.getAttribute(ATTRIBUTE_NAME)));
+        }
+        return result.get();
     }
 
     @Override
@@ -65,11 +100,20 @@ public class VaadinSessionScopedContext extends AbstractContext {
         return VaadinSessionScoped.class;
     }
 
+    /**
+     * Determines if the context is active based on the current session and activation policy.
+     * @return true if the context is active, false otherwise
+     */
     @Override
     public boolean isActive() {
-        VaadinSession session = VaadinSession.getCurrent();
-        return session != null && session.hasLock();
+        final VaadinSession session = VaadinSession.getCurrent();
+        final boolean isStrict = Objects.equals(Policy.STRICT, VaadinSessionActivationPolicyHolder.get(session));
+        if (isStrict) {
+            return session != null && session.hasLock();
+        }
+        return session != null;
     }
+
 
     public static void destroy(VaadinSession session) {
         ContextualStorage storage = findContextualStorage(session);

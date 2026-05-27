@@ -40,11 +40,12 @@ public class LayoutEventView2 extends Div {
 
     @PostConstruct
     private void init() {
-        NativeButton fireBtn = new NativeButton("fire event", clickEvent
-                -> eventTrigger.fire(EventObserverLayout.CustomEvent.INSTANCE));
+        NativeButton fireBtn = new NativeButton("fire event",
+                clickEvent -> eventTrigger
+                        .fire(EventObserverLayout.CustomEvent.INSTANCE));
         fireBtn.setId(FIRE);
-        NativeButton navigateBtn = new NativeButton("change view", clickEvent
-                -> UI.getCurrent().navigate(LayoutEventView.class));
+        NativeButton navigateBtn = new NativeButton("change view",
+                clickEvent -> UI.getCurrent().navigate(LayoutEventView.class));
         navigateBtn.setId(CHANGE_VIEW);
         Span viewName = new Span("Layout Event View 2");
         viewName.setId(VIEW_NAME);

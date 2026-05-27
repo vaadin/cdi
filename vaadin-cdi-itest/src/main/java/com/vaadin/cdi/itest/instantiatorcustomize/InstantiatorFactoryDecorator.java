@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.instantiatorcustomize;
 
 import jakarta.annotation.Priority;
@@ -29,7 +28,8 @@ import com.vaadin.flow.server.VaadinService;
 
 @Priority(Interceptor.Priority.APPLICATION)
 @Decorator
-public abstract class InstantiatorFactoryDecorator implements InstantiatorFactory {
+public abstract class InstantiatorFactoryDecorator
+        implements InstantiatorFactory {
     @Inject
     @Delegate
     @VaadinServiceEnabled

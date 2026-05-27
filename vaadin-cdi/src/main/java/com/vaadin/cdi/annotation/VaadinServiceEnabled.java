@@ -13,13 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.annotation;
+
+import jakarta.inject.Qualifier;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import jakarta.inject.Qualifier;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -35,6 +34,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Qualifier
 @Retention(RUNTIME)
-@Target({TYPE, METHOD, FIELD, PARAMETER})
+@Target({ TYPE, METHOD, FIELD, PARAMETER })
 public @interface VaadinServiceEnabled {
 }

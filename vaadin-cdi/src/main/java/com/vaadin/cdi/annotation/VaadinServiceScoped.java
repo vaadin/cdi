@@ -13,16 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.annotation;
+
+import jakarta.enterprise.context.NormalScope;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import jakarta.enterprise.context.NormalScope;
 
 /**
  * The lifecycle of a VaadinServiceScoped bean is bound to a
@@ -33,7 +32,8 @@ import jakarta.enterprise.context.NormalScope;
  */
 @NormalScope
 @Inherited
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR })
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD,
+        ElementType.METHOD, ElementType.CONSTRUCTOR })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface VaadinServiceScoped {
 }

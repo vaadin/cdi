@@ -15,17 +15,18 @@
  */
 package com.vaadin.cdi;
 
-import java.io.Serializable;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.Executor;
-
 import jakarta.enterprise.context.spi.Context;
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.AmbiguousResolutionException;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
+
+import java.io.Serializable;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.Executor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -197,8 +198,8 @@ public class CdiVaadinServletService extends VaadinServletService {
             ui.addBeforeLeaveListener(uiEventListener);
             ui.addBeforeEnterListener(uiEventListener);
             ui.addPollListener(uiEventListener);
-            ui.addDetachListener(e -> 
-                    getBeanManager().getEvent().fire(new UIDetachEvent(e)));
+            ui.addDetachListener(e -> getBeanManager().getEvent()
+                    .fire(new UIDetachEvent(e)));
         }
 
         public <T> Optional<T> lookup(Class<T> type) throws ServiceException {

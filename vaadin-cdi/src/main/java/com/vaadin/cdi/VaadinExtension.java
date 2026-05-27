@@ -13,13 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi;
-
-import java.lang.annotation.Annotation;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.Executor;
 
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
@@ -28,6 +22,12 @@ import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.Extension;
 import jakarta.enterprise.inject.spi.ProcessBean;
+
+import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.Executor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

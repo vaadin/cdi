@@ -13,24 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest;
 
 import java.io.File;
 
-import com.vaadin.cdi.itest.i18n.TranslationView;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.vaadin.cdi.itest.i18n.TranslationView;
 
 public class TranslationTest extends AbstractCdiTest {
 
     @Deployment(testable = false)
     public static WebArchive createCdiServletEnabledDeployment() {
-        return ArchiveProvider.createWebArchive("translations",
-                        TranslationView.class)
+        return ArchiveProvider
+                .createWebArchive("translations", TranslationView.class)
                 .addAsResource(new File("src/main/resources/vaadin-i18n"));
 
     }
@@ -40,41 +39,37 @@ public class TranslationTest extends AbstractCdiTest {
         return "/translations";
     }
 
-
     @Test
     public void translationFilesExist_defaultI18NInstantiated_languagesWork() {
         open();
 
-        String locales = $("span").id(TranslationView.LOCALES_ID)
-                .getText();
-        Assert.assertTrue("Couldn't verify German locale", locales.contains("de"));
-        Assert.assertTrue("Couldn't verify Finnish locale", locales.contains("fi_FI"));
-        Assert.assertTrue("Couldn't verify French locale", locales.contains("fr_FR"));
-        Assert.assertTrue("Couldn't verify Japanese locale", locales.contains("ja_JP"));
+        String locales = $("span").id(TranslationView.LOCALES_ID).getText();
+        Assert.assertTrue("Couldn't verify German locale",
+                locales.contains("de"));
+        Assert.assertTrue("Couldn't verify Finnish locale",
+                locales.contains("fi_FI"));
+        Assert.assertTrue("Couldn't verify French locale",
+                locales.contains("fr_FR"));
+        Assert.assertTrue("Couldn't verify Japanese locale",
+                locales.contains("ja_JP"));
 
-        Assert.assertEquals("Default",
-                $("span").id("english").getText());
-        Assert.assertEquals("Deutsch",
-                $("span").id("german").getText());
-        Assert.assertEquals("Deutsch",
-                $("span").id("germany").getText());
-        Assert.assertEquals("Suomi",
-                $("span").id("finnish").getText());
-        Assert.assertEquals("français",
-                $("span").id("french").getText());
-        Assert.assertEquals("日本語",
-                $("span").id("japanese").getText());
+        Assert.assertEquals("Default", $("span").id("english").getText());
+        Assert.assertEquals("Deutsch", $("span").id("german").getText());
+        Assert.assertEquals("Deutsch", $("span").id("germany").getText());
+        Assert.assertEquals("Suomi", $("span").id("finnish").getText());
+        Assert.assertEquals("français", $("span").id("french").getText());
+        Assert.assertEquals("日本語", $("span").id("japanese").getText());
     }
 
     @Test
     public void translationFilesExist_defaultI18NInstantiated_updateFromExternalThreadWorks() {
         open();
 
-        waitUntilNot(driver -> $("span").id("dynamic").getText()
-                .equals("waiting"));
+        waitUntilNot(
+                driver -> $("span").id("dynamic").getText().equals("waiting"));
 
-        Assert.assertEquals("Dynamic update from thread should have used correct bundle.",
-                "français",
-                $("span").id("dynamic").getText());
+        Assert.assertEquals(
+                "Dynamic update from thread should have used correct bundle.",
+                "français", $("span").id("dynamic").getText());
     }
 }

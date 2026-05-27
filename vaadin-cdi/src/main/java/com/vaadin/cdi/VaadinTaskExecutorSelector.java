@@ -13,19 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi;
-
-import java.util.Optional;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.stream.Collectors;
 
 import jakarta.annotation.Resource;
 import jakarta.enterprise.concurrent.ManagedExecutorService;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
+
+import java.util.Optional;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
+
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
@@ -49,9 +49,8 @@ class VaadinTaskExecutorSelector {
      * This inner class allows us to check at runtime whether
      * ManagedExecutorService is available without causing deployment failures.
      * By programmatically resolving this bean through CDI, we can gracefully
-     * handle two potential issues:
-     * 1. Missing ManagedExecutorService in the classpath
-     * 2. javax.naming.NameNotFoundException when JNDI lookup fails
+     * handle two potential issues: 1. Missing ManagedExecutorService in the
+     * classpath 2. javax.naming.NameNotFoundException when JNDI lookup fails
      *
      * This approach prevents hard deployment failures and allows the
      * application to fall back to alternative execution strategies when

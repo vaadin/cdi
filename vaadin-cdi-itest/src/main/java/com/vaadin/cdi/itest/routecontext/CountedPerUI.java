@@ -13,12 +13,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.routecontext;
 
-import com.vaadin.cdi.util.BeanProvider;
-
 import com.vaadin.cdi.itest.Counter;
+import com.vaadin.cdi.util.BeanProvider;
 import com.vaadin.flow.component.UI;
 
 public interface CountedPerUI {

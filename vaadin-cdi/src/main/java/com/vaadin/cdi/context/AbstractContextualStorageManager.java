@@ -13,8 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.context;
+
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -24,9 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import jakarta.annotation.PreDestroy;
-import jakarta.enterprise.inject.spi.BeanManager;
-import jakarta.inject.Inject;
 import com.vaadin.cdi.util.AbstractContext;
 import com.vaadin.cdi.util.ContextualStorage;
 

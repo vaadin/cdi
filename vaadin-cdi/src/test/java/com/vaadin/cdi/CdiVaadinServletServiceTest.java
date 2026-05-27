@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi;
 
 import jakarta.enterprise.context.spi.Context;
@@ -24,6 +23,7 @@ import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -40,7 +40,6 @@ import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
 import com.vaadin.cdi.context.ServiceUnderTestContext;
 import com.vaadin.flow.component.ComponentUtil;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.PollEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.di.Instantiator;
@@ -126,7 +125,8 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
             throws ServiceException {
         initService(beanManager);
         final Instantiator instantiator = service.getInstantiator();
-        Assertions.assertTrue(CdiInstantiator.class.isAssignableFrom(instantiator.getClass()));
+        Assertions.assertTrue(CdiInstantiator.class
+                .isAssignableFrom(instantiator.getClass()));
     }
 
     @Test
@@ -146,27 +146,32 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
         BeanManager mockBm = mock(BeanManager.class);
         Bean<InstantiatorFactory> mockBean = mock(Bean.class);
         Set<Bean<?>> beans = Collections.singleton(mockBean);
-        when(mockBm.getBeans(eq(InstantiatorFactory.class), same(BeanLookup.SERVICE)))
-                .thenReturn(beans);
-        //noinspection unchecked
+        when(mockBm.getBeans(eq(InstantiatorFactory.class),
+                same(BeanLookup.SERVICE))).thenReturn(beans);
+        // noinspection unchecked
         when(mockBm.resolve(same(beans))).thenReturn((Bean) mockBean);
-        InstantiatorFactory mockInstantiatorFactory = mock(InstantiatorFactory.class);
+        InstantiatorFactory mockInstantiatorFactory = mock(
+                InstantiatorFactory.class);
         Context mockContext = mock(Context.class);
         when(mockBm.getContext(VaadinServiceScoped.class))
                 .thenReturn(mockContext);
         when(mockContext.get(same(mockBean), any()))
                 .thenReturn(mockInstantiatorFactory);
         when(mockInstantiatorFactory.createInstantitor(any())).thenReturn(null);
-        Assertions.assertThrows(ServiceException.class, () -> initService(mockBm));
-        verify(mockInstantiatorFactory, times(1)).createInstantitor(same(service));
+        Assertions.assertThrows(ServiceException.class,
+                () -> initService(mockBm));
+        verify(mockInstantiatorFactory, times(1))
+                .createInstantitor(same(service));
     }
 
     @Test
-    public void init_SystemMessagesProviderExists_configured() throws ServiceException {
+    public void init_SystemMessagesProviderExists_configured()
+            throws ServiceException {
         initService(beanManager);
-        SystemMessagesProvider systemMessagesProvider =
-                service.getSystemMessagesProvider();
-        Assertions.assertTrue(CdiSystemMessagesProvider.class.isAssignableFrom(systemMessagesProvider.getClass()));
+        SystemMessagesProvider systemMessagesProvider = service
+                .getSystemMessagesProvider();
+        Assertions.assertTrue(CdiSystemMessagesProvider.class
+                .isAssignableFrom(systemMessagesProvider.getClass()));
     }
 
     @Test
@@ -178,7 +183,9 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
     public void init_SystemMessagesProviderMissing_defaultConfigured() {
         Assertions.assertThrows(ServiceException.class, () -> {
             initServiceWithoutBeanFor(SystemMessagesProvider.class);
-            Assertions.assertTrue(DefaultSystemMessagesProvider.class.isAssignableFrom(service.getSystemMessagesProvider().getClass()));
+            Assertions.assertTrue(
+                    DefaultSystemMessagesProvider.class.isAssignableFrom(
+                            service.getSystemMessagesProvider().getClass()));
         });
     }
 
@@ -195,8 +202,8 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
 
         Bean<InstantiatorFactory> mockBean = mock(Bean.class);
         Set<Bean<?>> beans = Collections.singleton(mockBean);
-        when(mockBm.getBeans(eq(InstantiatorFactory.class), same(BeanLookup.SERVICE)))
-                .thenReturn(beans);
+        when(mockBm.getBeans(eq(InstantiatorFactory.class),
+                same(BeanLookup.SERVICE))).thenReturn(beans);
         when(mockBm.resolve(same(beans))).thenReturn((Bean) mockBean);
 
         CreationalContext<InstantiatorFactory> mockCreationalContext = mock(
@@ -208,12 +215,14 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
         when(mockBm.getContext(VaadinServiceScoped.class))
                 .thenReturn(mockContext);
 
-        InstantiatorFactory mockInstantiatorFactory = mock(InstantiatorFactory.class);
+        InstantiatorFactory mockInstantiatorFactory = mock(
+                InstantiatorFactory.class);
         when(mockContext.get(same(mockBean), same(mockCreationalContext)))
                 .thenReturn(mockInstantiatorFactory);
 
         Instantiator mockInstantiator = mock(Instantiator.class);
-        when(mockInstantiatorFactory.createInstantitor(same(service))).thenReturn(mockInstantiator);
+        when(mockInstantiatorFactory.createInstantitor(same(service)))
+                .thenReturn(mockInstantiator);
 
         Optional<Instantiator> maybeInstantiator = service.loadInstantiators();
         Assertions.assertTrue(maybeInstantiator.isPresent());
@@ -221,10 +230,12 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
     }
 
     @Test
-    void fireUIInitListeners_serialization_UIserializableAndListenersWork() throws Exception {
+    void fireUIInitListeners_serialization_UIserializableAndListenersWork()
+            throws Exception {
         initService(beanManager);
 
-        UIListenerEventReceiver uiListenerEventReceiver = service.getInstantiator().getOrCreate(UIListenerEventReceiver.class);
+        UIListenerEventReceiver uiListenerEventReceiver = service
+                .getInstantiator().getOrCreate(UIListenerEventReceiver.class);
         UI ui = new UI();
         VaadinSession session = new MockVaadinSession(service);
         session.getLockInstance().lock();
@@ -277,7 +288,8 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
     }
 
     private void initService(BeanManager beanManager) throws ServiceException {
-        ServiceUnderTestContext serviceUnderTestContext = new ServiceUnderTestContext(beanManager);
+        ServiceUnderTestContext serviceUnderTestContext = new ServiceUnderTestContext(
+                beanManager);
         serviceUnderTestContext.activate();
         service = serviceUnderTestContext.getService();
         service.init();
@@ -297,10 +309,11 @@ public class CdiVaadinServletServiceTest extends AbstractWeldTest {
         Set<Bean<?>> beans = new HashSet<>(Arrays.asList(mockBean, mockBean));
         when(mockBm.getBeans(eq(type), same(BeanLookup.SERVICE)))
                 .thenReturn(beans);
-        //noinspection unchecked
+        // noinspection unchecked
         when(mockBm.resolve(same(beans)))
                 .thenThrow(AmbiguousResolutionException.class);
-        Assertions.assertThrows(ServiceException.class, () -> initService(mockBm));
+        Assertions.assertThrows(ServiceException.class,
+                () -> initService(mockBm));
 
         verify(mockBm, times(1)).resolve(same(beans));
     }

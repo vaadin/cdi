@@ -13,12 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.context;
 
 import com.vaadin.cdi.annotation.NormalUIScoped;
 
-public class UiContextNormalTest extends AbstractContextTest<UiContextNormalTest.NormalUIScopedTestBean> {
+public class UiContextNormalTest extends
+        AbstractContextTest<UiContextNormalTest.NormalUIScopedTestBean> {
 
     @Override
     protected Class<NormalUIScopedTestBean> getBeanType() {

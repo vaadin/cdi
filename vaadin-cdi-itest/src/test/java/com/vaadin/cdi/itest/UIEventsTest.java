@@ -13,15 +13,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest;
 
-import com.vaadin.cdi.itest.uievents.NavigationObserver;
-import com.vaadin.cdi.itest.uievents.UIEventsView;
-import com.vaadin.flow.router.AfterNavigationEvent;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeLeaveEvent;
-import com.vaadin.testbench.TestBenchElement;
+import java.util.List;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -29,14 +24,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
-import java.util.List;
+import com.vaadin.cdi.itest.uievents.NavigationObserver;
+import com.vaadin.cdi.itest.uievents.UIEventsView;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.testbench.TestBenchElement;
 
 public class UIEventsTest extends AbstractCdiTest {
 
     @Deployment(testable = false)
     public static WebArchive deployment() {
-        return ArchiveProvider.createWebArchive("uievents",
-                UIEventsView.class, NavigationObserver.class);
+        return ArchiveProvider.createWebArchive("uievents", UIEventsView.class,
+                NavigationObserver.class);
     }
 
     @Before
@@ -47,8 +47,7 @@ public class UIEventsTest extends AbstractCdiTest {
     @Test
     public void navigationEventsObserved() {
         List<TestBenchElement> events = $("div")
-                .id(UIEventsView.NAVIGATION_EVENTS)
-                .$("label").all();
+                .id(UIEventsView.NAVIGATION_EVENTS).$("label").all();
         Assert.assertEquals(3, events.size());
         assertEventIs(events.get(0), BeforeLeaveEvent.class);
         assertEventIs(events.get(1), BeforeEnterEvent.class);
@@ -61,7 +60,8 @@ public class UIEventsTest extends AbstractCdiTest {
         assertTextEquals("true", UIEventsView.POLL_FROM_CLIENT);
     }
 
-    private void assertEventIs(TestBenchElement eventElem, Class<?> eventClass) {
+    private void assertEventIs(TestBenchElement eventElem,
+            Class<?> eventClass) {
         Assert.assertEquals(eventClass.getSimpleName(), eventElem.getText());
     }
 

@@ -13,16 +13,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi;
-
-import java.util.Set;
 
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletRegistration;
 import jakarta.servlet.annotation.HandlesTypes;
 import jakarta.servlet.annotation.WebListener;
+
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,12 +41,11 @@ import com.vaadin.flow.server.startup.ServletDeployer;
  * <li>No Vaadin servlet is registered
  * </ul>
  * <p>
- * Vaadin ships with {@link ServletDeployer}, which is a {@link WebListener}
- * to register the default {@link VaadinServlet}.
- * We can't override it from java, but since this class is a
- * container initializer, we run first.
- * After registration of the CDI Vaadin Servlet, the original
- * deployer won't register the default one.
+ * Vaadin ships with {@link ServletDeployer}, which is a {@link WebListener} to
+ * register the default {@link VaadinServlet}. We can't override it from java,
+ * but since this class is a container initializer, we run first. After
+ * registration of the CDI Vaadin Servlet, the original deployer won't register
+ * the default one.
  * <p>
  * The rest of this class is copied from {@link ServletDeployer}.
  */
@@ -74,8 +73,8 @@ public class CdiServletDeployer implements ServletContainerInitializer {
         }
 
         String servletName = getClass().getName();
-        ServletRegistration.Dynamic registration = ctx
-                .addServlet(servletName, CdiVaadinServlet.class);
+        ServletRegistration.Dynamic registration = ctx.addServlet(servletName,
+                CdiVaadinServlet.class);
         if (registration == null) {
             // Not expected to ever happen
             // ServletDeployer have to fail too, and will log it
@@ -104,7 +103,7 @@ public class CdiServletDeployer implements ServletContainerInitializer {
     }
 
     private static boolean isVaadinServlet(ClassLoader classLoader,
-                                           ServletRegistration registration) {
+            ServletRegistration registration) {
         String className = registration.getClassName();
         try {
             return VaadinServlet.class

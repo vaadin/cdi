@@ -13,14 +13,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.vaadin.cdi.itest.smoke.CdiView;
-import com.vaadin.cdi.itest.smoke.ProxiedNavigationTargetView;
-import com.vaadin.cdi.itest.smoke.UselessInterceptor;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -29,21 +25,24 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
+import com.vaadin.cdi.itest.smoke.CdiView;
+import com.vaadin.cdi.itest.smoke.ProxiedNavigationTargetView;
+import com.vaadin.cdi.itest.smoke.UselessInterceptor;
+
 @SuppressWarnings("ArquillianTooManyDeployment")
 public class SmokeTest extends AbstractCdiTest {
 
     @Deployment(name = "noncdi", testable = false)
     public static WebArchive createCdiServletDisabledDeployment() {
-        return ArchiveProvider.createWebArchive("noncdi-test",
-                        CdiView.class)
+        return ArchiveProvider.createWebArchive("noncdi-test", CdiView.class)
                 .addAsWebInfResource(ArchiveProvider.class.getClassLoader()
                         .getResource("disablecdi-web.xml"), "web.xml");
     }
 
     @Deployment(name = "cdi", testable = false)
     public static WebArchive createCdiServletEnabledDeployment() {
-        return ArchiveProvider.createWebArchive("cdi-test",
-                CdiView.class, ProxiedNavigationTargetView.class, UselessInterceptor.class);
+        return ArchiveProvider.createWebArchive("cdi-test", CdiView.class,
+                ProxiedNavigationTargetView.class, UselessInterceptor.class);
     }
 
     @Before

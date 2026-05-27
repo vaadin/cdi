@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest;
 
 import java.io.File;
@@ -78,8 +77,9 @@ public class ArchiveProvider {
                             .withoutTransitivity().asFile());
 
         } else if ("wildfly".equals(container)) {
-            archive.addAsWebInfResource(AbstractCdiTest.class.getClassLoader()
-                    .getResource("wildfly/jboss-deployment-structure.xml"),
+            archive.addAsWebInfResource(
+                    AbstractCdiTest.class.getClassLoader().getResource(
+                            "wildfly/jboss-deployment-structure.xml"),
                     "jboss-deployment-structure.xml");
         }
 

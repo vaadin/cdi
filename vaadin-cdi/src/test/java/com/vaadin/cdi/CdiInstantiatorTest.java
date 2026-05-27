@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -26,9 +25,16 @@ import jakarta.interceptor.AroundInvoke;
 import jakarta.interceptor.Interceptors;
 import jakarta.interceptor.InvocationContext;
 import jakarta.servlet.ServletException;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.context.ServiceUnderTestContext;
@@ -39,12 +45,6 @@ import com.vaadin.flow.internal.UsageStatistics;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.MenuAccessControl;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 public class CdiInstantiatorTest extends AbstractWeldTest {
 
@@ -71,7 +71,6 @@ public class CdiInstantiatorTest extends AbstractWeldTest {
 
         }
     }
-
 
     public static class ParentBean {
 
@@ -107,7 +106,7 @@ public class CdiInstantiatorTest extends AbstractWeldTest {
 
         @Override
         public String getTranslation(String key, Locale locale,
-                                     Object... params) {
+                Object... params) {
             return null;
         }
 
@@ -164,7 +163,8 @@ public class CdiInstantiatorTest extends AbstractWeldTest {
     public void setUp() {
         serviceUnderTestContext = new ServiceUnderTestContext(beanManager);
         serviceUnderTestContext.activate();
-        instantiator = instantiatorFactory.createInstantitor(VaadinService.getCurrent());
+        instantiator = instantiatorFactory
+                .createInstantitor(VaadinService.getCurrent());
     }
 
     @AfterEach
@@ -184,7 +184,8 @@ public class CdiInstantiatorTest extends AbstractWeldTest {
         MenuAccessControl menuAccessControl = instantiator
                 .getMenuAccessControl();
         Assertions.assertNotNull(menuAccessControl);
-        Assertions.assertInstanceOf(TestMenuAccessControl.class, menuAccessControl);
+        Assertions.assertInstanceOf(TestMenuAccessControl.class,
+                menuAccessControl);
     }
 
     @Test
@@ -248,7 +249,9 @@ public class CdiInstantiatorTest extends AbstractWeldTest {
     public void init_callsUsageStatistics() {
         // @Before does instantiator.init()
         // There will be other entries too to filter out
-        List<UsageStatistics.UsageEntry> entries = UsageStatistics.getEntries().filter(entry -> entry.getName().contains("Cdi")).collect(Collectors.toList());
+        List<UsageStatistics.UsageEntry> entries = UsageStatistics.getEntries()
+                .filter(entry -> entry.getName().contains("Cdi"))
+                .collect(Collectors.toList());
         Assertions.assertEquals(1, entries.size());
 
         UsageStatistics.UsageEntry entry = entries.get(0);
@@ -278,7 +281,8 @@ public class CdiInstantiatorTest extends AbstractWeldTest {
     @Test
     public void getApplicationClass_proxiedBean_getsApplicationClass()
             throws ServletException {
-        InterceptedCdiBean instance = instantiator.getOrCreate(InterceptedCdiBean.class);
+        InterceptedCdiBean instance = instantiator
+                .getOrCreate(InterceptedCdiBean.class);
         instance.exec();
         Assertions.assertNotSame(InterceptedCdiBean.class, instance.getClass());
         Assertions.assertSame(InterceptedCdiBean.class,

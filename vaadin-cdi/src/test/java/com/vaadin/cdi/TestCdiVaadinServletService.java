@@ -13,13 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi;
-
-import java.util.Properties;
 
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.servlet.ServletContext;
+
+import java.util.Properties;
 
 import com.vaadin.flow.di.Lookup;
 import com.vaadin.flow.function.DeploymentConfiguration;

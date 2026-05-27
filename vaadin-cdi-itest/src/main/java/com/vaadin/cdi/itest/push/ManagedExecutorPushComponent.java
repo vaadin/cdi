@@ -13,19 +13,17 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.push;
-
-import java.util.concurrent.ScheduledExecutorService;
 
 import jakarta.annotation.Resource;
 import jakarta.enterprise.concurrent.ManagedScheduledExecutorService;
+
+import java.util.concurrent.ScheduledExecutorService;
 
 import com.vaadin.cdi.annotation.CdiComponent;
 
 @CdiComponent
 public class ManagedExecutorPushComponent extends PushComponent {
-
 
     @Resource
     private ManagedScheduledExecutorService executorService;

@@ -13,15 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest;
-
-import java.io.File;
-import java.lang.annotation.Annotation;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.context.SessionScoped;
+
+import java.io.File;
+import java.lang.annotation.Annotation;
+
 import net.jcip.annotations.NotThreadSafe;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -44,10 +44,12 @@ public class PushTest extends AbstractCdiTest {
 
     @Deployment(testable = false)
     public static WebArchive deployment() {
-        return ArchiveProvider.createWebArchive("push-managed", webArchive -> webArchive
-                .addClasses(WebsocketPushView.class, WebsocketXhrPushView.class,
-                        PushComponent.class, ManagedExecutorPushComponent.class)
-                .addAsResource(new File("target/classes/META-INF")));
+        return ArchiveProvider.createWebArchive("push-managed",
+                webArchive -> webArchive
+                        .addClasses(WebsocketPushView.class,
+                                WebsocketXhrPushView.class, PushComponent.class,
+                                ManagedExecutorPushComponent.class)
+                        .addAsResource(new File("target/classes/META-INF")));
     }
 
     @Test

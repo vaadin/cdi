@@ -1,3 +1,18 @@
+/*
+ * Copyright 2000-2026 Vaadin Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.vaadin.cdi.itest.regression;
 
 import com.vaadin.cdi.annotation.CdiComponent;
@@ -13,11 +28,9 @@ import com.vaadin.flow.router.RouterLayout;
 @UIScoped
 @Route("")
 @CdiComponent
-public class RemoveOldContentView extends Div
-        implements RouterLayout {
+public class RemoveOldContentView extends Div implements RouterLayout {
 
-    public static String NAVIGATE_TO_ANOTHER_ROUTE_INSIDE_MAIN_LAYOUT_BUTTON_ID =
-            "navigate-to-another-route-inside-main-layout-button-id";
+    public static String NAVIGATE_TO_ANOTHER_ROUTE_INSIDE_MAIN_LAYOUT_BUTTON_ID = "navigate-to-another-route-inside-main-layout-button-id";
     public static String NAVIGATE_TO_ANOTHER_ROUTE_OUTSIDE_MAIN_LAYOUT_BUTTON_ID = "navigate-to-another-layout-button-id";
     public static String NAVIGATE_BACK_FROM_ANOTHER_ROUTE_INSIDE_MAIN_LAYOUT_BUTTON_ID = "navigate-back-from-another-route-inside-main-layout-button-id";
     public static String NAVIGATE_BACK_FROM_ANOTHER_ROUTE_OUTSIDE_MAIN_LAYOUT_BUTTON_ID = "navigate-back-from-another-route-outside-main-layout-button-id";
@@ -49,8 +62,8 @@ public class RemoveOldContentView extends Div
             add(navigateToAnotherViewButton);
             NativeButton navigateToAnotherLayoutButton = new NativeButton(
                     "Navigate to another route outside Main Layout",
-                    click -> UI.getCurrent().navigate(
-                            AnotherParentLayout.ThirdView.class));
+                    click -> UI.getCurrent()
+                            .navigate(AnotherParentLayout.ThirdView.class));
             navigateToAnotherLayoutButton.setId(
                     NAVIGATE_TO_ANOTHER_ROUTE_OUTSIDE_MAIN_LAYOUT_BUTTON_ID);
             add(navigateToAnotherLayoutButton);

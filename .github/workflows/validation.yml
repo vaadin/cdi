@@ -23,7 +23,6 @@ env:
 
 jobs:
   build:
-    environment: ${{ github.event.pull_request.head.repo.fork && 'pr-tests' || '' }}
     timeout-minutes: 15
     runs-on: ubuntu-24.04
     steps:
@@ -67,6 +66,7 @@ jobs:
           retention-days: 1
 
   test:
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     needs: build
     timeout-minutes: 30
     runs-on: ubuntu-24.04
@@ -135,7 +135,7 @@ jobs:
           if-no-files-found: ignore
 
   test-results:
-    if: ${{ always() }}
+    if: ${{ always() && !github.event.pull_request.head.repo.fork }}
     needs: test
     runs-on: ubuntu-24.04
     permissions:

@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.routecontext;
 
 import jakarta.annotation.PostConstruct;
@@ -30,7 +29,8 @@ import com.vaadin.flow.router.RouterLink;
 @Route("postpone")
 @RouteScoped
 @CdiComponent
-public class PostponeView extends AbstractCountedView implements BeforeLeaveObserver {
+public class PostponeView extends AbstractCountedView
+        implements BeforeLeaveObserver {
 
     public static final String NAVIGATE = "NAVIGATE";
     public static final String POSTPONED_ROOT = "postpone";
@@ -39,14 +39,12 @@ public class PostponeView extends AbstractCountedView implements BeforeLeaveObse
 
     @PostConstruct
     private void init() {
-        NativeButton navBtn = new NativeButton("navigate", clickEvent
-                -> navigationAction.proceed());
+        NativeButton navBtn = new NativeButton("navigate",
+                clickEvent -> navigationAction.proceed());
         navBtn.setId(NAVIGATE);
 
-        add(
-                new Div(new RouterLink(POSTPONED_ROOT, RootView.class)),
-                new Div(navBtn)
-        );
+        add(new Div(new RouterLink(POSTPONED_ROOT, RootView.class)),
+                new Div(navBtn));
     }
 
     @Override

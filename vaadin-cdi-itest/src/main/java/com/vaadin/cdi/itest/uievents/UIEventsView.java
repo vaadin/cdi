@@ -13,15 +13,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.uievents;
-
-import java.util.EventObject;
-import java.util.List;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
+
+import java.util.EventObject;
+import java.util.List;
 
 import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.UIScoped;
@@ -57,7 +56,8 @@ public class UIEventsView extends Div implements AfterNavigationObserver {
     private void showNavigationEvents() {
         Div events = new Div();
         events.setId(NAVIGATION_EVENTS);
-        List<EventObject> navigationEvents = navigationObserver.getNavigationEvents();
+        List<EventObject> navigationEvents = navigationObserver
+                .getNavigationEvents();
         navigationEvents.stream()
                 .map(event -> new NativeLabel(event.getClass().getSimpleName()))
                 .forEach(events::add);

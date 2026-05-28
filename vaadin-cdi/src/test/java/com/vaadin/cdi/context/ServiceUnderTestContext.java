@@ -13,16 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.context;
-
-import java.util.Set;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.spi.AlterableContext;
 import jakarta.enterprise.context.spi.Context;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
+
+import java.util.Set;
 
 import com.vaadin.cdi.CdiVaadinServletService;
 import com.vaadin.cdi.TestCdiVaadinServletService;
@@ -50,7 +49,8 @@ public class ServiceUnderTestContext implements UnderTestContext {
     public void tearDownAll() {
         VaadinService.setCurrent(null);
         Context appContext = beanManager.getContext(ApplicationScoped.class);
-        Set<Bean<?>> beans = beanManager.getBeans(ContextualStorageManager.class);
+        Set<Bean<?>> beans = beanManager
+                .getBeans(ContextualStorageManager.class);
         ((AlterableContext) appContext).destroy(beanManager.resolve(beans));
     }
 

@@ -15,10 +15,11 @@
  */
 package com.vaadin.cdi;
 
+import jakarta.enterprise.inject.spi.BeanManager;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
-import jakarta.enterprise.inject.spi.BeanManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

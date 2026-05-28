@@ -13,9 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.routecontext;
-
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.event.Event;
@@ -26,8 +24,8 @@ import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.RouteScopeOwner;
 import com.vaadin.cdi.annotation.RouteScoped;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.router.Route;
 
 @Route("event")
@@ -68,8 +66,8 @@ public class EventView extends Div {
     @PostConstruct
     private void init() {
         label.setId(OBSERVER_LABEL);
-        NativeButton fireBtn = new NativeButton("fire event", clickEvent
-                -> printEventTrigger.fire(new PrintEvent("HELLO")));
+        NativeButton fireBtn = new NativeButton("fire event",
+                clickEvent -> printEventTrigger.fire(new PrintEvent("HELLO")));
         fireBtn.setId(FIRE);
 
         add(fireBtn, label);

@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.service;
 
 import jakarta.annotation.PostConstruct;
@@ -34,8 +33,8 @@ public class ServiceView extends Div {
 
     @PostConstruct
     private void init() {
-        NativeButton expireBtn = new NativeButton("expire", event ->
-                VaadinSession.getCurrent().getSession().invalidate());
+        NativeButton expireBtn = new NativeButton("expire",
+                event -> VaadinSession.getCurrent().getSession().invalidate());
         expireBtn.setId(EXPIRE);
 
         NativeButton actionButton = new NativeButton("an action", event -> {

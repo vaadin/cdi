@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest;
 
 import java.io.File;
@@ -67,10 +66,12 @@ public class UIContextTest extends AbstractCdiTest {
         follow(UIContextRootView.UISCOPED_LINK);
         assertTextEquals("", UIScopedView.VIEWSTATE_LABEL);
         click(UIScopedView.SETSTATE_BTN);
-        assertTextEquals(UIScopedView.UISCOPED_STATE, UIScopedView.VIEWSTATE_LABEL);
+        assertTextEquals(UIScopedView.UISCOPED_STATE,
+                UIScopedView.VIEWSTATE_LABEL);
         follow(UIScopedView.ROOT_LINK);
         follow(UIContextRootView.UISCOPED_LINK);
-        assertTextEquals(UIScopedView.UISCOPED_STATE, UIScopedView.VIEWSTATE_LABEL);
+        assertTextEquals(UIScopedView.UISCOPED_STATE,
+                UIScopedView.VIEWSTATE_LABEL);
     }
 
     @Test
@@ -96,7 +97,8 @@ public class UIContextTest extends AbstractCdiTest {
         assertTextEquals(uiId, UINormalScopedBeanView.UIID_LABEL);
     }
 
-    private void assertDestroyCountEquals(int expectedCount) throws IOException {
+    private void assertDestroyCountEquals(int expectedCount)
+            throws IOException {
         assertCountEquals(expectedCount, UIScopedLabel.DESTROY_COUNT + uiId);
     }
 }

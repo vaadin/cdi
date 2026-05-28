@@ -13,21 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.context;
 
 import jakarta.enterprise.context.ContextNotActiveException;
-import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.Test;
 
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
 import com.vaadin.cdi.util.BeanProvider;
 import com.vaadin.flow.server.VaadinSession;
 
-public class SessionContextTest extends AbstractContextTest<SessionContextTest.SessionScopedTestBean> {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+
+public class SessionContextTest
+        extends AbstractContextTest<SessionContextTest.SessionScopedTestBean> {
 
     @Override
     protected UnderTestContext newContextUnderTest() {
@@ -52,15 +53,16 @@ public class SessionContextTest extends AbstractContextTest<SessionContextTest.S
         VaadinSession session = context.getSession();
         when(session.hasLock()).thenReturn(false);
 
-        VaadinSessionScopedContext sessionContext =
-                new VaadinSessionScopedContext(weld.select().select(
-                        jakarta.enterprise.inject.spi.BeanManager.class).get());
+        VaadinSessionScopedContext sessionContext = new VaadinSessionScopedContext(
+                weld.select()
+                        .select(jakarta.enterprise.inject.spi.BeanManager.class)
+                        .get());
 
         assertFalse(sessionContext.isActive());
 
         assertThrows(ContextNotActiveException.class, () -> {
-            SessionScopedTestBean ref =
-                    BeanProvider.getContextualReference(SessionScopedTestBean.class);
+            SessionScopedTestBean ref = BeanProvider
+                    .getContextualReference(SessionScopedTestBean.class);
             ref.getState();
         });
     }

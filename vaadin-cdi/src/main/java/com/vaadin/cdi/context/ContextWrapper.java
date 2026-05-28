@@ -13,14 +13,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.context;
-
-import java.lang.annotation.Annotation;
 
 import jakarta.enterprise.context.spi.AlterableContext;
 import jakarta.enterprise.context.spi.Contextual;
 import jakarta.enterprise.context.spi.CreationalContext;
+
+import java.lang.annotation.Annotation;
+
 import com.vaadin.cdi.util.AbstractContext;
 
 /**
@@ -34,7 +34,8 @@ public class ContextWrapper implements AlterableContext {
     private final AbstractContext context;
     private final Class<? extends Annotation> scope;
 
-    public ContextWrapper(AbstractContext context, Class<? extends Annotation> scope) {
+    public ContextWrapper(AbstractContext context,
+            Class<? extends Annotation> scope) {
         this.context = context;
         this.scope = scope;
     }

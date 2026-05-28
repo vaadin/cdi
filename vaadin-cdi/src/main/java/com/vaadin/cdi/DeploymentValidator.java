@@ -13,8 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi;
+
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.spi.Annotated;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -23,12 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
-
-import jakarta.enterprise.context.Dependent;
-import jakarta.enterprise.inject.spi.Annotated;
-import jakarta.enterprise.inject.spi.Bean;
-import jakarta.enterprise.inject.spi.BeanManager;
-import jakarta.inject.Inject;
 
 import com.vaadin.cdi.DeploymentValidator.DeploymentProblem.ErrorCode;
 import com.vaadin.cdi.annotation.NormalRouteScoped;
@@ -98,7 +97,9 @@ class DeploymentValidator {
     static class DeploymentProblem extends Throwable {
 
         enum ErrorCode {
-            NORMAL_SCOPED_COMPONENT, NON_ROUTE_SCOPED_HAVE_OWNER, OWNER_IS_NOT_ROUTE_COMPONENT
+            NORMAL_SCOPED_COMPONENT,
+            NON_ROUTE_SCOPED_HAVE_OWNER,
+            OWNER_IS_NOT_ROUTE_COMPONENT
         }
 
         private final Type baseType;

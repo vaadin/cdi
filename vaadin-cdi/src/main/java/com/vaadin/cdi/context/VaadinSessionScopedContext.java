@@ -13,31 +13,31 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.context;
-
-import java.lang.annotation.Annotation;
 
 import jakarta.enterprise.context.spi.Contextual;
 import jakarta.enterprise.inject.spi.BeanManager;
-import com.vaadin.cdi.util.ContextUtils;
-import com.vaadin.cdi.util.AbstractContext;
-import com.vaadin.cdi.util.ContextualStorage;
+
+import java.lang.annotation.Annotation;
 
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
+import com.vaadin.cdi.util.AbstractContext;
+import com.vaadin.cdi.util.ContextUtils;
+import com.vaadin.cdi.util.ContextualStorage;
 import com.vaadin.flow.server.VaadinSession;
 
 /**
  * Context for {@link VaadinSessionScoped @VaadinSessionScoped} beans.
  * <p>
- * Stores contextuals in {@link VaadinSession}.
- * Other Vaadin CDI contexts are stored in the corresponding {@link VaadinSessionScoped} context.
+ * Stores contextuals in {@link VaadinSession}. Other Vaadin CDI contexts are
+ * stored in the corresponding {@link VaadinSessionScoped} context.
  *
  * @since 3.0
  */
 public class VaadinSessionScopedContext extends AbstractContext {
     private final BeanManager beanManager;
-    private static final String ATTRIBUTE_NAME = VaadinSessionScopedContext.class.getName();
+    private static final String ATTRIBUTE_NAME = VaadinSessionScopedContext.class
+            .getName();
 
     public VaadinSessionScopedContext(BeanManager beanManager) {
         super(beanManager);
@@ -45,7 +45,8 @@ public class VaadinSessionScopedContext extends AbstractContext {
     }
 
     @Override
-    protected ContextualStorage getContextualStorage(Contextual<?> contextual, boolean createIfNotExist) {
+    protected ContextualStorage getContextualStorage(Contextual<?> contextual,
+            boolean createIfNotExist) {
         VaadinSession session = VaadinSession.getCurrent();
         ContextualStorage storage = findContextualStorage(session);
         if (storage == null && createIfNotExist) {
@@ -55,7 +56,8 @@ public class VaadinSessionScopedContext extends AbstractContext {
         return storage;
     }
 
-    private static ContextualStorage findContextualStorage(VaadinSession session) {
+    private static ContextualStorage findContextualStorage(
+            VaadinSession session) {
         // session lock is checked inside
         return (ContextualStorage) session.getAttribute(ATTRIBUTE_NAME);
     }
@@ -81,14 +83,15 @@ public class VaadinSessionScopedContext extends AbstractContext {
     /**
      * Guess whether this context is undeployed.
      *
-     * Tomcat expires sessions after contexts are undeployed.
-     * Need this guess to prevent exceptions when try to
-     * properly destroy contexts on session expiration.
+     * Tomcat expires sessions after contexts are undeployed. Need this guess to
+     * prevent exceptions when try to properly destroy contexts on session
+     * expiration.
      *
      * @return true when context is not active, but sure it should
      */
     public static boolean guessContextIsUndeployed() {
-        // Given there is a current VaadinSession, we should have an active context,
+        // Given there is a current VaadinSession, we should have an active
+        // context,
         // except we get here after the application is undeployed.
         return (VaadinSession.getCurrent() != null
                 && !ContextUtils.isContextActive(VaadinSessionScoped.class));

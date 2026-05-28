@@ -13,13 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest;
+
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class Counter {

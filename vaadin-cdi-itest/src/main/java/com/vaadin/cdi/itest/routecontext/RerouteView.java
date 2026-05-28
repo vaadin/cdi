@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.routecontext;
 
 import com.vaadin.cdi.annotation.CdiComponent;
@@ -25,7 +24,8 @@ import com.vaadin.flow.router.Route;
 @Route("reroute")
 @RouteScoped
 @CdiComponent
-public class RerouteView extends AbstractCountedView implements BeforeEnterObserver {
+public class RerouteView extends AbstractCountedView
+        implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {

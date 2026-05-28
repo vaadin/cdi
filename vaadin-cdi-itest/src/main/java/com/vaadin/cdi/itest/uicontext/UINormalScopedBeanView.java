@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.uicontext;
 
 import jakarta.annotation.PostConstruct;
@@ -38,7 +37,8 @@ public class UINormalScopedBeanView extends Div {
 
     @PostConstruct
     private void init() {
-        final NativeLabel label = new NativeLabel(sessionScopedUIidService.getUiIdStr());
+        final NativeLabel label = new NativeLabel(
+                sessionScopedUIidService.getUiIdStr());
         label.setId(UIID_LABEL);
         add(label);
     }

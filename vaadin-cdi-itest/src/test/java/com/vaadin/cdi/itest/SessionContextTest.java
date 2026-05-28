@@ -13,10 +13,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest;
 
-import com.vaadin.cdi.itest.sessioncontext.SessionContextView;
+import java.io.IOException;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
@@ -25,7 +25,7 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import com.vaadin.cdi.itest.sessioncontext.SessionContextView;
 
 import static com.vaadin.cdi.itest.sessioncontext.SessionContextView.SessionScopedBean.DESTROY_COUNT;
 import static org.junit.Assert.assertTrue;
@@ -48,7 +48,7 @@ public class SessionContextTest extends AbstractCdiTest {
     public void sameSessionIsAccessibleFromUIs() {
         assertLabelEquals("");
         click(SessionContextView.SETVALUEBTN_ID);
-        getDriver().navigate().refresh();//creates new UI
+        getDriver().navigate().refresh();// creates new UI
         assertLabelEquals(SessionContextView.VALUE);
     }
 
@@ -73,7 +73,7 @@ public class SessionContextTest extends AbstractCdiTest {
         click(SessionContextView.EXPIREBTN_ID);
         boolean destroyed = false;
         getLogger().info("Waiting for session expiration...");
-        for (int i=0; i<60; i++) {
+        for (int i = 0; i < 60; i++) {
             Thread.sleep(1000);
             if (getCount(DESTROY_COUNT) > 0) {
                 getLogger().info("session expired after {} seconds", i);
@@ -88,7 +88,8 @@ public class SessionContextTest extends AbstractCdiTest {
         assertTextEquals(expected, SessionContextView.VALUELABEL_ID);
     }
 
-    private void assertDestroyCountEquals(int expectedCount) throws IOException {
+    private void assertDestroyCountEquals(int expectedCount)
+            throws IOException {
         assertCountEquals(expectedCount, DESTROY_COUNT);
     }
 

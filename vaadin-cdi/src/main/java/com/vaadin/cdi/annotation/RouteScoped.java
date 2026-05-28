@@ -13,16 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.annotation;
+
+import jakarta.inject.Scope;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import jakarta.inject.Scope;
 
 import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.Route;

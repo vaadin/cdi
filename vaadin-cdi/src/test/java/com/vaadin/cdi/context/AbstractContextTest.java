@@ -13,13 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.context;
+
+import jakarta.enterprise.context.ContextNotActiveException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.enterprise.context.ContextNotActiveException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +28,8 @@ import org.junit.jupiter.api.Test;
 import com.vaadin.cdi.AbstractWeldTest;
 import com.vaadin.cdi.util.BeanProvider;
 
-public abstract class AbstractContextTest<T extends TestBean> extends AbstractWeldTest {
+public abstract class AbstractContextTest<T extends TestBean>
+        extends AbstractWeldTest {
 
     private List<UnderTestContext> contexts;
 
@@ -47,7 +48,8 @@ public abstract class AbstractContextTest<T extends TestBean> extends AbstractWe
     @Test
     public void get_contextNotActive_ExceptionThrown() {
         Assertions.assertThrows(ContextNotActiveException.class, () -> {
-            final T reference = BeanProvider.getContextualReference(getBeanType());
+            final T reference = BeanProvider
+                    .getContextualReference(getBeanType());
             reference.getState();
         });
     }

@@ -13,9 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.sessioncontext;
-
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -25,11 +23,10 @@ import com.vaadin.cdi.annotation.CdiComponent;
 import com.vaadin.cdi.annotation.VaadinSessionScoped;
 import com.vaadin.cdi.itest.Counter;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
-
 
 @Route("")
 @CdiComponent
@@ -53,7 +50,8 @@ public class SessionContextView extends Div {
         add(setBtn);
 
         NativeButton invalidateBtn = new NativeButton("invalidate");
-        invalidateBtn.addClickListener(event -> VaadinSession.getCurrent().close());
+        invalidateBtn
+                .addClickListener(event -> VaadinSession.getCurrent().close());
         invalidateBtn.setId(INVALIDATEBTN_ID);
         add(invalidateBtn);
 
@@ -64,8 +62,8 @@ public class SessionContextView extends Div {
         add(httpInvalidateBtn);
 
         NativeButton expireBtn = new NativeButton("httpexpire");
-        expireBtn.addClickListener(
-                event -> VaadinSession.getCurrent().getSession().setMaxInactiveInterval(1));
+        expireBtn.addClickListener(event -> VaadinSession.getCurrent()
+                .getSession().setMaxInactiveInterval(1));
         expireBtn.setId(EXPIREBTN_ID);
         add(expireBtn);
 
@@ -76,8 +74,9 @@ public class SessionContextView extends Div {
     }
 
     @VaadinSessionScoped
-    //Like other vaadin scopes,
-    // Serializable is mandatory only if you want a working session serialization
+    // Like other vaadin scopes,
+    // Serializable is mandatory only if you want a working session
+    // serialization
     public static class SessionScopedBean {
         public static final String DESTROY_COUNT = "SessionScopedBeanDestroy";
 

@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.context;
 
 import jakarta.enterprise.inject.spi.BeanManager;
@@ -21,7 +20,8 @@ import jakarta.inject.Inject;
 
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
 
-public class ServiceContextTest extends AbstractContextTest<ServiceContextTest.ServiceScopedTestBean> {
+public class ServiceContextTest
+        extends AbstractContextTest<ServiceContextTest.ServiceScopedTestBean> {
     @Inject
     private BeanManager beanManager;
 

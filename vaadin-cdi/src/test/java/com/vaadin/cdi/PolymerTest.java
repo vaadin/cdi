@@ -13,11 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
+
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -89,7 +89,8 @@ public class PolymerTest extends AbstractWeldTest {
 
     @Test
     public void injectField_componentHasScope_elementBindingSuccess() {
-        Assertions.assertNotNull(template.pseudo.getElement().getNode().getParent());
+        Assertions.assertNotNull(
+                template.pseudo.getElement().getNode().getParent());
     }
 
     private static String getTemplateContent() {

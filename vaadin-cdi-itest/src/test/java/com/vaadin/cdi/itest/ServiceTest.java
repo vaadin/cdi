@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest;
 
 import java.io.IOException;
@@ -44,11 +43,10 @@ public class ServiceTest extends AbstractCdiTest {
 
     @Deployment(testable = false)
     public static WebArchive deployment() {
-        return ArchiveProvider
-                .createWebArchive("services", BootstrapCustomizer.class,
-                        BootstrapCustomizeView.class, ServiceView.class,
-                        EventObserver.class, TestErrorHandler.class,
-                        TestSystemMessagesProvider.class);
+        return ArchiveProvider.createWebArchive("services",
+                BootstrapCustomizer.class, BootstrapCustomizeView.class,
+                ServiceView.class, EventObserver.class, TestErrorHandler.class,
+                TestSystemMessagesProvider.class);
     }
 
     @Before

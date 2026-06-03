@@ -13,18 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest;
 
 import java.io.IOException;
 
-import com.vaadin.cdi.itest.sessioncontextspecializes.SessionContextSpecializesView;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.vaadin.cdi.itest.sessioncontextspecializes.SessionContextSpecializesView;
+
 import static com.vaadin.cdi.itest.sessioncontextspecializes.SessionContextSpecializesView.DIRECT_CALL_COUNT;
+import static com.vaadin.cdi.itest.sessioncontextspecializes.SessionContextSpecializesView.DONE_COUNT;
 import static com.vaadin.cdi.itest.sessioncontextspecializes.SessionContextSpecializesView.ERROR_COUNT;
 import static com.vaadin.cdi.itest.sessioncontextspecializes.SessionContextSpecializesView.FIREBTN_ID;
 import static com.vaadin.cdi.itest.sessioncontextspecializes.SessionContextSpecializesView.OBSERVED_COUNT;
@@ -43,8 +44,7 @@ public class SessionContextStrictTest extends AbstractCdiTest {
 
     @Deployment(testable = false)
     public static WebArchive deployment() {
-        return ArchiveProvider.createWebArchive(
-                "session-context-strict",
+        return ArchiveProvider.createWebArchive("session-context-strict",
                 SessionContextSpecializesView.class,
                 SessionContextSpecializesView.BackgroundEvent.class,
                 SessionContextSpecializesView.SessionScopedObserver.class);
@@ -65,6 +65,11 @@ public class SessionContextStrictTest extends AbstractCdiTest {
         assertCountEquals(0, UNEXPECTED_ERROR_COUNT);
 
         click(FIREBTN_ID);
+
+        // The background thread updates the counters asynchronously; wait
+        // for its completion signal so the zero-assertions below are
+        // meaningful instead of passing on a not-yet-run thread.
+        waitForCount(1, DONE_COUNT);
 
         // Neither the proxy call nor the observer dispatch succeeded:
         assertCountEquals(0, DIRECT_CALL_COUNT);

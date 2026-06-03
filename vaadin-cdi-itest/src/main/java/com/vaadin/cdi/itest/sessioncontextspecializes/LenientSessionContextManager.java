@@ -13,14 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.sessioncontextspecializes;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.spi.Contextual;
 import jakarta.enterprise.inject.Specializes;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.vaadin.cdi.context.VaadinSessionScopedContext;
 import com.vaadin.cdi.util.ContextualStorage;
@@ -30,9 +29,9 @@ import com.vaadin.flow.server.VaadinSession;
  * Replaces the framework-default
  * {@link VaadinSessionScopedContext.ContextualStorageManager} via
  * {@code @Specializes} to activate the {@code @VaadinSessionScoped} context
- * whenever a {@link VaadinSession} is set on the current thread, and to
- * acquire the session lock around storage access when the calling thread
- * does not already hold it.
+ * whenever a {@link VaadinSession} is set on the current thread, and to acquire
+ * the session lock around storage access when the calling thread does not
+ * already hold it.
  */
 @ApplicationScoped
 @Specializes
@@ -46,7 +45,7 @@ public class LenientSessionContextManager
 
     @Override
     protected ContextualStorage getContextualStorage(Contextual<?> contextual,
-                                                    boolean createIfNotExist) {
+            boolean createIfNotExist) {
         VaadinSession session = VaadinSession.getCurrent();
         if (session.hasLock()) {
             return super.getContextualStorage(contextual, createIfNotExist);

@@ -13,29 +13,30 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest;
 
 import java.io.IOException;
 
-import com.vaadin.cdi.itest.sessioncontextspecializes.LenientSessionContextManager;
-import com.vaadin.cdi.itest.sessioncontextspecializes.SessionContextSpecializesView;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.vaadin.cdi.itest.sessioncontextspecializes.LenientSessionContextManager;
+import com.vaadin.cdi.itest.sessioncontextspecializes.SessionContextSpecializesView;
+
 import static com.vaadin.cdi.itest.sessioncontextspecializes.SessionContextSpecializesView.DIRECT_CALL_COUNT;
+import static com.vaadin.cdi.itest.sessioncontextspecializes.SessionContextSpecializesView.DONE_COUNT;
 import static com.vaadin.cdi.itest.sessioncontextspecializes.SessionContextSpecializesView.ERROR_COUNT;
 import static com.vaadin.cdi.itest.sessioncontextspecializes.SessionContextSpecializesView.FIREBTN_ID;
 import static com.vaadin.cdi.itest.sessioncontextspecializes.SessionContextSpecializesView.OBSERVED_COUNT;
 import static com.vaadin.cdi.itest.sessioncontextspecializes.SessionContextSpecializesView.UNEXPECTED_ERROR_COUNT;
 
 /**
- * Verifies that an application can take {@code @VaadinSessionScoped} beans
- * into use from a background thread that only sets the
- * {@link com.vaadin.flow.server.VaadinSession} thread-local — without
- * holding the session lock — by providing a {@code @Specializes} lenient
+ * Verifies that an application can take {@code @VaadinSessionScoped} beans into
+ * use from a background thread that only sets the
+ * {@link com.vaadin.flow.server.VaadinSession} thread-local — without holding
+ * the session lock — by providing a {@code @Specializes} lenient
  * {@link com.vaadin.cdi.context.VaadinSessionScopedContext.ContextualStorageManager}.
  * <p>
  * Reproduces the user-facing scenarios from issues #495 and #506.
@@ -44,8 +45,7 @@ public class SessionContextSpecializesTest extends AbstractCdiTest {
 
     @Deployment(testable = false)
     public static WebArchive deployment() {
-        return ArchiveProvider.createWebArchive(
-                "session-context-specializes",
+        return ArchiveProvider.createWebArchive("session-context-specializes",
                 SessionContextSpecializesView.class,
                 SessionContextSpecializesView.BackgroundEvent.class,
                 SessionContextSpecializesView.SessionScopedObserver.class,
@@ -67,6 +67,10 @@ public class SessionContextSpecializesTest extends AbstractCdiTest {
         assertCountEquals(0, UNEXPECTED_ERROR_COUNT);
 
         click(FIREBTN_ID);
+
+        // The background thread updates the counters asynchronously; wait
+        // for its completion signal before asserting.
+        waitForCount(1, DONE_COUNT);
 
         assertCountEquals(1, DIRECT_CALL_COUNT);
         assertCountEquals(1, OBSERVED_COUNT);

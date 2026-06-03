@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.vaadin.cdi.itest.sessioncontextspecializes;
 
 import jakarta.annotation.PostConstruct;
@@ -32,17 +31,19 @@ import com.vaadin.flow.server.VaadinSession;
 
 /**
  * Background-thread probe used by both strict-default and {@code @Specializes}
- * integration tests. From a thread that has only set the
- * {@link VaadinSession} thread-local — without acquiring the session lock —
- * the view calls a method on a {@code @VaadinSessionScoped} bean and fires a
- * CDI event observed by the same bean.
+ * integration tests. From a thread that has only set the {@link VaadinSession}
+ * thread-local — without acquiring the session lock — the view calls a method
+ * on a {@code @VaadinSessionScoped} bean and fires a CDI event observed by the
+ * same bean.
  * <p>
  * Outcomes are recorded via the application-scoped {@link Counter} so that
  * failures on the session-scoped proxy don't lose information:
  * {@link #DIRECT_CALL_COUNT} is incremented if the proxy call succeeds,
- * {@link #OBSERVED_COUNT} if the observer is invoked, and
- * {@link #ERROR_COUNT} for each {@link RuntimeException} caught by the
- * background thread.
+ * {@link #OBSERVED_COUNT} if the observer is invoked, and {@link #ERROR_COUNT}
+ * for each {@link RuntimeException} caught by the background thread.
+ * {@link #DONE_COUNT} is incremented when the background thread finishes,
+ * regardless of outcome — tests synchronize on it before asserting the other
+ * counters.
  */
 @Route("")
 @CdiComponent
@@ -53,6 +54,7 @@ public class SessionContextSpecializesView extends Div {
     public static final String DIRECT_CALL_COUNT = "specializesDirectCall";
     public static final String ERROR_COUNT = "specializesError";
     public static final String UNEXPECTED_ERROR_COUNT = "specializesUnexpectedError";
+    public static final String DONE_COUNT = "specializesBackgroundDone";
 
     @Inject
     private SessionScopedObserver observer;
@@ -93,14 +95,12 @@ public class SessionContextSpecializesView extends Div {
                     }
                 } finally {
                     VaadinSession.setCurrent(previous);
+                    // Completion signal: tests wait for this counter before
+                    // asserting the other ones.
+                    counter.increment(DONE_COUNT);
                 }
             }, "background-event-fire");
             thread.start();
-            try {
-                thread.join(5000);
-            } catch (InterruptedException ignored) {
-                Thread.currentThread().interrupt();
-            }
         });
         fireBtn.setId(FIREBTN_ID);
         add(fireBtn);

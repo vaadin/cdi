@@ -3,11 +3,11 @@ name: CDI Validation
 on:
   push:
     # Change this when backporting to a maintenance branch
-    branches: [main]
+    branches: [16.0]
   pull_request:
     types: [opened, synchronize, reopened]
     # Change this when backporting to a maintenance branch
-    branches: [main]
+    branches: [16.0]
 
 permissions:
   contents: read

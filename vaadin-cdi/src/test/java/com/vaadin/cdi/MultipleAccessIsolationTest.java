@@ -1,3 +1,13 @@
+/*
+ * Vaadin CDI Integration
+ *
+ * Copyright (C) 2012-2026 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
+ */
 package com.vaadin.cdi;
 
 import com.vaadin.cdi.uis.ConcurrentUI;
@@ -11,6 +21,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +56,7 @@ public class MultipleAccessIsolationTest extends
                 firstWindow.getWindowHandles());
         // wait for second window fully loads
         firstWindow.switchTo().window(handles.get(1));
-        (new WebDriverWait(firstWindow, 15)).until(ExpectedConditions
+        (new WebDriverWait(firstWindow, Duration.ofSeconds(15))).until(ExpectedConditions
                 .presenceOfElementLocated(LABEL));
 
         firstWindow.switchTo().window(handles.get(0));
@@ -74,7 +85,7 @@ public class MultipleAccessIsolationTest extends
         assertThat(firstWindow.findElement(By.id(ConcurrentUI.COUNTER_LABEL))
                 .getText(), is("1"));
         firstWindow.navigate().refresh();
-        (new WebDriverWait(firstWindow, 15)).until(ExpectedConditions
+        (new WebDriverWait(firstWindow, Duration.ofSeconds(15))).until(ExpectedConditions
                 .presenceOfElementLocated(LABEL));
         assertThat(firstWindow.findElement(By.id(ConcurrentUI.COUNTER_LABEL))
                 .getText(), is("0"));
@@ -82,7 +93,7 @@ public class MultipleAccessIsolationTest extends
 
     @SuppressWarnings("unchecked")
     private void waitForNumberOfWindowsToEqual(final int numberOfWindows) {
-        (new WebDriverWait(firstWindow, 30)).until(new ExpectedCondition() {
+        (new WebDriverWait(firstWindow, Duration.ofSeconds(30))).until(new ExpectedCondition() {
             @Override
             public Object apply(Object input) {
                 return firstWindow.getWindowHandles().size() == numberOfWindows;

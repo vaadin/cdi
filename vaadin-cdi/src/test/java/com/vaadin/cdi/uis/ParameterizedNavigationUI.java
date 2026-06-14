@@ -1,40 +1,33 @@
 /*
- * Copyright 2000-2013 Vaadin Ltd.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * Vaadin CDI Integration
+ *
+ * Copyright (C) 2012-2026 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
  */
-
 package com.vaadin.cdi.uis;
 
+import com.vaadin.cdi.CDINavigator;
 import com.vaadin.cdi.CDIUI;
-import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.cdi.internal.Counter;
-import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 @CDIUI(value = "parameterizedNavigationUI")
 public class ParameterizedNavigationUI extends UI {
 
     public static final String CONSTRUCT_COUNT = "ParameterizedNavigationUIConstruct";
     @Inject
-    CDIViewProvider viewProvider;
+    CDINavigator navigator;
 
     @Inject
     Counter counter;
@@ -57,9 +50,7 @@ public class ParameterizedNavigationUI extends UI {
         Button navigate = new Button("button", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                Navigator navigator = new Navigator(
-                        ParameterizedNavigationUI.this, layout);
-                navigator.addProvider(viewProvider);
+                navigator.init(ParameterizedNavigationUI.this, layout);
                 navigator.navigateTo(navigateTo);
             }
         });

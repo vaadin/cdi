@@ -1,12 +1,19 @@
+/*
+ * Vaadin CDI Integration
+ *
+ * Copyright (C) 2012-2026 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
+ */
 package com.vaadin.cdi;
 
-import com.google.common.base.Predicate;
 import com.vaadin.cdi.internal.Conventions;
 import com.vaadin.cdi.uis.RootUI;
-import org.jboss.arquillian.graphene.Graphene;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -17,7 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -43,7 +50,7 @@ public abstract class AbstractManagedCDIIntegrationTest extends
     public void openWindow(WebDriver window, String uri)
             throws MalformedURLException {
         openWindowNoWait(window, uri, contextPath);
-        (new WebDriverWait(window, 15)).until(ExpectedConditions
+        (new WebDriverWait(window, Duration.ofSeconds(15))).until(ExpectedConditions
                 .presenceOfElementLocated(LABEL));
     }
 
@@ -51,34 +58,20 @@ public abstract class AbstractManagedCDIIntegrationTest extends
         openWindowNoWait(firstWindow, uri, contextPath);
     }
 
-    public void refreshWindow() {
-        refreshWindow(firstWindow);
-    }
-
-    public void refreshWindow(WebDriver window) {
-        window.navigate().refresh();
-        (new WebDriverWait(window, 15)).until(ExpectedConditions
-                .presenceOfElementLocated(LABEL));
-    }
-
     public void waitForValue(final By by, final int value) {
-        Graphene.waitModel(firstWindow).withTimeout(10, TimeUnit.SECONDS)
-                .until(new Predicate<WebDriver>() {
-                    @Override
-                    public boolean apply(WebDriver driver) {
+        new WebDriverWait(firstWindow, Duration.ofSeconds(10))
+                .until(driver -> {
+                    try {
                         return number(driver.findElement(by).getText()) == value;
+                    } catch (NumberFormatException e) {
+                        return false;
                     }
                 });
     }
 
     public void waitForValue(final By by, final String value) {
-        Graphene.waitModel(firstWindow).withTimeout(10, TimeUnit.SECONDS)
-                .until(new Predicate<WebDriver>() {
-                    @Override
-                    public boolean apply(WebDriver driver) {
-                        return value.equals(driver.findElement(by).getText());
-                    }
-                });
+        new WebDriverWait(firstWindow, Duration.ofSeconds(10))
+                .until(driver -> value.equals(driver.findElement(by).getText()));
     }
 
     public void resetCounts() throws IOException {
@@ -99,30 +92,8 @@ public abstract class AbstractManagedCDIIntegrationTest extends
         return line;
     }
 
-    public void clickAndWait(String id) {
-        findElement(id).click();
-        waitForClient();
-    }
-
-    public void clickAndWait(By by) {
-        findElement(by).click();
-        waitForClient();
-    }
-
-    public void waitForClient() {
-        new WebDriverWait(firstWindow, 10).until(new ClientIsReadyPredicate());
-    }
-
     public void assertDefaultRootNotInstantiated() throws IOException {
         assertThat(getCount(RootUI.CONSTRUCT_COUNT), is(0));
-    }
-
-    private class ClientIsReadyPredicate implements Predicate<WebDriver> {
-        @Override
-        public boolean apply(WebDriver input) {
-            return (Boolean) ((JavascriptExecutor) firstWindow)
-                    .executeScript("return !vaadin.clients[Object.keys(vaadin.clients)[0]].isActive()");
-        }
     }
 
 }

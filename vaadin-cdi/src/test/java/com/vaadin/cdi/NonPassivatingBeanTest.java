@@ -1,3 +1,13 @@
+/*
+ * Vaadin CDI Integration
+ *
+ * Copyright (C) 2012-2026 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
+ */
 package com.vaadin.cdi;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -13,7 +23,6 @@ import org.junit.Test;
 
 import com.vaadin.cdi.internal.Conventions;
 import com.vaadin.cdi.internal.NonPassivatingBean;
-import com.vaadin.cdi.internal.ViewScopedContext;
 import com.vaadin.cdi.uis.NonPassivatingUI;
 import com.vaadin.cdi.views.NonPassivatingContentView;
 

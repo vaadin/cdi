@@ -1,37 +1,33 @@
 /*
- * Copyright 2000-2013 Vaadin Ltd.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * Vaadin CDI Integration
+ *
+ * Copyright (C) 2012-2026 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
  */
-
 package com.vaadin.cdi;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.util.Comparator;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.enterprise.inject.AmbiguousResolutionException;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.AmbiguousResolutionException;
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.util.AnnotationLiteral;
+import jakarta.inject.Inject;
 
 import com.vaadin.cdi.internal.AnnotationUtil;
-import com.vaadin.cdi.internal.CDIUtil;
 import com.vaadin.cdi.internal.Conventions;
-import com.vaadin.cdi.internal.UIBean;
-import com.vaadin.cdi.internal.VaadinUICloseEvent;
+import com.vaadin.cdi.internal.UIContextualStorageManager;
+import com.vaadin.cdi.internal.VaadinSessionScopedContext;
 import com.vaadin.server.ClientConnector.DetachEvent;
 import com.vaadin.server.ClientConnector.DetachListener;
 import com.vaadin.server.DefaultUIProvider;
@@ -39,45 +35,56 @@ import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
-import com.vaadin.util.CurrentInstance;
 
-public class CDIUIProvider extends DefaultUIProvider implements Serializable {
+@ApplicationScoped
+public class CDIUIProvider extends DefaultUIProvider {
+
+    /**
+     * Copied From Vaadin 8.2+. Retained since we cannot be sure that this isn't
+     * used in other parts of the code (yet).
+     * <p>
+     * Original description reads:<br>
+     * A request attribute name to store the part of pathInfo that was used to
+     * select the UI. Will be used by default Navigator to separate view
+     * identifiers from UI. This can be set by custom UI providers.
+     * </p>
+     */
+    public static final String UI_ROOT_PATH = "com.vaadin.server.UI_ROOT_PATH";
+
+    private static final String PATH_WILDCARD = "/*";
+
+    @Inject
+    private UIContextualStorageManager uiContextualStorageManager;
+
+    @Inject
+    private BeanManager beanManager;
+
+    private final DetachListener detachListener = new DetachListenerImpl();
 
     private static final Annotation QUALIFIER_ANY = new AnnotationLiteral<Any>() {
     };
-    
-    public static final class DetachListenerImpl implements DetachListener {
-        private BeanManager beanManager;
 
-        public DetachListenerImpl(BeanManager beanManager) {
-            this.beanManager = beanManager;
-        }
+    public final class DetachListenerImpl implements DetachListener {
 
         @Override
         public void detach(DetachEvent event) {
             Object source = event.getSource();
             if (source instanceof UI) {
-
-                UI ui = (UI) source;
-                beanManager.fireEvent(new VaadinUICloseEvent(CDIUtil
-                        .getSessionId(ui.getSession()), ui.getUIId()));
+                int uiId = ((UI) source).getUIId();
+                if (VaadinSessionScopedContext.guessContextIsUndeployed()) {
+                    // Happens on tomcat when it expires sessions upon undeploy.
+                    // We would get ContextNotActiveException on
+                    // uiContextualStorageManager.destroy
+                    getLogger().log(Level.WARNING,
+                            "VaadinSessionScoped context does not exist. "
+                                    + "Maybe application is undeployed."
+                                    + " Can''t destroy UI context for UI {0}.",
+                            uiId);
+                    return;
+                }
+                uiContextualStorageManager.destroy(uiId);
             }
-
         }
-    }
-
-    // TODO a better way to do this could be custom injection management in the
-    // Extension if feasible
-    private BeanManager beanManager = null;
-
-    public BeanManager getBeanManager() {
-        if (beanManager == null) {
-            getLogger()
-                    .fine("CDIUIProvider is not injected, using JNDI lookup");
-            // as the CDIUIProvider is not injected, need to use JNDI lookup
-            beanManager = CDIUtil.lookupBeanManager();
-        }
-        return beanManager;
     }
 
     @Override
@@ -87,40 +94,56 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         int uiId = uiCreateEvent.getUiId();
         VaadinRequest request = uiCreateEvent.getRequest();
         Bean<?> bean = scanForBeans(type, request);
-        UIBean uiBean = new UIBean(bean, uiId);
         try {
-            // Make the UIBean available to UIScopedContext when creating nested
+            // Make the UI id available to UIScopedContext when creating nested
             // injected objects
-            CurrentInstance.set(UIBean.class, uiBean);
-            UI ui = (UI) getBeanManager().getReference(uiBean, type,
-                    getBeanManager().createCreationalContext(bean));
-            ui.addDetachListener(new DetachListenerImpl(getBeanManager()));
+            uiContextualStorageManager.prepareOpening(uiId);
+            UI ui = (UI) beanManager.getReference(bean, type,
+                    beanManager.createCreationalContext(bean));
+            ui.addDetachListener(detachListener);
             return ui;
         } finally {
-            CurrentInstance.set(UIBean.class, null);
+            uiContextualStorageManager.cleanupOpening();
         }
     }
 
     @Override
-    public Class<? extends UI> getUIClass(UIClassSelectionEvent selectionEvent) {
+    public Class<? extends UI> getUIClass(
+            UIClassSelectionEvent selectionEvent) {
         VaadinRequest request = selectionEvent.getRequest();
         String uiMapping = parseUIMapping(request);
+
+        Class<? extends UI> uiClass = null;
+        String pathInfo = "";
+
         if (isRoot(request)) {
-            return rootUI();
-        }
-        Bean<?> uiBean = getUIBeanWithMapping(uiMapping);
+            uiClass = rootUI();
+        } else {
+            Bean<?> uiBean = getUIBeanWithMapping(uiMapping);
 
-        if (uiBean != null) {
-            return uiBean.getBeanClass().asSubclass(UI.class);
+            if (uiBean != null) {
+                // Provide correct path info for UI for push state navigation
+                uiClass = uiBean.getBeanClass().asSubclass(UI.class);
+                pathInfo = removeWildcard(
+                        Conventions.deriveMappingForUI(uiClass));
+            }
         }
 
-        if (uiMapping.isEmpty()) {
+        if (uiClass == null && uiMapping.isEmpty()) {
             // See if UI is configured to web.xml with VaadinCDIServlet. This is
             // done only if no specific UI name is given.
-            return super.getUIClass(selectionEvent);
+            uiClass = super.getUIClass(selectionEvent);
         }
 
-        return null;
+        // Sometimes pathInfo does not contain leading slash
+        if (!pathInfo.isEmpty() && !pathInfo.startsWith("/")) {
+            pathInfo = "/" + pathInfo;
+        }
+
+        request.setAttribute(UI_ROOT_PATH,
+                request.getContextPath() + pathInfo);
+
+        return uiClass;
     }
 
     boolean isRoot(VaadinRequest request) {
@@ -130,12 +153,11 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
             return false;
         }
 
-        return pathInfo.equals("/");
+        return pathInfo.equals("/") || pathInfo.startsWith("/!");
     }
 
     Class<? extends UI> rootUI() {
-        Set<Bean<?>> rootBeans = AnnotationUtil
-                .getRootUiBeans(getBeanManager());
+        Set<Bean<?>> rootBeans = AnnotationUtil.getRootUiBeans(beanManager);
         if (rootBeans.isEmpty()) {
             return null;
         }
@@ -154,30 +176,47 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
         return rootUI.asSubclass(UI.class);
     }
 
-    private Bean<?> getUIBeanWithMapping(String mapping) {
-        Set<Bean<?>> beans = AnnotationUtil.getUiBeans(getBeanManager());
+    Bean<?> getUIBeanWithMapping(String mapping) {
+        Set<Bean<?>> beans = AnnotationUtil.getUiBeans(beanManager);
 
-        for (Bean<?> bean : beans) {
-            // We need this check since the returned beans can also be producers
-            if (UI.class.isAssignableFrom(bean.getBeanClass())) {
-                Class<? extends UI> beanClass = bean.getBeanClass().asSubclass(
-                        UI.class);
-
-                if (beanClass.isAnnotationPresent(CDIUI.class)) {
-                    String computedMapping = Conventions
-                            .deriveMappingForUI(beanClass);
-                    if (mapping.equals(computedMapping)) {
-                        return bean;
-                    }
-                }
-            }
-        }
-
-        return null;
+        return beans.stream()
+                .filter(bean -> UI.class.isAssignableFrom(bean.getBeanClass()))
+                .filter(bean -> {
+                    Class<? extends UI> beanClass = bean.getBeanClass()
+                            .asSubclass(UI.class);
+                    return beanClass.isAnnotationPresent(CDIUI.class)
+                            && isMatchingPath(mapping, beanClass);
+                }).sorted(Comparator.comparing(bean -> {
+                    Class<?> beanClass = ((Bean<?>) bean).getBeanClass();
+                    String path = Conventions.deriveMappingForUI(beanClass);
+                    return removeWildcard(path).length();
+                }).reversed()).findFirst().orElse(null);
     }
 
-    private Bean<?> scanForBeans(Class<? extends UI> type, VaadinRequest request) {
-        BeanManager beanManager = getBeanManager();
+    private boolean isMatchingPath(String mapping,
+            Class<? extends UI> beanClass) {
+        String path = Conventions.deriveMappingForUI(beanClass);
+
+        boolean isWildcardPath = path.endsWith(PATH_WILDCARD);;
+
+        path = removeWildcard(path);
+
+        boolean exactMatch = mapping.equals(path);
+        if (!exactMatch && isWildcardPath) {
+            return path.isEmpty() || mapping.startsWith(path + "/");
+        }
+        return exactMatch;
+    }
+
+    private String removeWildcard(String path) {
+        if (path.endsWith(PATH_WILDCARD)) {
+            return path.substring(0, path.length() - PATH_WILDCARD.length());
+        }
+        return path;
+    }
+
+    private Bean<?> scanForBeans(Class<? extends UI> type,
+            VaadinRequest request) {
         Bean<?> bean = null;
         Set<Bean<?>> beans = beanManager.getBeans(type, QUALIFIER_ANY);
 
@@ -199,9 +238,9 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
                 uiMapping = parseUIMapping(request);
                 bean = getUIBeanWithMapping(uiMapping);
             } else {
-                throw new IllegalStateException("UI class: " + type.getName()
-                        + " with mapping: " + uiMapping
-                        + " is not annotated with CDIUI!");
+                throw new IllegalStateException(
+                        "UI class: " + type.getName() + " with mapping: "
+                                + uiMapping + " is not annotated with CDIUI!");
             }
         }
         return bean;
@@ -218,20 +257,20 @@ public class CDIUIProvider extends DefaultUIProvider implements Serializable {
                 path = requestPath.substring(0, requestPath.length() - 1);
             }
             if (!path.contains("!")) {
-                int lastIndex = path.lastIndexOf('/');
-                return path.substring(lastIndex + 1);
+                return path.substring(path.startsWith("/") ? 1 : 0);
             } else {
                 int lastIndexOfBang = path.lastIndexOf('!');
-                // strip slash with bank => /!
-                String pathWithoutView = path.substring(0, lastIndexOfBang - 1);
-                int lastSlashIndex = pathWithoutView.lastIndexOf('/');
-                return pathWithoutView.substring(lastSlashIndex + 1);
+                String pathWithoutView = path.substring(0, lastIndexOfBang);
+                if (pathWithoutView.endsWith("/")) {
+                    pathWithoutView = pathWithoutView.substring(0,
+                            pathWithoutView.length() - 1);
+                }
+                return pathWithoutView
+                        .substring(pathWithoutView.startsWith("/") ? 1 : 0);
             }
         }
         return "";
     }
-
-
 
     private static Logger getLogger() {
         return Logger.getLogger(CDIUIProvider.class.getCanonicalName());

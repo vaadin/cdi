@@ -1,31 +1,46 @@
+/*
+ * Vaadin CDI Integration
+ *
+ * Copyright (C) 2012-2026 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
+ */
 package com.vaadin.cdi.uis;
 
-import com.vaadin.cdi.*;
+import com.vaadin.cdi.CDINavigator;
+import com.vaadin.cdi.CDIUI;
+import com.vaadin.cdi.CDIView;
+import com.vaadin.cdi.ViewScoped;
 import com.vaadin.cdi.internal.Counter;
-import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
 import java.io.Serializable;
 
 @CDIUI("viewDestroy")
 public class DestroyViewUI extends UI {
     public static final String CLOSE_BTN_ID = "close";
     public static final String LABEL_ID = "label";
-    public static final String VIEW_DESTROY_COUNT_KEY = "viewcount";
-    public static final String VIEWBEAN_DESTROY_COUNT_KEY = "viewbeancount";
-    public static final String NAVIGATE_BTN_ID = "navigate";
+    public static final String NAVIGATE_VIEW_BTN_ID = "navigateview";
+    public static final String UIID_ID = "UIID";
+    public static final String VIEWSCOPED_VIEW = "viewscoped";
+    public static final String OTHER_VIEW = "other";
+    public static final String NAVIGATE_ERROR_BTN_ID = "error";
+    public static final String NAVIGATE_OTHER_BTN_ID = "other";
 
     @Inject
-    CDIViewProvider viewProvider;
+    CDINavigator navigator;
     @Inject
     Counter counter;
 
@@ -40,74 +55,93 @@ public class DestroyViewUI extends UI {
         label.setId(LABEL_ID);
         layout.addComponent(label);
 
+        final Label uiId = new Label(String.valueOf(getUIId()));
+        uiId.setId(UIID_ID);
+        layout.addComponent(uiId);
+
         Button closeBtn = new Button("close UI");
         closeBtn.setId(CLOSE_BTN_ID);
-        closeBtn.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                close();
-            }
-        });
+        closeBtn.addClickListener(event -> close());
         layout.addComponent(closeBtn);
 
-        final Navigator navigator = new Navigator(this, new ViewDisplay() {
-            @Override
-            public void showView(View view) {
-            }
+        navigator.init(this, view -> {
         });
-        navigator.addProvider(viewProvider);
+        navigator.setErrorView(ErrorView.class);
 
-        Button viewNavigateBtn = new Button("navigate");
-        viewNavigateBtn.setId(NAVIGATE_BTN_ID);
-        viewNavigateBtn.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                navigator.navigateTo("other");
-            }
-        });
+        Button otherNavigateBtn = new Button("navigate other");
+        otherNavigateBtn.setId(NAVIGATE_OTHER_BTN_ID);
+        otherNavigateBtn.addClickListener(event -> navigator.navigateTo(OTHER_VIEW));
+        layout.addComponent(otherNavigateBtn);
+
+        Button viewNavigateBtn = new Button("navigate view");
+        viewNavigateBtn.setId(NAVIGATE_VIEW_BTN_ID);
+        viewNavigateBtn.addClickListener(event -> navigator.navigateTo(VIEWSCOPED_VIEW));
         layout.addComponent(viewNavigateBtn);
+
+        Button errorNavigateBtn = new Button("navigate error");
+        errorNavigateBtn.setId(NAVIGATE_ERROR_BTN_ID);
+        errorNavigateBtn.addClickListener(event -> navigator.navigateTo("nonexsistentview"));
+        layout.addComponent(errorNavigateBtn);
 
         setContent(layout);
     }
 
-    @CDIView(value = "home")
-    public static class HomeView implements View {
+    @CDIView(value = VIEWSCOPED_VIEW)
+    public static class ViewScopedView implements View {
+        public static final String DESTROY_COUNT = "viewdestroy";
+
         @Inject
         ViewScopedBean viewScopedBean;
 
         @Inject
         Counter counter;
 
+        int uiId;
+
         @PreDestroy
         public void destroy() {
-            counter.increment(VIEW_DESTROY_COUNT_KEY);
+            counter.increment(DESTROY_COUNT + uiId);
         }
 
         @Override
         public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+            uiId = UI.getCurrent().getUIId();
+        }
+    }
 
+    @CDIView(value = OTHER_VIEW)
+    public static class OtherView implements View {
+        @Override
+        public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
         }
     }
 
     @ViewScoped
     public static class ViewScopedBean implements Serializable {
+        public static final String DESTROY_COUNT = "viewbeandestroy";
+
         @Inject
         Counter counter;
 
+        int uiId;
+
         @PreDestroy
         public void destroy() {
-            counter.increment(VIEWBEAN_DESTROY_COUNT_KEY);
+            counter.increment(DESTROY_COUNT + uiId);
+        }
+
+        @PostConstruct
+        public void contruct() {
+            uiId = UI.getCurrent().getUIId();
         }
 
     }
 
-    @CDIView("other")
-    public static class OtherView implements View {
 
+    public static class ErrorView implements View {
         @Override
         public void enter(ViewChangeListener.ViewChangeEvent event) {
 
         }
     }
-
 }

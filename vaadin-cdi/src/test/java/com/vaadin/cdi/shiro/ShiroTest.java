@@ -1,3 +1,13 @@
+/*
+ * Vaadin CDI Integration
+ *
+ * Copyright (C) 2012-2026 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
+ */
 package com.vaadin.cdi.shiro;
 
 import com.vaadin.cdi.AbstractManagedCDIIntegrationTest;
@@ -12,6 +22,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.openqa.selenium.By;
 
 import static org.hamcrest.CoreMatchers.not;
@@ -20,24 +31,23 @@ import static org.junit.Assert.assertThat;
 /**
  * Simple test of Shiro access control.
  */
+@Ignore("Arquillian integration test - requires an application server container profile and browser")
 public class ShiroTest extends AbstractManagedCDIIntegrationTest {
 
     @Deployment(name = "shiro", testable = false)
     public static WebArchive initAndPostConstructAreConsistent() {
-        PomEquippedResolveStage pom = Maven.resolver().loadPomFromFile(
-                "pom.xml");
+        PomEquippedResolveStage pom = Maven.resolver()
+                .loadPomFromFile("pom.xml");
         return ArchiveProvider
                 .createWebArchive("shiro", false, NavigatableUI.class,
                         ShiroAccessControl.class, ShiroWebListener.class,
                         ShiroWebFilter.class, AbstractNavigatableView.class,
                         AbstractShiroTestView.class, LoginPane.class,
                         GuestView.class, ViewerView.class, AdminView.class)
-                .addAsLibraries(
-                        pom.resolve("org.apache.shiro:shiro-core:1.3.2")
-                                .withTransitivity().asFile())
-                .addAsLibraries(
-                        pom.resolve("org.apache.shiro:shiro-web:1.3.2")
-                                .withTransitivity().asFile())
+                .addAsLibraries(pom.resolve("org.apache.shiro:shiro-core:1.3.2")
+                        .withTransitivity().asFile())
+                .addAsLibraries(pom.resolve("org.apache.shiro:shiro-web:1.3.2")
+                        .withTransitivity().asFile())
                 .addAsWebInfResource(new ClassLoaderAsset("shiro.ini"),
                         ArchivePaths.create("shiro.ini"))
                 .addAsWebInfResource(new ClassLoaderAsset("shiro.beans.xml"),

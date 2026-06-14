@@ -1,12 +1,22 @@
+/*
+ * Vaadin CDI Integration
+ *
+ * Copyright (C) 2012-2026 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
+ */
 package com.vaadin.cdi.internal;
 
-import javax.inject.Inject;
-import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
+import jakarta.inject.Inject;
+import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
 import java.io.IOException;
 
 @WebFilter(urlPatterns = "/*", asyncSupported = true)
-public class CounterFilter implements javax.servlet.Filter {
+public class CounterFilter implements jakarta.servlet.Filter {
 
     @Inject
     Counter counter;

@@ -1,8 +1,18 @@
+/*
+ * Vaadin CDI Integration
+ *
+ * Copyright (C) 2012-2026 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
+ */
 package com.vaadin.cdi.uis;
 
-import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
 
 import com.vaadin.cdi.CDIUI;
 import com.vaadin.cdi.NormalUIScoped;

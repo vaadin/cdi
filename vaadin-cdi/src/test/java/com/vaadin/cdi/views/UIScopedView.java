@@ -1,8 +1,14 @@
+/*
+ * Vaadin CDI Integration
+ *
+ * Copyright (C) 2012-2026 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
+ */
 package com.vaadin.cdi.views;
-
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 
 import com.vaadin.cdi.CDIView;
 import com.vaadin.cdi.UIScoped;
@@ -16,6 +22,10 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 
 @UIScoped
 @CDIView(value = AbstractScopedInstancesView.UISCOPED_VIEW)
@@ -46,13 +56,13 @@ public class UIScopedView extends AbstractScopedInstancesView implements View {
         instanceLabel.setId(INSTANCE_LABEL);
         layout.addComponent(instanceLabel);
 
-        final Label viewScopedLabel = new Label(
-                String.valueOf(viewScopedBean.getUnderlyingInstance()));
+        final Label viewScopedLabel = new Label(String.valueOf(viewScopedBean
+                .getUnderlyingInstance()));
         viewScopedLabel.setId(ViewScopedBean.ID);
         layout.addComponent(viewScopedLabel);
 
-        final Label uiScopedLabel = new Label(
-                String.valueOf(uiScopedBean.getUnderlyingInstance()));
+        final Label uiScopedLabel = new Label(String.valueOf(uiScopedBean
+                .getUnderlyingInstance()));
         uiScopedLabel.setId(UIScopedBean.ID);
         layout.addComponent(uiScopedLabel);
 
@@ -61,10 +71,10 @@ public class UIScopedView extends AbstractScopedInstancesView implements View {
 
             @Override
             public void buttonClick(ClickEvent event) {
-                uiScopedLabel.setValue(
-                        String.valueOf(uiScopedBean.getUnderlyingInstance()));
-                viewScopedLabel.setValue(
-                        String.valueOf(viewScopedBean.getUnderlyingInstance()));
+                uiScopedLabel.setValue(String.valueOf(uiScopedBean
+                        .getUnderlyingInstance()));
+                viewScopedLabel.setValue(String.valueOf(viewScopedBean
+                        .getUnderlyingInstance()));
             }
         });
         layout.addComponent(refreshButton);
@@ -82,6 +92,7 @@ public class UIScopedView extends AbstractScopedInstancesView implements View {
         private void preDestroy() {
             counter.increment(DESTROY_COUNT);
         }
+
     }
 
 }

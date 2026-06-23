@@ -1,3 +1,13 @@
+/*
+ * Vaadin CDI Integration
+ *
+ * Copyright (C) 2012-2026 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
+ */
 package com.vaadin.cdi;
 
 import com.vaadin.cdi.internal.UIScopedBean;
@@ -26,8 +36,8 @@ public class ScopedInstancesTest extends AbstractManagedCDIIntegrationTest {
     public static WebArchive alternativeAndActiveWithSamePath() {
         return ArchiveProvider.createWebArchive("scopedNavigation",
                 UIScopedView.class, AbstractScopedInstancesView.class,
-                AbstractNavigatableView.class, ViewScopedView.class,
-                NavigatableUI.class, UIScopedBean.class, ViewScopedBean.class);
+                AbstractNavigatableView.class, ViewScopedView.class, NavigatableUI.class,
+                UIScopedBean.class, ViewScopedBean.class);
     }
 
     @Test
@@ -83,6 +93,7 @@ public class ScopedInstancesTest extends AbstractManagedCDIIntegrationTest {
         String secondViewScopedInViewScoped = getTextById(ViewScopedBean.ID);
         String secondUIScopedInViewScoped = getTextById(UIScopedBean.ID);
 
+
         // Navigate back to the UIScoped view
         navigateToUIScoped();
 
@@ -95,10 +106,8 @@ public class ScopedInstancesTest extends AbstractManagedCDIIntegrationTest {
         assertThat(firstViewScopedInViewScoped, not(firstViewScopedInUIScoped));
         assertThat(firstViewScopedInViewScoped,
                 not(secondViewScopedInViewScoped));
-        assertThat(firstViewScopedInViewScoped,
-                not(secondViewScopedInUIScoped));
-        assertThat(secondViewScopedInViewScoped,
-                not(firstViewScopedInUIScoped));
+        assertThat(firstViewScopedInViewScoped, not(secondViewScopedInUIScoped));
+        assertThat(secondViewScopedInViewScoped, not(firstViewScopedInUIScoped));
         assertThat(secondViewScopedInViewScoped,
                 not(secondViewScopedInUIScoped));
         assertThat(firstViewScopedInUIScoped, not(secondViewScopedInUIScoped));
@@ -115,15 +124,20 @@ public class ScopedInstancesTest extends AbstractManagedCDIIntegrationTest {
     @Test
     public void testCreationalContext() throws Exception {
         resetCounts();
-        openWindow(deriveMappingForUI(NavigatableUI.class));
         // ViewScoped view instance opens initially
+        openWindow(deriveMappingForUI(NavigatableUI.class));
+        assertThat(getCount(ViewScopedView.DependentBean.DESTROY_COUNT), is(0));
+        assertThat(getCount(UIScopedView.DependentBean.DESTROY_COUNT), is(0));
 
         // Open UIScoped view instance
         navigateToUIScoped();
+        // bean dependent to viewsoped view should be destroyed
+        assertThat(getCount(ViewScopedView.DependentBean.DESTROY_COUNT), is(1));
+        assertThat(getCount(UIScopedView.DependentBean.DESTROY_COUNT), is(0));
 
         // Navigate back to the ViewScoped view
         navigateToViewScoped();
-
+        // bean dependent to uiscoped view should not be destroyed
         assertThat(getCount(ViewScopedView.DependentBean.DESTROY_COUNT), is(1));
         assertThat(getCount(UIScopedView.DependentBean.DESTROY_COUNT), is(0));
     }
@@ -133,18 +147,14 @@ public class ScopedInstancesTest extends AbstractManagedCDIIntegrationTest {
     }
 
     private void navigateToUIScoped() {
-        firstWindow
-                .findElement(
-                        By.id(AbstractScopedInstancesView.NAVIGATE_TO_UISCOPED))
-                .click();
+        firstWindow.findElement(
+                By.id(AbstractScopedInstancesView.NAVIGATE_TO_UISCOPED)).click();
         waitForValue(By.id(UIScopedView.DESCRIPTION_LABEL), "UIScopedView");
     }
 
     private void navigateToViewScoped() {
-        firstWindow
-                .findElement(By
-                        .id(AbstractScopedInstancesView.NAVIGATE_TO_VIEWSCOPED))
-                .click();
+        firstWindow.findElement(
+                By.id(AbstractScopedInstancesView.NAVIGATE_TO_VIEWSCOPED)).click();
         waitForValue(By.id(ViewScopedView.DESCRIPTION_LABEL), "ViewScopedView");
     }
 

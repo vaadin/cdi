@@ -1,3 +1,13 @@
+/*
+ * Vaadin CDI Integration
+ *
+ * Copyright (C) 2012-2026 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
+ */
 package com.vaadin.cdi;
 
 import org.jboss.arquillian.container.test.api.Deployer;
@@ -7,19 +17,21 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-import javax.enterprise.inject.New;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 
 @RunWith(Arquillian.class)
 @RunAsClient
 abstract public class AbstractCDIIntegrationTest {
 
     @Drone
-    @New
     WebDriver firstWindow;
 
     @ArquillianResource
@@ -31,8 +43,6 @@ abstract public class AbstractCDIIntegrationTest {
     protected static final By NAVIGATE_BUTTON = By.id("navigate");
     protected static final String INSTRUMENTED_UI_URI = "instrumentedUI";
     private static final String SECOND_UI_URI = "secondUI";
-    protected static final String INSTRUMENTED_VIEW_URI = INSTRUMENTED_UI_URI
-                + "/#!instrumentedView";
     protected static final String DANGLING_VIEW_URI = SECOND_UI_URI
                 + "/#!danglingView";
 
@@ -52,6 +62,31 @@ abstract public class AbstractCDIIntegrationTest {
     
     public WebElement findElement(String id) {
         return findElement(By.id(id));
+    }
+    public void clickAndWait(String id) {
+        findElement(id).click();
+        waitForClient();
+    }
+
+    public void clickAndWait(By by) {
+        findElement(by).click();
+        waitForClient();
+    }
+
+    public void waitForClient() {
+        new WebDriverWait(firstWindow, Duration.ofSeconds(10)).until(input ->
+                (Boolean) ((JavascriptExecutor) firstWindow)
+                        .executeScript("return !vaadin.clients[Object.keys(vaadin.clients)[0]].isActive()"));
+    }
+
+    public void refreshWindow() {
+        refreshWindow(firstWindow);
+    }
+
+    public void refreshWindow(WebDriver window) {
+        window.navigate().refresh();
+        (new WebDriverWait(window, Duration.ofSeconds(15))).until(ExpectedConditions
+                .presenceOfElementLocated(LABEL));
     }
 
 }

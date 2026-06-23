@@ -1,12 +1,21 @@
+/*
+ * Vaadin CDI Integration
+ *
+ * Copyright (C) 2012-2026 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
+ */
 package com.vaadin.cdi;
 
-import com.vaadin.cdi.internal.AbstractVaadinContext;
 import com.vaadin.cdi.internal.Conventions;
-import com.vaadin.cdi.uis.DestroyNormalUI;
 import com.vaadin.cdi.uis.DestroyUI;
 import com.vaadin.cdi.views.TestView;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -16,46 +25,39 @@ import static org.junit.Assert.assertThat;
 
 public class UIDestroyTest extends AbstractManagedCDIIntegrationTest {
 
-    private String uri;
     private String uiId;
 
     @Deployment(testable = false)
     public static WebArchive deployment() {
-        return ArchiveProvider.createWebArchive("uiDestroy", DestroyUI.class,
-                DestroyNormalUI.class, TestView.class);
+        return ArchiveProvider.createWebArchive("uiDestroy",
+                DestroyUI.class,
+                TestView.class);
     }
 
-    protected Class<? extends DestroyUI> getUIClass() {
-        return DestroyUI.class;
-    }
-
-    @Test
-    public void testViewChangeTriggersClosedUIDestroy() throws Exception {
+    @Before
+    public void setUp() throws IOException {
         resetCounts();
-        uri = Conventions.deriveMappingForUI(getUIClass());
+        String uri = Conventions.deriveMappingForUI(DestroyUI.class);
         openWindow(uri);
         uiId = findElement(DestroyUI.UIID_ID).getText();
         assertDestroyCount(0);
-        // close first UI
+    }
+
+    @Test
+    public void testUiCloseTriggersDestroy() throws Exception {
         clickAndWait(DestroyUI.CLOSE_BTN_ID);
+        assertDestroyCount(1);
+    }
 
-        // open new UI
-        openWindow(uri);
-        assertDestroyCount(0);
-
-        Thread.sleep(AbstractVaadinContext.CLEANUP_DELAY + 1);
-
-        // ViewChange event triggers a cleanup
-        clickAndWait(DestroyUI.NAVIGATE_BTN_ID);
-
-        // first UI cleaned up
+    @Test
+    public void testSessionCloseDestroysUIContext() throws Exception {
+        clickAndWait(DestroyUI.CLOSE_SESSION_BTN_ID);
         assertDestroyCount(1);
     }
 
     private void assertDestroyCount(int count) throws IOException {
         assertThat(getCount(DestroyUI.DESTROY_COUNT + uiId), is(count));
-        assertThat(getCount(DestroyUI.UIScopedBean.DESTROY_COUNT + uiId),
-                is(count));
+        assertThat(getCount(DestroyUI.UIScopedBean.DESTROY_COUNT + uiId), is(count));
     }
 
 }

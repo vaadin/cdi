@@ -1,3 +1,13 @@
+/*
+ * Vaadin CDI Integration
+ *
+ * Copyright (C) 2012-2026 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
+ */
 package com.vaadin.cdi;
 
 import com.vaadin.cdi.internal.Conventions;
@@ -13,6 +23,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.MalformedURLException;
+import java.time.Duration;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -31,7 +42,7 @@ public class InjectionTest extends AbstractManagedCDIIntegrationTest {
     public void testUIInjection() throws MalformedURLException {
         openWindow(Conventions.deriveMappingForUI(InjectionUI.class));
 
-        (new WebDriverWait(firstWindow, 15)).until(ExpectedConditions
+        (new WebDriverWait(firstWindow, Duration.ofSeconds(15))).until(ExpectedConditions
                 .presenceOfElementLocated(By.id(InjectionUI.beanId1)));
 
         String bean11 = firstWindow.findElement(By.id(InjectionUI.beanId1))
@@ -43,7 +54,7 @@ public class InjectionTest extends AbstractManagedCDIIntegrationTest {
 
         refreshWindow();
 
-        (new WebDriverWait(firstWindow, 15)).until(ExpectedConditions
+        (new WebDriverWait(firstWindow, Duration.ofSeconds(15))).until(ExpectedConditions
                 .presenceOfElementLocated(By.id(InjectionUI.beanId1)));
 
         String bean12 = firstWindow.findElement(By.id(InjectionUI.beanId1))

@@ -1,55 +1,146 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-parent</artifactId>
-        <version>1.1.0</version>
-    </parent>
+	<parent>
+		<groupId>com.vaadin</groupId>
+		<artifactId>vaadin-parent</artifactId>
+		<version>3.0.0</version>
+	</parent>
+
     <!-- Do not remove explicit groupId even though Maven says this is redundant -->
     <groupId>com.vaadin</groupId>
     <artifactId>vaadin-cdi</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.9-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        
-        <!-- In addition to POMs, these version numbers are in ArchiveProvider for tests -->
-        <vaadin.version>7.7.7</vaadin.version>
-        <deltaspike.version>1.7.2</deltaspike.version>
+        <currentYear>2026</currentYear>
+
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
+
+        <vaadin.version>7.7.52</vaadin.version>
+        <deltaspike.version>2.0.0</deltaspike.version>
+        <jakarta.ee.version>11.0.0</jakarta.ee.version>
 
         <!-- Testing dependencies -->
-        <selenium.version>2.53.0</selenium.version>
-        <shiro.version>1.3.2</shiro.version>
-        <arquillian.version>1.1.11.Final</arquillian.version>
+        <selenium.version>4.21.0</selenium.version>
+        <shiro.version>2.1.0</shiro.version>
+        <arquillian.version>1.9.1.Final</arquillian.version>
 
         <!-- ZIP Manifest fields -->
         <Implementation-Version>${project.version}</Implementation-Version>
         <!-- Must not change this because of the Directory -->
         <Implementation-Title>Vaadin CDI</Implementation-Title>
         <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
-        <Vaadin-License-Title>Apache License 2.0</Vaadin-License-Title>
+        <Vaadin-License-Title>Vaadin Commercial License and Service Terms</Vaadin-License-Title>
         <Vaadin-Addon>vaadin-cdi-${project.version}.jar</Vaadin-Addon>
+
     </properties>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>vaadin-snapshots</id>
-            <name>Vaadin snapshot repository</name>
-            <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-bom</artifactId>
+                <version>${jakarta.ee.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>${arquillian.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-bom</artifactId>
+                <version>${selenium.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-dist</artifactId>
+                <version>35.0.1.Final</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shiro</groupId>
+                <artifactId>shiro-bom</artifactId>
+                <version>${shiro.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>7.0.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <!-- The order of definitions matters. Explicitly defining central here to make sure it has the highest priority. -->
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>vaadin-prereleases</id>
+            <url>
+                https://maven.vaadin.com/vaadin-prereleases/
+            </url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <!-- Repository used by many Vaadin add-ons -->
+        <repository>
+            <id>Vaadin Directory</id>
+            <url>https://maven.vaadin.com/vaadin-addons</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <!-- The order of definitions matters. Explicitly defining central here to make sure it has the highest priority. -->
+        <pluginRepository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>vaadin-prereleases</id>
+            <url>
+                https://maven.vaadin.com/vaadin-prereleases/
+            </url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
     <name>vaadin-cdi</name>
-    <url>http://vaadin.com</url>
+    <url>https://vaadin.com</url>
     <description>Provides CDI integration for Vaadin projects</description>
 
     <organization>
         <name>Vaadin Ltd</name>
-        <url>http://vaadin.com</url>
+        <url>https://vaadin.com</url>
     </organization>
     <scm>
         <url>https://github.com/vaadin/cdi</url>
@@ -58,7 +149,7 @@
     </scm>
     <issueManagement>
         <system>trac</system>
-        <url>http://dev.vaadin.com/</url>
+        <url>https://dev.vaadin.com/</url>
     </issueManagement>
 
     <developers>
@@ -77,11 +168,14 @@
         <developer>
             <name>Juuso Valli</name>
         </developer>
+        <developer>
+            <name>Patrik Lindström</name>
+        </developer>
     </developers>
     <licenses>
         <license>
-            <name>Apache License version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+            <name>Vaadin Commercial License and Terms</name>
+            <url>https://vaadin.com/commercial-license-and-service-terms</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -94,7 +188,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>2.1.2</version>
+                        <version>3.4.0</version>
                         <configuration>
                             <excludeResources>true</excludeResources>
                         </configuration>
@@ -110,7 +204,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.9</version>
+                        <version>3.12.0</version>
                         <executions>
                             <execution>
                                 <phase>package</phase>
@@ -123,7 +217,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-assembly-plugin</artifactId>
-                        <version>2.2.1</version>
+                        <version>3.8.0</version>
                         <configuration>
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
@@ -145,31 +239,131 @@
         </profile>
 
         <profile>
+            <id>prerelease</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.4.0</version>
+                        <configuration>
+                            <excludeResources>true</excludeResources>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.12.0</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>3.8.0</version>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>assembly/assembly.xml</descriptor>
+                            </descriptors>
+                            <attach>false</attach>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <phase>install</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- TomEE profiles commented out: TomEE 7.x uses javax.* namespace,
+             incompatible with Jakarta EE 11. Re-enable when TomEE 10+ is available.
+        <profile>
             <id>tomee</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <dependencies>
-                <!-- Embedded TomEE -->
                 <dependency>
                     <groupId>org.apache.tomee</groupId>
                     <artifactId>arquillian-tomee-embedded</artifactId>
                     <version>7.0.2</version>
                     <scope>test</scope>
                 </dependency>
-                <!-- Java EE 6 API. Must be last to be overridden by tomee for
-                     the test phase -->
                 <dependency>
-                    <groupId>javax</groupId>
-                    <artifactId>javaee-api</artifactId>
-                    <version>6.0</version>
+                    <groupId>jakarta.platform</groupId>
+                    <artifactId>jakarta.jakartaee-api</artifactId>
+                    <version>10.0.0</version>
                     <scope>provided</scope>
                 </dependency>
             </dependencies>
         </profile>
 
         <profile>
-            <id>wildfly</id>
+            <id>tomee-cluster</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.tomee</groupId>
+                    <artifactId>arquillian-tomee-remote</artifactId>
+                    <version>7.0.2</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.tomee</groupId>
+                    <artifactId>apache-tomee</artifactId>
+                    <version>7.0.2</version>
+                    <classifier>webprofile</classifier>
+                    <type>zip</type>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>jakarta</groupId>
+                    <artifactId>javaee-api</artifactId>
+                    <version>7.0</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <forkMode>always</forkMode>
+                            <systemPropertyVariables>
+                                <arquillian.launch>tomee-cluster</arquillian.launch>
+                            </systemPropertyVariables>
+                            <groups>com.vaadin.cdi.ClusterTestCategory</groups>
+                            <excludedGroups>com.vaadin.cdi.NoneTestCategory</excludedGroups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        -->
+
+        <!--
+        <profile>
+            <id>wildfly-cluster</id>
             <dependencies>
                 <dependency>
                     <groupId>org.wildfly.arquillian</groupId>
@@ -178,9 +372,98 @@
                     <scope>test</scope>
                 </dependency>
                 <dependency>
-                    <groupId>javax</groupId>
+                    <groupId>jakarta</groupId>
                     <artifactId>javaee-api</artifactId>
                     <version>7.0</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack-node1</id>
+                                <phase>process-test-classes</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.wildfly</groupId>
+                                            <artifactId>wildfly-dist</artifactId>
+                                            <type>zip</type>
+                                            <outputDirectory>target/wildfly-node1</outputDirectory>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.wildfly</groupId>
+                                            <artifactId>wildfly-dist</artifactId>
+                                            <type>zip</type>
+                                            <outputDirectory>target/wildfly-node2</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <arquillian.launch>wildfly-cluster</arquillian.launch>
+                                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                            </systemPropertyVariables>
+                            <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                            <groups>com.vaadin.cdi.ClusterTestCategory</groups>
+                            <excludedGroups>com.vaadin.cdi.NoneTestCategory</excludedGroups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        -->
+
+        <profile>
+            <id>wildfly</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.wildfly.arquillian</groupId>
+                    <artifactId>wildfly-arquillian-container-managed</artifactId>
+                    <version>5.1.0.Final</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.threads</groupId>
+                    <artifactId>jboss-threads</artifactId>
+                    <version>2.4.0.Final</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.logging</groupId>
+                    <artifactId>jboss-logging</artifactId>
+                    <version>3.6.1.Final</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.wildfly.common</groupId>
+                    <artifactId>wildfly-common</artifactId>
+                    <version>1.7.0.Final</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.logmanager</groupId>
+                    <artifactId>jboss-logmanager</artifactId>
+                    <version>2.1.19.Final</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>jakarta.platform</groupId>
+                    <artifactId>jakarta.jakartaee-api</artifactId>
+                    <version>${jakarta.ee.version}</version>
                     <scope>provided</scope>
                 </dependency>
             </dependencies>
@@ -201,9 +484,7 @@
                                         <artifactItem>
                                             <groupId>org.wildfly</groupId>
                                             <artifactId>wildfly-dist</artifactId>
-                                            <version>10.1.0.Final</version>
                                             <type>zip</type>
-                                            <overWrite>false</overWrite>
                                             <outputDirectory>target</outputDirectory>
                                         </artifactItem>
                                     </artifactItems>
@@ -218,8 +499,7 @@
                             <forkMode>always</forkMode>
                             <systemPropertyVariables>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                                <jboss.home>${project.build.directory}/wildfly-10.1.0.Final</jboss.home>
-                                <arguillian.launch>wildfly</arguillian.launch>
+                                <jboss.home>${project.build.directory}/wildfly-35.0.1.Final</jboss.home>
                             </systemPropertyVariables>
                             <redirectTestOutputToFile>false</redirectTestOutputToFile>
                         </configuration>
@@ -227,19 +507,20 @@
                 </plugins>
             </build>
         </profile>
+        
         <profile>
-            <id>glassfish</id>
+            <id>payara</id>
             <dependencies>
                 <dependency>
-                    <groupId>org.jboss.arquillian.container</groupId>
-                    <artifactId>arquillian-glassfish-managed-3.1</artifactId>
-                    <version>1.0.0.Final</version>
+                    <groupId>fish.payara.arquillian</groupId>
+                    <artifactId>arquillian-payara-server-managed</artifactId>
+                    <version>3.1</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
-                    <groupId>javax</groupId>
-                    <artifactId>javaee-api</artifactId>
-                    <version>7.0</version>
+                    <groupId>jakarta.platform</groupId>
+                    <artifactId>jakarta.jakartaee-api</artifactId>
+                    <version>${jakarta.ee.version}</version>
                     <scope>provided</scope>
                 </dependency>
             </dependencies>
@@ -258,9 +539,9 @@
                                 <configuration>
                                     <artifactItems>
                                         <artifactItem>
-                                            <groupId>org.glassfish.main.distributions</groupId>
-                                            <artifactId>glassfish</artifactId>
-                                            <version>4.1.1</version>
+                                            <groupId>fish.payara.distributions</groupId>
+                                            <artifactId>payara</artifactId>
+                                            <version>7.2026.5</version>
                                             <type>zip</type>
                                             <overWrite>false</overWrite>
                                             <outputDirectory>target</outputDirectory>
@@ -276,7 +557,7 @@
                         <configuration>
                             <forkMode>always</forkMode>
                             <environmentVariables>
-                                <GLASSFISH_HOME>${project.build.directory}/glassfish4</GLASSFISH_HOME>
+                                <PAYARA_HOME>${project.build.directory}/payara7</PAYARA_HOME>
                             </environmentVariables>
                             <redirectTestOutputToFile>false</redirectTestOutputToFile>
                         </configuration>
@@ -286,25 +567,6 @@
         </profile>
     </profiles>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.jboss.arquillian</groupId>
-                <artifactId>arquillian-bom</artifactId>
-                <version>${arquillian.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.arquillian.selenium</groupId>
-                <artifactId>selenium-bom</artifactId>
-                <version>${selenium.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
 
         <!-- Compile dependencies -->
@@ -312,11 +574,11 @@
         <!-- vaadin core -->
         <dependency>
             <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-server</artifactId>
+            <artifactId>vaadin-server-mpr-jakarta</artifactId>
             <version>${vaadin.version}</version>
             <scope>compile</scope>
         </dependency>
-        
+
         <!-- DeltaSpike -->
         <dependency>
             <groupId>org.apache.deltaspike.core</groupId>
@@ -333,10 +595,22 @@
         </dependency>
 
         <dependency>
-           <groupId>javax.enterprise</groupId>
-           <artifactId>cdi-api</artifactId>
-           <version>1.2</version>
-           <scope>provided</scope>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <version>6.2.11.Final</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Test dependencies -->
@@ -349,6 +623,13 @@
         <dependency>
             <groupId>org.jboss.shrinkwrap.resolver</groupId>
             <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+            <version>3.3.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+            <artifactId>shrinkwrap-descriptors-impl-javaee</artifactId>
+            <version>2.0.0</version>
             <scope>test</scope>
         </dependency>
         <!-- Graphene -->
@@ -356,12 +637,12 @@
             <groupId>org.jboss.arquillian.graphene</groupId>
             <artifactId>graphene-webdriver</artifactId>
             <type>pom</type>
-            <version>2.1.0.Final</version>
+            <version>3.0.1.Final</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
-                     <groupId>javax.enterprise</groupId>
-                     <artifactId>cdi-api</artifactId>
+                    <groupId>jakarta.enterprise</groupId>
+                    <artifactId>cdi-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -369,13 +650,13 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
+            <artifactId>mockito-core</artifactId>
+            <version>5.12.0</version>
             <scope>test</scope>
         </dependency>
         <!-- vaadin dependencies needed for integration testing -->
@@ -394,14 +675,34 @@
         <!-- shiro dependencies needed for integration testing -->
         <dependency>
             <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-jakarta-ee</artifactId>
+            <classifier>jakarta</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-core</artifactId>
-            <version>${shiro.version}</version>
+            <classifier>jakarta</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-web</artifactId>
-            <version>${shiro.version}</version>
+            <classifier>jakarta</classifier>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>jakarta.ejb</groupId>
+            <artifactId>jakarta.ejb-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- undertow core for clustering test reverse proxy -->
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-core</artifactId>
+            <version>2.3.17.Final</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -411,21 +712,21 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
+                <version>3.15.0</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>21</source>
+                    <target>21</target>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>3.5.0</version>
                 <configuration>
                     <archive>
                         <index>true</index>
                         <manifest>
-                            <addClasspath>true</addClasspath>
+                            <addClasspath>false</addClasspath>
                             <!-- Implementation-Title and Implementation-Version come from the
                                 POM by default -->
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -450,7 +751,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
+                <version>3.5.5</version>
                 <configuration>
                     <!-- Assertions must be disabled when @UIScoped is a @NormalScope
                         otherwise the core framework will fail assertions that compare
@@ -460,27 +761,55 @@
                     <!-- Fork every test because it will launch a separate AS instance -->
                     <forkMode>always</forkMode>
                     <systemPropertyVariables>
-                       <javax.el.ExpressionFactory>org.apache.el.ExpressionFactoryImpl</javax.el.ExpressionFactory>
+                        <jakarta.el.ExpressionFactory>org.apache.el.ExpressionFactoryImpl</jakarta.el.ExpressionFactory>
                     </systemPropertyVariables>
                     <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                    <excludedGroups>com.vaadin.cdi.ClusterTestCategory</excludedGroups>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.5</version>
+                <version>3.1.4</version>
                 <configuration>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.10</version>
+                <version>3.6.0</version>
                 <configuration>
                     <enableRulesSummary>false</enableRulesSummary>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <configLocation>checkstyle/vaadin-checkstyle.xml</configLocation>
                     <violationSeverity>error</violationSeverity>
                     <headerLocation>checkstyle/header</headerLocation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>4.6</version>
+                <configuration>
+                    <header>src/license/header.txt</header>
+                    <quiet>false</quiet>
+                    <failIfMissing>true</failIfMissing>
+                    <aggregate>false</aggregate>
+                    <useDefaultExcludes>true</useDefaultExcludes>
+                    <useDefaultMapping>true</useDefaultMapping>
+                    <encoding>UTF-8</encoding>
+                    <properties>
+                        <year>${currentYear}</year>
+                    </properties>
+                    <excludes>
+                        <exclude>**/*.xml</exclude>
+                        <exclude>**/*.properties</exclude>
+                        <exclude>**/*.txt</exclude>
+                        <exclude>**/*.html</exclude>
+                        <exclude>**/*.js</exclude>
+                        <exclude>**/*.css</exclude>
+                        <exclude>**/*.scss</exclude>
+                        <exclude>**/*.sh</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
 

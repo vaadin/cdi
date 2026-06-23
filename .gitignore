@@ -7,3 +7,10 @@ nbactions.xml
 .iml
 *.iml
 *.log
+*.class
+/build
+# Package Files #
+*.jar
+*.war
+*.ear
+target/

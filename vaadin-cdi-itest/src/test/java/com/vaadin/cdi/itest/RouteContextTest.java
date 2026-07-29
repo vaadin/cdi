@@ -24,6 +24,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WindowType;
 
 import com.vaadin.cdi.itest.routecontext.ApartBean;
 import com.vaadin.cdi.itest.routecontext.AssignedBean;
@@ -295,6 +296,49 @@ public class RouteContextTest extends AbstractCdiTest {
         follow(MainLayout.PARENT_NO_OWNER);
 
         assertDestroyed(PreserveOnRefreshBean.class, 1);
+    }
+
+    @Test
+    public void noPreserveOnRefresh_routeTargetIsRecreatedOnRefresh()
+            throws IOException {
+        getDriver().get(getDriver().getCurrentUrl());
+
+        // UI ID has to be updated: all bean creations/removals will be done
+        // now within the new UI
+        uiId = getText(MainLayout.UIID);
+
+        assertConstructed(RootView.class, 1);
+        assertDestroyed(RootView.class, 0);
+        assertRootViewIsRendered();
+    }
+
+    @Test
+    public void noPreserveOnRefresh_otherUIWithSameWindowName_routeTargetIsNotShared()
+            throws IOException {
+        String url = getDriver().getCurrentUrl();
+        String windowName = (String) executeScript("return window.name;");
+
+        // Open a second tab and make it report the window name of the first
+        // one, as a duplicated tab or a restored browser session does. Both
+        // UIs are alive at the same time, so a route scope keyed by window
+        // name would be shared between them.
+        getDriver().switchTo().newWindow(WindowType.TAB);
+        getDriver().get(url);
+        executeScript("window.name = arguments[0];", windowName);
+        // same origin reload, so the window name is retained
+        getDriver().navigate().refresh();
+
+        uiId = getText(MainLayout.UIID);
+
+        assertConstructed(RootView.class, 1);
+        assertDestroyed(RootView.class, 0);
+        assertRootViewIsRendered();
+    }
+
+    private void assertRootViewIsRendered() {
+        Assert.assertNotNull(
+                "The root view is expected to be rendered in the current UI",
+                findElement(By.linkText(RootView.MASTER)));
     }
 
     @Test

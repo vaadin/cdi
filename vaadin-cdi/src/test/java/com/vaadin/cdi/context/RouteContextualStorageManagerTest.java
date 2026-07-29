@@ -45,7 +45,9 @@ import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.LocationChangeEvent;
+import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.VaadinSession;
 
 public class RouteContextualStorageManagerTest extends AbstractWeldTest {
@@ -92,6 +94,28 @@ public class RouteContextualStorageManagerTest extends AbstractWeldTest {
     public static class Group2 extends HasElementTestBean {
     }
 
+    @Route("preserved")
+    @PreserveOnRefresh
+    public static class PreservedGroup extends HasElementTestBean {
+    }
+
+    @PreserveOnRefresh
+    public static class PreservedLayout extends HasElementTestBean
+            implements RouterLayout {
+    }
+
+    @RouteScoped
+    @RouteScopeOwner(PreservedGroup.class)
+    public static class MemberOfPreservedGroup extends HasElementTestBean {
+
+        boolean isDestroyed;
+
+        @PreDestroy
+        private void onDestroy() {
+            isDestroyed = true;
+        }
+    }
+
     @Route("")
     public static class InitialRoute extends HasElementTestBean {
 
@@ -119,6 +143,10 @@ public class RouteContextualStorageManagerTest extends AbstractWeldTest {
     @Inject
     @RouteScopeOwner(Group1.class)
     private Provider<MemberOfGroup1> memberOfGroup1;
+
+    @Inject
+    @RouteScopeOwner(PreservedGroup.class)
+    private Provider<MemberOfPreservedGroup> memberOfPreservedGroup;
 
     @Inject
     private Provider<NoOwnerBean> noOwnerBean;
@@ -232,7 +260,64 @@ public class RouteContextualStorageManagerTest extends AbstractWeldTest {
     public void preserveOnRefresh_anotherUIHasSameWindowName_beanIsPreserved() {
         UI ui = doSetUp("foo", null);
         Mockito.when(event.getNavigationTarget())
+                .thenReturn((Class) PreservedGroup.class);
+        beforeNavigationTrigger.fire(event);
+
+        MemberOfPreservedGroup bean1 = memberOfPreservedGroup.get();
+        bean1.setState(STATE);
+
+        // set another UI instance with the same window name into the context
+        doSetUp("foo", ui.getSession());
+        Mockito.when(event.getNavigationTarget())
+                .thenReturn((Class) PreservedGroup.class);
+        beforeNavigationTrigger.fire(event);
+
+        ComponentUtil.onComponentDetach(ui);
+
+        Assertions.assertFalse(bean1.isDestroyed);
+        Assertions.assertSame(bean1, memberOfPreservedGroup.get());
+        Assertions.assertEquals(STATE, memberOfPreservedGroup.get().getState());
+    }
+
+    @Test
+    public void noPreserveOnRefresh_anotherUIHasSameWindowName_beanIsNotShared() {
+        UI ui = doSetUp("foo", null);
+        Mockito.when(event.getNavigationTarget())
                 .thenReturn((Class) Group1.class);
+        beforeNavigationTrigger.fire(event);
+
+        MemberOfGroup1 bean1 = memberOfGroup1.get();
+        bean1.setState(STATE);
+
+        // set another UI instance with the same window name into the context,
+        // simulating e.g. a page refresh or a duplicated browser tab
+        doSetUp("foo", ui.getSession());
+        Mockito.when(event.getNavigationTarget())
+                .thenReturn((Class) Group1.class);
+        beforeNavigationTrigger.fire(event);
+
+        MemberOfGroup1 bean2 = memberOfGroup1.get();
+        Assertions.assertNotSame(bean1, bean2,
+                "Beans of a not preserved navigation chain must not be shared "
+                        + "between UIs of the same browser window");
+        Assertions.assertNotEquals(STATE, bean2.getState());
+
+        // the bean of the first UI is still bound to that UI only, and is
+        // destroyed together with it
+        Assertions.assertFalse(bean1.isDestroyed);
+        ComponentUtil.onComponentDetach(ui);
+        Assertions.assertTrue(bean1.isDestroyed);
+        Assertions.assertFalse(bean2.isDestroyed);
+    }
+
+    @Test
+    public void preserveOnRefreshLayout_anotherUIHasSameWindowName_beanIsPreserved() {
+        UI ui = doSetUp("foo", null);
+        Mockito.when(event.getNavigationTarget())
+                .thenReturn((Class) Group1.class);
+        Mockito.when(event.getLayouts()).thenReturn(
+                Collections.<Class<? extends RouterLayout>> singletonList(
+                        PreservedLayout.class));
         beforeNavigationTrigger.fire(event);
 
         MemberOfGroup1 bean1 = memberOfGroup1.get();
@@ -242,11 +327,15 @@ public class RouteContextualStorageManagerTest extends AbstractWeldTest {
         doSetUp("foo", ui.getSession());
         Mockito.when(event.getNavigationTarget())
                 .thenReturn((Class) Group1.class);
+        Mockito.when(event.getLayouts()).thenReturn(
+                Collections.<Class<? extends RouterLayout>> singletonList(
+                        PreservedLayout.class));
         beforeNavigationTrigger.fire(event);
 
         ComponentUtil.onComponentDetach(ui);
 
         Assertions.assertFalse(bean1.isDestroyed);
+        Assertions.assertSame(bean1, memberOfGroup1.get());
         Assertions.assertEquals(STATE, memberOfGroup1.get().getState());
     }
 

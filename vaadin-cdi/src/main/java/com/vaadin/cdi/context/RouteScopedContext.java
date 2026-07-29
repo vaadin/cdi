@@ -41,6 +41,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.page.ExtendedClientDetails;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.VaadinSession;
 
@@ -54,6 +55,17 @@ public class RouteScopedContext extends AbstractContext {
     @VaadinSessionScoped
     public static class ContextualStorageManager
             extends AbstractContextualStorageManager<RouteStorageKey> {
+
+        /**
+         * Prefix of storage identifiers bound to a single UI instance.
+         */
+        private static final String UI_STORE_ID_PREFIX = "uid-";
+
+        /**
+         * Prefix of storage identifiers bound to a browser window, and thus
+         * shared by all the UIs of that window.
+         */
+        private static final String WINDOW_STORE_ID_PREFIX = "win-";
 
         public ContextualStorageManager() {
             // Session lock checked in VaadinSessionScopedContext while
@@ -92,10 +104,10 @@ public class RouteScopedContext extends AbstractContext {
 
         private void destroyDescopedBeans(UI ui,
                 Set<Class<?>> navigationChain) {
-            String uiStoreId = getUIStoreId(ui);
+            Set<String> uiStoreIds = getUIStoreIds(ui);
 
             Set<RouteStorageKey> missingKeys = getKeySet().stream()
-                    .filter(key -> key.getUIId().equals(uiStoreId))
+                    .filter(key -> uiStoreIds.contains(key.getUIId()))
                     .filter(key -> !navigationChain.contains(key.getOwner()))
                     .collect(Collectors.toSet());
 
@@ -103,6 +115,12 @@ public class RouteScopedContext extends AbstractContext {
         }
 
         private void handleUIDetach(UI ui, RouteStorageKey key) {
+            if (!key.isWindowScoped()) {
+                // The storage belongs to this UI only, so there is nothing to
+                // preserve for a potential UI created by a page refresh.
+                destroy(key);
+                return;
+            }
             UI uiAfterRefresh = findPreservingUI(ui);
             if (uiAfterRefresh == null) {
                 destroy(key);
@@ -131,36 +149,62 @@ public class RouteScopedContext extends AbstractContext {
         }
 
         private RouteStorageKey getKey(UI ui, Class<?> owner) {
-            ExtendedClientDetails details = ui.getInternals()
-                    .getExtendedClientDetails();
-            RouteStorageKey key = new RouteStorageKey(owner, getUIStoreId(ui));
-            if (details.getWindowName() == null) {
-                ui.getPage().retrieveExtendedClientDetails(
-                        det -> relocate(ui, key));
+            // Beans are shared with the UI created by a page refresh only if
+            // the navigation chain is preserved by Flow. In that case the
+            // storage is bound to the browser window, exactly like Flow binds
+            // the preserved component chain.
+            if (isPreserveOnRefreshChain(ui)) {
+                String windowName = getWindowName(ui);
+                if (windowName != null) {
+                    return new RouteStorageKey(owner,
+                            WINDOW_STORE_ID_PREFIX + windowName, true);
+                }
             }
-            return key;
-        }
-
-        private void relocate(UI ui, RouteStorageKey key) {
-            relocate(key,
-                    new RouteStorageKey(key.getOwner(), getUIStoreId(ui)));
+            return new RouteStorageKey(owner, getUIStoreId(ui), false);
         }
 
         private List<ContextualStorage> getActiveContextualStorages() {
-            return getKeySet().stream().filter(
-                    key -> key.getUIId().equals(getUIStoreId(UI.getCurrent())))
+            Set<String> uiStoreIds = getUIStoreIds(UI.getCurrent());
+            return getKeySet().stream()
+                    .filter(key -> uiStoreIds.contains(key.getUIId()))
                     .map(key -> getContextualStorage(key, false))
                     .collect(Collectors.toList());
         }
 
-        private String getUIStoreId(UI ui) {
-            ExtendedClientDetails details = ui.getInternals()
-                    .getExtendedClientDetails();
-            if (details.getWindowName() == null) {
-                return "uid-" + ui.getUIId();
-            } else {
-                return "win-" + getWindowName(ui);
+        /**
+         * Gets all the storage identifiers a UI can hold beans for: its own
+         * one, plus the one shared by all the UIs of the same browser window. A
+         * single UI may own both kinds of storage, for example after navigating
+         * from a regular view to a {@link PreserveOnRefresh} one.
+         */
+        private Set<String> getUIStoreIds(UI ui) {
+            Set<String> ids = new HashSet<>();
+            ids.add(getUIStoreId(ui));
+            String windowName = getWindowName(ui);
+            if (windowName != null) {
+                ids.add(WINDOW_STORE_ID_PREFIX + windowName);
             }
+            return ids;
+        }
+
+        private String getUIStoreId(UI ui) {
+            return UI_STORE_ID_PREFIX + ui.getUIId();
+        }
+
+        private static boolean isPreserveOnRefreshChain(UI ui) {
+            NavigationData data = ComponentUtil.getData(ui,
+                    NavigationData.class);
+            if (data == null) {
+                return false;
+            }
+            return isPreserveOnRefresh(data.getNavigationTarget())
+                    || data.getLayouts().stream().anyMatch(
+                            ContextualStorageManager::isPreserveOnRefresh);
+        }
+
+        private static boolean isPreserveOnRefresh(Class<?> clazz) {
+            return clazz != null
+                    && clazz.isAnnotationPresent(PreserveOnRefresh.class);
         }
 
     }
@@ -168,10 +212,14 @@ public class RouteScopedContext extends AbstractContext {
     private static class RouteStorageKey implements Serializable {
         private final Class<?> owner;
         private final String uiId;
+        // Derived from uiId, so it is not part of equals/hashCode
+        private final boolean windowScoped;
 
-        private RouteStorageKey(Class<?> owner, String uiId) {
+        private RouteStorageKey(Class<?> owner, String uiId,
+                boolean windowScoped) {
             this.owner = owner;
             this.uiId = uiId;
+            this.windowScoped = windowScoped;
         }
 
         @Override
@@ -202,6 +250,15 @@ public class RouteScopedContext extends AbstractContext {
 
         String getUIId() {
             return uiId;
+        }
+
+        /**
+         * Whether the storage is shared by all the UIs of the same browser
+         * window, as required to preserve beans of a {@link PreserveOnRefresh}
+         * navigation chain.
+         */
+        boolean isWindowScoped() {
+            return windowScoped;
         }
 
     }

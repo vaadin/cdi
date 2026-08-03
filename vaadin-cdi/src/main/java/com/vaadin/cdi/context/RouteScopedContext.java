@@ -115,6 +115,11 @@ public class RouteScopedContext extends AbstractContext {
         }
 
         private void handleUIDetach(UI ui, RouteStorageKey key) {
+            if (getContextualStorage(key, false) == null) {
+                // The storage has been relocated to another key because the
+                // scope of its owner changed, or it is already destroyed.
+                return;
+            }
             if (!key.isWindowScoped()) {
                 // The storage belongs to this UI only, so there is nothing to
                 // preserve for a potential UI created by a page refresh.
@@ -149,18 +154,51 @@ public class RouteScopedContext extends AbstractContext {
         }
 
         private RouteStorageKey getKey(UI ui, Class<?> owner) {
+            RouteStorageKey uiKey = new RouteStorageKey(owner, getUIStoreId(ui),
+                    false);
+            String windowName = getWindowName(ui);
+            if (windowName == null) {
+                return uiKey;
+            }
+            RouteStorageKey windowKey = new RouteStorageKey(owner,
+                    WINDOW_STORE_ID_PREFIX + windowName, true);
             // Beans are shared with the UI created by a page refresh only if
             // the navigation chain is preserved by Flow. In that case the
             // storage is bound to the browser window, exactly like Flow binds
             // the preserved component chain.
             if (isPreserveOnRefreshChain(ui)) {
-                String windowName = getWindowName(ui);
-                if (windowName != null) {
-                    return new RouteStorageKey(owner,
-                            WINDOW_STORE_ID_PREFIX + windowName, true);
-                }
+                return rescope(uiKey, windowKey, ui);
             }
-            return new RouteStorageKey(owner, getUIStoreId(ui), false);
+            // The owner may stay in the navigation chain while the chain stops
+            // being preserved, for example navigating from a preserved view to
+            // a plain sibling of the same layout. Its beans are then bound back
+            // to this UI, unless another UI of the same browser window is still
+            // alive and may be holding the preserved chain.
+            if (getContextualStorage(windowKey, false) != null
+                    && findPreservingUI(ui) == null) {
+                return rescope(windowKey, uiKey, ui);
+            }
+            return uiKey;
+        }
+
+        /**
+         * Moves the storage of an owner whose scope changed, so that its beans
+         * are not recreated while the owner stays in the navigation chain.
+         *
+         * @return the key the storage of the owner is bound to, always
+         *         {@code to}
+         */
+        private RouteStorageKey rescope(RouteStorageKey from,
+                RouteStorageKey to, UI ui) {
+            if (getContextualStorage(to, false) == null
+                    && getContextualStorage(from, false) != null) {
+                relocate(from, to);
+                // The listener registered for the previous key does not find
+                // any storage anymore, so the new key needs its own.
+                ui.addDetachListener(
+                        event -> handleUIDetach(event.getUI(), to));
+            }
+            return to;
         }
 
         private List<ContextualStorage> getActiveContextualStorages() {

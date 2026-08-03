@@ -40,7 +40,10 @@ import com.vaadin.cdi.itest.routecontext.EventObserverLayout;
 import com.vaadin.cdi.itest.routecontext.EventView;
 import com.vaadin.cdi.itest.routecontext.LayoutEventView;
 import com.vaadin.cdi.itest.routecontext.LayoutEventView2;
+import com.vaadin.cdi.itest.routecontext.LayoutScopedPlainView;
+import com.vaadin.cdi.itest.routecontext.LayoutScopedPreservedView;
 import com.vaadin.cdi.itest.routecontext.MainLayout;
+import com.vaadin.cdi.itest.routecontext.MainLayoutBean;
 import com.vaadin.cdi.itest.routecontext.MasterView;
 import com.vaadin.cdi.itest.routecontext.PostponeView;
 import com.vaadin.cdi.itest.routecontext.PreserveOnRefreshBean;
@@ -333,6 +336,33 @@ public class RouteContextTest extends AbstractCdiTest {
         assertConstructed(RootView.class, 1);
         assertDestroyed(RootView.class, 0);
         assertRootViewIsRendered();
+    }
+
+    @Test
+    public void sharedLayout_navigateBetweenPreservedAndPlainChild_layoutBeanIsKept()
+            throws IOException {
+        follow(MainLayout.LAYOUT_PRESERVED);
+        String beanData = getText(LayoutScopedPreservedView.LAYOUT_BEAN_LABEL);
+
+        assertConstructed(MainLayoutBean.class, 1);
+        assertDestroyed(MainLayoutBean.class, 0);
+
+        // the layout instance is reused, so the beans it owns must not be
+        // recreated even if the navigation chain is not preserved anymore
+        follow(MainLayout.LAYOUT_PLAIN);
+
+        Assert.assertEquals(beanData,
+                getText(LayoutScopedPlainView.LAYOUT_BEAN_LABEL));
+        assertConstructed(MainLayoutBean.class, 1);
+        assertDestroyed(MainLayoutBean.class, 0);
+
+        // ... and the other way around
+        follow(MainLayout.LAYOUT_PRESERVED);
+
+        Assert.assertEquals(beanData,
+                getText(LayoutScopedPreservedView.LAYOUT_BEAN_LABEL));
+        assertConstructed(MainLayoutBean.class, 1);
+        assertDestroyed(MainLayoutBean.class, 0);
     }
 
     private void assertRootViewIsRendered() {

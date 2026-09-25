@@ -3,11 +3,31 @@
 
 # Vaadin CDI
 
-This is the official CDI integration for [Vaadin Flow](https://github.com/vaadin/flow).
+The official CDI integration for [Vaadin Flow](https://github.com/vaadin/flow).
 
-This branch is compatible with upcoming Vaadin platform versions. See other branches for other Vaadin versions:
+## Development has moved to vaadin/flow
 
-* 16.1 for Vaadin 25.2
+From **Vaadin 25.4** onwards `vaadin-cdi` is developed and released as part of
+Flow, in the [vaadin/flow](https://github.com/vaadin/flow) repository:
+
+* the library: [`vaadin-cdi/`](https://github.com/vaadin/flow/tree/main/vaadin-cdi)
+* the integration tests: [`flow-tests/vaadin-cdi-tests/`](https://github.com/vaadin/flow/tree/main/flow-tests/vaadin-cdi-tests)
+
+It follows Flow's version numbering there, so the release that goes with Vaadin
+25.4 is `vaadin-cdi` 25.4.0 rather than a 16.x one, and a new `vaadin-cdi` is
+published with every Flow release. The history of this repository was carried
+over with the move, so `git log` and `git blame` on those files still reach the
+commits made here.
+
+**Please open issues and pull requests for Vaadin 25.4 and later in
+[vaadin/flow](https://github.com/vaadin/flow/issues).** This tracker stays open
+for the versions listed below.
+
+## Branches for earlier Vaadin versions
+
+Vaadin 25.3 and earlier are still served from this repository:
+
+* `main` holds the 16.1 line, for Vaadin 25.2 and 25.3
 * 16.0 for Vaadin 25.0 and 25.1
 * 15.2 for Vaadin 24.8
 * 15.1 for Vaadin 24.4
@@ -23,16 +43,29 @@ This branch is compatible with upcoming Vaadin platform versions. See other bran
 
 ## Using with Vaadin
 
-To use CDI with Vaadin, you need to add the following dependency to your pom.xml:
+On Vaadin 25.4 or later the platform manages the version for you, so add the
+dependency without one:
+
 ```xml
 <dependency>
-  <groupdId>com.vaadin</groupId>
+  <groupId>com.vaadin</groupId>
   <artifactId>vaadin-cdi</artifactId>
-  <version>15.2.0</version> <!-- Or the LATEST version -->
 </dependency>
 ```
 
-Since the current release version is a prerelease, you need to also include the prerelease Maven repository:
+On Vaadin 25.3 or earlier, give the version that matches your platform version
+from the list above:
+
+```xml
+<dependency>
+  <groupId>com.vaadin</groupId>
+  <artifactId>vaadin-cdi</artifactId>
+  <version>16.1.2</version>
+</dependency>
+```
+
+If the version you are using is a prerelease, include the prerelease repository
+as well:
 
 ```xml
 <repositories>
@@ -45,28 +78,29 @@ Since the current release version is a prerelease, you need to also include the 
 
 ## Getting started
 
-**NOTE: This is still WIP.** The easiest way for starting a project is to go to [vaadin.com/start](https://vaadin.com/start) and select the _Project Base with CDI_ to get an empty project with everything setup ready for you.
+Start a project from [vaadin.com/start](https://vaadin.com/start) and pick the
+_Project Base with CDI_ to get an empty project set up for you.
 
-**NOTE: This is still WIP.** There is a tutorial also available in https://github.com/vaadin/flow-cdi-tutorial that helps you get started with Vaadin 10 and CDI.
+## Building the branches kept here
 
-## Building the project
+These instructions apply to this repository, i.e. to Vaadin 25.3 and earlier.
+For 25.4 and later, build the module in
+[vaadin/flow](https://github.com/vaadin/flow) instead.
 
-Execute `mvn clean install -DskipTests` in the root directory to build vaadin-cdi.
+Execute `mvn clean install -DskipTests` in the root directory to build
+vaadin-cdi.
 
-## Run integration tests
+### Run integration tests
 
-Execute `mvn -pl vaadin-cdi-itest -Ptomee verify` in the root directory to run integration tests.
+Execute `mvn -pl vaadin-cdi-itest -Ptomee verify` in the root directory.
 
-Test can be executed against the following containers, activating the specific profile:
+Tests can be executed against the following containers, activating the specific
+profile:
 
-* Wildfly Jakarta EE 10: `-Pwidfly`
+* Wildfly Jakarta EE 10: `-Pwildfly`
 * OpenLiberty Jakarta EE 10: `-Pliberty`
 * Payara Jakarta EE 10: `-Ppayara`
 * TomEE Jakarta EE 10: `-Ptomee`
-
-## Issue tracking
-
-If you find an issue, please report it in the [GitHub issue tracker](https://github.com/vaadin/cdi/issues).
 
 ## Contributions
 

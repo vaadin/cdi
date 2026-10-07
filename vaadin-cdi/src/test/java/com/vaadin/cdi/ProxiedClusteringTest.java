@@ -16,6 +16,7 @@ import com.vaadin.cdi.uis.UIScopedIncUI;
 import com.vaadin.cdi.uis.ViewScopedIncUI;
 import io.undertow.Undertow;
 import io.undertow.client.UndertowClient;
+import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.ResponseCodeHandler;
 import io.undertow.server.handlers.proxy.LoadBalancingProxyClient;
 import io.undertow.server.handlers.proxy.ProxyHandler;
@@ -162,6 +163,12 @@ public class ProxiedClusteringTest extends AbstractCDIIntegrationTest {
             @Override
             public int selectHost(LoadBalancingProxyClient.Host[] availableHosts) {
                 return selectedHost;
+            }
+
+            @Override
+            public int selectHost(LoadBalancingProxyClient.Host[] availableHosts,
+                    HttpServerExchange exchange) {
+                return selectHost(availableHosts);
             }
 
         }

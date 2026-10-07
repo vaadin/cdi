@@ -28,7 +28,7 @@
         <jakarta.ee.version>11.0.0</jakarta.ee.version>
 
         <!-- Testing dependencies -->
-        <selenium.version>4.21.0</selenium.version>
+        <selenium.version>4.50.0</selenium.version>
         <shiro.version>2.2.1</shiro.version>
         <arquillian.version>1.9.1.Final</arquillian.version>
 

@@ -28,6 +28,7 @@ for the versions listed below.
 Vaadin 25.3 and earlier are still served from this repository:
 
 * `main` holds the 16.1 line, for Vaadin 25.2 and 25.3
+* 16.1 for Vaadin 25.2
 * 16.0 for Vaadin 25.0 and 25.1
 * 15.2 for Vaadin 24.8
 * 15.1 for Vaadin 24.4
@@ -39,6 +40,7 @@ Vaadin 25.3 and earlier are still served from this repository:
 * 4.0 for Vaadin 8 Extended Maintenance with Jakarta
 * 3.0 for Vaadin 8.2+
 * 2.0 for Vaadin Framework 8.0...8.1 versions
+* 1.9 for Vaadin Framework 7 Extended Maintenance with Jakarta
 * 1.0 for Vaadin Framework 7 versions
 
 ## Using with Vaadin
